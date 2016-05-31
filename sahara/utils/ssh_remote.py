@@ -718,20 +718,24 @@ class InstanceInteropHelper(remote.Remote):
         finally:
             procutils.shutdown_subprocess(proc, _cleanup)
 
-    def _run_with_log(self, func, timeout, *args, **kwargs):
+    def _run_with_log(self, func, timeout, description, *args, **kwargs):
         start_time = time.time()
+
         try:
-            with e_timeout.Timeout(timeout, ex.TimeoutException(timeout)):
+            with e_timeout.Timeout(timeout,
+                                   ex.TimeoutException(timeout,
+                                                       op_name=description)):
                 return self._run(func, *args, **kwargs)
         finally:
-            self._log_command('%s took %.1f seconds to complete' % (
-                func.__name__, time.time() - start_time))
+            self._log_command('"%s" took %.1f seconds to complete' % (
+                description, time.time() - start_time))
 
-    def _run_s(self, func, timeout, *args, **kwargs):
+    def _run_s(self, func, timeout, description, *args, **kwargs):
         timeout = _get_ssh_timeout(func, timeout)
         _acquire_remote_semaphore()
         try:
-            return self._run_with_log(func, timeout, *args, **kwargs)
+            return self._run_with_log(func, timeout,
+                                      description, *args, **kwargs)
         finally:
             _release_remote_semaphore()
 
@@ -797,48 +801,62 @@ class InstanceInteropHelper(remote.Remote):
 
     def execute_command(self, cmd, run_as_root=False, get_stderr=False,
                         raise_when_error=True, timeout=None):
-        self._log_command('Executing "%s"' % cmd)
-        return self._run_s(_execute_command, timeout, cmd, run_as_root,
-                           get_stderr, raise_when_error)
+        description = _('Executing "%s"') % cmd
+        self._log_command(description)
+        return self._run_s(_execute_command, timeout, description,
+                           cmd, run_as_root, get_stderr, raise_when_error)
 
     def write_file_to(self, remote_file, data, run_as_root=False,
                       timeout=None):
-        self._log_command('Writing file "%s"' % remote_file)
-        self._run_s(_write_file_to, timeout, remote_file, data, run_as_root)
+        description = _('Writing file "%s"') % remote_file
+        self._log_command(description)
+        self._run_s(_write_file_to, timeout, description,
+                    remote_file, data, run_as_root)
 
     def write_files_to(self, files, run_as_root=False, timeout=None):
-        self._log_command('Writing files "%s"' % list(files.keys()))
-        self._run_s(_write_files_to, timeout, files, run_as_root)
+        description = _('Writing files "%s"') % list(files)
+        self._log_command(description)
+        self._run_s(_write_files_to, timeout, description, files, run_as_root)
 
     def append_to_file(self, r_file, data, run_as_root=False, timeout=None):
-        self._log_command('Appending to file "%s"' % r_file)
-        self._run_s(_append_to_file, timeout, r_file, data, run_as_root)
+        description = _('Appending to file "%s"') % r_file
+        self._log_command(description)
+        self._run_s(_append_to_file, timeout, description,
+                    r_file, data, run_as_root)
 
     def append_to_files(self, files, run_as_root=False, timeout=None):
-        self._log_command('Appending to files "%s"' % list(files.keys()))
-        self._run_s(_append_to_files, timeout, files, run_as_root)
+        description = _('Appending to files "%s"') % list(files)
+        self._log_command(description)
+        self._run_s(_append_to_files, timeout, description, files, run_as_root)
 
     def read_file_from(self, remote_file, run_as_root=False, timeout=None):
-        self._log_command('Reading file "%s"' % remote_file)
-        return self._run_s(_read_file_from, timeout, remote_file, run_as_root)
+        description = _('Reading file "%s"') % remote_file
+        self._log_command(description)
+        return self._run_s(_read_file_from, timeout, description,
+                           remote_file, run_as_root)
 
     def get_os_distrib(self, timeout=None):
-        return self._run_s(_get_os_distrib, timeout)
+        return self._run_s(_get_os_distrib, timeout, "get_os_distrib")
 
     def install_packages(self, packages, timeout=None):
-        self._log_command('Installing packages "%s"' % list(packages))
-        self._run_s(_install_packages, timeout, packages)
+        description = _('Installing packages "%s"') % list(packages)
+        self._log_command(description)
+        self._run_s(_install_packages, timeout, description, packages)
 
     def update_repository(self, timeout=None):
-        self._log_command('Updating repository')
-        self._run_s(_update_repository, timeout)
+        description = _('Updating repository')
+        self._log_command(description)
+        self._run_s(_update_repository, timeout, description)
 
     def replace_remote_string(self, remote_file, old_str, new_str,
                               timeout=None):
-        self._log_command('In file "%s" replacing string "%s" '
-                          'with "%s"' % (remote_file, old_str, new_str))
-        self._run_s(_replace_remote_string, timeout, remote_file, old_str,
-                    new_str)
+        description = _('In file "%(file)s" replacing string '
+                        '"%(old_string)s" with "%(new_string)s"') % {
+            "file": remote_file, "old_string": old_str, "new_string": new_str}
+
+        self._log_command(description)
+        self._run_s(_replace_remote_string, timeout, description,
+                    remote_file, old_str, new_str)
 
     def execute_on_vm_interactive(self, cmd, matcher, timeout=None):
         """Runs given command and responds to prompts.
@@ -854,9 +872,10 @@ class InstanceInteropHelper(remote.Remote):
              the command is finished. False should be returned
              otherwise.
         """
-
-        self._log_command('Executing interactively "%s"' % cmd)
-        self._run_s(_execute_on_vm_interactive, timeout, cmd, matcher)
+        description = _('Executing interactively "%s"') % cmd
+        self._log_command(description)
+        self._run_s(_execute_on_vm_interactive, timeout,
+                    description, cmd, matcher)
 
     def _log_command(self, str):
         with context.set_current_instance_id(self.instance.instance_id):
@@ -880,9 +899,9 @@ class BulkInstanceInteropHelper(InstanceInteropHelper):
     def _run(self, func, *args, **kwargs):
         return procutils.run_in_subprocess(self.proc, func, args, kwargs)
 
-    def _run_s(self, func, timeout, *args, **kwargs):
+    def _run_s(self, func, timeout, description, *args, **kwargs):
         timeout = _get_ssh_timeout(func, timeout)
-        return self._run_with_log(func, timeout, *args, **kwargs)
+        return self._run_with_log(func, timeout, description, *args, **kwargs)
 
 
 class SshRemoteDriver(remote.RemoteDriver):

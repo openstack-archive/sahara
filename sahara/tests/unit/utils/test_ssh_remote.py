@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 import shlex
 
 import mock
@@ -299,21 +300,127 @@ class TestInstanceInteropHelper(base.SaharaTestCase):
         remote = ssh_remote.InstanceInteropHelper(instance)
 
         remote.get_os_distrib()
-        p_run_s.assert_called_with(ssh_remote._get_os_distrib, None)
+        p_run_s.assert_called_with(ssh_remote._get_os_distrib,
+                                   None, "get_os_distrib")
 
     @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._run_s')
-    def test_install_packages(self, p_run_s):
+    @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._log_command')
+    def test_install_packages(self, p_log_command, p_run_s):
         instance = FakeInstance('inst5', '123', '10.0.0.5', 'user5', 'key5')
         remote = ssh_remote.InstanceInteropHelper(instance)
 
-        remote.install_packages(['pkg1', 'pkg2'])
+        packages = ['pkg1', 'pkg2']
+        remote.install_packages(packages)
+        description = 'Installing packages "%s"' % list(packages)
         p_run_s.assert_called_once_with(
-            ssh_remote._install_packages, None, ['pkg1', 'pkg2'])
+            ssh_remote._install_packages, None, description, packages)
+
+        p_log_command.assert_called_with(description)
 
     @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._run_s')
-    def test_update_repository(self, p_run_s):
+    @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._log_command')
+    def test_update_repository(self, p_log_command, p_run_s):
         instance = FakeInstance('inst6', '123', '10.0.0.6', 'user6', 'key6')
         remote = ssh_remote.InstanceInteropHelper(instance)
 
         remote.update_repository()
-        p_run_s.assert_called_once_with(ssh_remote._update_repository, None)
+        p_run_s.assert_called_once_with(ssh_remote._update_repository,
+                                        None, 'Updating repository')
+
+        p_log_command.assert_called_with('Updating repository')
+
+    @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._run_s')
+    @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._log_command')
+    def test_write_file_to(self, p_log_command, p_run_s):
+        instance = FakeInstance('inst7', '123', '10.0.0.7', 'user7', 'key7')
+        remote = ssh_remote.InstanceInteropHelper(instance)
+        description = 'Writing file "file"'
+
+        remote.write_file_to("file", "data")
+        p_run_s.assert_called_once_with(ssh_remote._write_file_to, None,
+                                        description, "file", "data", False)
+
+        p_log_command.assert_called_with(description)
+
+    @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._run_s')
+    @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._log_command')
+    def test_write_files_to(self, p_log_command, p_run_s):
+        instance = FakeInstance('inst8', '123', '10.0.0.8', 'user8', 'key8')
+        remote = ssh_remote.InstanceInteropHelper(instance)
+        description = 'Writing files "[\'file\']"'
+
+        remote.write_files_to({"file": "data"})
+        p_run_s.assert_called_once_with(ssh_remote._write_files_to, None,
+                                        description, {"file": "data"}, False)
+
+        p_log_command.assert_called_with(description)
+
+    @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._run_s')
+    @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._log_command')
+    def test_append_to_file(self, p_log_command, p_run_s):
+        instance = FakeInstance('inst9', '123', '10.0.0.9', 'user9', 'key9')
+        remote = ssh_remote.InstanceInteropHelper(instance)
+        description = 'Appending to file "file"'
+
+        remote.append_to_file("file", "data")
+        p_run_s.assert_called_once_with(ssh_remote._append_to_file, None,
+                                        description, "file", "data", False)
+
+        p_log_command.assert_called_with(description)
+
+    @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._run_s')
+    @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._log_command')
+    def test_append_to_files(self, p_log_command, p_run_s):
+        instance = FakeInstance('inst10', '123',
+                                '10.0.0.10', 'user10', 'key10')
+        remote = ssh_remote.InstanceInteropHelper(instance)
+        description = 'Appending to files "[\'file\']"'
+
+        remote.append_to_files({"file": "data"})
+        p_run_s.assert_called_once_with(ssh_remote._append_to_files, None,
+                                        description, {"file": "data"}, False)
+
+        p_log_command.assert_called_with(description)
+
+    @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._run_s')
+    @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._log_command')
+    def test_read_file_from(self, p_log_command, p_run_s):
+        instance = FakeInstance('inst11', '123',
+                                '10.0.0.11', 'user11', 'key11')
+        remote = ssh_remote.InstanceInteropHelper(instance)
+        description = 'Reading file "file"'
+
+        remote.read_file_from("file")
+        p_run_s.assert_called_once_with(ssh_remote._read_file_from, None,
+                                        description, "file", False)
+
+        p_log_command.assert_called_with(description)
+
+    @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._run_s')
+    @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._log_command')
+    def test_replace_remote_string(self, p_log_command, p_run_s):
+        instance = FakeInstance('inst12', '123',
+                                '10.0.0.12', 'user12', 'key12')
+        remote = ssh_remote.InstanceInteropHelper(instance)
+        description = 'In file "file" replacing string "str1" with "str2"'
+
+        remote.replace_remote_string("file", "str1", "str2")
+        p_run_s.assert_called_once_with(ssh_remote._replace_remote_string,
+                                        None, description, "file", "str1",
+                                                                   "str2")
+
+        p_log_command.assert_called_with(description)
+
+    @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._run_s')
+    @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._log_command')
+    def test_execute_on_vm_interactive(self, p_log_command, p_run_s):
+        instance = FakeInstance('inst13', '123',
+                                '10.0.0.13', 'user13', 'key13')
+        remote = ssh_remote.InstanceInteropHelper(instance)
+        description = 'Executing interactively "factor 42"'
+
+        remote.execute_on_vm_interactive("factor 42", None)
+        p_run_s.assert_called_once_with(ssh_remote._execute_on_vm_interactive,
+                                        None, description, "factor 42", None)
+
+        p_log_command(description)
