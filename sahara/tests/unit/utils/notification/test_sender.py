@@ -18,47 +18,28 @@ import mock
 from sahara import context
 from sahara.tests.unit import base
 from sahara.utils.notification import sender
-from sahara.utils import rpc as messaging
 
 
 class NotificationTest(base.SaharaTestCase):
-
-    def setUp(self):
-        super(NotificationTest, self).setUp()
-
-    def _make_sample(self):
-        ctx = context.ctx()
-
-        self.ctx = ctx
-        self.cluster_id = 'someId'
-        self.cluster_name = 'someName'
-        self.cluster_status = 'someStatus'
-
-        sender.status_notify(self.cluster_id, self.cluster_name,
-                             self.cluster_status, "update")
-
-        self.create_mock('update')
-
-    def create_mock(self, action):
-
-        self.expected = mock.call(self.ctx,
-                                  'sahara.cluster.%s' % action,
-                                  {'cluster_id': self.cluster_id,
-                                   'cluster_name': self.cluster_name,
-                                   'cluster_status': self.cluster_status,
-                                   'project_id': self.ctx.tenant_id,
-                                   'user_id': self.ctx.user_id})
-
-    @mock.patch('oslo_messaging.notify.notifier.Notifier.info')
+    @mock.patch('sahara.utils.rpc.get_notifier')
     def test_update_cluster(self, mock_notify):
+        class FakeNotifier(object):
+            def info(self, *args):
+                self.call = args
+
         self.override_config("enable", True,
                              group='oslo_messaging_notifications')
-        messaging.setup()
+        notifier = FakeNotifier()
+        mock_notify.return_value = notifier
+        ctx = context.ctx()
+        sender.status_notify('someId', 'someName', 'someStatus', "update")
+        self.expected_args = (ctx,
+                              'sahara.cluster.%s' % 'update',
+                              {'cluster_id': 'someId',
+                               'cluster_name': 'someName',
+                               'cluster_status': 'someStatus',
+                               'project_id': ctx.tenant_id,
+                               'user_id': ctx.user_id})
 
-        self._make_sample()
-        self.assertEqual([self.expected],
-                         mock_notify.call_args_list)
-
-        if messaging.TRANSPORT:
-            messaging.TRANSPORT.cleanup()
-            messaging.TRANSPORT = messaging.NOTIFIER = None
+        self.assertEqual(self.expected_args,
+                         notifier.call)

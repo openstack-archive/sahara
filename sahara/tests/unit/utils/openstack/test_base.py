@@ -71,8 +71,6 @@ class AuthUrlTest(testbase.SaharaTestCase):
         _assert("https://127.0.0.1:8080/v2.0/")
         _assert("https://127.0.0.1:8080/v3")
         _assert("https://127.0.0.1:8080/v3/")
-        _assert("https://127.0.0.1:8080/v42")
-        _assert("https://127.0.0.1:8080/v42/")
 
     @mock.patch("sahara.utils.openstack.base.url_for")
     def test_retrieve_auth_url_api_v3_without_port(self, mock_url_for):
@@ -91,8 +89,21 @@ class AuthUrlTest(testbase.SaharaTestCase):
         _assert("https://127.0.0.1/v2.0/")
         _assert("https://127.0.0.1/v3")
         _assert("https://127.0.0.1/v3/")
-        _assert("https://127.0.0.1/v42")
-        _assert("https://127.0.0.1/v42/")
+
+    @mock.patch("sahara.utils.openstack.base.url_for")
+    def test_retrieve_auth_url_api_v3_path_present(self, mock_url_for):
+        self.override_config('use_identity_api_v3', True)
+        self.setup_context(service_catalog=True)
+        correct = "https://127.0.0.1/identity/v3"
+
+        def _assert(uri):
+            mock_url_for.return_value = uri
+            self.assertEqual(correct, base.retrieve_auth_url())
+
+        _assert("%s" % correct)
+        _assert("%s/" % correct)
+        _assert("https://127.0.0.1/identity")
+        _assert("https://127.0.0.1/identity/")
 
     def test_retrieve_auth_url_api_v20(self):
         self.override_config('use_identity_api_v3', False)
@@ -109,8 +120,6 @@ class AuthUrlTest(testbase.SaharaTestCase):
         _assert("https://127.0.0.1:8080/v2.0/")
         _assert("https://127.0.0.1:8080/v3")
         _assert("https://127.0.0.1:8080/v3/")
-        _assert("https://127.0.0.1:8080/v42")
-        _assert("https://127.0.0.1:8080/v42/")
 
     @mock.patch("sahara.utils.openstack.base.url_for")
     def test_retrieve_auth_url_api_v20_without_port(self, mock_url_for):
@@ -129,8 +138,6 @@ class AuthUrlTest(testbase.SaharaTestCase):
         _assert("https://127.0.0.1/v2.0/")
         _assert("https://127.0.0.1/v3")
         _assert("https://127.0.0.1/v3/")
-        _assert("https://127.0.0.1/v42")
-        _assert("https://127.0.0.1/v42/")
 
 
 class ExecuteWithRetryTest(testbase.SaharaTestCase):

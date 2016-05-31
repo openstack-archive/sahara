@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import re
+
 from keystoneauth1.access import service_catalog as keystone_service_catalog
 from keystoneauth1 import exceptions as keystone_ex
 from oslo_config import cfg
@@ -63,15 +65,24 @@ def url_for(service_catalog=None, service_type='identity',
                 region_name=CONF.os_region_name)
 
 
-def retrieve_auth_url(endpoint_type="internalURL"):
-    version = 'v3' if CONF.use_identity_api_v3 else 'v2.0'
+def prepare_auth_url(auth_url, version):
+    info = urlparse.urlparse(auth_url)
+    url_path = info.path.rstrip("/")
+    # replacing current api version to empty string
+    url_path = re.sub('/(v3/auth|v3|v2\.0)', '', url_path)
+    url_path = (url_path + "/" + version).lstrip("/")
+    return "%s://%s/%s" % (info[:2] + (url_path,))
+
+
+def retrieve_auth_url(endpoint_type="internalURL", version=None):
+    if not version:
+        version = 'v3' if CONF.use_identity_api_v3 else 'v2.0'
     ctx = context.current()
     if ctx.service_catalog:
-        info = urlparse.urlparse(url_for(ctx.service_catalog, 'identity',
-                                         endpoint_type))
+        auth_url = url_for(ctx.service_catalog, 'identity', endpoint_type)
     else:
-        info = urlparse.urlparse(CONF.keystone_authtoken.auth_uri)
-    return "%s://%s/%s" % (info[:2] + (version,))
+        auth_url = CONF.keystone_authtoken.auth_uri
+    return prepare_auth_url(auth_url, version)
 
 
 def execute_with_retries(method, *args, **kwargs):
