@@ -152,6 +152,19 @@ def _prepare_ranger(cluster):
         sudo("rm /tmp/init.sql")
 
 
+def prepare_hive(cluster):
+    hive = plugin_utils.get_instance(cluster, p_common.HIVE_SERVER)
+    if not hive:
+        return
+    with hive.remote() as r:
+        r.execute_command(
+            'sudo su - -c  "hadoop fs -mkdir /user/oozie/conf" hdfs')
+        r.execute_command(
+            'sudo su - -c  "hadoop fs -copyFromLocal '
+            '/etc/hive/conf/hive-site.xml '
+            '/user/oozie/conf/hive-site.xml" hdfs')
+
+
 def update_default_ambari_password(cluster):
     ambari = plugin_utils.get_instance(cluster, p_common.AMBARI_SERVER)
     new_password = uuidutils.generate_uuid()
