@@ -77,11 +77,13 @@ There are two types of configs here:
    Here is the list of ``${config}``:
 
    * ``.auth.url`` - authorization URL
-   * ``.tenant``
+   * ``.auth.endpoint.prefix`` - prefix for the service url, e.g. ``/AUTH_``
+   * ``.tenant`` - project name in V3 terms
    * ``.username``
    * ``.password``
    * ``.domain.name`` - Domains can be used to specify users who are not in
      the tenant specified.
+   * ``.domain.id`` - You can also specify domain using id.
    * ``.trust.id`` - Trusts are optionally  used to scope the authentication
      tokens of the supplied user.
    * ``.http.port``
