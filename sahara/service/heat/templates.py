@@ -32,6 +32,8 @@ LOG = logging.getLogger(__name__)
 SSH_PORT = 22
 INSTANCE_RESOURCE_NAME = "inst"
 SERVER_GROUP_PARAM_NAME = "servgroup"
+AUTO_SECURITY_GROUP_PARAM_NAME = "autosecgroup"
+
 # TODO(vgridnev): Using insecure flag until correct way to pass certificate
 # will be invented
 WAIT_CONDITION_SCRIPT_TEMPLATE = '''
@@ -215,6 +217,9 @@ class ClusterStack(object):
         for ng in self.cluster.node_groups:
             resources.update(self._serialize_ng_group(ng, outputs))
 
+        for ng in self.cluster.node_groups:
+            resources.update(self._serialize_auto_security_group(ng))
+
         return resources
 
     def _serialize_ng_group(self, ng, outputs):
@@ -224,9 +229,15 @@ class ClusterStack(object):
         outputs[ng.name + "-instances"] = {
             "value": {"get_attr": [ng.name, "instance"]}}
         properties = {"instance_index": "%index%"}
+
         if ng.cluster.anti_affinity:
             properties[SERVER_GROUP_PARAM_NAME] = {
                 'get_resource': _get_aa_group_name(ng.cluster)}
+
+        if ng.auto_security_group:
+            properties[AUTO_SECURITY_GROUP_PARAM_NAME] = {
+                'get_resource': g.generate_auto_security_group_name(ng)}
+
         return {
             ng.name: {
                 "type": "OS::Heat::ResourceGroup",
@@ -242,8 +253,13 @@ class ClusterStack(object):
 
     def _serialize_ng_file(self, ng):
         parameters = {"instance_index": {"type": "string"}}
+
         if ng.cluster.anti_affinity:
             parameters[SERVER_GROUP_PARAM_NAME] = {'type': "string"}
+
+        if ng.auto_security_group:
+            parameters[AUTO_SECURITY_GROUP_PARAM_NAME] = {'type': "string"}
+
         return yaml.safe_dump({
             "heat_template_version": heat_common.HEAT_TEMPLATE_VERSION,
             "description": self._node_group_description(ng),
@@ -325,9 +341,6 @@ class ClusterStack(object):
         properties = {}
 
         inst_name = _get_inst_name(ng)
-
-        if ng.auto_security_group:
-            resources.update(self._serialize_auto_security_group(ng))
 
         if ng.floating_ip_pool:
             resources.update(self._serialize_nova_floating(ng))
@@ -492,8 +505,7 @@ class ClusterStack(object):
         node_group_sg = list(node_group.security_groups or [])
         if node_group.auto_security_group:
             node_group_sg += [
-                {"get_resource": g.generate_auto_security_group_name(
-                    node_group)}
+                {"get_param": AUTO_SECURITY_GROUP_PARAM_NAME}
             ]
         return node_group_sg
 
