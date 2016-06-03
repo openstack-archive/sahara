@@ -93,35 +93,56 @@ class TestAttachVolume(base.SaharaWithDbTestCase):
 
         attached_info = '/dev/vda /dev/vda1 /dev/vdb /dev/vdc'
         mounted_info = '/dev/vda1'
-        ex_cmd.side_effect = [(0, attached_info), (0, mounted_info)]
+        ex_cmd.side_effect = [(0, attached_info), (0, mounted_info), (2, ""),
+                              (2, "")]
 
         diff = volumes._find_instance_devices(instance)
         self.assertEqual(['/dev/vdb', '/dev/vdc'], diff)
 
         attached_info = '/dev/vda /dev/vda1 /dev/vdb /dev/vdb1 /dev/vdb2'
         mounted_info = '/dev/vda1'
-        ex_cmd.side_effect = [(0, attached_info), (0, mounted_info)]
+        ex_cmd.side_effect = [(0, attached_info), (0, mounted_info), (2, ""),
+                              (2, "")]
 
         diff = volumes._find_instance_devices(instance)
         self.assertEqual(['/dev/vdb'], diff)
 
         attached_info = '/dev/vda /dev/vda1 /dev/vdb /dev/vdb1 /dev/vdb2'
         mounted_info = '/dev/vda1 /dev/vdb1'
-        ex_cmd.side_effect = [(0, attached_info), (0, mounted_info)]
+        ex_cmd.side_effect = [(0, attached_info), (0, mounted_info), (2, ""),
+                              (2, "")]
 
         diff = volumes._find_instance_devices(instance)
         self.assertEqual(['/dev/vdb2'], diff)
 
         attached_info = '/dev/vda /dev/vda1 /dev/vdb /dev/vdb1 /dev/vdb2'
         mounted_info = '/dev/vda1 /dev/vdb2'
-        ex_cmd.side_effect = [(0, attached_info), (0, mounted_info)]
+        ex_cmd.side_effect = [(0, attached_info), (0, mounted_info), (2, ""),
+                              (2, "")]
 
         diff = volumes._find_instance_devices(instance)
         self.assertEqual(['/dev/vdb1'], diff)
 
         attached_info = '/dev/vda /dev/vda1 /dev/vdb'
         mounted_info = '/dev/vda1 /dev/vdb'
-        ex_cmd.side_effect = [(0, attached_info), (0, mounted_info)]
+        ex_cmd.side_effect = [(0, attached_info), (0, mounted_info), (2, ""),
+                              (2, "")]
+
+        diff = volumes._find_instance_devices(instance)
+        self.assertEqual([], diff)
+
+        attached_info = '/dev/vda /dev/vda1 /dev/vdb'
+        mounted_info = '/dev/vda1'
+        ex_cmd.side_effect = [(0, attached_info), (0, mounted_info),
+                              (0, "/dev/vdb")]
+
+        diff = volumes._find_instance_devices(instance)
+        self.assertEqual([], diff)
+
+        attached_info = '/dev/vda /dev/vda1 /dev/vdb'
+        mounted_info = '/dev/vda1'
+        ex_cmd.side_effect = [(0, attached_info), (0, mounted_info),
+                              (2, ""), (0, "/dev/vdb")]
 
         diff = volumes._find_instance_devices(instance)
         self.assertEqual([], diff)

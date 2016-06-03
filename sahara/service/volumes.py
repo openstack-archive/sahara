@@ -143,6 +143,18 @@ def _find_instance_devices(instance):
             "mount | awk '$1 ~ /^\/dev/ {print $1}'")
         mounted_dev = mounted_info.split()
 
+        # find and ignore Nova config drive
+        for label in ("config-2", "CONFIG-2"):
+            code, nova_config_drive = r.execute_command(
+                "/sbin/blkid -t LABEL=\"%s\" -odevice" % label,
+                raise_when_error=False,
+                run_as_root=True
+            )
+            drive_name = nova_config_drive.strip()
+            if code == 0 and drive_name in attached_dev:
+                attached_dev.remove(drive_name)
+                break
+
     # filtering attached devices, that should not be mounted
     for dev in attached_dev[:]:
         idx = re.sub("\D", "", dev)
