@@ -15,14 +15,9 @@
 
 import sahara.exceptions as ex
 from sahara.i18n import _
-from sahara.plugins import base as plugin_base
-
-
-CONVERT_TO_TEMPLATE_SCHEMA = None
 
 
 def check_convert_to_template(plugin_name, version, **kwargs):
-    if not plugin_base.PLUGINS.is_plugin_implements(plugin_name, 'convert'):
-        raise ex.InvalidReferenceException(
-            _("Requested plugin '%s' doesn't support converting config files "
-              "to cluster templates") % plugin_name)
+    raise ex.InvalidReferenceException(
+        _("Requested plugin '%s' doesn't support converting config files "
+          "to cluster templates") % plugin_name)

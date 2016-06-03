@@ -13,8 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from six.moves.urllib import parse as urlparse
-
 from sahara import conductor as c
 from sahara import context
 from sahara.plugins import base as plugin_base
@@ -44,14 +42,6 @@ def get_plugin(plugin_name, version=None):
             else:
                 return None
         return res
-
-
-def convert_to_cluster_template(plugin_name, version, template_name,
-                                config_file):
-    plugin = plugin_base.PLUGINS.get_plugin(plugin_name)
-    return plugin.convert(config_file, plugin_name, version,
-                          urlparse.unquote(template_name),
-                          conductor.cluster_template_create)
 
 
 def construct_ngs_for_scaling(cluster, additional_node_groups):

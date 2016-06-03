@@ -16,7 +16,6 @@
 from sahara.api import acl
 from sahara.service.api.v2 import plugins as api
 from sahara.service import validation as v
-from sahara.service.validations import plugins as v_p
 import sahara.utils.api as u
 
 
@@ -41,12 +40,3 @@ def plugins_get(plugin_name):
 @v.check_exists(api.get_plugin, plugin_name='plugin_name', version='version')
 def plugins_get_version(plugin_name, version):
     return u.render(api.get_plugin(plugin_name, version).wrapped_dict)
-
-
-@rest.post_file('/plugins/<plugin_name>/<version>/convert-config/<name>')
-@acl.enforce("data-processing:plugins:convert_config")
-@v.check_exists(api.get_plugin, plugin_name='plugin_name', version='version')
-@v.validate(v_p.CONVERT_TO_TEMPLATE_SCHEMA, v_p.check_convert_to_template)
-def plugins_convert_to_cluster_template(plugin_name, version, name, data):
-    return u.to_wrapped_dict(
-        api.convert_to_cluster_template, plugin_name, version, name, data)

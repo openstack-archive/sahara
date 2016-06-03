@@ -17,7 +17,6 @@ from oslo_config import cfg
 from oslo_log import log as logging
 from oslo_utils import excutils
 import six
-from six.moves.urllib import parse as urlparse
 
 from sahara import conductor as c
 from sahara import context
@@ -237,14 +236,6 @@ def get_plugin(plugin_name, version=None):
             else:
                 return None
         return res
-
-
-def convert_to_cluster_template(plugin_name, version, template_name,
-                                config_file):
-    plugin = plugin_base.PLUGINS.get_plugin(plugin_name)
-    return plugin.convert(config_file, plugin_name, version,
-                          urlparse.unquote(template_name),
-                          conductor.cluster_template_create)
 
 
 def construct_ngs_for_scaling(cluster, additional_node_groups):
