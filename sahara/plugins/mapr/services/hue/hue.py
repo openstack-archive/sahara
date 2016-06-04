@@ -34,6 +34,7 @@ import sahara.plugins.mapr.services.spark.spark as spark
 import sahara.plugins.mapr.services.sqoop.sqoop2 as sqoop
 import sahara.plugins.mapr.services.yarn.yarn as yarn
 import sahara.plugins.mapr.util.general as g
+import sahara.plugins.mapr.util.password_utils as pu
 from sahara.plugins.mapr.util import service_utils as su
 import sahara.plugins.mapr.util.validation_utils as vu
 import sahara.plugins.provisioning as p
@@ -74,13 +75,20 @@ class Hue(s.Service):
         self._name = 'hue'
         self._ui_name = 'Hue'
         self._node_processes = [HUE]
-        self._ui_info = [('HUE', HUE, 'http://%s:8888')]
+        self._ui_info = None
         self._validation_rules = [
             vu.exactly(1, HUE),
             vu.on_same_node(HUE, httpfs.HTTP_FS),
             vu.on_same_node(HUE_LIVY, spark.SPARK_SLAVE),
         ]
         self._priority = 2
+
+    def get_ui_info(self, cluster_context):
+        # Hue uses credentials of the administrative user (PAM auth)
+        return [('HUE', HUE, {s.SERVICE_UI: 'http://%s:8888',
+                              'Username': pu.MAPR_USER_NAME,
+                              'Password': pu.get_mapr_password(cluster_context
+                                                               .cluster)})]
 
     def get_configs(self):
         return [Hue.THRIFT_VERSION]

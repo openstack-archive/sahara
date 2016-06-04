@@ -61,7 +61,7 @@ class HBase(s.Service):
             vu.at_least(1, HBASE_REGION_SERVER),
         ]
         self._ui_info = [
-            ("HBase Master", HBASE_MASTER, "http://%s:60010"),
+            ("HBase Master", HBASE_MASTER, {s.SERVICE_UI: "http://%s:60010"}),
         ]
 
     def get_config_files(self, cluster_context, configs, instance=None):
@@ -94,7 +94,7 @@ class HBaseV0989(HBase):
         self._dependencies = [('mapr-hbase', self.version)]
         self._node_processes.append(HBASE_REST)
         self._ui_info.append(
-            ("HBase REST", HBASE_REST, "http://%s:8085"),
+            ("HBase REST", HBASE_REST, {s.SERVICE_UI: "http://%s:8085"}),
         )
 
 
@@ -105,5 +105,5 @@ class HBaseV09812(HBase):
         self._dependencies = [("mapr-hbase", self.version)]
         self._node_processes.append(HBASE_REST)
         self._ui_info.append(
-            ("HBase REST", HBASE_REST, "http://%s:8085"),
+            ("HBase REST", HBASE_REST, {s.SERVICE_UI: "http://%s:8085"}),
         )

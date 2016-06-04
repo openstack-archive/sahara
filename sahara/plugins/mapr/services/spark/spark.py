@@ -122,9 +122,9 @@ class Spark(s.Service):
         self._dependencies = [('mapr-spark', self.version)]
         self._ui_info = [
             ('Spark Master', SPARK_MASTER,
-             'http://%%s:%s' % SPARK_MASTER_UI_PORT),
+             {s.SERVICE_UI: 'http://%%s:%s' % SPARK_MASTER_UI_PORT}),
             ('Spark History Server', SPARK_HISTORY_SERVER,
-             'http://%%s:%s' % SPARK_HS_UI_PORT)]
+             {s.SERVICE_UI: 'http://%%s:%s' % SPARK_HS_UI_PORT})]
         self._validation_rules = [
             vu.exactly(1, SPARK_MASTER),
             vu.exactly(1, SPARK_HISTORY_SERVER),

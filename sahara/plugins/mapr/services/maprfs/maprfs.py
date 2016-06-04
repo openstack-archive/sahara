@@ -82,7 +82,8 @@ class MapRFS(s.Service):
         self._ui_name = 'MapRFS'
         self._node_processes = [CLDB, FILE_SERVER, NFS]
         self._ui_info = [
-            ('Container Location Database (CLDB)', CLDB, 'http://%s:7221'),
+            ('Container Location Database (CLDB)', CLDB,
+             {s.SERVICE_UI: 'http://%s:7221'}),
         ]
         self._validation_rules = [
             vu.at_least(1, CLDB),
