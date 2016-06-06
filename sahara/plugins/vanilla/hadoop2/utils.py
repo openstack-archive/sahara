@@ -15,7 +15,17 @@
 
 import re
 
+from oslo_log import log as logging
+
+from sahara import conductor as cond
+from sahara import context
+from sahara.i18n import _LW
 from sahara.plugins.vanilla import utils as u
+from sahara.service.castellan import utils as castellan
+
+conductor = cond.API
+
+LOG = logging.getLogger(__name__)
 
 
 def get_datanodes_status(cluster):
@@ -44,3 +54,20 @@ def get_nodemanagers_status(cluster):
         statuses[host] = status.lower()
 
     return statuses
+
+
+def get_oozie_password(cluster):
+    cluster = conductor.cluster_get(context.ctx(), cluster)
+    extra = cluster.extra.to_dict()
+    if 'oozie_pass_id' not in extra:
+        extra['oozie_pass_id'] = u.generate_random_password()
+        conductor.cluster_update(context.ctx(), cluster, {'extra': extra})
+    return castellan.get_secret(extra['oozie_pass_id'])
+
+
+def delete_oozie_password(cluster):
+    extra = cluster.extra.to_dict()
+    if 'oozie_pass_id' in extra:
+        castellan.delete_secret(extra['oozie_pass_id'])
+    else:
+        LOG.warning(_LW("Cluster hasn't Oozie password"))

@@ -12,6 +12,7 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from sahara.plugins.vanilla.hadoop2 import utils as u
 
 
 def get_oozie_required_xml_configs(hadoop_conf_dir):
@@ -38,12 +39,13 @@ def get_oozie_required_xml_configs(hadoop_conf_dir):
     }
 
 
-def get_oozie_mysql_configs():
+def get_oozie_mysql_configs(cluster):
     return {
         'oozie.service.JPAService.jdbc.driver':
         'com.mysql.jdbc.Driver',
         'oozie.service.JPAService.jdbc.url':
         'jdbc:mysql://localhost:3306/oozie',
         'oozie.service.JPAService.jdbc.username': 'oozie',
-        'oozie.service.JPAService.jdbc.password': 'oozie'
+        'oozie.service.JPAService.jdbc.password': u.get_oozie_password(
+            cluster)
     }
