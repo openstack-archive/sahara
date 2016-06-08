@@ -183,7 +183,7 @@ Create a master node group template with the command:
 
     $ openstack dataprocessing node group template create \
         --name vanilla-default-master --plugin vanilla \
-        --version <plugin_version> --processes namenode resourcemanager
+        --version <plugin_version> --processes namenode resourcemanager \
         --flavor 2 --auto-security-group --floating-ip-pool <pool-id>
     +---------------------+--------------------------------------+
     | Field               | Value                                |
@@ -212,7 +212,7 @@ Create a worker node group template with the command:
 
     $ openstack dataprocessing node group template create \
         --name vanilla-default-worker --plugin vanilla \
-        --version <plugin_version> --processes datanode nodemanager
+        --version <plugin_version> --processes datanode nodemanager \
         --flavor 2 --auto-security-group --floating-ip-pool <pool-id>
     +---------------------+--------------------------------------+
     | Field               | Value                                |
@@ -321,7 +321,7 @@ Create a cluster template with the command:
 .. sourcecode:: console
 
     $ openstack dataprocessing cluster template create \
-        --name vanilla-default-cluster
+        --name vanilla-default-cluster \
         --node-groups vanilla-default-master:1 vanilla-default-worker:3
 
     +----------------+----------------------------------------------------+
@@ -396,7 +396,7 @@ Create a cluster with the command:
 .. sourcecode:: console
 
     $ openstack dataprocessing cluster create --name my-cluster-1 \
-        --cluster-template vanilla-default-cluster --user-keypair my_stack
+        --cluster-template vanilla-default-cluster --user-keypair my_stack \
         --neutron-network private --image sahara-vanilla-latest-ubuntu
 
     +----------------------------+----------------------------------------------------+
