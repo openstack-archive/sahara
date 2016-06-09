@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+# ``upgrade-sahara``
+
+function configure_sahara_upgrade {
+    XTRACE=$(set +o | grep xtrace)
+    set -o xtrace
+    local old_plugins
+
+    old_plugins=$(cat $SAHARA_CONF_DIR/sahara.conf | grep ^plugins)
+    sed -i.bak "s/$old_plugins/plugins=fake,vanilla,cdh/g" $SAHARA_CONF_DIR/sahara.conf
+
+    # reset to previous state
+    $XTRACE
+}
