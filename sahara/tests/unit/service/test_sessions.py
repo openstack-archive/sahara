@@ -128,6 +128,25 @@ class TestSessionCache(base.SaharaTestCase):
         self.assertFalse(keystone_session.called)
 
     @mock.patch('keystoneauth1.session.Session')
+    def test_get_heat_session(self, keystone_session):
+        sc = sessions.SessionCache()
+        self.override_config('ca_file', '/some/cacert', group='heat')
+        self.override_config('api_insecure', False, group='heat')
+        sc.get_session(sessions.SESSION_TYPE_HEAT)
+        keystone_session.assert_called_once_with(verify='/some/cacert')
+
+        sc = sessions.SessionCache()
+        keystone_session.reset_mock()
+        self.override_config('ca_file', None, group='heat')
+        self.override_config('api_insecure', True, group='heat')
+        sc.get_session(sessions.SESSION_TYPE_HEAT)
+        keystone_session.assert_called_once_with(verify=False)
+
+        keystone_session.reset_mock()
+        sc.get_session(sessions.SESSION_TYPE_HEAT)
+        self.assertFalse(keystone_session.called)
+
+    @mock.patch('keystoneauth1.session.Session')
     def test_insecure_session(self, session):
         sc = sessions.SessionCache()
         sc.get_session(sessions.SESSION_TYPE_INSECURE)

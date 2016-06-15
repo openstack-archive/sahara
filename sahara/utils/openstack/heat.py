@@ -19,8 +19,9 @@ from oslo_config import cfg
 from sahara import context
 from sahara import exceptions as ex
 from sahara.i18n import _
+from sahara.service import sessions
 from sahara.utils.openstack import base
-
+from sahara.utils.openstack import keystone
 
 opts = [
     cfg.BoolOpt('api_insecure',
@@ -43,14 +44,13 @@ CONF.register_opts(opts, group=heat_group)
 
 
 def client():
-    ctx = context.current()
+    ctx = context.ctx()
+    session = sessions.cache().get_heat_session()
     heat_url = base.url_for(ctx.service_catalog, 'orchestration',
                             endpoint_type=CONF.heat.endpoint_type)
-    return heat_client.Client('1', heat_url, token=context.get_auth_token(),
-                              cert_file=CONF.heat.ca_file,
-                              insecure=CONF.heat.api_insecure,
-                              username=ctx.username,
-                              include_pass=True)
+    return heat_client.Client(
+        '1', endpoint=heat_url, session=session, auth=keystone.auth(),
+        region_name=CONF.os_region_name)
 
 
 def get_stack(stack_name, raise_on_missing=True):

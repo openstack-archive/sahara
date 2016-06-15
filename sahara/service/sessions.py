@@ -33,6 +33,7 @@ SESSION_TYPE_NEUTRON = 'neutron'
 SESSION_TYPE_NOVA = 'nova'
 SESSION_TYPE_GLANCE = 'glance'
 SESSION_TYPE_INSECURE = 'insecure'
+SESSION_TYPE_HEAT = 'heat'
 
 
 def cache():
@@ -64,6 +65,7 @@ class SessionCache(object):
             SESSION_TYPE_NOVA: self.get_nova_session,
             SESSION_TYPE_GLANCE: self.get_glance_session,
             SESSION_TYPE_INSECURE: self.get_insecure_session,
+            SESSION_TYPE_HEAT: self.get_heat_session,
         }
 
     def _set_session(self, session_type, session):
@@ -154,6 +156,16 @@ class SessionCache(object):
             else:
                 session = self.get_insecure_session()
             self._set_session(SESSION_TYPE_GLANCE, session)
+        return session
+
+    def get_heat_session(self):
+        session = self._sessions.get(SESSION_TYPE_HEAT)
+        if not session:
+            if not CONF.heat.api_insecure:
+                session = keystone.Session(verify=CONF.heat.ca_file or True)
+            else:
+                session = self.get_insecure_session()
+            self._set_session(SESSION_TYPE_HEAT, session)
         return session
 
     def token_for_auth(self, auth):
