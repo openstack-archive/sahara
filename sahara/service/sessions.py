@@ -103,9 +103,9 @@ class SessionCache(object):
     def get_cinder_session(self):
         session = self._sessions.get(SESSION_TYPE_CINDER)
         if not session:
-            if not CONF.cinder.api_insecure and CONF.cinder.ca_file:
+            if not CONF.cinder.api_insecure:
                 session = keystone.Session(
-                    cert=CONF.cinder.ca_file, verify=True)
+                    verify=CONF.cinder.ca_file or True)
             else:
                 session = self.get_insecure_session()
             self._set_session(SESSION_TYPE_CINDER, session)
@@ -114,9 +114,9 @@ class SessionCache(object):
     def get_keystone_session(self):
         session = self._sessions.get(SESSION_TYPE_KEYSTONE)
         if not session:
-            if not CONF.keystone.api_insecure and CONF.keystone.ca_file:
+            if not CONF.keystone.api_insecure:
                 session = keystone.Session(
-                    cert=CONF.keystone.ca_file, verify=True)
+                    verify=CONF.keystone.ca_file or True)
             else:
                 session = self.get_insecure_session()
             self._set_session(SESSION_TYPE_KEYSTONE, session)
@@ -125,9 +125,9 @@ class SessionCache(object):
     def get_neutron_session(self):
         session = self._sessions.get(SESSION_TYPE_NEUTRON)
         if not session:
-            if not CONF.neutron.api_insecure and CONF.neutron.ca_file:
+            if not CONF.neutron.api_insecure:
                 session = keystone.Session(
-                    cert=CONF.neutron.ca_file, verify=True)
+                    verify=CONF.neutron.ca_file or True)
             else:
                 session = self.get_insecure_session()
             self._set_session(SESSION_TYPE_NEUTRON, session)
@@ -136,9 +136,9 @@ class SessionCache(object):
     def get_nova_session(self):
         session = self._sessions.get(SESSION_TYPE_NOVA)
         if not session:
-            if not CONF.nova.api_insecure and CONF.nova.ca_file:
+            if not CONF.nova.api_insecure:
                 session = keystone.Session(
-                    cert=CONF.nova.ca_file, verify=True)
+                    verify=CONF.nova.ca_file or True)
             else:
                 session = self.get_insecure_session()
             self._set_session(SESSION_TYPE_NOVA, session)

@@ -1,0 +1,4 @@
+---
+fixes:
+  - CA certificate handling in keystone, nova, neutron and
+    cinder clients are fixed (#330635)
