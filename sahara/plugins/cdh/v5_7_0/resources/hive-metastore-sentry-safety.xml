@@ -1,0 +1,15 @@
+<property>
+    <name>hive.metastore.client.impl</name>
+    <value>org.apache.sentry.binding.metastore.SentryHiveMetaStoreClient</value>
+    <description>Sets custom Hive metastore client which Sentry uses to filter out metadata.</description>
+</property>
+<property>
+    <name>hive.metastore.pre.event.listeners</name>
+    <value>org.apache.sentry.binding.metastore.MetastoreAuthzBinding</value>
+    <description>list of comma separated listeners for metastore events.</description>
+</property>
+<property>
+    <name>hive.metastore.event.listeners</name>
+    <value>org.apache.sentry.binding.metastore.SentryMetastorePostEventListener</value>
+    <description>list of comma separated listeners for metastore, post events.</description>
+</property>
