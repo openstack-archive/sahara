@@ -14,7 +14,6 @@
 # limitations under the License.
 
 from keystoneauth1 import identity as keystone_identity
-from keystoneauth1 import session as keystone_session
 from keystoneclient.v2_0 import client as keystone_client
 from keystoneclient.v3 import client as keystone_client_v3
 from oslo_config import cfg
@@ -168,18 +167,6 @@ def service_catalog_from_auth(auth):
         return []
 
 
-# TODO(elmiko) factor this out when redoing the barbicanclient
-def session_for_admin():
-    '''Return a Keystone session for the admin user.'''
-    auth = _password_auth(
-        username=CONF.keystone_authtoken.admin_user,
-        password=CONF.keystone_authtoken.admin_password,
-        project_name=CONF.keystone_authtoken.admin_tenant_name,
-        user_domain_name=CONF.admin_user_domain_name,
-        project_domain_name=CONF.admin_project_domain_name)
-    return keystone_session.Session(auth=auth)
-
-
 def token_auth(token, project_id=None, project_name=None,
                project_domain_name='Default'):
     '''Return a token auth plugin object.
@@ -229,38 +216,6 @@ def user_id_from_auth(auth):
     '''
     return auth.get_user_id(sessions.cache().get_session(
         sessions.SESSION_TYPE_KEYSTONE))
-
-
-# TODO(elmiko) deprecate this when all client have been migrated to sessions
-def _client(username, password=None, token=None, tenant_name=None,
-            tenant_id=None, trust_id=None, domain_name=None):
-
-    if trust_id and not CONF.use_identity_api_v3:
-        raise Exception("Trusts aren't implemented in keystone api"
-                        " less than v3")
-
-    auth_url = base.retrieve_auth_url(
-        endpoint_type=CONF.keystone.endpoint_type)
-
-    client_kwargs = {'username': username,
-                     'password': password,
-                     'token': token,
-                     'tenant_name': tenant_name,
-                     'tenant_id': tenant_id,
-                     'trust_id': trust_id,
-                     'user_domain_name': domain_name,
-                     'auth_url': auth_url,
-                     'cacert': CONF.keystone.ca_file,
-                     'insecure': CONF.keystone.api_insecure
-                     }
-
-    if CONF.use_identity_api_v3:
-        keystone = keystone_client_v3.Client(**client_kwargs)
-        keystone.management_url = auth_url
-    else:
-        keystone = keystone_client.Client(**client_kwargs)
-
-    return keystone
 
 
 def _password_auth(username, password,
