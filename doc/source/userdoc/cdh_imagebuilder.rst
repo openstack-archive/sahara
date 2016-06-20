@@ -7,7 +7,7 @@ In this document you will find instructions on how to build Ubuntu and CentOS
 images with Cloudera Express (now only 5.0.0, 5.3.0 5.4.0 and 5.5.0 versions
 are supported).
 
-Apache Hadoop. To simplify the task of building such images we use
+To simplify the task of building such images we use
 `Disk Image Builder <https://github.com/openstack/diskimage-builder>`_.
 
 `Disk Image Builder` builds disk images using elements. An element is a
