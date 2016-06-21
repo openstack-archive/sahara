@@ -1,0 +1,4 @@
+---
+deprecations:
+  - Convert to cluster template feature is no longer
+    supported by all plugins.

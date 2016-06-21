@@ -129,15 +129,6 @@ that.
 
 *Returns*: None
 
-convert(config, plugin_name, version, template_name, cluster_template_create)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Provides plugin with ability to create cluster based on plugin-specific config.
-Sahara expects plugin to fill in all the required fields.
-The last argument is the function that plugin should call to save the Cluster
-Template.
-See “Cluster Lifecycle for Config File Mode” section below for clarification.
-
 on_terminate_cluster(cluster)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
