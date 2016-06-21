@@ -607,6 +607,22 @@ class SaharaMigrationsCheckers(object):
         self.assertColumnsExist(engine, 'cluster_health_checks',
                                 health_check_columns)
 
+    def _check_031(self, engine, data):
+        plugins_data_columns = [
+            'name',
+            'id',
+            'tenant_id',
+            'version_labels',
+            'plugin_labels',
+            'updated_at',
+            'created_at'
+        ]
+
+        self.assertColumnCount(engine, 'plugin_data',
+                               plugins_data_columns)
+        self.assertColumnsExist(engine, 'plugin_data',
+                                plugins_data_columns)
+
 
 class TestMigrationsMySQL(SaharaMigrationsCheckers,
                           base.BaseWalkMigrationTestCase,

@@ -601,3 +601,32 @@ def cluster_health_check_get(context, health_check_id):
 def cluster_health_check_update(context, health_check_id, values):
     """Return updated health check with the specified health_check_id."""
     return IMPL.cluster_health_check_update(context, health_check_id, values)
+
+
+@to_dict
+def plugin_create(context, values):
+    """Return created DB entry for plugin."""
+    return IMPL.plugin_create(context, values)
+
+
+@to_dict
+def plugin_get(context, name):
+    """Return DB entry for plugin."""
+    return IMPL.plugin_get(context, name)
+
+
+@to_dict
+def plugin_get_all(context):
+    """Return DB entries of all plugins."""
+    return IMPL.plugin_get_all(context)
+
+
+@to_dict
+def plugin_update(context, name, values):
+    """Return updated DB entry for plugin."""
+    return IMPL.plugin_update(context, name, values)
+
+
+def plugin_remove(context, name):
+    """Remove DB entry for plugin."""
+    return IMPL.plugin_remove(context, name)
