@@ -130,6 +130,17 @@ class PluginManager(object):
 
         return not hasattr(fun, '__not_implemented__')
 
+    def serialize_plugin(self, plugin_name, version=None):
+        plugin = self.get_plugin(plugin_name)
+        if plugin:
+            res = plugin.as_resource()
+            if version:
+                if version in plugin.get_versions():
+                    res._info.update(plugin.get_version_details(version))
+                else:
+                    return None
+            return res
+
 
 PLUGINS = None
 

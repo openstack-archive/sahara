@@ -104,6 +104,14 @@ class ProvisioningPluginBase(plugins_base.PluginInterface):
             common.extend(plugin_specific_configs)
         return common
 
+    def get_version_details(self, version):
+        details = {}
+        configs = self.get_all_configs(version)
+        details['configs'] = [c.dict for c in configs]
+        details['node_processes'] = self.get_node_processes(version)
+        details['required_image_tags'] = self.get_required_image_tags(version)
+        return details
+
     def to_dict(self):
         res = super(ProvisioningPluginBase, self).to_dict()
         res['versions'] = self.get_versions()

@@ -222,20 +222,7 @@ def get_plugins():
 
 
 def get_plugin(plugin_name, version=None):
-    plugin = plugin_base.PLUGINS.get_plugin(plugin_name)
-    if plugin:
-        res = plugin.as_resource()
-        if version:
-            if version in plugin.get_versions():
-                configs = plugin.get_all_configs(version)
-                res._info['configs'] = [c.dict for c in configs]
-                processes = plugin.get_node_processes(version)
-                res._info['node_processes'] = processes
-                required_image_tags = plugin.get_required_image_tags(version)
-                res._info['required_image_tags'] = required_image_tags
-            else:
-                return None
-        return res
+    return plugin_base.PLUGINS.serialize_plugin(plugin_name, version)
 
 
 def construct_ngs_for_scaling(cluster, additional_node_groups):
