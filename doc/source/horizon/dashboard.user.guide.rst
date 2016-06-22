@@ -39,7 +39,7 @@ Create Node Group Templates
 2) From that page, click on the "Create Template" button at the top right
 
 3) Choose your desired Plugin name and Version from the dropdowns and click
-   "Create"
+   "Next"
 
 4) Give your Node Group Template a name (description is optional)
 
@@ -63,7 +63,7 @@ Create a Cluster Template
 2) From that page, click on the "Create Template" button at the top right
 
 3) Choose your desired Plugin name and Version from the dropdowns and click
-   "Create"
+   "Next"
 
 4) Under the "Details" tab, you must give your template a name
 
@@ -90,7 +90,7 @@ Launching a Cluster
 2) Click on the "Launch Cluster" button at the top right
 
 3) Choose your desired Plugin name and Version from the dropdowns and click
-   "Create"
+   "Next"
 
 4) Give your cluster a name (required)
 
