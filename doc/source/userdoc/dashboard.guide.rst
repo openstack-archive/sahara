@@ -44,14 +44,18 @@ Local endpoint example:
 
 .. sourcecode:: console
 
-    keystone service-create --name sahara_local --type data_processing_local \
-        --description "Sahara Data Processing (local installation)"
+    openstack service create --name sahara_local --description \
+        "Sahara Data Processing (local installation)" \
+        data_processing_local
 
-    keystone endpoint-create --service sahara_local --region RegionOne \
-        --publicurl "http://127.0.0.1:8386/v1.1/%(tenant_id)s" \
-        --adminurl "http://127.0.0.1:8386/v1.1/%(tenant_id)s" \
-        --internalurl "http://127.0.0.1:8386/v1.1/%(tenant_id)s"
+    openstack endpoint create --region RegionOne \
+        sahara_local public "http://127.0.0.1:8386/v1.1/%(tenant_id)s"
 
+    openstack endpoint create --region RegionOne \
+        sahara_local admin "http://127.0.0.1:8386/v1.1/%(tenant_id)s"
+
+    openstack endpoint create --region RegionOne \
+        sahara_local internal "http://127.0.0.1:8386/v1.1/%(tenant_id)s"
 ..
 
 Then the endpoint name should be changed in ``sahara.py`` under the module of

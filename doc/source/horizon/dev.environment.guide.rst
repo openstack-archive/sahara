@@ -33,13 +33,13 @@ using the following command:
 
 .. sourcecode:: console
 
-    $ keystone endpoint-list
+    $ openstack endpoint list
 
 You can list the registered services with this command:
 
 .. sourcecode:: console
 
-    $ keystone service-list
+    $ openstack service list
 
 Sahara service should be present in keystone service list with service type
 *data-processing*
