@@ -22,7 +22,7 @@ from oslo_log import log
 
 from sahara import exceptions as ex
 from sahara.i18n import _
-from sahara.plugins import base as plugins_base
+from sahara.plugins import opts as plugins_base
 from sahara.service.castellan import config as castellan
 from sahara.topology import topology_helper
 from sahara.utils.notification import sender

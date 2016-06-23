@@ -16,6 +16,7 @@
 from sahara.api import acl
 from sahara.service.api.v2 import plugins as api
 from sahara.service import validation as v
+from sahara.service.validations import plugins as v_p
 import sahara.utils.api as u
 
 
@@ -40,3 +41,11 @@ def plugins_get(plugin_name):
 @v.check_exists(api.get_plugin, plugin_name='plugin_name', version='version')
 def plugins_get_version(plugin_name, version):
     return u.render(api.get_plugin(plugin_name, version).wrapped_dict)
+
+
+@rest.patch('/plugins/<plugin_name>')
+@acl.enforce("data-processing:plugins:patch")
+@v.check_exists(api.get_plugin, plugin_name='plugin_name')
+@v.validate(v_p.plugin_update_validation_jsonschema(), v_p.check_plugin_update)
+def plugins_update(plugin_name, data):
+    return u.render(api.update_plugin(plugin_name, data).wrapped_dict)

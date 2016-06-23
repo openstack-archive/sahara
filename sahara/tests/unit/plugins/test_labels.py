@@ -1,0 +1,241 @@
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import jsonschema.exceptions as json_exc
+import testtools
+
+from sahara import conductor as cond
+from sahara import exceptions as ex
+from sahara.plugins import base
+from sahara.tests.unit import base as unit_base
+from sahara.utils import api_validator
+
+conductor = cond.API
+
+EXPECTED_SCHEMA = {
+    "type": "object",
+    "additionalProperties": False,
+    "properties": {
+        "plugin_labels": {
+            "type": "object",
+            "additionalProperties": False,
+            "properties": {
+                "hidden": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "properties": {
+                        "status": {
+                            "type": "boolean"
+                        }
+                    }
+                },
+                "stable": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "properties": {
+                        "status": {
+                            "type": "boolean"
+                        }
+                    }
+                },
+                "enabled": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "properties": {
+                        "status": {
+                            "type": "boolean"
+                        }
+                    }
+                },
+                "deprecated": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "properties": {
+                        "status": {
+                            "type": "boolean"
+                        }
+                    }
+                }
+            }
+        },
+        "version_labels": {
+            "type": "object",
+            "additionalProperties": False,
+            "properties": {
+                "0.1": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "properties": {
+                        "hidden": {
+                            "type": "object",
+                            "additionalProperties": False,
+                            "properties": {
+                                "status": {
+                                    "type": "boolean"
+                                }
+                            }
+                        },
+                        "stable": {
+                            "type": "object",
+                            "additionalProperties": False,
+                            "properties": {
+                                "status": {
+                                    "type": "boolean"
+                                }
+                            }
+                        },
+                        "enabled": {
+                            "type": "object",
+                            "additionalProperties": False,
+                            "properties": {
+                                "status": {
+                                    "type": "boolean"
+                                }
+                            }
+                        },
+                        "deprecated": {
+                            "type": "object",
+                            "additionalProperties": False,
+                            "properties": {
+                                "status": {
+                                    "type": "boolean"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+    }
+}
+
+
+class TestPluginLabels(unit_base.SaharaWithDbTestCase):
+    def test_validate_default_labels_load(self):
+        all_plugins = ['cdh', 'ambari', 'fake', 'storm', 'mapr', 'spark',
+                       'vanilla']
+        self.override_config('plugins', all_plugins)
+        manager = base.PluginManager()
+        for plugin in all_plugins:
+            data = manager.label_handler.get_label_details(plugin)
+            self.assertIsNotNone(data)
+            # order doesn't play a role
+            self.assertIsNotNone(data['plugin_labels'])
+            self.assertEqual(
+                sorted(list(manager.get_plugin(plugin).get_versions())),
+                sorted(list(data.get('version_labels').keys())))
+
+    def test_get_label_full_details(self):
+        self.override_config('plugins', ['fake'])
+        lh = base.PluginManager().label_handler
+
+        result = lh.get_label_full_details('fake')
+        self.assertIsNotNone(result.get('plugin_labels'))
+        self.assertIsNotNone(result.get('version_labels'))
+        pl = result.get('plugin_labels')
+
+        self.assertEqual(
+            ['enabled', 'hidden'],
+            sorted(list(pl.keys()))
+        )
+        for lb in ['hidden', 'enabled']:
+            self.assertEqual(
+                ['description', 'mutable', 'status'],
+                sorted(list(pl[lb]))
+            )
+        vl = result.get('version_labels')
+        self.assertEqual(['0.1'], list(vl.keys()))
+        vl = vl.get('0.1')
+
+        self.assertEqual(
+            ['enabled'], list(vl.keys()))
+
+        self.assertEqual(
+            ['description', 'mutable', 'status'],
+            sorted(list(vl['enabled']))
+        )
+
+    def test_validate_plugin_update(self):
+        def validate(plugin_name, values, validator, lh):
+            validator.validate(values)
+            lh.validate_plugin_update(plugin_name, values)
+
+        values = {'plugin_labels': {'enabled': {'status': False}}}
+        self.override_config('plugins', ['fake', 'spark'])
+        lh = base.PluginManager()
+        validator = api_validator.ApiValidator(
+            lh.get_plugin_update_validation_jsonschema())
+        validate('fake', values, validator, lh)
+        values = {'plugin_labels': {'not_exists': {'status': False}}}
+
+        with testtools.ExpectedException(json_exc.ValidationError):
+            validate('fake', values, validator, lh)
+
+        values = {'plugin_labels': {'enabled': {'status': 'False'}}}
+        with testtools.ExpectedException(json_exc.ValidationError):
+            validate('fake', values, validator, lh)
+
+        values = {'field': {'blala': 'blalalalalala'}}
+
+        with testtools.ExpectedException(json_exc.ValidationError):
+            validate('fake', values, validator, lh)
+
+        values = {'plugin_labels': {'hidden': {'status': True}}}
+
+        with testtools.ExpectedException(ex.InvalidDataException):
+            # valid under schema, but not valid under validator
+            # hidden is not available to spark
+            validate('spark', values, validator, lh)
+
+        values = {'plugin_labels': {'enabled': {'mutable': False}}}
+        with testtools.ExpectedException(json_exc.ValidationError):
+            validate('spark', values, validator, lh)
+
+        values = {'version_labels': {'enabled': {'status': False}}}
+        with testtools.ExpectedException(json_exc.ValidationError):
+            validate('spark', values, validator, lh)
+
+        values = {'version_labels': {'0.1': {'enabled': {'status': False}}}}
+        validate('fake', values, validator, lh)
+
+        values = {'version_labels': {'0.1': {'enabled': {'status': False}}}}
+        with testtools.ExpectedException(ex.InvalidDataException):
+            validate('spark', values, validator, lh)
+
+        values = {'version_labels': {'0.1': {'hidden': {'status': True}}}}
+        with testtools.ExpectedException(ex.InvalidDataException):
+            validate('fake', values, validator, lh)
+
+    def test_jsonschema(self):
+        self.override_config('plugins', ['fake'])
+        lh = base.PluginManager()
+        schema = lh.get_plugin_update_validation_jsonschema()
+        self.assertEqual(EXPECTED_SCHEMA, schema)
+
+    def test_update(self):
+        self.override_config('plugins', ['fake'])
+        lh = base.PluginManager()
+
+        data = lh.update_plugin('fake', values={
+            'plugin_labels': {'enabled': {'status': False}}}).dict
+
+        # enabled is updated, but hidden still same
+        self.assertFalse(data['plugin_labels']['enabled']['status'])
+        self.assertTrue(data['plugin_labels']['hidden']['status'])
+
+        data = lh.update_plugin('fake', values={
+            'version_labels': {'0.1': {'enabled': {'status': False}}}}).dict
+
+        self.assertFalse(data['plugin_labels']['enabled']['status'])
+        self.assertTrue(data['plugin_labels']['hidden']['status'])
+        self.assertFalse(data['version_labels']['0.1']['enabled']['status'])

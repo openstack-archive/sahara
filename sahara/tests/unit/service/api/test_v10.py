@@ -135,12 +135,8 @@ class FakePlugin(pr_base.ProvisioningPluginBase):
 
 class FakePluginManager(pl_base.PluginManager):
     def __init__(self, calls_order):
-        self.calls = calls_order
-
-    def get_plugin(self, plugin_name):
-        if plugin_name == "fake":
-            return FakePlugin(self.calls)
-        return None
+        super(FakePluginManager, self).__init__()
+        self.plugins['fake'] = FakePlugin(calls_order)
 
 
 class FakeOps(object):
@@ -296,6 +292,11 @@ class TestApi(base.SaharaWithDbTestCase):
 
         self.assertIsNone(api.get_plugin('fake', '0.3'))
         data = api.get_plugin('fake').dict
+        self.assertIsNotNone(data.get('version_labels'))
+        self.assertIsNotNone(data.get('plugin_labels'))
+        del data['plugin_labels']
+        del data['version_labels']
+
         self.assertEqual({
             'description': "Some description",
             'name': 'fake',

@@ -31,6 +31,10 @@ def get_plugin(plugin_name, version=None):
     return plugin_base.PLUGINS.serialize_plugin(plugin_name, version)
 
 
+def update_plugin(plugin_name, values):
+    return plugin_base.PLUGINS.update_plugin(plugin_name, values)
+
+
 def construct_ngs_for_scaling(cluster, additional_node_groups):
     ctx = context.ctx()
     additional = {}
