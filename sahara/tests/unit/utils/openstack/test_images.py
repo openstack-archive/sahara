@@ -16,7 +16,7 @@
 import mock
 
 from sahara.tests.unit import base
-from sahara.utils.openstack import nova as nova_client
+from sahara.utils.openstack import glance as glance_client
 
 
 class FakeImage(object):
@@ -39,38 +39,53 @@ class TestImages(base.SaharaTestCase):
             FakeImage('baz', [], 'test'),
             FakeImage('spam', [], "")]
 
-        with mock.patch('novaclient.v2.images.ImageManager.list',
+        with mock.patch('glanceclient.v2.images.Controller.list',
                         return_value=some_images):
-            nova = nova_client.client()
+            glance = glance_client.client()
 
-            images = nova.images.list_registered()
+            images = glance.images.list_registered()
             self.assertEqual(2, len(images))
 
-            images = nova.images.list_registered(name='foo')
+            images = glance.images.list_registered(name='foo')
             self.assertEqual(1, len(images))
             self.assertEqual('foo', images[0].name)
             self.assertEqual('test', images[0].username)
 
-            images = nova.images.list_registered(name='eggs')
+            images = glance.images.list_registered(name='eggs')
             self.assertEqual(0, len(images))
 
-            images = nova.images.list_registered(tags=['bar'])
+            images = glance.images.list_registered(tags=['bar'])
             self.assertEqual(1, len(images))
             self.assertEqual('foo', images[0].name)
 
-            images = nova.images.list_registered(tags=['bar', 'eggs'])
+            images = glance.images.list_registered(tags=['bar', 'eggs'])
             self.assertEqual(0, len(images))
 
-    @mock.patch('novaclient.v2.images.ImageManager.set_meta')
+    @mock.patch('sahara.utils.openstack.images.SaharaImageManager.set_meta')
     def test_set_description(self, set_meta):
         with mock.patch('sahara.utils.openstack.base.url_for'):
-            nova = nova_client.client()
-            nova.images.set_description('id', 'ubuntu')
+            glance = glance_client.client()
+            glance.images.set_description('id', 'ubuntu')
             self.assertEqual(
                 ('id', {'_sahara_username': 'ubuntu'}), set_meta.call_args[0])
 
-            nova.images.set_description('id', 'ubuntu', 'descr')
+            glance.images.set_description('id', 'ubuntu', 'descr')
             self.assertEqual(
                 ('id', {'_sahara_description': 'descr',
                         '_sahara_username': 'ubuntu'}),
                 set_meta.call_args[0])
+
+    @mock.patch('sahara.utils.openstack.images.SaharaImageManager.get')
+    @mock.patch('sahara.utils.openstack.images.SaharaImageManager.delete_meta')
+    def test_unset_description(self, delete_meta, get_image):
+            glance = glance_client.client()
+            image = mock.MagicMock()
+            image.tags = ['fake', 'fake_2.0']
+            image.username = 'ubuntu'
+            image.description = 'some description'
+            get_image.return_value = image
+            glance.images.unset_description('id')
+            self.assertEqual(
+                ('id', ['_sahara_tag_fake', '_sahara_tag_fake_2.0',
+                        '_sahara_description', '_sahara_username']),
+                delete_meta.call_args[0])

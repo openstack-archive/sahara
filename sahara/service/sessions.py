@@ -31,6 +31,7 @@ SESSION_TYPE_CINDER = 'cinder'
 SESSION_TYPE_KEYSTONE = 'keystone'
 SESSION_TYPE_NEUTRON = 'neutron'
 SESSION_TYPE_NOVA = 'nova'
+SESSION_TYPE_GLANCE = 'glance'
 SESSION_TYPE_INSECURE = 'insecure'
 
 
@@ -61,6 +62,7 @@ class SessionCache(object):
             SESSION_TYPE_KEYSTONE: self.get_keystone_session,
             SESSION_TYPE_NEUTRON: self.get_neutron_session,
             SESSION_TYPE_NOVA: self.get_nova_session,
+            SESSION_TYPE_GLANCE: self.get_glance_session,
             SESSION_TYPE_INSECURE: self.get_insecure_session,
         }
 
@@ -142,6 +144,16 @@ class SessionCache(object):
             else:
                 session = self.get_insecure_session()
             self._set_session(SESSION_TYPE_NOVA, session)
+        return session
+
+    def get_glance_session(self):
+        session = self._sessions.get(SESSION_TYPE_GLANCE)
+        if not session:
+            if not CONF.glance.api_insecure:
+                session = keystone.Session(verify=CONF.glance.ca_file or True)
+            else:
+                session = self.get_insecure_session()
+            self._set_session(SESSION_TYPE_GLANCE, session)
         return session
 
     def token_for_auth(self, auth):

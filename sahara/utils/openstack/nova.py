@@ -19,7 +19,6 @@ from oslo_config import cfg
 
 from sahara.service import sessions
 import sahara.utils.openstack.base as base
-from sahara.utils.openstack import images
 from sahara.utils.openstack import keystone
 
 
@@ -48,7 +47,6 @@ def client():
     nova = nova_client.Client('2', session=session, auth=keystone.auth(),
                               endpoint_type=CONF.nova.endpoint_type,
                               region_name=CONF.os_region_name)
-    nova.images = images.SaharaImageManager(nova)
     return nova
 
 

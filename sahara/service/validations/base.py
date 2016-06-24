@@ -27,6 +27,7 @@ import sahara.plugins.base as plugin_base
 from sahara.service.api import v10 as api
 from sahara.utils import general as g
 import sahara.utils.openstack.cinder as cinder
+from sahara.utils.openstack import glance
 import sahara.utils.openstack.nova as nova
 
 
@@ -74,7 +75,8 @@ def check_plugin_supports_version(p_name, version):
 
 
 def check_image_registered(image_id):
-    if image_id not in [i.id for i in nova.client().images.list_registered()]:
+    if image_id not in (
+            [i.id for i in glance.client().images.list_registered()]):
         raise ex.InvalidReferenceException(
             _("Requested image '%s' is not registered") % image_id)
 

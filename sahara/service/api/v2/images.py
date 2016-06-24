@@ -15,7 +15,7 @@
 
 from sahara import conductor as c
 from sahara.utils.openstack import base as b
-from sahara.utils.openstack import nova
+from sahara.utils.openstack import glance
 
 
 conductor = c.API
@@ -26,41 +26,41 @@ conductor = c.API
 
 def get_images(name, tags):
     return b.execute_with_retries(
-        nova.client().images.list_registered, name, tags)
+        glance.client().images.list_registered, name, tags)
 
 
 def get_image(**kwargs):
     if len(kwargs) == 1 and 'id' in kwargs:
-        return b.execute_with_retries(nova.client().images.get, kwargs['id'])
+        return b.execute_with_retries(glance.client().images.get, kwargs['id'])
     else:
-        return b.execute_with_retries(nova.client().images.find, **kwargs)
+        return b.execute_with_retries(glance.client().images.find, **kwargs)
 
 
 def get_registered_image(id):
     return b.execute_with_retries(
-        nova.client().images.get_registered_image, id)
+        glance.client().images.get_registered_image, id)
 
 
 def register_image(image_id, username, description=None):
-    client = nova.client()
+    client = glance.client()
     b.execute_with_retries(
         client.images.set_description, image_id, username, description)
     return b.execute_with_retries(client.images.get, image_id)
 
 
 def unregister_image(image_id):
-    client = nova.client()
+    client = glance.client()
     b.execute_with_retries(client.images.unset_description, image_id)
     return b.execute_with_retries(client.images.get, image_id)
 
 
 def add_image_tags(image_id, tags):
-    client = nova.client()
+    client = glance.client()
     b.execute_with_retries(client.images.tag, image_id, tags)
     return b.execute_with_retries(client.images.get, image_id)
 
 
 def remove_image_tags(image_id, tags):
-    client = nova.client()
+    client = glance.client()
     b.execute_with_retries(client.images.untag, image_id, tags)
     return b.execute_with_retries(client.images.get, image_id)
