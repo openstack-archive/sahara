@@ -47,7 +47,8 @@ class AmbariValidationTestCase(base.SaharaTestCase):
                                     p_common.RESOURCEMANAGER,
                                     p_common.NODEMANAGER,
                                     p_common.HISTORYSERVER,
-                                    p_common.APP_TIMELINE_SERVER]})
+                                    p_common.APP_TIMELINE_SERVER,
+                                    p_common.SECONDARY_NAMENODE]})
         cluster.cluster_configs = {"general": {}}
         with mock.patch("sahara.plugins.ambari.validation.conductor") as p:
             p.cluster_get = mock.Mock()
