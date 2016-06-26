@@ -86,9 +86,7 @@ def setup_common(possible_topdir, service_name):
     cinder.validate_config()
     castellan.validate_config()
 
-    if (service_name != 'all-in-one' or
-            CONF.oslo_messaging_notifications.enable):
-        messaging.setup()
+    messaging.setup(service_name)
 
     plugins_base.setup_plugins()
 
