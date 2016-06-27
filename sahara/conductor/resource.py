@@ -238,6 +238,26 @@ class ClusterResource(Resource, objects.Cluster):
     _sanitize_fields = {'cluster_configs': sanitize_cluster_configs}
 
 
+class ImageResource(Resource, objects.Image):
+
+    _resource_name = 'image'
+
+    @property
+    def dict(self):
+        return self.to_dict()
+
+    @property
+    def wrapped_dict(self):
+        return {'image': self.dict}
+
+    def _sanitize_image_properties(self, image_props):
+        if 'links' in image_props:
+            del image_props['links']
+        return image_props
+
+    _sanitize_fields = {'links': _sanitize_image_properties}
+
+
 # EDP Resources
 
 class DataSource(Resource, objects.DataSource):

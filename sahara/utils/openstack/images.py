@@ -13,19 +13,39 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import copy
+import functools
 
-from glanceclient.v2 import images
-from glanceclient.v2 import schemas
 import six
 
+from sahara.conductor import resource
 from sahara import exceptions as exc
+from sahara.utils.openstack import glance
 
 
 PROP_DESCR = '_sahara_description'
 PROP_USERNAME = '_sahara_username'
 PROP_TAG = '_sahara_tag_'
-PROP_TAGS = '_all_tags'
+PROP_ALL_TAGS = '_all_tags'
+
+
+def image_manager():
+    return SaharaImageManager()
+
+
+def wrap_entity(func):
+    @functools.wraps(func)
+    def handle(*args, **kwargs):
+        res = func(*args, **kwargs)
+        if isinstance(res, list):
+            images = []
+            for image in res:
+                _transform_image_props(image)
+                images.append(resource.ImageResource(image))
+            return images
+        else:
+            _transform_image_props(res)
+            return resource.ImageResource(res)
+    return handle
 
 
 def _get_all_tags(image_props):
@@ -36,62 +56,67 @@ def _get_all_tags(image_props):
     return tags
 
 
+def _get_meta_prop(image_props, prop, default=None):
+    if PROP_ALL_TAGS == prop:
+        return _get_all_tags(image_props)
+    return image_props.get(prop, default)
+
+
+def _parse_tags(image_props):
+    tags = _get_meta_prop(image_props, PROP_ALL_TAGS)
+    return [t.replace(PROP_TAG, "") for t in tags]
+
+
+def _transform_image_props(image):
+    image['username'] = _get_meta_prop(image, PROP_USERNAME, "")
+    image['description'] = _get_meta_prop(image, PROP_DESCR, "")
+    image['tags'] = _parse_tags(image)
+    return image
+
+
 def _ensure_tags(tags):
     if not tags:
         return []
     return [tags] if isinstance(tags, six.string_types) else tags
 
 
-class SaharaImageModel(schemas.SchemaBasedModel):
+class SaharaImageManager(object):
+    """SaharaImageManager
 
-    def __init__(self, *args, **kwargs):
-        super(SaharaImageModel, self).__init__(*args, **kwargs)
-        self.username = self._get_meta_prop(PROP_USERNAME, "")
-        self.description = self._get_meta_prop(PROP_DESCR, "")
-        self.tags = self._parse_tags()
-
-    def _get_meta_prop(self, prop, default=None):
-        if PROP_TAGS == prop:
-            return _get_all_tags(self)
-        return self.get(prop, default)
-
-    def _parse_tags(self):
-        tags = self._get_meta_prop(PROP_TAGS)
-        return [t.replace(PROP_TAG, "") for t in tags]
-
-    @property
-    def dict(self):
-        return self.to_dict()
-
-    @property
-    def wrapped_dict(self):
-        return {'image': self.dict}
-
-    def to_dict(self):
-        result = copy.deepcopy(dict(self))
-        if 'links' in result:
-            del result['links']
-        return result
-
-
-class SaharaImageManager(images.Controller):
-    """Manage :class:`SaharaImageModel` resources.
-
-    This is an extended version of glance client's Controller with support of
-    additional description and image tags stored as image properties.
+    This class is intermediate layer between sahara and glanceclient.v2.images.
+    It provides additional sahara properties for image such as description,
+    image tags and image username.
     """
-    def __init__(self, glance_client):
-        schemas.SchemaBasedModel = SaharaImageModel
-        super(SaharaImageManager, self).__init__(glance_client.http_client,
-                                                 glance_client.schemas)
+    def __init__(self):
+        self.client = glance.client().images
+
+    @wrap_entity
+    def get(self, image_id):
+        image = self.client.get(image_id)
+        return image
+
+    @wrap_entity
+    def find(self, **kwargs):
+        images = self.client.list(**kwargs)
+        num_matches = len(images)
+        if num_matches == 0:
+            raise exc.NotFoundException(kwargs, "No images matching %s.")
+        elif num_matches > 1:
+            raise exc.NoUniqueMatchException(response=images, query=kwargs)
+        else:
+            return images[0]
+
+    @wrap_entity
+    def list(self):
+        return list(self.client.list())
 
     def set_meta(self, image_id, meta):
-        self.update(image_id, remove_props=None, **meta)
+        self.client.update(image_id, remove_props=None, **meta)
 
     def delete_meta(self, image_id, meta_list):
-        self.update(image_id, remove_props=meta_list)
+        self.client.update(image_id, remove_props=meta_list)
 
-    def set_description(self, image_id, username, description=None):
+    def set_image_info(self, image_id, username, description=None):
         """Sets human-readable information for image.
 
         For example:
@@ -102,7 +127,7 @@ class SaharaImageManager(images.Controller):
             meta[PROP_DESCR] = description
         self.set_meta(image_id, meta)
 
-    def unset_description(self, image_id):
+    def unset_image_info(self, image_id):
         """Unsets all Sahara-related information.
 
         It removes username, description and tags from the specified image.

@@ -223,6 +223,16 @@ class NodeGroupTemplate(object):
     """
 
 
+class Image(object):
+    """An object representing Image.
+
+    id
+    tags
+    username
+    description
+    """
+
+
 # EDP Objects
 
 class DataSource(object):

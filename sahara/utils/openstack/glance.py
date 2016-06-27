@@ -18,7 +18,6 @@ from glanceclient import client as glance_client
 from oslo_config import cfg
 
 from sahara.service import sessions
-from sahara.utils.openstack import images
 from sahara.utils.openstack import keystone
 
 
@@ -45,5 +44,4 @@ CONF.register_opts(opts, group=glance_group)
 def client():
     session = sessions.cache().get_session(sessions.SESSION_TYPE_GLANCE)
     glance = glance_client.Client('2', session=session, auth=keystone.auth())
-    glance.images = images.SaharaImageManager(glance)
     return glance

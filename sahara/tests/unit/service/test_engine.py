@@ -50,12 +50,12 @@ class TestEngine(base.SaharaWithDbTestCase):
         super(TestEngine, self).setUp()
         self.eng = EngineTest()
 
-    @mock.patch('sahara.utils.openstack.glance.client')
-    def test_get_node_group_image_username(self, glance_client):
+    @mock.patch('sahara.utils.openstack.images.SaharaImageManager')
+    def test_get_node_group_image_username(self, mock_manager):
         ng = mock.Mock()
-        client = mock.Mock()
-        client.images.get.return_value = mock.Mock(username='username')
-        glance_client.return_value = client
+        manager = mock.Mock()
+        manager.get.return_value = mock.Mock(username='username')
+        mock_manager.return_value = manager
 
         self.assertEqual(
             'username', self.eng.get_node_group_image_username(ng))

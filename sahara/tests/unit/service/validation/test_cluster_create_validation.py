@@ -486,7 +486,6 @@ class TestClusterCreateFlavorValidation(base.SaharaWithDbTestCase):
             "sahara.service.validations.base.check_plugin_supports_version",
             "sahara.service.validations.base._get_plugin_configs",
             "sahara.service.validations.base.check_node_processes",
-            "sahara.utils.openstack.nova.client",
         ]
         self.patchers = []
         for module in modules:

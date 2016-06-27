@@ -135,7 +135,8 @@ def start_patch(patch_templates=True):
             "sahara.service.api.v10.get_cluster_template")
     nova_p = mock.patch("sahara.utils.openstack.nova.client")
     heat_p = mock.patch("sahara.utils.openstack.heat.client")
-    glance_p = mock.patch("sahara.utils.openstack.glance.client")
+    image_manager_p = mock.patch(
+        "sahara.utils.openstack.images.SaharaImageManager")
     cinder_p = mock.patch("sahara.utils.openstack.cinder.client")
     cinder_exists_p = mock.patch(
         "sahara.utils.openstack.cinder.check_cinder_exists")
@@ -167,7 +168,7 @@ def start_patch(patch_templates=True):
     heat = heat_p.start()
     heat().stacks.list.side_effect = _get_heat_stack_list
 
-    glance = glance_p.start()
+    image_manager = image_manager_p.start()
 
     cinder = cinder_p.start()
     cinder().availability_zones.list.side_effect = _get_availability_zone_list
@@ -200,7 +201,7 @@ def start_patch(patch_templates=True):
             return Image('wrong_test')
 
     get_image.side_effect = _get_image
-    glance().images.list_registered.return_value = [Image(),
+    image_manager().list_registered.return_value = [Image(),
                                                     Image(name='wrong_name')]
     ng_dict = tu.make_ng_dict('ng', '42', ['namenode'], 1)
     cluster = tu.create_cluster('test', 't', 'fake', '0.1', [ng_dict],
@@ -233,7 +234,7 @@ def start_patch(patch_templates=True):
         get_ng_template.side_effect = _get_ng_template
     # request data to validate
     patchers = [get_clusters_p, get_cluster_p,
-                nova_p, get_image_p, heat_p, glance_p, cinder_p,
+                nova_p, get_image_p, heat_p, image_manager_p, cinder_p,
                 cinder_exists_p]
     if patch_templates:
         patchers.extend([get_ng_template_p, get_ng_templates_p,
