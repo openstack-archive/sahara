@@ -12,8 +12,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from tempest import test
-
 from sahara.tests.tempest.scenario.data_processing.client_tests import base
 
 
@@ -42,7 +40,6 @@ class PluginsTest(base.BaseDataProcessingTest):
                 self.assertIn(plugin_name, image_tags)
                 self.assertIn(plugin_version, image_tags)
 
-    @test.services('data_processing')
     def test_plugins(self):
         plugins_names = self._check_plugins_list()
         self._check_plugins_get(plugins_names)

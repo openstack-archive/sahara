@@ -13,7 +13,6 @@
 #    under the License.
 
 from tempest.lib.common.utils import data_utils
-from tempest import test
 
 from sahara.tests.tempest.scenario.data_processing.client_tests import base
 
@@ -69,7 +68,6 @@ class NodeGroupTemplateTest(base.BaseDataProcessingTest):
         templates = self.client.node_group_templates.list()
         self.assertNotIn(template_id, [template.id for template in templates])
 
-    @test.services('data_processing')
     def test_node_group_templates(self):
         template_id, template_name = self._check_create_node_group_template()
         self._check_node_group_template_list(template_id, template_name)
