@@ -14,7 +14,6 @@
 
 from tempest import config
 from tempest.lib.common.utils import data_utils
-from tempest import test
 
 from sahara.tests.tempest.scenario.data_processing.client_tests import base
 
@@ -90,7 +89,6 @@ class ClusterTemplateTest(base.BaseDataProcessingTest):
         templates = self.client.cluster_templates.list()
         self.assertNotIn(template_id, [template.id for template in templates])
 
-    @test.services('data_processing')
     def test_cluster_templates(self):
         template_id, template_name = self._check_create_cluster_template()
         self._check_cluster_template_list(template_id, template_name)

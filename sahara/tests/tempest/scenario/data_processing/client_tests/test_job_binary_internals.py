@@ -13,7 +13,6 @@
 #    under the License.
 
 from tempest.lib.common.utils import data_utils
-from tempest import test
 
 from sahara.tests.tempest.scenario.data_processing.client_tests import base
 
@@ -54,7 +53,6 @@ class JobBinaryInternalsTest(base.BaseDataProcessingTest):
         binary_list = self.client.job_binary_internals.list()
         self.assertNotIn(binary_id, [binary.id for binary in binary_list])
 
-    @test.services('data_processing')
     def test_job_binary_internal(self):
         binary_id, binary_name = self._check_job_binary_internal_create()
         self._check_job_binary_internal_list(binary_id, binary_name)

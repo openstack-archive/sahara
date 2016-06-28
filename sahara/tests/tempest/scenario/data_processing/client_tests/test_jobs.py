@@ -13,7 +13,6 @@
 #    under the License.
 
 from tempest.lib.common.utils import data_utils
-from tempest import test
 
 from sahara.tests.tempest.scenario.data_processing.client_tests import base
 
@@ -72,7 +71,6 @@ class JobTest(base.BaseDataProcessingTest):
         job_list = self.client.jobs.list()
         self.assertNotIn(job_id, [job.id for job in job_list])
 
-    @test.services('data_processing')
     def test_job(self):
         job_id, job_name = self._check_create_job()
         self._check_job_list(job_id, job_name)

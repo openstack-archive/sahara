@@ -285,7 +285,6 @@ class JobExecutionTest(base.BaseDataProcessingTest):
 
     @decorators.skip_because(bug="1430252")
     @test.attr(type='slow')
-    @test.services('data_processing')
     def test_job_executions(self):
         image_id = TEMPEST_CONF.data_processing.fake_image_id
         self._check_register_image(image_id)
