@@ -86,7 +86,7 @@ cloudera plugin versions:
   + Cluster can contain at most one resourcemanager and this process is also
     required by nodemanager.
   + Cluster can contain at most one jobhistory and this process is also
-    requried for resourcemanager.
+    required for resourcemanager.
   + Cluster can contain at most one oozie and this process is also required
     for EDP.
   + Cluster can't contain oozie without datanode.
@@ -120,4 +120,4 @@ limitations in the cluster topology:
   + Cluster can contain at most one impala statestore.
   + Cluster can't contain impala catalogserver without impala statestore,
     at least one impalad service, at least one datanode, and metastore.
-  + If using Imapala, the daemons must be installed on every datanode.
+  + If using Impala, the daemons must be installed on every datanode.
