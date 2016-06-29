@@ -71,7 +71,24 @@ class RemoteDriver(object):
 
 
 @six.add_metaclass(abc.ABCMeta)
-class Remote(object):
+class TerminalOnlyRemote(object):
+
+    @abc.abstractmethod
+    def execute_command(self, cmd, run_as_root=False, get_stderr=False,
+                        raise_when_error=True, timeout=300):
+        """Execute specified command remotely using existing ssh connection.
+
+        Return exit code, stdout data and stderr data of the executed command.
+        """
+
+    @abc.abstractmethod
+    def get_os_distrib(self):
+        """Returns the OS distribution running on the target machine."""
+
+
+@six.add_metaclass(abc.ABCMeta)
+class Remote(TerminalOnlyRemote):
+
     @abc.abstractmethod
     def get_neutron_info(self):
         """Returns dict which later could be passed to get_http_client."""
@@ -83,14 +100,6 @@ class Remote(object):
     @abc.abstractmethod
     def close_http_session(self, port):
         """Closes cached HTTP session for a given instance's port."""
-
-    @abc.abstractmethod
-    def execute_command(self, cmd, run_as_root=False, get_stderr=False,
-                        raise_when_error=True, timeout=300):
-        """Execute specified command remotely using existing ssh connection.
-
-        Return exit code, stdout data and stderr data of the executed command.
-        """
 
     @abc.abstractmethod
     def write_file_to(self, remote_file, data, run_as_root=False, timeout=120):

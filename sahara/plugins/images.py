@@ -414,7 +414,8 @@ class SaharaPackageValidator(SaharaImageValidatorBase):
                 _("Unknown distro: cannot verify or install packages."))
         try:
             check(self, remote)
-        except (ex.SubprocessException, ex.RemoteCommandException):
+        except (ex.SubprocessException, ex.RemoteCommandException,
+                RuntimeError):
             if reconcile:
                 install(self, remote)
                 check(self, remote)
@@ -474,6 +475,10 @@ class SaharaScriptValidator(SaharaImageValidatorBase):
                         "output": {
                             "type": "string",
                             "minLength": 1
+                        },
+                        "inline": {
+                            "type": "string",
+                            "minLength": 1
                         }
                     },
                 }
@@ -502,6 +507,7 @@ class SaharaScriptValidator(SaharaImageValidatorBase):
         """
         jsonschema.validate(spec, cls.SPEC_SCHEMA)
 
+        script_contents = None
         if isinstance(spec, six.string_types):
             script_path = spec
             env_vars, output_var = cls._DEFAULT_ENV_VARS, None
@@ -509,13 +515,14 @@ class SaharaScriptValidator(SaharaImageValidatorBase):
             script_path, properties = list(six.iteritems(spec))[0]
             env_vars = cls._DEFAULT_ENV_VARS + properties.get('env_vars', [])
             output_var = properties.get('output', None)
+            script_contents = properties.get('inline')
 
-        script_contents = None
-        for root in resource_roots:
-            file_path = path.join(root, script_path)
-            script_contents = files.try_get_file_text(file_path)
-            if script_contents:
-                break
+        if not script_contents:
+            for root in resource_roots:
+                file_path = path.join(root, script_path)
+                script_contents = files.try_get_file_text(file_path)
+                if script_contents:
+                    break
 
         if not script_contents:
             raise p_ex.ImageValidationSpecificationError(
