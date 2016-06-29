@@ -1,3 +1,0 @@
-#!/bin/sh
-
-tools/run_pep8

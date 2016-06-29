@@ -117,10 +117,10 @@ Just add the following lines to .git/hooks/pre-commit and do chmod +x for it.
 
     #!/bin/sh
     # Run fast checks (PEP8 style check and PyFlakes fast static analysis)
-    tools/run_fast_checks
+    tox -epep8
 
-You can added the same check for pre-push, for example, run_tests and
-run_pylint.
+You can add also other checks for pre-push, for example pylint (see below)
+and tests (tox -epy27).
 
 3. Running static analysis (PyLint)
 
