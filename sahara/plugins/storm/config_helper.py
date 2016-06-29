@@ -42,10 +42,17 @@ def get_plugin_configs():
     return {}
 
 
-def generate_storm_config(master_hostname, zk_hostnames):
+def generate_storm_config(master_hostname, zk_hostnames, version):
+
+    if version == '1.0.1':
+        host_cfg = 'nimbus.seeds'
+        master_value = [master_hostname.encode('ascii', 'ignore')]
+    else:
+        host_cfg = 'nimbus.host'
+        master_value = master_hostname.encode('ascii', 'ignore')
 
     cfg = {
-        "nimbus.host": master_hostname.encode('ascii', 'ignore'),
+        host_cfg: master_value,
         "worker.childopts": "-Xmx768m -Djava.net.preferIPv4Stack=true",
         "nimbus.childopts": "-Xmx1024m -Djava.net.preferIPv4Stack=true",
         "supervisor.childopts": "-Djava.net.preferIPv4Stack=true",

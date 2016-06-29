@@ -53,7 +53,7 @@ class StormProvider(p.ProvisioningPluginBase):
               "cluster without any management consoles."))
 
     def get_versions(self):
-        return ['0.9.2']
+        return ['0.9.2', '1.0.1']
 
     def get_configs(self, storm_version):
         return c_helper.get_plugin_configs()
@@ -148,7 +148,8 @@ class StormProvider(p.ProvisioningPluginBase):
 
             config_instances = c_helper.generate_storm_config(
                 st_master.hostname(),
-                zknames)
+                zknames,
+                cluster.hadoop_version)
 
         config = self._convert_dict_to_yaml(config_instances)
         supervisor_conf = c_helper.generate_slave_supervisor_conf()
