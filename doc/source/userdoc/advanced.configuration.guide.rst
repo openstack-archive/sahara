@@ -218,6 +218,15 @@ to use periodic tasks distribution, the following steps are required:
        [DEFAULT]
        periodic_coordinator_backend_url=kazoo://IP:PORT
 
+ * Tooz extras should be installed. When using Zookeeper as coordination
+   backend, ``kazoo`` library should be installed. It can be done with pip:
+
+   .. sourcecode:: console
+
+      pip install tooz[zookeeper]
+
+   ..
+
  * Periodic tasks can be performed in parallel. Number of threads to run
    periodic tasks on a single engine can be set with
    ``periodic_workers_number`` parameter (only 1 thread will be launched by

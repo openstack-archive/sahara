@@ -1,0 +1,7 @@
+---
+prelude: >
+    Documentation about distributed periodics are
+    extended with steps about installation additional
+    libs required for correct work of coordination backend.
+    Please refer Advanced Configuration Guide for
+    details.
