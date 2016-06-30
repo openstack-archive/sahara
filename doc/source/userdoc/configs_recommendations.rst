@@ -26,7 +26,7 @@ autoconfiguration:
 
 The Cloudera, Spark and Vanilla Apache Hadoop plugin support configuring
 ``dfs.replication`` (``dfs_replication`` for Cloudera plugin) which is
-calculated as a minimun from the amount of ``datanode`` (``HDFS_DATANODE`` for
+calculated as a minimum from the amount of ``datanode`` (``HDFS_DATANODE`` for
 Cloudera plugin) instances in the cluster and the default value for
 ``dfs.replication``.
 
