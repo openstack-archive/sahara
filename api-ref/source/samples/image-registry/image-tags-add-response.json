@@ -1,0 +1,27 @@
+{
+    "image": {
+        "updated": "2015-03-24T10:18:33Z",
+        "metadata": {
+            "_sahara_tag_vanilla": true,
+            "_sahara_description": "Ubuntu image for Hadoop 2.7.1",
+            "_sahara_username": "ubuntu",
+            "_sahara_tag_some_other_tag": true,
+            "_sahara_tag_2.7.1": true
+        },
+        "id": "bb8d12b5-f9bb-49f0-aecb-739b8a9bec89",
+        "minDisk": 0,
+        "status": "ACTIVE",
+        "tags": [
+            "vanilla",
+            "some_other_tag",
+            "2.7.1"
+        ],
+        "minRam": 0,
+        "progress": 100,
+        "username": "ubuntu",
+        "created": "2015-02-03T10:28:39Z",
+        "name": "sahara-vanilla-2.6.0-ubuntu-14.04",
+        "description": "Ubuntu image for Hadoop 2.7.1",
+        "OS-EXT-IMG-SIZE:size": 1101856768
+    }
+}

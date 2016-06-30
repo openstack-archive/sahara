@@ -1,0 +1,9 @@
+{
+    "plugin_name": "vanilla",
+    "hadoop_version": "2.7.1",
+    "cluster_template_id": "57c92a7c-5c6a-42ea-9c6f-9f40a5aa4b36",
+    "default_image_id": "4118a476-dfdc-4b0e-8d5c-463cba08e9ae",
+    "user_keypair_id": "test",
+    "name": "vanilla-cluster",
+    "neutron_management_network": "b1610452-2933-46b0-bf31-660cfa5621bd"
+}

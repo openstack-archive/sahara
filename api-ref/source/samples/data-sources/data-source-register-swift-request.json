@@ -1,0 +1,10 @@
+{
+    "description": "This is input",
+    "url": "swift://container/text",
+    "credentials": {
+        "password": "swordfish",
+        "user": "dev"
+    },
+    "type": "swift",
+    "name": "swift_input"
+}

@@ -1,0 +1,28 @@
+{
+    "data_sources": [
+        {
+            "is_public": false,
+            "tenant_id": "9cd1314a0a31493282b6712b76a8fcda",
+            "is_protected": false,
+            "created_at": "2015-03-26 11:18:10",
+            "id": "953831f2-0852-49d8-ac71-af5805e25256",
+            "name": "swift_input",
+            "updated_at": null,
+            "description": "This is input",
+            "url": "swift://container/text",
+            "type": "swift"
+        },
+        {
+            "is_public": false,
+            "tenant_id": "9cd1314a0a31493282b6712b76a8fcda",
+            "is_protected": false,
+            "created_at": "2015-03-26 11:09:36",
+            "id": "d7fffe9c-3b42-46a9-8be8-e98f586fa7a9",
+            "name": "hdfs_input",
+            "updated_at": null,
+            "description": "This is hdfs input",
+            "url": "hdfs://test-master-node:8020/user/hadoop/input",
+            "type": "hdfs"
+        }
+    ]
+}

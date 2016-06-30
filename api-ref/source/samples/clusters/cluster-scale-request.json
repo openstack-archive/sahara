@@ -1,0 +1,15 @@
+{
+    "add_node_groups": [
+        {
+            "count": 1,
+            "name": "b-worker",
+            "node_group_template_id": "bc270ffe-a086-4eeb-9baa-2f5a73504622"
+        }
+    ],
+    "resize_node_groups": [
+        {
+            "count": 4,
+            "name": "worker"
+        }
+    ]
+}

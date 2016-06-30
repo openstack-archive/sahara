@@ -1,0 +1,24 @@
+{
+    "binaries": [
+        {
+            "is_public": false,
+            "name": "example.pig",
+            "tenant_id": "11587919cc534bcbb1027a161c82cf58",
+            "created_at": "2013-10-15 12:36:59.329034",
+            "updated_at": null,
+            "datasize": 161,
+            "id": "d2498cbf-4589-484a-a814-81436c18beb3",
+            "is_protected": false
+        },
+        {
+            "is_public": false,
+            "name": "udf.jar",
+            "tenant_id": "11587919cc534bcbb1027a161c82cf58",
+            "created_at": "2013-10-15 12:43:52.008620",
+            "updated_at": null,
+            "datasize": 3745,
+            "id": "22f1d87a-23c8-483e-a0dd-cb4a16dde5f9",
+            "is_protected": false
+        }
+    ]
+}
