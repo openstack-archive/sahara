@@ -26,6 +26,7 @@ from sahara.i18n import _
 from sahara.plugins import base as plugin_base
 from sahara.service.edp import job_utils as j_u
 from sahara.service.validations import acl
+from sahara.service.validations import base as val_base
 import sahara.service.validations.edp.base as b
 import sahara.service.validations.edp.job_interface as j_i
 from sahara.utils import cluster as c_u
@@ -91,6 +92,7 @@ def check_job_execution(data, job_id):
         raise ex.InvalidReferenceException(
             _("Cluster with id '%s' doesn't exist") % data['cluster_id'])
 
+    val_base.check_plugin_labels(cluster.plugin_name, cluster.hadoop_version)
     job = conductor.job_get(ctx, job_id)
 
     plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)

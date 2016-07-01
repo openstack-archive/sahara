@@ -12,9 +12,11 @@
 # limitations under the License.
 
 import jsonschema.exceptions as json_exc
+import mock
 import testtools
 
 from sahara import conductor as cond
+from sahara import context
 from sahara import exceptions as ex
 from sahara.plugins import base
 from sahara.tests.unit import base as unit_base
@@ -239,3 +241,42 @@ class TestPluginLabels(unit_base.SaharaWithDbTestCase):
         self.assertFalse(data['plugin_labels']['enabled']['status'])
         self.assertTrue(data['plugin_labels']['hidden']['status'])
         self.assertFalse(data['version_labels']['0.1']['enabled']['status'])
+
+    @mock.patch('sahara.plugins.labels.LOG.warning')
+    def test_validate_plugin_labels(self, logger):
+        self.override_config('plugins', ['fake'])
+        lh = base.PluginManager()
+
+        lh.validate_plugin_labels('fake', '0.1')
+        self.assertEqual(0, logger.call_count)
+
+        dct = {
+            'name': 'fake',
+            'version_labels': {
+                '0.1': {
+                    'deprecated': {'status': True},
+                    'enabled': {'status': True}
+                }
+            },
+            'plugin_labels': {
+                'deprecated': {'status': True},
+                'enabled': {'status': True}
+            }
+        }
+
+        conductor.plugin_create(context.ctx(), dct)
+        lh.validate_plugin_labels('fake', '0.1')
+        self.assertEqual(2, logger.call_count)
+
+        conductor.plugin_remove(context.ctx(), 'fake')
+        dct['plugin_labels']['enabled']['status'] = False
+        conductor.plugin_create(context.ctx(), dct)
+        with testtools.ExpectedException(ex.InvalidReferenceException):
+            lh.validate_plugin_labels('fake', '0.1')
+
+        conductor.plugin_remove(context.ctx(), 'fake')
+        dct['plugin_labels']['enabled']['status'] = True
+        dct['version_labels']['0.1']['enabled']['status'] = False
+        conductor.plugin_create(context.ctx(), dct)
+        with testtools.ExpectedException(ex.InvalidReferenceException):
+            lh.validate_plugin_labels('fake', '0.1')

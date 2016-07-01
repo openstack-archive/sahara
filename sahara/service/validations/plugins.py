@@ -28,5 +28,5 @@ def check_convert_to_template(plugin_name, version, **kwargs):
           "to cluster templates") % plugin_name)
 
 
-def check_plugin_update(plugin_name, values, **kwargs):
-    base.PLUGINS.validate_plugin_update(plugin_name, values)
+def check_plugin_update(plugin_name, data, **kwargs):
+    base.PLUGINS.validate_plugin_update(plugin_name, data)
