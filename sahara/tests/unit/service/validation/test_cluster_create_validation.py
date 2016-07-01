@@ -289,10 +289,7 @@ class TestClusterCreateValidation(u.ValidationTestCase):
                         'security_groups': ['group1', 'group2']
                     }
                 ]
-            },
-            bad_req_i=(1, 'MISSING_FLOATING_NETWORK',
-                       "Node Group ng2 is missing 'floating_ip_pool' "
-                       "field")
+            }
         )
 
     def test_cluster_create_with_proxy_gateway(self):

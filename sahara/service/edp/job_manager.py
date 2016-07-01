@@ -76,8 +76,11 @@ def _update_job_status(engine, job_execution):
 
 
 def _update_job_execution_extra(cluster, job_execution):
-    if ((CONF.use_namespaces and not CONF.use_floating_ips) or
-            CONF.proxy_command):
+    # tmckay-fp we can make this slightly more efficient in
+    # the use_namespaces case by asking the engine if it knows
+    # the submission machine, and checking if that machine has
+    # a floating ip.
+    if (CONF.use_namespaces or CONF.proxy_command):
         info = cluster.node_groups[0].instances[0].remote().get_neutron_info()
         extra = job_execution.extra.copy()
         extra['neutron'] = info

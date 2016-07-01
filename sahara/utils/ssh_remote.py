@@ -56,6 +56,7 @@ from sahara.i18n import _
 from sahara.i18n import _LE
 from sahara.service import trusts
 from sahara.utils import crypto
+from sahara.utils import network as net_utils
 from sahara.utils.openstack import neutron
 from sahara.utils import procutils
 from sahara.utils import remote
@@ -677,6 +678,17 @@ class InstanceInteropHelper(remote.Remote):
         gateway_host = None
         gateway_image_username = None
         if proxy_gateway_node and not host_ng.is_proxy_gateway:
+
+            # tmckay-fp in other words, if we are going to connect
+            # through the proxy instead of the node we are actually
+            # trying to reach
+
+            # okay, the node group that supplies the proxy gateway
+            # must have fps, but if a proxy is used the other
+            # nodes are not required to have an fp.
+
+            # so, this instance is assumed not to have a floating
+            # ip and we are going to get to it through the proxy
             access_instance = proxy_gateway_node
             gateway_host = proxy_gateway_node.management_ip
             ng = proxy_gateway_node.node_group
@@ -686,7 +698,16 @@ class InstanceInteropHelper(remote.Remote):
         if CONF.proxy_command:
             # Build a session through a user-defined socket
             proxy_command = CONF.proxy_command
-        elif CONF.use_namespaces and not CONF.use_floating_ips:
+
+        # tmckay-fp we have the node_group for the instance right here
+        # okay, this test here whether access_instance.management_ip is an
+        # fp -- just compare to internal?
+        # in the neutron case, we check the node group for the
+        # access_instance and look for fp
+        # in the nova case, we compare management_ip to internal_ip or even
+        # use the nova interface
+        elif CONF.use_namespaces and not net_utils.has_floating_ip(
+                access_instance):
             # Build a session through a netcat socket in the Neutron namespace
             proxy_command = (
                 'ip netns exec qrouter-{router_id} nc {host} {port}')
@@ -763,7 +784,17 @@ class InstanceInteropHelper(remote.Remote):
         if CONF.proxy_command:
             # Build a session through a user-defined socket
             proxy_command = CONF.proxy_command
-        elif info or (CONF.use_namespaces and not CONF.use_floating_ips):
+
+        # tmckay-fp again we can check the node group for the instance
+        # what are the implications for nova here? None, because use_namespaces
+        # is synonomous with use_neutron
+        # this is a test on whether access_instance has a floating_ip
+        # in the neutron case, we check the node group for the
+        # access_instance and look for fp
+        # in the nova case, we compare management_ip to internal_ip or even
+        # use the nova interface
+        elif (CONF.use_namespaces and not net_utils.has_floating_ip(
+                access_instance)):
             # need neutron info
             if not info:
                 info = self.get_neutron_info(access_instance)

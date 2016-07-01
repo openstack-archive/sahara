@@ -225,11 +225,6 @@ class TestQuotas(base.SaharaTestCase):
             {'cpu': 10, 'floatingips': 200,
              'instances': 3, 'ram': 9, 'security_group_rules': 'unlimited',
              'security_groups': 28}, quotas._get_nova_limits())
-        self.override_config('use_floating_ips', False)
-        self.assertEqual(
-            {'cpu': 10, 'instances': 3, 'ram': 9,
-             'security_group_rules': 'unlimited',
-             'security_groups': 28}, quotas._get_nova_limits())
         self.override_config('use_neutron', True)
         self.assertEqual(
             {'cpu': 10, 'instances': 3, 'ram': 9}, quotas._get_nova_limits())
@@ -247,11 +242,6 @@ class TestQuotas(base.SaharaTestCase):
         self.override_config('use_neutron', True)
         self.assertEqual({'floatingips': 2340,
                           'ports': 'unlimited',
-                          'security_group_rules': 332,
-                          'security_groups': 1516},
-                         quotas._get_neutron_limits())
-        self.override_config('use_floating_ips', False)
-        self.assertEqual({'ports': 'unlimited',
                           'security_group_rules': 332,
                           'security_groups': 1516},
                          quotas._get_neutron_limits())

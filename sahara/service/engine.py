@@ -239,6 +239,7 @@ sed '/^Defaults    requiretty*/ s/^/#/' -i /etc/sudoers\n
                 b.execute_with_retries(client.delete, server_groups[0].id)
 
     def _shutdown_instance(self, instance):
+        # tmckay-fp perfect, already testing the right thing
         if instance.node_group.floating_ip_pool:
             try:
                 b.execute_with_retries(networks.delete_floating_ip,

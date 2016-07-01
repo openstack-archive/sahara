@@ -103,6 +103,7 @@ def _update_limits_for_ng(limits, ng, count):
     flavor = b.execute_with_retries(nova.flavors.get, ng.flavor_id)
     limits['ram'] += flavor.ram * count
     limits['cpu'] += flavor.vcpus * count
+    # tmckay-fp this is fine, it will be zero without it
     if ng.floating_ip_pool:
         limits['floatingips'] += count
     if ng.volumes_per_node:
@@ -146,9 +147,10 @@ def _get_nova_limits():
                                      lim['totalInstancesUsed'])
     if CONF.use_neutron:
         return limits
-    if CONF.use_floating_ips:
-        limits['floatingips'] = _sub_limit(lim['maxTotalFloatingIps'],
-                                           lim['totalFloatingIpsUsed'])
+
+    # tmckay-fp here we would just get the limits all the time
+    limits['floatingips'] = _sub_limit(lim['maxTotalFloatingIps'],
+                                       lim['totalFloatingIpsUsed'])
     limits['security_groups'] = _sub_limit(lim['maxSecurityGroups'],
                                            lim['totalSecurityGroupsUsed'])
     limits['security_group_rules'] = _sub_limit(lim['maxSecurityGroupRules'],
@@ -164,11 +166,11 @@ def _get_neutron_limits():
     tenant_id = context.ctx().tenant_id
     total_lim = b.execute_with_retries(neutron.show_quota, tenant_id)['quota']
 
-    if CONF.use_floating_ips:
-        usage_fip = b.execute_with_retries(
-            neutron.list_floatingips,  tenant_id=tenant_id)['floatingips']
-        limits['floatingips'] = _sub_limit(total_lim['floatingip'],
-                                           len(usage_fip))
+    # tmckay-fp here we would just get the limits all the time
+    usage_fip = b.execute_with_retries(
+        neutron.list_floatingips,  tenant_id=tenant_id)['floatingips']
+    limits['floatingips'] = _sub_limit(total_lim['floatingip'],
+                                       len(usage_fip))
 
     usage_sg = b.execute_with_retries(
         neutron.list_security_groups, tenant_id=tenant_id).get(
