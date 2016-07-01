@@ -22,6 +22,7 @@ from sahara import conductor as cond
 from sahara import context
 from sahara import exceptions as exc
 from sahara.plugins import base as pl_base
+from sahara.plugins import provisioning as pr_base
 from sahara.service import api as service_api
 from sahara.service.api import v10 as api
 from sahara.tests.unit import base
@@ -91,11 +92,24 @@ SCALE_DATA = {
 }
 
 
-class FakePlugin(object):
+class FakePlugin(pr_base.ProvisioningPluginBase):
     _info = {}
+    name = "fake"
 
     def __init__(self, calls_order):
         self.calls_order = calls_order
+
+    def configure_cluster(self, cluster):
+        pass
+
+    def start_cluster(self, cluster):
+        pass
+
+    def get_description(self):
+        return "Some description"
+
+    def get_title(self):
+        return "Fake plugin"
 
     def validate(self, cluster):
         self.calls_order.append('validate')
@@ -106,29 +120,20 @@ class FakePlugin(object):
     def validate_scaling(self, cluster, to_be_enlarged, additional):
         self.calls_order.append('validate_scaling')
 
-    def as_resource(self):
-        return FakePlugin(self.calls_order)
-
     def get_versions(self):
         return ['0.1', '0.2']
 
-    def get_all_configs(self, version):
-        return self.get_configs(version)
-
-    def get_required_image_tags(self, version):
-        return ['fake']
-
     def get_node_processes(self, version):
-        return ['namenode', 'datanode']
+        return {'HDFS': ['namenode', 'datanode']}
 
     def get_configs(self, version):
-        return {}
+        return []
 
     def recommend_configs(self, cluster, scaling=False):
         self.calls_order.append('recommend_configs')
 
 
-class FakePluginManager(object):
+class FakePluginManager(pl_base.PluginManager):
     def __init__(self, calls_order):
         self.calls = calls_order
 
@@ -280,7 +285,20 @@ class TestApi(base.SaharaWithDbTestCase):
             self.assertEqual('Cluster', updated_cluster.description)
 
     def test_get_plugin(self):
-        api.get_plugin('fake', '0.1')
-        api.get_plugin('fake', '0.3')
-        api.get_plugin('fake')
+        # processing to dict
+        data = api.get_plugin('fake', '0.1').dict
+        self.assertIsNotNone(data)
+        self.assertEqual(
+            len(pr_base.list_of_common_configs()), len(data.get('configs')))
+        self.assertEqual(['fake', '0.1'], data.get('required_image_tags'))
+        self.assertEqual(
+            {'HDFS': ['namenode', 'datanode']}, data.get('node_processes'))
+
+        self.assertIsNone(api.get_plugin('fake', '0.3'))
+        data = api.get_plugin('fake').dict
+        self.assertEqual({
+            'description': "Some description",
+            'name': 'fake',
+            'title': 'Fake plugin',
+            'versions': ['0.1', '0.2']}, data)
         self.assertIsNone(api.get_plugin('name1', '0.1'))
