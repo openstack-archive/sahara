@@ -15,8 +15,14 @@
 
 import testtools
 
+from sahara import conductor as cond
+from sahara import context
 from sahara import exceptions as ex
 from sahara.plugins import provisioning as p
+from sahara.tests.unit import base
+
+
+conductor = cond.API
 
 
 class ProvisioningPluginBaseTest(testtools.TestCase):
@@ -87,3 +93,48 @@ class TestEmptyPlugin(p.ProvisioningPluginBase):
 
     def start_cluster(self, cluster):
         pass
+
+
+class TestPluginDataCRUD(base.SaharaWithDbTestCase):
+    def test_crud(self):
+        ctx = context.ctx()
+        data = conductor.plugin_create(
+            ctx, {'name': 'fake', 'plugin_labels': {'enabled': True}})
+        self.assertIsNotNone(data)
+        raised = None
+        try:
+            # duplicate entry, shouldn't work
+            conductor.plugin_create(ctx, {'name': 'fake'})
+        except Exception as e:
+            raised = e
+        self.assertIsNotNone(raised)
+
+        # not duplicated entry, other tenant
+        ctx.tenant = "tenant_2"
+        res = conductor.plugin_create(ctx, {'name': 'fake'})
+        conductor.plugin_create(ctx, {'name': 'guy'})
+        self.assertIsNotNone(res)
+        self.assertEqual(2, len(conductor.plugin_get_all(ctx)))
+
+        ctx.tenant = "tenant_1"
+
+        data = conductor.plugin_get(ctx, 'fake')
+        self.assertEqual('fake', data['name'])
+
+        data = conductor.plugin_update(
+            ctx, 'fake', {'version_labels': {'0.1': {'enabled': False}}})
+        data = conductor.plugin_get(ctx, 'fake')
+        self.assertEqual(
+            {'0.1': {'enabled': False}}, data.get('version_labels'))
+
+        with testtools.ExpectedException(ex.NotFoundException):
+            conductor.plugin_update(ctx, 'fake_not_found', {})
+
+        data = conductor.plugin_remove(ctx, 'fake')
+        self.assertIsNone(data)
+
+        data = conductor.plugin_get(ctx, 'fake')
+        self.assertIsNone(data)
+
+        with testtools.ExpectedException(ex.NotFoundException):
+            conductor.plugin_remove(ctx, 'fake')

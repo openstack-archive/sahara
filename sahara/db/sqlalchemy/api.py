@@ -1486,3 +1486,56 @@ def cluster_health_check_update(context, health_check_id, values):
         health_check.update(values)
 
     return health_check
+
+
+def _plugin_get(context, session, name):
+    query = model_query(m.PluginData, context, session)
+    return query.filter_by(name=name).first()
+
+
+def plugin_get(context, name):
+    session = get_session()
+    with session.begin():
+        data = _plugin_get(context, session, name)
+    return data
+
+
+def plugin_create(context, values):
+    session = get_session()
+    with session.begin():
+        plugin = m.PluginData()
+        values['tenant_id'] = context.tenant_id
+        plugin.update(values)
+        session.add(plugin)
+    return plugin
+
+
+def plugin_get_all(context):
+    query = model_query(m.PluginData, context)
+    return query.all()
+
+
+def plugin_update(context, name, values):
+    session = get_session()
+
+    with session.begin():
+        plugin = _plugin_get(context, session, name)
+
+        if not plugin:
+            raise ex.NotFoundException(name, _("Plugin name '%s' not found!"))
+
+        plugin.update(values)
+
+    return plugin
+
+
+def plugin_remove(context, name):
+    session = get_session()
+
+    with session.begin():
+        plugin = _plugin_get(context, session, name)
+
+        if not plugin:
+            raise ex.NotFoundException(name, _("Plugin name '%s' not found!"))
+
+        session.delete(plugin)

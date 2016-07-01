@@ -595,6 +595,26 @@ class LocalApi(object):
         return self._manager.cluster_health_check_update(
             context, _get_id(health_check_id), values)
 
+    def plugin_create(self, context, values):
+        """Return created DB entry for plugin."""
+        return self._manager.plugin_create(context, values)
+
+    def plugin_get(self, context, name):
+        """Return DB entry for plugin."""
+        return self._manager.plugin_get(context, name)
+
+    def plugin_get_all(self, context):
+        """Return DB entries for all plugins."""
+        return self._manager.plugin_get_all(context)
+
+    def plugin_update(self, context, name, values):
+        """Return updated DB entry for plugin."""
+        return self._manager.plugin_update(context, name, values)
+
+    def plugin_remove(self, context, name):
+        """Remove DB entry for plugin."""
+        return self._manager.plugin_remove(context, name)
+
 
 class RemoteApi(LocalApi):
     """Conductor API that does updates via RPC to the ConductorManager."""

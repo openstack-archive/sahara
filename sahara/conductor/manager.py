@@ -755,3 +755,23 @@ class ConductorManager(db_base.Base):
         """Return updated health check with the specified health_check_id."""
         return self.db.cluster_health_check_update(
             context, health_check_id, values)
+
+    def plugin_create(self, context, values):
+        """Return created DB entry for plugin."""
+        return self.db.plugin_create(context, values)
+
+    def plugin_get(self, context, name):
+        """Return DB entry for plugin."""
+        return self.db.plugin_get(context, name)
+
+    def plugin_get_all(self, context):
+        """Return DB entries for all plugins."""
+        return self.db.plugin_get_all(context)
+
+    def plugin_update(self, context, name, values):
+        """Return updated DB entry for plugin."""
+        return self.db.plugin_update(context, name, values)
+
+    def plugin_remove(self, context, name):
+        """Remove DB entry for plugin."""
+        return self.db.plugin_remove(context, name)

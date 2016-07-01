@@ -537,3 +537,19 @@ class ClusterHealthCheck(mb.SaharaBase):
     status = sa.Column(sa.String(15))
     description = sa.Column(sa.Text)
     name = sa.Column(sa.String(80))
+
+
+class PluginData(mb.SaharaBase):
+    """Plugin Data represents Provisioning Plugin."""
+
+    __tablename__ = 'plugin_data'
+    __table_args__ = (
+        sa.UniqueConstraint('name', 'tenant_id'),
+    )
+
+    id = _id_column()
+    tenant_id = sa.Column(sa.String(36), nullable=False)
+    name = sa.Column(sa.String(15), nullable=False)
+
+    plugin_labels = sa.Column(st.JsonDictType())
+    version_labels = sa.Column(st.JsonDictType())
