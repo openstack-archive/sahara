@@ -235,7 +235,7 @@ Create/update default templates from the directory *mypath*::
   $ sahara-templates --config-file myconfig update -t $TENANT_ID -d mypath
 
 Create/update default templates from the directory *mypath* but do not descend
-into subirectories::
+into subdirectories::
 
   $ sahara-templates --config-file myconfig update -t $TENANT_ID -d mypath -n
 
