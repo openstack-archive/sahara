@@ -27,11 +27,11 @@ rest = u.RestV2('node-group-templates', __name__)
 
 @rest.get('/node-group-templates')
 @acl.enforce("data-processing:node-group-templates:get_all")
+@v.check_exists(api.get_node_group_template, 'marker')
+@v.validate(None, v.validate_pagination_limit)
 def node_group_templates_list():
-    return u.render(
-        node_group_templates=[t.to_dict()
-                              for t in api.get_node_group_templates(
-                              **u.get_request_args().to_dict())])
+    result = api.get_node_group_templates(**u.get_request_args().to_dict())
+    return u.render(res=result, name="node_group_templates")
 
 
 @rest.post('/node-group-templates')

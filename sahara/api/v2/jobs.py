@@ -29,9 +29,11 @@ rest = u.RestV2('jobs', __name__)
 
 @rest.get('/job-templates')
 @acl.enforce("data-processing:jobs:get_all")
+@v.check_exists(api.get_job, 'marker')
+@v.validate(None, v.validate_pagination_limit)
 def job_list():
-    return u.render(job_templates=[j.to_dict() for j in api.get_jobs(
-        **u.get_request_args().to_dict())])
+    result = api.get_jobs(**u.get_request_args().to_dict())
+    return u.render(res=result, name='job_templates')
 
 
 @rest.post('/job-templates')

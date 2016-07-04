@@ -26,10 +26,11 @@ rest = u.RestV2('cluster-templates', __name__)
 
 @rest.get('/cluster-templates')
 @acl.enforce("data-processing:cluster-templates:get_all")
+@v.check_exists(api.get_cluster_template, 'marker')
+@v.validate(None, v.validate_pagination_limit)
 def cluster_templates_list():
-    return u.render(
-        cluster_templates=[t.to_dict() for t in api.get_cluster_templates(
-            **u.get_request_args().to_dict())])
+    result = api.get_cluster_templates(**u.get_request_args().to_dict())
+    return u.render(res=result, name='cluster_templates')
 
 
 @rest.post('/cluster-templates')
