@@ -603,3 +603,23 @@ specify:
 
     [DEFAULT]
     cleanup_time_for_incomplete_clusters = 3
+
+Security Group Rules Configuration
+----------------------------------
+
+When auto_security_group is used, the amount of created security group rules
+may be bigger than the default values configured in ``neutron.conf``. Then the
+default limit should be raised up to some bigger value which is proportional to
+the number of cluster node groups. You can change it in ``neutron.conf`` file:
+
+.. sourcecode:: cfg
+
+    [quotas]
+    quota_security_group = 1000
+    quota_security_group_rule = 10000
+
+Or you can execute openstack CLI command:
+
+.. sourcecode:: console
+
+    openstack quota set --secgroups 1000 --secgroup-rules 10000 $PROJECT_ID
