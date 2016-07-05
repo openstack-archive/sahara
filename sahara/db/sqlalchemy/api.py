@@ -1079,7 +1079,7 @@ def job_binary_get_all(context, regex_search=False, **kwargs):
 def job_binary_get(context, job_binary_id):
     """Returns a JobBinary object that does not contain a data field
 
-    The data column uses deferred loadling.
+    The data column uses deferred loading.
     """
     return _job_binary_get(context, get_session(), job_binary_id)
 
@@ -1199,7 +1199,7 @@ def job_binary_internal_get_all(context, regex_search=False, **kwargs):
 def job_binary_internal_get(context, job_binary_internal_id):
     """Returns a JobBinaryInternal object that does not contain a data field
 
-    The data column uses deferred loadling.
+    The data column uses deferred loading.
     """
     return _job_binary_internal_get(context, get_session(),
                                     job_binary_internal_id)
