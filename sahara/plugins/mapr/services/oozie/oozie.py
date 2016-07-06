@@ -85,6 +85,13 @@ class Oozie(s.Service):
         remote.execute_command('chown -R mapr:mapr /opt/mapr/oozie',
                                run_as_root=True)
 
+    def install(self, cluster_context, instances):
+        # oozie requires executed configure.sh
+        pass
+
+    def post_configure(self, cluster_context, instances):
+        super(Oozie, self).install(cluster_context, instances)
+
     def post_install(self, cluster_context, instances):
         oozie_inst = cluster_context.get_instance(OOZIE)
         oozie_service = cluster_context.get_service(OOZIE)
