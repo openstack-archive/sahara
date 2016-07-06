@@ -49,13 +49,10 @@ Local endpoint example:
         data_processing_local
 
     openstack endpoint create --region RegionOne \
-        sahara_local public "http://127.0.0.1:8386/v1.1/%(tenant_id)s"
-
-    openstack endpoint create --region RegionOne \
-        sahara_local admin "http://127.0.0.1:8386/v1.1/%(tenant_id)s"
-
-    openstack endpoint create --region RegionOne \
-        sahara_local internal "http://127.0.0.1:8386/v1.1/%(tenant_id)s"
+    --publicurl http://127.0.0.1:8386/v1.1/%\(tenant_id\)s \
+    --adminurl http://127.0.0.1:8386/v1.1/%\(tenant_id\)s \
+    --internalurl http://127.0.0.1:8386/v1.1/%\(tenant_id\)s \
+    data_processing_local
 ..
 
 Then the endpoint name should be changed in ``sahara.py`` under the module of
