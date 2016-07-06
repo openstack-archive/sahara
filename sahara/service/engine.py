@@ -34,7 +34,7 @@ from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils import edp
 from sahara.utils import general as g
 from sahara.utils.openstack import base as b
-from sahara.utils.openstack import glance
+from sahara.utils.openstack import images as sahara_images
 from sahara.utils.openstack import nova
 from sahara.utils import poll_utils
 from sahara.utils import remote
@@ -71,7 +71,7 @@ class Engine(object):
     def get_node_group_image_username(self, node_group):
         image_id = node_group.get_image_id()
         return b.execute_with_retries(
-            glance.client().images.get, image_id).username
+            sahara_images.image_manager().get, image_id).username
 
     @poll_utils.poll_status('ips_assign_timeout', _("Assign IPs"), sleep=1)
     def _ips_assign(self, ips_assigned, cluster, instances):

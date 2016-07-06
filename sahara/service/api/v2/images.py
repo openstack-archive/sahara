@@ -15,7 +15,7 @@
 
 from sahara import conductor as c
 from sahara.utils.openstack import base as b
-from sahara.utils.openstack import glance
+from sahara.utils.openstack import images as sahara_images
 
 
 conductor = c.API
@@ -26,41 +26,43 @@ conductor = c.API
 
 def get_images(name, tags):
     return b.execute_with_retries(
-        glance.client().images.list_registered, name, tags)
+        sahara_images.image_manager().list_registered, name, tags)
 
 
 def get_image(**kwargs):
     if len(kwargs) == 1 and 'id' in kwargs:
-        return b.execute_with_retries(glance.client().images.get, kwargs['id'])
+        return b.execute_with_retries(
+            sahara_images.image_manager().get, kwargs['id'])
     else:
-        return b.execute_with_retries(glance.client().images.find, **kwargs)
+        return b.execute_with_retries(
+            sahara_images.image_manager().find, **kwargs)
 
 
 def get_registered_image(id):
     return b.execute_with_retries(
-        glance.client().images.get_registered_image, id)
+        sahara_images.image_manager().get_registered_image, id)
 
 
 def register_image(image_id, username, description=None):
-    client = glance.client()
+    manager = sahara_images.image_manager()
     b.execute_with_retries(
-        client.images.set_description, image_id, username, description)
-    return b.execute_with_retries(client.images.get, image_id)
+        manager.set_image_info, image_id, username, description)
+    return b.execute_with_retries(manager.get, image_id)
 
 
 def unregister_image(image_id):
-    client = glance.client()
-    b.execute_with_retries(client.images.unset_description, image_id)
-    return b.execute_with_retries(client.images.get, image_id)
+    manager = sahara_images.image_manager()
+    b.execute_with_retries(manager.unset_image_info, image_id)
+    return b.execute_with_retries(manager.get, image_id)
 
 
 def add_image_tags(image_id, tags):
-    client = glance.client()
-    b.execute_with_retries(client.images.tag, image_id, tags)
-    return b.execute_with_retries(client.images.get, image_id)
+    manager = sahara_images.image_manager()
+    b.execute_with_retries(manager.tag, image_id, tags)
+    return b.execute_with_retries(manager.get, image_id)
 
 
 def remove_image_tags(image_id, tags):
-    client = glance.client()
-    b.execute_with_retries(client.images.untag, image_id, tags)
-    return b.execute_with_retries(client.images.get, image_id)
+    manager = sahara_images.image_manager()
+    b.execute_with_retries(manager.untag, image_id, tags)
+    return b.execute_with_retries(manager.get, image_id)

@@ -53,8 +53,8 @@ class SaharaException(Exception):
 class NotFoundException(SaharaException):
     code = "NOT_FOUND"
     message_template = _("Object '%s' is not found")
-    # It could be a various property of object which was not found
 
+    # It could be a various property of object which was not found
     def __init__(self, value, message_template=None):
         self.value = value
         if message_template:
@@ -63,6 +63,17 @@ class NotFoundException(SaharaException):
             formatted_message = self.message_template % value
 
         super(NotFoundException, self).__init__(formatted_message)
+
+
+class NoUniqueMatchException(SaharaException):
+    code = "NO_UNIQUE_MATCH"
+    message_template = _(
+        "Response {response} is not unique for this query {query}.")
+
+    def __init__(self, response, query, message_template=None):
+        template = message_template or self.message_template
+        formatted_message = template.format(response=response, query=query)
+        super(NoUniqueMatchException, self).__init__(formatted_message)
 
 
 class NameAlreadyExistsException(SaharaException):
