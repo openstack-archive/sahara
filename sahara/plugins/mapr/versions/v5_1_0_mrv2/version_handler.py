@@ -20,6 +20,7 @@ from sahara.plugins.mapr.services.hbase import hbase
 from sahara.plugins.mapr.services.hive import hive
 from sahara.plugins.mapr.services.httpfs import httpfs
 from sahara.plugins.mapr.services.hue import hue
+from sahara.plugins.mapr.services.impala import impala
 from sahara.plugins.mapr.services.mahout import mahout
 from sahara.plugins.mapr.services.management import management as mng
 from sahara.plugins.mapr.services.maprfs import maprfs
@@ -48,6 +49,7 @@ class VersionHandler(bvh.BaseVersionHandler):
         self._services = [
             hive.HiveV013(),
             hive.HiveV12(),
+            impala.ImpalaV220(),
             pig.PigV014(),
             pig.PigV015(),
             flume.FlumeV16(),
