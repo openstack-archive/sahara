@@ -107,14 +107,7 @@ To install into a virtual environment
    require super user privileges and can be executed in any directory where
    the current user has write permissions.
 
-3. You can install the latest sahara release from pypi:
-
-.. sourcecode:: console
-
-    $ sahara-venv/bin/pip install sahara
-..
-
-   Or you can get a sahara archive from
+3. You can get a sahara archive from
    `<http://tarballs.openstack.org/sahara/>`_ and install it using pip:
 
 .. sourcecode:: console
@@ -125,7 +118,20 @@ To install into a virtual environment
    Note that ``sahara-master.tar.gz`` contains the latest changes and
    might not be stable at the moment. We recommend browsing
    `<http://tarballs.openstack.org/sahara/>`_ and selecting the latest
-   stable release.
+   stable release. For installation just execute (where replace the 'release'
+   word with release name, e.g. 'mitaka'):
+
+.. sourcecode:: console
+
+    $ sahara-venv/bin/pip install 'http://tarballs.openstack.org/sahara/sahara-stable-release.tar.gz'
+..
+
+   For example, you can get Sahara Mitaka release by executing:
+
+.. sourcecode:: console
+
+    $ sahara-venv/bin/pip install 'http://tarballs.openstack.org/sahara/sahara-stable-mitaka.tar.gz'
+..
 
 4. After installation you should create a configuration file from the sample
    file located in ``sahara-venv/share/sahara/sahara.conf.sample-basic``:
