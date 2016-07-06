@@ -20,23 +20,17 @@ from oslo_log import log as logging
 import six
 from stevedore import enabled
 
+from sahara import conductor as cond
 from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.i18n import _LI
+from sahara.plugins import labels
 from sahara.utils import resources
 
+conductor = cond.API
 
 LOG = logging.getLogger(__name__)
-
-opts = [
-    cfg.ListOpt('plugins',
-                default=['vanilla', 'spark', 'cdh', 'ambari'],
-                help='List of plugins to be loaded. Sahara preserves the '
-                     'order of the list when returning it.'),
-]
-
 CONF = cfg.CONF
-CONF.register_opts(opts)
 
 
 def required(fun):
@@ -87,7 +81,9 @@ class PluginInterface(resources.BaseResource):
 class PluginManager(object):
     def __init__(self):
         self.plugins = {}
+        self.default_label_schema = {}
         self._load_cluster_plugins()
+        self.label_handler = labels.LabelHandler(self.plugins)
 
     def _load_cluster_plugins(self):
         config_plugins = CONF.plugins
@@ -134,6 +130,8 @@ class PluginManager(object):
         plugin = self.get_plugin(plugin_name)
         if plugin:
             res = plugin.as_resource()
+            res._info.update(self.label_handler.get_label_full_details(
+                plugin_name))
             if version:
                 if version in plugin.get_versions():
                     res._info.update(plugin.get_version_details(version))
@@ -141,6 +139,15 @@ class PluginManager(object):
                     return None
             return res
 
+    def update_plugin(self, plugin_name, values):
+        self.label_handler.update_plugin(plugin_name, values)
+        return self.serialize_plugin(plugin_name)
+
+    def validate_plugin_update(self, plugin_name, values):
+        return self.label_handler.validate_plugin_update(plugin_name, values)
+
+    def get_plugin_update_validation_jsonschema(self):
+        return self.label_handler.get_plugin_update_validation_jsonschema()
 
 PLUGINS = None
 

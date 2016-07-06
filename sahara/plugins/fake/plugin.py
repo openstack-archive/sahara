@@ -34,6 +34,17 @@ class FakePluginProvider(p.ProvisioningPluginBase):
     def get_versions(self):
         return ["0.1"]
 
+    def get_labels(self):
+        return {
+            'plugin_labels': {
+                'enabled': {'status': True},
+                'hidden': {'status': True},
+            },
+            'version_labels': {
+                '0.1': {'enabled': {'status': True}}
+            }
+        }
+
     def get_node_processes(self, hadoop_version):
         return {
             "HDFS": ["namenode", "datanode"],

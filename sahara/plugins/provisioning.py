@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import copy
 
 from sahara import exceptions as ex
 from sahara.i18n import _
@@ -28,6 +29,17 @@ class ProvisioningPluginBase(plugins_base.PluginInterface):
     @plugins_base.required
     def get_configs(self, hadoop_version):
         pass
+
+    @plugins_base.required_with_default
+    def get_labels(self):
+        versions = self.get_versions()
+        default = {'enabled': {'status': True}}
+        return {
+            'plugin_labels': copy.deepcopy(default),
+            'version_labels': {
+                version: copy.deepcopy(default) for version in versions
+            }
+        }
 
     @plugins_base.required
     def get_node_processes(self, hadoop_version):
