@@ -53,6 +53,7 @@ def _check_ambari(cluster):
 def _check_hdfs(cluster):
     nn_count = utils.get_instances_count(cluster, common.NAMENODE)
     dn_count = utils.get_instances_count(cluster, common.DATANODE)
+    snn_count = utils.get_instances_count(cluster, common.SECONDARY_NAMENODE)
 
     if cluster.cluster_configs.get("general", {}).get(common.NAMENODE_HA):
         _check_zk_ha(cluster)
@@ -65,6 +66,11 @@ def _check_hdfs(cluster):
         if nn_count != 1:
             raise ex.InvalidComponentCountException(common.NAMENODE, 1,
                                                     nn_count)
+
+        if snn_count != 1:
+            raise ex.InvalidComponentCountException(common.SECONDARY_NAMENODE,
+                                                    1, snn_count)
+
     if dn_count == 0:
         raise ex.InvalidComponentCountException(
             common.DATANODE, _("1 or more"), dn_count)
