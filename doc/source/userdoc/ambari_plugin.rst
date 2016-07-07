@@ -41,7 +41,7 @@ The username specified should be 'cloud-user' in case of CentOS 6.x image,
 High Availability for HDFS and YARN
 -----------------------------------
 High Availability (Using the Quorum Journal Manager) can be
-deployed automatically with the Ambari plugin. You can deploy High Avaliable
+deployed automatically with the Ambari plugin. You can deploy High Available
 cluster through UI by selecting ``NameNode HA`` and/or ``ResourceManager HA``
 options in general configs of cluster template.
 
