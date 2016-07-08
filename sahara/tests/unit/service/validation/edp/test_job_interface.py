@@ -80,7 +80,8 @@ _job_types = [
     _job(edp.JOB_TYPE_JAVA, [_configs(), _args()]),
     _job(edp.JOB_TYPE_SHELL, [_configs(), _params(), _args()]),
     _job(edp.JOB_TYPE_SPARK, [_configs(), _args()]),
-    _job(edp.JOB_TYPE_STORM, [_args()])
+    _job(edp.JOB_TYPE_STORM, [_args()]),
+    _job(edp.JOB_TYPE_PYLEUS, [])
 ]
 
 

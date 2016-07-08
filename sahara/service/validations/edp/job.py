@@ -37,9 +37,10 @@ def check_mains_libs(data, **kwargs):
     # These types must have a value in mains and may also use libs
     if job_type in [edp.JOB_TYPE_PIG, edp.JOB_TYPE_HIVE,
                     edp.JOB_TYPE_SHELL, edp.JOB_TYPE_SPARK,
-                    edp.JOB_TYPE_STORM]:
+                    edp.JOB_TYPE_STORM, edp.JOB_TYPE_PYLEUS]:
         if not mains:
-            if job_type in [edp.JOB_TYPE_SPARK, edp.JOB_TYPE_STORM]:
+            if job_type in [edp.JOB_TYPE_SPARK, edp.JOB_TYPE_STORM,
+                            edp.JOB_TYPE_PYLEUS]:
                 msg = _(
                     "%s job requires main application jar") % data.get("type")
             else:

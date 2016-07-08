@@ -48,6 +48,21 @@ def check_main_class_present(data, job):
             _('%s job must specify edp.java.main_class') % job.type)
 
 
+def _is_topology_name_present(data):
+    if data:
+        val = data.get(
+            'job_configs', {}).get(
+            'configs', {}).get('topology_name', None)
+        return val and isinstance(val, six.string_types)
+    return False
+
+
+def check_topology_name_present(data, job):
+    if not _is_main_class_present(data):
+        raise ex.InvalidDataException(
+            _('%s job must specify topology_name') % job.type)
+
+
 def _streaming_present(data):
     try:
         streaming = set(('edp.streaming.mapper',
