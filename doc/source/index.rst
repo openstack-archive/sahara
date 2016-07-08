@@ -106,7 +106,7 @@ Developer Guide
     devref/plugin.spi
     devref/edp.spi
     userdoc/statuses
-
+    userdoc/sahara_on_ironic
 
 **Other Resources**
 
