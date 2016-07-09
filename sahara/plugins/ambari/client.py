@@ -268,6 +268,7 @@ class AmbariClient(object):
     def wait_ambari_requests(self, requests, cluster_name):
         requests = set(requests)
         failed = []
+        context.sleep(20)
         while len(requests) > 0:
             completed, not_completed = set(), set()
             for req_id in requests:
@@ -298,6 +299,7 @@ class AmbariClient(object):
         LOG.debug("All ambari requests have been completed")
 
     def wait_ambari_request(self, request_id, cluster_name):
+        context.sleep(20)
         while True:
             status = self.check_request_status(cluster_name, request_id)
             LOG.debug("Task %s in %s state. Completed %.1f%%" % (
