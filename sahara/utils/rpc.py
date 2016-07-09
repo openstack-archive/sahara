@@ -20,10 +20,12 @@ import oslo_messaging as messaging
 from oslo_serialization import jsonutils
 
 from sahara import context
+from sahara.i18n import _LE
 from sahara.i18n import _LI
 
 
-TRANSPORT = None
+MESSAGING_TRANSPORT = None
+NOTIFICATION_TRANSPORT = None
 NOTIFIER = None
 
 CONF = cfg.CONF
@@ -63,11 +65,11 @@ class JsonPayloadSerializer(messaging.NoOpSerializer):
 
 class RPCClient(object):
     def __init__(self, target):
-        global TRANSPORT
+        global MESSAGING_TRANSPORT
 
         self.__client = messaging.RPCClient(
             target=target,
-            transport=TRANSPORT,
+            transport=MESSAGING_TRANSPORT,
         )
 
     def cast(self, name, **kwargs):
@@ -81,11 +83,11 @@ class RPCClient(object):
 
 class RPCServer(object):
     def __init__(self, target):
-        global TRANSPORT
+        global MESSAGING_TRANSPORT
 
         self.__server = messaging.get_rpc_server(
             target=target,
-            transport=TRANSPORT,
+            transport=MESSAGING_TRANSPORT,
             endpoints=[self],
             executor='eventlet')
 
@@ -93,21 +95,50 @@ class RPCServer(object):
         return self.__server
 
 
-def setup():
-    """Initialise the oslo_messaging layer."""
-    global TRANSPORT, NOTIFIER
+def setup_service_messaging():
+    global MESSAGING_TRANSPORT
+    if MESSAGING_TRANSPORT:
+        # Already is up
+        return
+    MESSAGING_TRANSPORT = messaging.get_transport(cfg.CONF, aliases=_ALIASES)
 
-    messaging.set_transport_defaults('sahara')
 
-    TRANSPORT = messaging.get_transport(cfg.CONF, aliases=_ALIASES)
-
+def setup_notifications():
+    global NOTIFICATION_TRANSPORT, NOTIFIER, MESSAGING_TRANSPORT
     if not cfg.CONF.oslo_messaging_notifications.enable:
         LOG.info(_LI("Notifications disabled"))
         return
-    LOG.info(_LI("Notifications enabled"))
+
+    try:
+        NOTIFICATION_TRANSPORT = messaging.get_notification_transport(
+            cfg.CONF, aliases=_ALIASES)
+    except Exception:
+        LOG.error(_LE("Unable to setup notification transport. Reusing "
+                      "service transport for that."))
+
+        setup_service_messaging()
+
+        NOTIFICATION_TRANSPORT = MESSAGING_TRANSPORT
 
     serializer = ContextSerializer(JsonPayloadSerializer())
-    NOTIFIER = messaging.Notifier(TRANSPORT, serializer=serializer)
+    NOTIFIER = messaging.Notifier(
+        NOTIFICATION_TRANSPORT, serializer=serializer)
+    LOG.info(_LI("Notifications enabled"))
+
+
+def setup(service_name):
+    """Initialise the oslo_messaging layer."""
+    global MESSAGING_TRANSPORT, NOTIFICATION_TRANSPORT, NOTIFIER
+    if (service_name == 'all-in-one' and
+            not cfg.CONF.oslo_messaging_notifications.enable):
+        LOG.info(_LI("Notifications disabled"))
+        return
+
+    messaging.set_transport_defaults('sahara')
+
+    setup_notifications()
+    if service_name != 'all-in-one':
+        setup_service_messaging()
 
 
 def get_notifier(publisher_id):

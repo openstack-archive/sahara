@@ -27,27 +27,95 @@ _ALIASES = {
 
 
 class TestMessagingSetup(base.SaharaTestCase):
-    @mock.patch('oslo_messaging.set_transport_defaults')
-    @mock.patch('oslo_messaging.get_transport')
-    @mock.patch('oslo_messaging.Notifier')
-    def test_set_defaults(self, notifier_init,
-                          get_transport, set_transport_def):
+    def setUp(self):
+        super(TestMessagingSetup, self).setUp()
+        self.patchers = []
+        notifier_init_patch = mock.patch('oslo_messaging.Notifier')
+        self.notifier_init = notifier_init_patch.start()
+        self.patchers.append(notifier_init_patch)
+
+        get_notif_transp_patch = mock.patch(
+            'oslo_messaging.get_notification_transport')
+        self.get_notify_transport = get_notif_transp_patch.start()
+        self.patchers.append(get_notif_transp_patch)
+
+        get_transport_patch = mock.patch('oslo_messaging.get_transport')
+        self.get_transport = get_transport_patch.start()
+        self.patchers.append(get_transport_patch)
+
+        set_def_patch = mock.patch('oslo_messaging.set_transport_defaults')
+        self.set_transport_def = set_def_patch.start()
+        self.patchers.append(set_def_patch)
+
+    def tearDown(self):
+        messaging.NOTIFICATION_TRANSPORT = None
+        messaging.MESSAGING_TRANSPORT = None
+        messaging.NOTIFIER = None
+        for patch in reversed(self.patchers):
+            patch.stop()
+        super(TestMessagingSetup, self).tearDown()
+
+    def test_set_defaults(self):
         self.override_config('enable', True,
                              group='oslo_messaging_notifications')
 
-        messaging.setup()
-        self.assertIsNotNone(messaging.TRANSPORT)
+        messaging.setup('distributed')
+        self.assertIsNotNone(messaging.MESSAGING_TRANSPORT)
+        self.assertIsNotNone(messaging.NOTIFICATION_TRANSPORT)
         self.assertIsNotNone(messaging.NOTIFIER)
 
         expected = [
             mock.call('sahara')
         ]
-        self.assertEqual(expected, set_transport_def.call_args_list)
+        self.assertEqual(expected, self.set_transport_def.call_args_list)
         self.assertEqual(
             [mock.call(main.CONF, aliases=_ALIASES)],
-            get_transport.call_args_list)
-        self.assertEqual(1, notifier_init.call_count)
+            self.get_transport.call_args_list)
+        self.assertEqual(
+            [mock.call(main.CONF, aliases=_ALIASES)],
+            self.get_notify_transport.call_args_list)
+        self.assertEqual(1, self.notifier_init.call_count)
 
-        if messaging.TRANSPORT:
-            messaging.TRANSPORT.cleanup()
-            messaging.TRANSPORT = messaging.NOTIFIER = None
+    def test_fallback(self):
+        self.override_config('enable', True,
+                             group='oslo_messaging_notifications')
+        self.get_notify_transport.side_effect = ValueError()
+        messaging.setup('distributed')
+
+        self.assertIsNotNone(messaging.MESSAGING_TRANSPORT)
+        self.assertIsNotNone(messaging.NOTIFICATION_TRANSPORT)
+        self.assertEqual(
+            messaging.MESSAGING_TRANSPORT, messaging.NOTIFICATION_TRANSPORT)
+        self.assertIsNotNone(messaging.NOTIFIER)
+
+        expected = [
+            mock.call('sahara')
+        ]
+        self.assertEqual(expected, self.set_transport_def.call_args_list)
+        self.assertEqual(
+            [mock.call(main.CONF, aliases=_ALIASES)],
+            self.get_transport.call_args_list)
+        self.assertEqual(
+            [mock.call(main.CONF, aliases=_ALIASES)],
+            self.get_notify_transport.call_args_list)
+        self.assertEqual(1, self.notifier_init.call_count)
+
+    def test_no_messaging(self):
+        messaging.setup('all-in-one')
+
+        self.assertEqual(0, self.get_notify_transport.call_count)
+        self.assertEqual(0, self.get_transport.call_count)
+
+    def test_only_notifications(self):
+        self.override_config('enable', True,
+                             group='oslo_messaging_notifications')
+
+        messaging.setup('all-in-one')
+        self.assertEqual(0, self.get_transport.call_count)
+        self.assertEqual(1, self.get_notify_transport.call_count)
+
+    def test_only_service_messaging(self):
+        messaging.setup('distributed')
+
+        self.assertEqual(1, self.get_transport.call_count)
+        self.assertEqual(0, self.get_notify_transport.call_count)

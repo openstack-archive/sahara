@@ -1,0 +1,5 @@
+---
+features:
+  - Separate transport url can be used for notifications purposes now,
+    to enable this feature 'transport_url' should be provided in
+    'oslo_messaging_notifications' section.
