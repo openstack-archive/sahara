@@ -43,7 +43,9 @@ repo_id_map = {
 
 os_type_map = {
     "centos6": "redhat6",
-    "redhat6": "redhat6"
+    "redhat6": "redhat6",
+    "centos7": "redhat7",
+    "redhat7": "redhat7"
 }
 
 
