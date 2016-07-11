@@ -82,7 +82,9 @@ class VersionHandlerTestCase(base.SaharaTestCase):
     @mock.patch(plugin_utils_path + "get_hue")
     def test_set_cluster_info(self, get_hue, get_cloudera_manager_info,
                               ctx, cluster_update):
-        get_hue.return_value.management_ip = "1.2.3.4"
+        hue = mock.Mock()
+        hue.get_ip_or_dns_name.return_value = "1.2.3.4"
+        get_hue.return_value = hue
         cluster = mock.Mock()
         self.vh._set_cluster_info(cluster)
         info = {'info': {'Hue Dashboard': {'Web UI': 'http://1.2.3.4:8888'}}}

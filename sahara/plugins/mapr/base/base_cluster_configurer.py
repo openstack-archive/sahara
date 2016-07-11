@@ -251,7 +251,7 @@ class BaseConfigurer(ac.AbstractConfigurer):
                     display_name = display_name_template % args
                     data = ui_info.copy()
                     data[srvc.SERVICE_UI] = (data[srvc.SERVICE_UI] %
-                                             instance.management_ip)
+                                             instance.get_ip_or_dns_name())
                     info.update({display_name: data})
 
         ctx = context.ctx()

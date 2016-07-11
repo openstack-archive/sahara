@@ -64,6 +64,7 @@ class Cluster(object):
     use_autoconfig
     is_public
     is_protected
+    domain_name
     """
 
     def has_proxy_gateway(self):
@@ -86,6 +87,9 @@ class Cluster(object):
     def stack_name(self):
         extra = self.extra or {}
         return extra.get('heat_stack_name', self.name)
+
+    def use_designate_feature(self):
+        return CONF.use_designate and self.domain_name
 
 
 class NodeGroup(object):
@@ -152,13 +156,23 @@ class Instance(object):
     management_ip
     volumes
     storage_devices_number
+    dns_hostname
     """
 
     def hostname(self):
         return self.instance_name
 
     def fqdn(self):
-        return self.instance_name + '.' + CONF.node_domain
+        if self._use_designate_feature():
+            return self.dns_hostname
+        else:
+            return self.instance_name + '.' + CONF.node_domain
+
+    def get_ip_or_dns_name(self):
+        if self._use_designate_feature():
+            return self.dns_hostname
+        else:
+            return self.management_ip
 
     def remote(self):
         return remote.get_remote(self)
@@ -172,6 +186,9 @@ class Instance(object):
             mp = ['/mnt']
 
         return mp
+
+    def _use_designate_feature(self):
+        return CONF.use_designate and self.dns_hostname
 
 
 class ClusterTemplate(object):
@@ -190,6 +207,7 @@ class ClusterTemplate(object):
     node_groups - list of NodeGroup objects
     is_public
     is_protected
+    domain_name
     """
 
 

@@ -83,6 +83,7 @@ class Cluster(mb.SaharaBase):
     shares = sa.Column(st.JsonListType())
     is_public = sa.Column(sa.Boolean())
     is_protected = sa.Column(sa.Boolean())
+    domain_name = sa.Column(sa.String(255))
 
     def to_dict(self, show_progress=False):
         d = super(Cluster, self).to_dict()
@@ -162,6 +163,7 @@ class Instance(mb.SaharaBase):
     management_ip = sa.Column(sa.String(45))
     volumes = sa.Column(st.JsonListType())
     storage_devices_number = sa.Column(sa.Integer)
+    dns_hostname = sa.Column(sa.String(255))
 
 
 # Template objects: ClusterTemplate, NodeGroupTemplate, TemplatesRelation
@@ -192,6 +194,7 @@ class ClusterTemplate(mb.SaharaBase):
     shares = sa.Column(st.JsonListType())
     is_public = sa.Column(sa.Boolean())
     is_protected = sa.Column(sa.Boolean())
+    domain_name = sa.Column(sa.String(255))
 
     def to_dict(self):
         d = super(ClusterTemplate, self).to_dict()

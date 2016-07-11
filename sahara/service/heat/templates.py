@@ -35,6 +35,10 @@ SSH_PORT = 22
 INSTANCE_RESOURCE_NAME = "inst"
 SERVER_GROUP_PARAM_NAME = "servgroup"
 AUTO_SECURITY_GROUP_PARAM_NAME = "autosecgroup"
+INTERNAL_DESIGNATE_REC = "internal_designate_record"
+INTERNAL_DESIGNATE_REV_REC = "internal_designate_reverse_record"
+EXTERNAL_DESIGNATE_REC = "external_designate_record"
+EXTERNAL_DESIGNATE_REV_REC = "external_designate_reverse_record"
 
 # TODO(vgridnev): Using insecure flag until correct way to pass certificate
 # will be invented
@@ -64,6 +68,14 @@ def _get_inst_name(ng):
             [ng.cluster.name.lower(), ng.name.lower(),
              {"get_param": "instance_index"}]
         ]
+    }
+
+
+def _get_inst_domain_name(domain):
+    return {
+        "list_join": [
+            '.',
+            [{"get_attr": [INSTANCE_RESOURCE_NAME, "name"]}, domain]]
     }
 
 
@@ -175,7 +187,8 @@ class ClusterStack(object):
             'disable_rollback': disable_rollback,
             'parameters': {},
             'template': main_tmpl,
-            'files': self.files}
+            'files': self.files
+        }
 
         if CONF.heat_stack_tags:
             kwargs['tags'] = ",".join(CONF.heat_stack_tags)
@@ -346,6 +359,75 @@ class ClusterStack(object):
         return int(configs.get(cfg_target,
                                {}).get(cfg_name, timeout_cfg.default_value))
 
+    def _serialize_designate_records(self):
+        if not self.cluster.use_designate_feature():
+            return {}
+        hostname = _get_inst_domain_name(self.cluster.domain_name)
+        return {
+            INTERNAL_DESIGNATE_REC: {
+                'type': 'OS::Designate::Record',
+                'properties': {
+                    'name': hostname,
+                    'type': 'A',
+                    'data': {'get_attr': [
+                        INSTANCE_RESOURCE_NAME, 'networks', 'private', 0]},
+                    'domain': self.cluster.domain_name
+                }
+            },
+            EXTERNAL_DESIGNATE_REC: {
+                'type': 'OS::Designate::Record',
+                'properties': {
+                    'name': hostname,
+                    'type': 'A',
+                    'data': {'get_attr': ['floating_ip', 'ip']},
+                    'domain': self.cluster.domain_name
+                }
+            }
+        }
+
+    def _serialize_designate_reverse_records(self):
+
+        if not self.cluster.use_designate_feature():
+            return {}
+
+        def _generate_reversed_ip(ip):
+            return {
+                'list_join': [
+                    '.',
+                    [
+                        {'str_split': ['.', ip, 3]},
+                        {'str_split': ['.', ip, 2]},
+                        {'str_split': ['.', ip, 1]},
+                        {'str_split': ['.', ip, 0]},
+                        'in-addr.arpa.'
+                    ]
+                ]
+            }
+
+        hostname = _get_inst_domain_name(self.cluster.domain_name)
+        return {
+            INTERNAL_DESIGNATE_REV_REC: {
+                'type': 'OS::Designate::Record',
+                'properties': {
+                    'name': _generate_reversed_ip({'get_attr': [
+                        INSTANCE_RESOURCE_NAME, 'networks', 'private', 0]}),
+                    'type': 'PTR',
+                    'data': hostname,
+                    'domain': 'in-addr.arpa.'
+                }
+            },
+            EXTERNAL_DESIGNATE_REV_REC: {
+                'type': 'OS::Designate::Record',
+                'properties': {
+                    'name':  _generate_reversed_ip(
+                        {'get_attr': ['floating_ip', 'ip']}),
+                    'type': 'PTR',
+                    'data': hostname,
+                    'domain': 'in-addr.arpa.'
+                }
+            }
+        }
+
     def _serialize_instance(self, ng):
         resources = {}
         properties = {}
@@ -406,6 +488,8 @@ class ClusterStack(object):
             }
         })
 
+        resources.update(self._serialize_designate_records())
+        resources.update(self._serialize_designate_reverse_records())
         resources.update(self._serialize_volume(ng))
         resources.update(self._serialize_wait_condition(ng))
         return resources

@@ -326,7 +326,7 @@ class ClouderaUtils(object):
         mng = self.pu.get_manager(cluster)
         info = {
             'Cloudera Manager': {
-                'Web UI': 'http://%s:7180' % mng.management_ip,
+                'Web UI': 'http://%s:7180' % mng.get_ip_or_dns_name(),
                 'Username': 'admin',
                 'Password': db_helper.get_cm_password(cluster)
             }

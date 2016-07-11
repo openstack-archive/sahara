@@ -1,0 +1,4 @@
+---
+features:
+  - Added integration of Designate for hostname resolution through dns
+    servers

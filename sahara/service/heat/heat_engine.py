@@ -153,11 +153,17 @@ class HeatEngine(e.Engine):
             instances = stack.get_node_group_instances(node_group)
             for instance in instances:
                 nova_id = instance['physical_id']
-                name = instance['name']
                 if nova_id not in old_ids:
-                    instance_id = conductor.instance_add(
-                        ctx, node_group, {"instance_id": nova_id,
-                                          "instance_name": name})
+                    name = instance['name']
+                    inst = {
+                        "instance_id": nova_id,
+                        "instance_name": name
+                    }
+                    if cluster.use_designate_feature():
+                        inst.update(
+                            {"dns_hostname":
+                                name + '.' + cluster.domain_name[:-1]})
+                    instance_id = conductor.instance_add(ctx, node_group, inst)
                     new_ids.append(instance_id)
 
         return new_ids
@@ -234,6 +240,7 @@ class HeatEngine(e.Engine):
         cluster = c_u.change_cluster_status(cluster, stages[2])
 
         instances = c_u.get_instances(cluster, inst_ids)
+
         volumes.mount_to_instances(instances)
 
         self._configure_instances(cluster)

@@ -398,7 +398,7 @@ class SparkProvider(p.ProvisioningPluginBase):
                 'HDFS', 'dfs.http.address', cluster)
             port = address[address.rfind(':') + 1:]
             info['HDFS'] = {
-                'Web UI': 'http://%s:%s' % (nn.management_ip, port)
+                'Web UI': 'http://%s:%s' % (nn.get_ip_or_dns_name(), port)
             }
             info['HDFS']['NameNode'] = 'hdfs://%s:8020' % nn.hostname()
 
@@ -407,7 +407,8 @@ class SparkProvider(p.ProvisioningPluginBase):
                 'Spark', 'Master webui port', cluster)
             if port is not None:
                 info['Spark'] = {
-                    'Web UI': 'http://%s:%s' % (sp_master.management_ip, port)
+                    'Web UI': 'http://%s:%s' % (
+                        sp_master.get_ip_or_dns_name(), port)
                 }
         ctx = context.ctx()
         conductor.cluster_update(ctx, cluster, {'info': info})

@@ -125,7 +125,7 @@ class BaseVersionHandler(AbstractVersionHandler):
         hue = self.cloudera_utils.pu.get_hue(cluster)
         if hue:
             info['Hue Dashboard'] = {
-                'Web UI': 'http://%s:8888' % hue.management_ip
+                'Web UI': 'http://%s:8888' % hue.get_ip_or_dns_name()
             }
 
         ctx = context.ctx()

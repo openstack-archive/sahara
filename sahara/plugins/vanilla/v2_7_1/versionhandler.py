@@ -107,24 +107,25 @@ class VersionHandler(avm.AbstractVersionHandler):
 
         if rm:
             info['YARN'] = {
-                'Web UI': 'http://%s:%s' % (rm.management_ip, '8088'),
-                'ResourceManager': 'http://%s:%s' % (rm.management_ip, '8032')
+                'Web UI': 'http://%s:%s' % (rm.get_ip_or_dns_name(), '8088'),
+                'ResourceManager': 'http://%s:%s' % (
+                    rm.get_ip_or_dns_name(), '8032')
             }
 
         if nn:
             info['HDFS'] = {
-                'Web UI': 'http://%s:%s' % (nn.management_ip, '50070'),
+                'Web UI': 'http://%s:%s' % (nn.get_ip_or_dns_name(), '50070'),
                 'NameNode': 'hdfs://%s:%s' % (nn.hostname(), '9000')
             }
 
         if oo:
             info['JobFlow'] = {
-                'Oozie': 'http://%s:%s' % (oo.management_ip, '11000')
+                'Oozie': 'http://%s:%s' % (oo.get_ip_or_dns_name(), '11000')
             }
 
         if hs:
             info['MapReduce JobHistory Server'] = {
-                'Web UI': 'http://%s:%s' % (hs.management_ip, '19888')
+                'Web UI': 'http://%s:%s' % (hs.get_ip_or_dns_name(), '19888')
             }
 
         ctx = context.ctx()

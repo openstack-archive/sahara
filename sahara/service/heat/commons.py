@@ -14,4 +14,4 @@
 # limitations under the License.
 
 HEAT_ENGINE_VERSION = 'heat.3.0'
-HEAT_TEMPLATE_VERSION = '2013-05-23'
+HEAT_TEMPLATE_VERSION = '2016-04-08'

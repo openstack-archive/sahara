@@ -22,6 +22,12 @@
 # with use_neutron=True)
 #use_namespaces=false
 
+# Use Designate for internal and external hostnames resolution (boolean value)
+#use_designate=false
+
+# IP addresses of Designate nameservers. This is required if 'use_designate' is
+# True
+#nameservers =
 
 # Maximum length of job binary data in kilobytes that may be
 # stored or retrieved in a single operation (integer value)

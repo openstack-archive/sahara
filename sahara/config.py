@@ -94,12 +94,24 @@ networking_opts = [
                     "use_rootwrap=True")
 ]
 
+dns_opts = [
+    cfg.BoolOpt('use_designate',
+                default=False,
+                help='Use Designate for internal and external hostnames '
+                     'resolution'),
+    cfg.ListOpt('nameservers',
+                default=[],
+                help="IP addresses of Designate nameservers. "
+                     "This is required if 'use_designate' is True")
+]
+
 
 CONF = cfg.CONF
 CONF.register_cli_opts(cli_opts)
 CONF.register_opts(networking_opts)
 CONF.register_opts(edp_opts)
 CONF.register_opts(db_opts)
+CONF.register_opts(dns_opts)
 
 log.register_options(CONF)
 
@@ -149,6 +161,7 @@ def list_opts():
          itertools.chain(cli_opts,
                          edp_opts,
                          networking_opts,
+                         dns_opts,
                          db_opts,
                          plugins_base.opts,
                          topology_helper.opts,

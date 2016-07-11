@@ -310,7 +310,8 @@ class StormProvider(p.ProvisioningPluginBase):
             port = "8080"
 
             info['Strom'] = {
-                'Web UI': 'http://%s:%s' % (st_master.management_ip, port)
+                'Web UI': 'http://%s:%s' % (
+                    st_master.get_ip_or_dns_name(), port)
             }
         ctx = context.ctx()
         conductor.cluster_update(ctx, cluster, {'info': info})
