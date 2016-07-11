@@ -585,3 +585,21 @@ CORS specification`_.
 
 .. _Administrator Guide: http://docs.openstack.org/admin-guide/cross_project_cors.html
 .. _W3C CORS specification: www.w3.org/TR/cors/
+
+Cleanup time for incomplete clusters
+------------------------------------
+
+Sahara provides maximal time (in hours) for clusters allowed to be in states
+other than "Active", "Deleting" or "Error". If a cluster is not in "Active",
+"Deleting" or "Error" state and last update of it was longer than
+"cleanup_time_for_incomplete_clusters" hours ago then it will be deleted
+automatically. You can enable this feature by adding appropriate config
+property in the ``default`` section (by default it set up to ``0`` value which
+means that automatic clean up is disabled). For example, if you want cluster to
+be deleted after 3 hours if it didn't leave "Starting" state then you should
+specify:
+
+.. sourcecode:: cfg
+
+    [DEFAULT]
+    cleanup_time_for_incomplete_clusters = 3
