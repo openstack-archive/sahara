@@ -50,7 +50,8 @@ class ConfigHelper(object):
         'https://repository.cloudera.com/artifactory/repo/org'
         '/apache/hadoop/hadoop-openstack/2.3.0-cdh5.0.0'
         '/hadoop-openstack-2.3.0-cdh5.0.0.jar')
-    DEFAULT_EXTJS_LIB_URL = 'http://dev.sencha.com/deploy/ext-2.2.zip'
+
+    DEFAULT_EXTJS_LIB_URL = 'http://sahara-files.mirantis.com/ext-2.2.zip'
 
     SWIFT_LIB_URL = p.Config(
         'Hadoop OpenStack library URL', 'general', 'cluster', priority=1,
