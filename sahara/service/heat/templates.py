@@ -281,6 +281,8 @@ class ClusterStack(object):
         })
 
     def _serialize_auto_security_group(self, ng):
+        if not ng.auto_security_group:
+            return {}
         security_group_name = g.generate_auto_security_group_name(ng)
         security_group_description = self._asg_for_node_group_description(ng)
 
