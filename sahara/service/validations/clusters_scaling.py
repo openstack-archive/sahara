@@ -33,6 +33,9 @@ def check_cluster_scaling(data, cluster_id, **kwargs):
         raise ex.NotFoundException(
             {'id': cluster_id}, _('Object with %s not found'))
 
+    b.check_plugin_labels(
+        cluster.plugin_name, cluster.hadoop_version)
+
     acl.check_tenant_for_update(ctx, cluster)
     acl.check_protected_from_update(cluster, data)
 

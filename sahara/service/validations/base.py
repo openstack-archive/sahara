@@ -74,6 +74,10 @@ def check_plugin_supports_version(p_name, version):
               "'%(version)s'") % {'name': p_name, 'version': version})
 
 
+def check_plugin_labels(p_name, version):
+    plugin_base.PLUGINS.validate_plugin_labels(p_name, version)
+
+
 def check_image_registered(image_id):
     if image_id not in (
             [i.id for i in sahara_images.image_manager().list_registered()]):

@@ -13,12 +13,18 @@
 
 import copy
 
+from oslo_log import log as logging
+
 from sahara import conductor as cond
 from sahara import context
 from sahara import exceptions as ex
 from sahara.i18n import _
+from sahara.i18n import _LE
+from sahara.i18n import _LW
 
 conductor = cond.API
+LOG = logging.getLogger(__name__)
+
 
 STABLE = {
     'name': 'stable',
@@ -99,10 +105,13 @@ class LabelHandler(object):
         return plugin.get_labels()
 
     def get_label_details(self, plugin_name):
-        plugin = conductor.plugin_get(context.ctx(), plugin_name)
+        try:
+            plugin = conductor.plugin_get(context.ctx(), plugin_name)
+        except Exception:
+            LOG.error(_LE("Unable to retrieve plugin data from database"))
+            plugin = None
         if not plugin:
             plugin = self.get_default_label_details(plugin_name)
-        # keep only tenant
         fields = ['name', 'id', 'updated_at', 'created_at']
         for field in fields:
             if field in plugin:
@@ -192,3 +201,26 @@ class LabelHandler(object):
             del current[VERSION_LABELS_SCOPE]
 
         conductor.plugin_update(context.ctx(), plugin_name, current)
+
+    def validate_plugin_labels(self, plugin_name, version):
+        details = self.get_label_details(plugin_name)
+        plb = details.get(PLUGIN_LABELS_SCOPE, {})
+        if not plb.get('enabled', {}).get('status'):
+            raise ex.InvalidReferenceException(
+                _("Plugin %s is not enabled") % plugin_name)
+
+        if plb.get('deprecated', {}).get('status', False):
+            LOG.warning(_LW("Plugin %s is deprecated and can removed in next "
+                            "release") % plugin_name)
+
+        vlb = details.get(VERSION_LABELS_SCOPE, {}).get(version, {})
+        if not vlb.get('enabled', {}).get('status'):
+            raise ex.InvalidReferenceException(
+                _("Version %(version)s of plugin %(plugin)s is not enabled")
+                % {'version': version, 'plugin': plugin_name})
+
+        if vlb.get('deprecated', {}).get('status', False):
+            LOG.warning(
+                _LW("Using version %(version)s of plugin %(plugin)s is "
+                    "deprecated and can removed in next release")
+                % {'version': version, 'plugin': plugin_name})

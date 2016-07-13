@@ -44,6 +44,9 @@ def _check_cluster_create(data):
     b.check_plugin_name_exists(data['plugin_name'])
     b.check_plugin_supports_version(data['plugin_name'],
                                     data['hadoop_version'])
+    b.check_plugin_labels(
+        data['plugin_name'], data['hadoop_version'])
+
     if data.get('cluster_template_id'):
         ct_id = data['cluster_template_id']
         b.check_cluster_template_exists(ct_id)
