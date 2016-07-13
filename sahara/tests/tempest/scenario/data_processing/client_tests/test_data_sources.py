@@ -13,7 +13,6 @@
 #    under the License.
 
 from tempest.lib.common.utils import data_utils
-from tempest import test
 
 from sahara.tests.tempest.scenario.data_processing.client_tests import base
 
@@ -62,7 +61,6 @@ class DataSourceTest(base.BaseDataProcessingTest):
         source_list = self.client.data_sources.list()
         self.assertNotIn(source_id, [source.id for source in source_list])
 
-    @test.services('data_processing')
     def test_swift_data_source(self):
         # Create extra self.swift_data_source variable to use for comparison to
         # data source response body because response body has no 'credentials'
@@ -76,7 +74,6 @@ class DataSourceTest(base.BaseDataProcessingTest):
                                     self.swift_data_source)
         self._check_data_source_delete(source_id)
 
-    @test.services('data_processing')
     def test_local_hdfs_data_source(self):
         source_id, source_name = self._check_data_source_create(
             self.local_hdfs_data_source)
@@ -85,7 +82,6 @@ class DataSourceTest(base.BaseDataProcessingTest):
                                     self.local_hdfs_data_source)
         self._check_data_source_delete(source_id)
 
-    @test.services('data_processing')
     def test_external_hdfs_data_source(self):
         source_id, source_name = self._check_data_source_create(
             self.external_hdfs_data_source)

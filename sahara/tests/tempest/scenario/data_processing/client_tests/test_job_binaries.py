@@ -13,7 +13,6 @@
 #    under the License.
 
 from tempest.lib.common.utils import data_utils
-from tempest import test
 
 from sahara.tests.tempest.scenario.data_processing.client_tests import base
 
@@ -117,7 +116,6 @@ class JobBinariesTest(base.BaseDataProcessingTest):
         data = self.client.job_binaries.get_file(binary_id)
         self.assertEqual(self.job_binary_data, data)
 
-    @test.services('data_processing')
     def test_swift_job_binaries(self):
         binary_id, binary_name = self._check_swift_job_binary_create()
         self._check_job_binary_list(binary_id, binary_name)
@@ -125,7 +123,6 @@ class JobBinariesTest(base.BaseDataProcessingTest):
         self._check_swift_job_binary_update(binary_id)
         self._check_job_binary_delete(binary_id)
 
-    @test.services('data_processing')
     def test_internal_job_binaries(self):
         binary_id, binary_name = self._check_internal_db_job_binary_create()
         self._check_job_binary_list(binary_id, binary_name)
