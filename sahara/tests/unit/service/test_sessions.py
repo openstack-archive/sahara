@@ -38,8 +38,7 @@ class TestSessionCache(base.SaharaTestCase):
         self.override_config('ca_file', '/some/cacert', group='keystone')
         self.override_config('api_insecure', False, group='keystone')
         sc.get_session(sessions.SESSION_TYPE_KEYSTONE)
-        keystone_session.assert_called_once_with(cert='/some/cacert',
-                                                 verify=True)
+        keystone_session.assert_called_once_with(verify='/some/cacert')
 
         sc = sessions.SessionCache()
         keystone_session.reset_mock()
@@ -58,8 +57,7 @@ class TestSessionCache(base.SaharaTestCase):
         self.override_config('ca_file', '/some/cacert', group='nova')
         self.override_config('api_insecure', False, group='nova')
         sc.get_session(sessions.SESSION_TYPE_NOVA)
-        keystone_session.assert_called_once_with(cert='/some/cacert',
-                                                 verify=True)
+        keystone_session.assert_called_once_with(verify='/some/cacert')
 
         sc = sessions.SessionCache()
         keystone_session.reset_mock()
@@ -78,8 +76,7 @@ class TestSessionCache(base.SaharaTestCase):
         self.override_config('ca_file', '/some/cacert', group='cinder')
         self.override_config('api_insecure', False, group='cinder')
         sc.get_session(sessions.SESSION_TYPE_CINDER)
-        keystone_session.assert_called_once_with(cert='/some/cacert',
-                                                 verify=True)
+        keystone_session.assert_called_once_with(verify='/some/cacert')
 
         sc = sessions.SessionCache()
         keystone_session.reset_mock()
@@ -98,8 +95,7 @@ class TestSessionCache(base.SaharaTestCase):
         self.override_config('ca_file', '/some/cacert', group='neutron')
         self.override_config('api_insecure', False, group='neutron')
         sc.get_session(sessions.SESSION_TYPE_NEUTRON)
-        keystone_session.assert_called_once_with(cert='/some/cacert',
-                                                 verify=True)
+        keystone_session.assert_called_once_with(verify='/some/cacert')
 
         sc = sessions.SessionCache()
         keystone_session.reset_mock()
