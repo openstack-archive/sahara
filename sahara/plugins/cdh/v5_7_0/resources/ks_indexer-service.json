@@ -1,0 +1,188 @@
+[
+    {
+        "desc": "The password for the HBase Indexer TLS/SSL Certificate Trust Store File. This password is not required to access the trust store; this field can be left blank. This password provides optional integrity checking of the file. The contents of trust stores are certificates, and certificates are public information.",
+        "display_name": "HBase Indexer TLS/SSL Certificate Trust Store Password",
+        "name": "keystore_indexer_truststore_password",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Key-Value Store Indexer Service Advanced Configuration Snippet (Safety Valve) for sentry-site.xml parameter.",
+        "display_name": "Suppress Parameter Validation: Key-Value Store Indexer Service Advanced Configuration Snippet (Safety Valve) for sentry-site.xml",
+        "name": "service_config_suppression_keystore_indexer_sentry_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "The location on disk of the trust store, in .jks format, used to confirm the authenticity of TLS/SSL servers that HBase Indexer might connect to. This is used when HBase Indexer is the client in a TLS/SSL connection. This trust store must contain the certificate(s) used to sign the service(s) connected to. If this parameter is not provided, the default list of well-known certificate authorities is used instead.",
+        "display_name": "HBase Indexer TLS/SSL Certificate Trust Store File",
+        "name": "keystore_indexer_truststore_file",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Service Monitor Derived Configs Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: Service Monitor Derived Configs Advanced Configuration Snippet (Safety Valve)",
+        "name": "service_config_suppression_smon_derived_configs_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only, key-value pairs (one on each line) to be inserted into a role's environment. Applies to configurations of all roles in this service except client configuration.",
+        "display_name": "Key-Value Store Indexer Service Environment Advanced Configuration Snippet (Safety Valve)",
+        "name": "ks_indexer_env_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "When set, Cloudera Manager will send alerts when this entity's configuration changes.",
+        "display_name": "Enable Configuration Change Alerts",
+        "name": "enable_config_alerts",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Sentry Global Policy File parameter.",
+        "display_name": "Suppress Parameter Validation: Sentry Global Policy File",
+        "name": "service_config_suppression_keystore_indexer_provider_resource",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only, a list of derived configuration properties that will be used by the Service Monitor instead of the default ones.",
+        "display_name": "Service Monitor Derived Configs Advanced Configuration Snippet (Safety Valve)",
+        "name": "smon_derived_configs_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "<p>The configured triggers for this service. This is a JSON formatted list of triggers. These triggers are evaluated as part as the health system. Every trigger expression is parsed, and if the trigger condition is met, the list of actions provided in the trigger expression is executed.</p><p>Each trigger has the following fields:</p><ul><li><code>triggerName</code> <strong>(mandatory)</strong> - The name of the trigger. This value must be unique for the specific service. </li><li><code>triggerExpression</code> <strong>(mandatory)</strong> - A tsquery expression representing the trigger. </li><li><code>streamThreshold</code> <strong>(optional)</strong> - The maximum number of streams that can satisfy a condition of a trigger before the condition fires. By default set to 0, and any stream returned causes the condition to fire. </li><li><code>enabled</code> <strong> (optional)</strong> - By default set to 'true'. If set to 'false', the trigger is not evaluated.</li><li><code>expressionEditorConfig</code> <strong> (optional)</strong> - Metadata for the trigger editor. If present, the trigger should only be edited from the Edit Trigger page; editing the trigger here can lead to inconsistencies.</li></ul></p><p>For example, the followig JSON formatted trigger fires if there are more than 10 DataNodes with more than 500 file descriptors opened:</p><p><pre>[{\"triggerName\": \"sample-trigger\",\n  \"triggerExpression\": \"IF (SELECT fd_open WHERE roleType = DataNode and last(fd_open) > 500) DO health:bad\",\n  \"streamThreshold\": 10, \"enabled\": \"true\"}]</pre></p><p>See the trigger rules documentation for more details on how to write triggers using tsquery.</p><p>The JSON format is evolving and may change and, as a result, backward compatibility is not guaranteed between releases.</p>",
+        "display_name": "Service Triggers",
+        "name": "service_triggers",
+        "value": "[]"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>sentry-site.xml</strong>. Applies to configurations of all roles in this service except client configuration.",
+        "display_name": "Key-Value Store Indexer Service Advanced Configuration Snippet (Safety Valve) for sentry-site.xml",
+        "name": "keystore_indexer_sentry_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Name of the HBase service that this Key-Value Store Indexer service instance depends on",
+        "display_name": "HBase Service",
+        "name": "hbase_service",
+        "value": null
+    },
+    {
+        "desc": "Use Sentry to enable role-based, fine-grained authorization. This configuration enables Sentry using policy files.  Sentry is supported only on CDH 5.4 or later deployments and requires authentication to be turned on for HBase Indexer.</a>.",
+        "display_name": "Enable Sentry Authorization using Policy Files",
+        "name": "keystore_indexer_sentry_enabled",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Custom Mime-types File parameter.",
+        "display_name": "Suppress Parameter Validation: Custom Mime-types File",
+        "name": "service_config_suppression_custom_mimetypes_file",
+        "value": "false"
+    },
+    {
+        "desc": "HDFS path to the global policy file for Sentry authorization. This should be a relative path (and not a full HDFS URL). The global policy file must be in Sentry policy file format.",
+        "display_name": "Sentry Global Policy File",
+        "name": "keystore_indexer_provider_resource",
+        "value": "/user/hbaseindexer/sentry/sentry-provider.ini"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Impala Sentry Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Impala Sentry Validator",
+        "name": "service_config_suppression_keystore_indexer_sentry_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Lily HBase Indexer Count Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Lily HBase Indexer Count Validator",
+        "name": "service_config_suppression_hbase_indexer_count_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Grok Dictionary File parameter.",
+        "display_name": "Suppress Parameter Validation: Grok Dictionary File",
+        "name": "service_config_suppression_grok_dictionary_conf_file",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HBase Indexer TLS/SSL Certificate Trust Store File parameter.",
+        "display_name": "Suppress Parameter Validation: HBase Indexer TLS/SSL Certificate Trust Store File",
+        "name": "service_config_suppression_keystore_indexer_truststore_file",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Key-Value Store Indexer Service Environment Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: Key-Value Store Indexer Service Environment Advanced Configuration Snippet (Safety Valve)",
+        "name": "service_config_suppression_ks_indexer_env_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Text that goes verbatim into grok-dictionary.conf file used by HBase Indexers.",
+        "display_name": "Grok Dictionary File",
+        "name": "grok_dictionary_conf_file",
+        "value": "USERNAME [a-zA-Z0-9._-]+\nUSER %{USERNAME}\nINT (?:[+-]?(?:[0-9]+))\nBASE10NUM (?<![0-9.+-])(?>[+-]?(?:(?:[0-9]+(?:\\.[0-9]+)?)|(?:\\.[0-9]+)))\nNUMBER (?:%{BASE10NUM})\nBASE16NUM (?<![0-9A-Fa-f])(?:[+-]?(?:0x)?(?:[0-9A-Fa-f]+))\nBASE16FLOAT \\b(?<![0-9A-Fa-f.])(?:[+-]?(?:0x)?(?:(?:[0-9A-Fa-f]+(?:\\.[0-9A-Fa-f]*)?)|(?:\\.[0-9A-Fa-f]+)))\\b\n\nPOSINT \\b(?:[1-9][0-9]*)\\b\nNONNEGINT \\b(?:[0-9]+)\\b\nWORD \\b\\w+\\b\nNOTSPACE \\S+\nSPACE \\s*\nDATA .*?\nGREEDYDATA .*\n#QUOTEDSTRING (?:(?<!\\\\)(?:\"(?:\\\\.|[^\\\\\"])*\"|(?:'(?:\\\\.|[^\\\\'])*')|(?:`(?:\\\\.|[^\\\\`])*`)))\nQUOTEDSTRING (?>(?<!\\\\)(?>\"(?>\\\\.|[^\\\\\"]+)+\"|\"\"|(?>'(?>\\\\.|[^\\\\']+)+')|''|(?>`(?>\\\\.|[^\\\\`]+)+`)|``))\nUUID [A-Fa-f0-9]{8}-(?:[A-Fa-f0-9]{4}-){3}[A-Fa-f0-9]{12}\n\n# Networking\nMAC (?:%{CISCOMAC}|%{WINDOWSMAC}|%{COMMONMAC})\nCISCOMAC (?:(?:[A-Fa-f0-9]{4}\\.){2}[A-Fa-f0-9]{4})\nWINDOWSMAC (?:(?:[A-Fa-f0-9]{2}-){5}[A-Fa-f0-9]{2})\nCOMMONMAC (?:(?:[A-Fa-f0-9]{2}:){5}[A-Fa-f0-9]{2})\nIP (?<![0-9])(?:(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2}))(?![0-9])\nHOSTNAME \\b(?:[0-9A-Za-z][0-9A-Za-z-]{0,62})(?:\\.(?:[0-9A-Za-z][0-9A-Za-z-]{0,62}))*(\\.?|\\b)\nHOST %{HOSTNAME}\nIPORHOST (?:%{HOSTNAME}|%{IP})\n#HOSTPORT (?:%{IPORHOST=~/\\./}:%{POSINT}) # WH\n\n# paths\nPATH (?:%{UNIXPATH}|%{WINPATH})\nUNIXPATH (?>/(?>[\\w_%!$@:.,-]+|\\\\.)*)+\n#UNIXPATH (?<![\\w\\/])(?:/[^\\/\\s?*]*)+\nLINUXTTY (?>/dev/pts/%{NONNEGINT})\nBSDTTY (?>/dev/tty[pq][a-z0-9])\nTTY (?:%{BSDTTY}|%{LINUXTTY})\nWINPATH (?>[A-Za-z]+:|\\\\)(?:\\\\[^\\\\?*]*)+\nURIPROTO [A-Za-z]+(\\+[A-Za-z+]+)?\nURIHOST %{IPORHOST}(?::%{POSINT:port})?\n# uripath comes loosely from RFC1738, but mostly from what Firefox\n# doesn't turn into %XX\nURIPATH (?:/[A-Za-z0-9$.+!*'(){},~:;=#%_\\-]*)+\n#URIPARAM \\?(?:[A-Za-z0-9]+(?:=(?:[^&]*))?(?:&(?:[A-Za-z0-9]+(?:=(?:[^&]*))?)?)*)?\nURIPARAM \\?[A-Za-z0-9$.+!*'|(){},~#%&/=:;_?\\-\\[\\]]*\nURIPATHPARAM %{URIPATH}(?:%{URIPARAM})?\nURI %{URIPROTO}://(?:%{USER}(?::[^@]*)?@)?(?:%{URIHOST})?(?:%{URIPATHPARAM})?\n\n# Months: January, Feb, 3, 03, 12, December\nMONTH \\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\\b\nMONTHNUM (?:0?[1-9]|1[0-2])\nMONTHDAY (?:(?:0[1-9])|(?:[12][0-9])|(?:3[01])|[1-9])\n\n# Days: Monday, Tue, Thu, etc...\nDAY (?:Mon(?:day)?|Tue(?:sday)?|Wed(?:nesday)?|Thu(?:rsday)?|Fri(?:day)?|Sat(?:urday)?|Sun(?:day)?)\n\n# Years?\nYEAR (?>\\d\\d){1,2}\n# Time: HH:MM:SS\n#TIME \\d{2}:\\d{2}(?::\\d{2}(?:\\.\\d+)?)?\n# I'm still on the fence about using grok to perform the time match,\n# since it's probably slower.\n# TIME %{POSINT<24}:%{POSINT<60}(?::%{POSINT<60}(?:\\.%{POSINT})?)?\nHOUR (?:2[0123]|[01]?[0-9])\nMINUTE (?:[0-5][0-9])\n# '60' is a leap second in most time standards and thus is valid.\nSECOND (?:(?:[0-5][0-9]|60)(?:[:.,][0-9]+)?)\nTIME (?!<[0-9])%{HOUR}:%{MINUTE}(?::%{SECOND})(?![0-9])\n# datestamp is YYYY/MM/DD-HH:MM:SS.UUUU (or something like it)\nDATE_US %{MONTHNUM}[/-]%{MONTHDAY}[/-]%{YEAR}\nDATE_EU %{MONTHDAY}[./-]%{MONTHNUM}[./-]%{YEAR}\nISO8601_TIMEZONE (?:Z|[+-]%{HOUR}(?::?%{MINUTE}))\nISO8601_SECOND (?:%{SECOND}|60)\nTIMESTAMP_ISO8601 %{YEAR}-%{MONTHNUM}-%{MONTHDAY}[T ]%{HOUR}:?%{MINUTE}(?::?%{SECOND})?%{ISO8601_TIMEZONE}?\nDATE %{DATE_US}|%{DATE_EU}\nDATESTAMP %{DATE}[- ]%{TIME}\nTZ (?:[PMCE][SD]T)\nDATESTAMP_RFC822 %{DAY} %{MONTH} %{MONTHDAY} %{YEAR} %{TIME} %{TZ}\nDATESTAMP_OTHER %{DAY} %{MONTH} %{MONTHDAY} %{TIME} %{TZ} %{YEAR}\n\n# Syslog Dates: Month Day HH:MM:SS\nSYSLOGTIMESTAMP %{MONTH} +%{MONTHDAY} %{TIME}\nPROG (?:[\\w._/%-]+)\nSYSLOGPROG %{PROG:program}(?:\\[%{POSINT:pid}\\])?\nSYSLOGHOST %{IPORHOST}\nSYSLOGFACILITY <%{NONNEGINT:facility}.%{NONNEGINT:priority}>\nHTTPDATE %{MONTHDAY}/%{MONTH}/%{YEAR}:%{TIME} %{INT}\n\n# Shortcuts\nQS %{QUOTEDSTRING}\n\n# Log formats\nSYSLOGBASE %{SYSLOGTIMESTAMP:timestamp} (?:%{SYSLOGFACILITY} )?%{SYSLOGHOST:logsource} %{SYSLOGPROG}:\nCOMBINEDAPACHELOG %{IPORHOST:clientip} %{USER:ident} %{USER:auth} \\[%{HTTPDATE:timestamp}\\] \"(?:%{WORD:verb} %{NOTSPACE:request}(?: HTTP/%{NUMBER:httpversion})?|%{DATA:rawrequest})\" %{NUMBER:response} (?:%{NUMBER:bytes}|-) %{QS:referrer} %{QS:agent}\n\n# Log Levels\nLOGLEVEL ([T|t]race|TRACE|[D|d]ebug|DEBUG|[N|n]otice|NOTICE|[I|i]nfo|INFO|[W|w]arn?(?:ing)?|WARN?(?:ING)?|[E|e]rr?(?:or)?|ERR?(?:OR)?|[C|c]rit?(?:ical)?|CRIT?(?:ICAL)?|[F|f]atal|FATAL|[S|s]evere|SEVERE|EMERG(?:ENCY)?|[Ee]merg(?:ency)?)"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HBase Indexer TLS/SSL Certificate Trust Store Password parameter.",
+        "display_name": "Suppress Parameter Validation: HBase Indexer TLS/SSL Certificate Trust Store Password",
+        "name": "service_config_suppression_keystore_indexer_truststore_password",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds of the overall Lily HBase Indexer health. The check returns \"Concerning\" health if the percentage of \"Healthy\" Lily HBase Indexers falls below the warning threshold. The check is unhealthy if the total percentage of \"Healthy\" and \"Concerning\" Lily HBase Indexers falls below the critical threshold.",
+        "display_name": "Healthy Lily HBase Indexer Monitoring Thresholds",
+        "name": "ks_indexer_indexers_healthy_thresholds",
+        "value": "{\"critical\":\"90.0\",\"warning\":\"95.0\"}"
+    },
+    {
+        "desc": "The class to use in Sentry authorization for user to group mapping. Sentry authorization may be configured to use either Hadoop groups or local groups defined in the policy file. When configured with Hadoop groups, Sentry will ask the HDFS Namenode for group mapping for a given user to determine authorization access.",
+        "display_name": "Sentry User to Group Mapping Class",
+        "name": "keystore_indexer_sentry_provider",
+        "value": "org.apache.sentry.provider.file.HadoopGroupResourceAuthorizationProvider"
+    },
+    {
+        "desc": "Text that goes verbatim into custom-mimetypes.xml file used by HBase Indexers.",
+        "display_name": "Custom Mime-types File",
+        "name": "custom_mimetypes_file",
+        "value": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!-- Licensed to the Apache Software Foundation (ASF) under one or more contributor\n  license agreements. See the NOTICE file distributed with this work for additional\n  information regarding copyright ownership. The ASF licenses this file to\n  You under the Apache License, Version 2.0 (the \"License\"); you may not use\n  this file except in compliance with the License. You may obtain a copy of\n  the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required\n  by applicable law or agreed to in writing, software distributed under the\n  License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS\n  OF ANY KIND, either express or implied. See the License for the specific\n  language governing permissions and limitations under the License. -->\n\n<mime-info>\n\n  <mime-type type=\"text/space-separated-values\">\n    <glob pattern=\"*.ssv\"/>\n  </mime-type>\n\n  <mime-type type=\"avro/binary\">\n    <magic priority=\"50\">\n      <match value=\"0x4f626a01\" type=\"string\" offset=\"0\"/>       \n    </magic>\n    <glob pattern=\"*.avro\"/>\n  </mime-type>\n\n  <mime-type type=\"mytwittertest/json+delimited+length\">\n    <magic priority=\"50\">\n      <match value=\"[0-9]+(\\r)?\\n\\\\{&quot;\" type=\"regex\" offset=\"0:16\"/>       \n    </magic>\n  </mime-type>\n  \n  <mime-type type=\"application/hadoop-sequence-file\">\n    <magic priority=\"50\">\n      <match value=\"SEQ[\\0-\\6]\" type=\"regex\" offset=\"0\"/>\n    </magic>\n  </mime-type>\n  \n</mime-info>"
+    },
+    {
+        "desc": "Authentication mechanism used by HBase Indexer.",
+        "display_name": "HBase Indexer Secure Authentication",
+        "name": "hbase_indexer_security_authentication",
+        "value": "simple"
+    },
+    {
+        "desc": "Text that goes into morphlines.conf file used by HBase Indexers. The text goes verbatim into the config file except that $ZK_HOST is replaced by the ZooKeeper quorum of the Solr service.",
+        "display_name": "Morphlines File",
+        "name": "morphlines_conf_file",
+        "value": "SOLR_LOCATOR : {\n  # Name of solr collection\n  collection : collection\n  \n  # ZooKeeper ensemble\n  zkHost : \"$ZK_HOST\" \n}\n\n\nmorphlines : [\n{\nid : morphline\nimportCommands : [\"org.kitesdk.**\", \"com.ngdata.**\"]\n\ncommands : [                    \n  {\n    extractHBaseCells {\n      mappings : [\n        {\n          inputColumn : \"data:*\"\n          outputField : \"data\" \n          type : string \n          source : value\n        }\n      ]\n    }\n  }\n\n\n  { logDebug { format : \"output record: {}\", args : [\"@{}\"] } }\n]\n}\n]\n"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Morphlines File parameter.",
+        "display_name": "Suppress Parameter Validation: Morphlines File",
+        "name": "service_config_suppression_morphlines_conf_file",
+        "value": "false"
+    },
+    {
+        "desc": "When set, Cloudera Manager will send alerts when the health of this service reaches the threshold specified by the EventServer setting eventserver_health_events_alert_threshold",
+        "display_name": "Enable Service Level Health Alerts",
+        "name": "enable_alerts",
+        "value": "true"
+    },
+    {
+        "desc": "Name of the Solr service that this Key-Value Store Indexer service instance depends on",
+        "display_name": "Solr Service",
+        "name": "solr_service",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Service Triggers parameter.",
+        "display_name": "Suppress Parameter Validation: Service Triggers",
+        "name": "service_config_suppression_service_triggers",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the Lily HBase Indexer Health heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Lily HBase Indexer Health",
+        "name": "service_health_suppression_ks_indexer_hbase_indexers_healthy",
+        "value": "false"
+    }
+]

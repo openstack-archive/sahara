@@ -1,0 +1,704 @@
+[
+    {
+        "desc": "The full path to a file with a sample of metrics exposed by the role. The sample is updated at the frequency configured by Metrics Sample File Logging Frequency. By default, the sample file is logged to a directory under the role log directory, e.g., /var/log/hive/metrics-hivemetastore/metrics.log. The setting only has an effect if \"Enable Metrics Subsystem\" is set to true.",
+        "display_name": "Metrics Sample File Location",
+        "name": "hive_metrics_sample_file_location",
+        "value": null
+    },
+    {
+        "desc": "For advanced use only. A string to be inserted into <strong>hive-site.xml</strong> for this role only.",
+        "display_name": "HiveServer2 Advanced Configuration Snippet (Safety Valve) for hive-site.xml",
+        "name": "hive_hs2_config_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "When the average output file size of a job is less than the value of this property, Hive will start an additional map-only job to merge the output files into bigger files. This is only done for map-only jobs if hive.merge.mapfiles is true, for map-reduce jobs if hive.merge.mapredfiles is true, and for Spark jobs if hive.merge.sparkfiles is true.",
+        "display_name": "Small File Average Size Merge Threshold",
+        "name": "hiveserver2_merge_smallfiles_avgsize",
+        "value": "16777216"
+    },
+    {
+        "desc": "The health test thresholds for unexpected exits encountered within a recent period specified by the unexpected_exits_window configuration for the role.",
+        "display_name": "Unexpected Exits Thresholds",
+        "name": "unexpected_exits_thresholds",
+        "value": "{\"critical\":\"any\",\"warning\":\"never\"}"
+    },
+    {
+        "desc": "Whether to suppress the results of the Hive Downloaded Resources Directory Free Space heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Hive Downloaded Resources Directory Free Space",
+        "name": "role_health_suppression_hiveserver2_downloaded_resources_directory_free_space",
+        "value": "false"
+    },
+    {
+        "desc": "Port on which HiveServer2 will listen for connections.",
+        "display_name": "HiveServer2 Port",
+        "name": "hs2_thrift_address_port",
+        "value": "10000"
+    },
+    {
+        "desc": "Whether to suppress the results of the Log Directory Free Space heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Log Directory Free Space",
+        "name": "role_health_suppression_hiveserver2_log_directory_free_space",
+        "value": "false"
+    },
+    {
+        "desc": "Enabled the Calcite-based Cost-Based Optimizer for HiveServer2.",
+        "display_name": "Enable Cost-Based Optimizer for Hive",
+        "name": "hiveserver2_enable_cbo",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds for monitoring of free space on the filesystem that contains this role's Hive Downloaded Resources Directory.",
+        "display_name": "Hive Downloaded Resources Directory Free Space Monitoring Absolute Thresholds",
+        "name": "hiveserver2_downloaded_resources_directory_free_space_absolute_thresholds",
+        "value": "{\"critical\":\"5.36870912E9\",\"warning\":\"1.073741824E10\"}"
+    },
+    {
+        "desc": "Local Directory where Hive stores jars and data when performing a MapJoin optimization. If not specified, Hive uses a default location.",
+        "display_name": "Hive Local Scratch Directory",
+        "name": "hiveserver2_exec_local_scratchdir",
+        "value": null
+    },
+    {
+        "desc": "Remove extra map-reduce jobs if the data is already clustered by the same key, eliminating the need to repartition the dataset again.",
+        "display_name": "Enable ReduceDeDuplication Optimization",
+        "name": "hiveserver2_optimize_reducededuplication",
+        "value": "true"
+    },
+    {
+        "desc": "When set, a SIGKILL signal is sent to the role process when java.lang.OutOfMemoryError is thrown.",
+        "display_name": "Kill When Out of Memory",
+        "name": "oom_sigkill_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Above this size, queries are converted to fetch tasks.",
+        "display_name": "Fetch Task Query Conversion Threshold",
+        "name": "hiveserver2_fetch_task_conversion_threshold",
+        "value": "268435456"
+    },
+    {
+        "desc": "Ratio between 0.0 and 1.0 of entries in the vectorized group-by aggregation hash that is flushed when the memory threshold is exceeded.",
+        "display_name": "Vectorized GroupBy Flush Ratio",
+        "name": "hiveserver2_vectorized_groupby_flush_ratio",
+        "value": "0.1"
+    },
+    {
+        "desc": "Merge small files at the end of a Spark job. When enabled, a map-only job is created to merge the files in the destination table/partitions.",
+        "display_name": "Enable Merging Small Files - Spark Job",
+        "name": "hiveserver2_merge_sparkfiles",
+        "value": "true"
+    },
+    {
+        "desc": "If configured, overrides the process soft and hard rlimits (also called ulimits) for file descriptors to the configured value.",
+        "display_name": "Maximum Process File Descriptors",
+        "name": "rlimit_fds",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress the results of the File Descriptors heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: File Descriptors",
+        "name": "role_health_suppression_hiveserver2_file_descriptor",
+        "value": "false"
+    },
+    {
+        "desc": "Soft memory limit to assign to this role, enforced by the Linux kernel. When the limit is reached, the kernel will reclaim pages charged to the process if and only if the host is facing memory pressure. If reclaiming fails, the kernel may kill the process. Both anonymous as well as page cache pages contribute to the limit. Use a value of -1 B to specify no limit. By default processes not managed by Cloudera Manager will have no limit.",
+        "display_name": "Cgroup Memory Soft Limit",
+        "name": "rm_memory_soft_limit",
+        "value": "-1"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hive HDFS Scratch Directory parameter.",
+        "display_name": "Suppress Parameter Validation: Hive HDFS Scratch Directory",
+        "name": "role_config_suppression_hiveserver2_exec_scratchdir",
+        "value": "false"
+    },
+    {
+        "desc": "Number of Spark executors assigned to each application. This should not be set when Dynamic Executor Allocation is enabled.",
+        "display_name": "Spark Executors Per Application",
+        "name": "hiveserver2_spark_executor_instances",
+        "value": null
+    },
+    {
+        "desc": "Merge small files at the end of a map-only job. When enabled, a map-only job is created to merge the files in the destination table/partitions.",
+        "display_name": "Enable Merging Small Files - Map-Only Job",
+        "name": "hiveserver2_merge_mapfiles",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress the results of the Unexpected Exits heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Unexpected Exits",
+        "name": "role_health_suppression_hiveserver2_unexpected_exits",
+        "value": "false"
+    },
+    {
+        "desc": "Operation will be closed when not accessed for this duration of time, in milliseconds; disable by setting to zero. For a positive value, checked for operations in terminal state only (FINISHED, CANCELED, CLOSED, ERROR). For a negative value, checked for all of the operations regardless of state.",
+        "display_name": "Idle Operation Timeout",
+        "name": "hiveserver2_idle_operation_timeout",
+        "value": "259200000"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HiveServer2 Environment Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: HiveServer2 Environment Advanced Configuration Snippet (Safety Valve)",
+        "name": "role_config_suppression_hive_hs2_env_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "The amount of stacks data that is retained. After the retention limit is reached, the oldest data is deleted.",
+        "display_name": "Stacks Collection Data Retention",
+        "name": "stacks_collection_data_retention",
+        "value": "104857600"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Java Configuration Options for HiveServer2 parameter.",
+        "display_name": "Suppress Parameter Validation: Java Configuration Options for HiveServer2",
+        "name": "role_config_suppression_hiveserver2_java_opts",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the Host Health heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Host Health",
+        "name": "role_health_suppression_hiveserver2_host_health",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the Pause Duration heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Pause Duration",
+        "name": "role_health_suppression_hiveserver2_pause_duration",
+        "value": "false"
+    },
+    {
+        "desc": "The maximum size, in megabytes, per log file for HiveServer2 logs.  Typically used by log4j or logback.",
+        "display_name": "HiveServer2 Max Log Size",
+        "name": "max_log_size",
+        "value": "200"
+    },
+    {
+        "desc": "The period to review when computing the moving average of extra time the pause monitor spent paused.",
+        "display_name": "Pause Duration Monitoring Period",
+        "name": "hiveserver2_pause_duration_window",
+        "value": "5"
+    },
+    {
+        "desc": "HiveServer2 will impersonate the beeline client user when talking to other services such as MapReduce and HDFS.",
+        "display_name": "HiveServer2 Enable Impersonation",
+        "name": "hiveserver2_enable_impersonation",
+        "value": "true"
+    },
+    {
+        "desc": "Maximum size of each Spark driver's Java heap memory when Hive is running on Spark.",
+        "display_name": "Spark Driver Maximum Java Heap Size",
+        "name": "hiveserver2_spark_driver_memory",
+        "value": "268435456"
+    },
+    {
+        "desc": "Initial number of executors used by the application at any given time. This is required if the dynamic executor allocation feature is enabled.",
+        "display_name": "Initial Number of Executors",
+        "name": "hiveserver2_spark_dynamic_allocation_initial_executors",
+        "value": "1"
+    },
+    {
+        "desc": "When the number of ReduceSink operators after merging is less than this number, the ReduceDeDuplication optimization will be disabled.",
+        "display_name": "Mininum Reducers for ReduceDeDuplication Optimization",
+        "name": "hiveserver2_optimize_reducededuplication_min_reducer",
+        "value": "4"
+    },
+    {
+        "desc": "Enable optimization that vectorizes query execution by streamlining operations by processing a block of 1024 rows at a time.",
+        "display_name": "Enable Vectorization Optimization",
+        "name": "hiveserver2_vectorized_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "The check interval for session/operation timeout, in milliseconds, which can be disabled by setting to zero or a negative value. ",
+        "display_name": "Session Check Interval",
+        "name": "hiveserver2_session_check_interval",
+        "value": "3600000"
+    },
+    {
+        "desc": "Whether column stats for a table are fetched during explain.",
+        "display_name": "Load Column Statistics",
+        "name": "hiveserver2_stats_fetch_column_stats",
+        "value": "true"
+    },
+    {
+        "desc": "When set, Cloudera Manager will send alerts when the health of this role reaches the threshold specified by the EventServer setting eventserver_health_events_alert_threshold",
+        "display_name": "Enable Health Alerts for this Role",
+        "name": "enable_alerts",
+        "value": "true"
+    },
+    {
+        "desc": "Enable optimization that checks if a query can be answered using statistics. If so, answers the query using only statistics stored in metastore.",
+        "display_name": "Enable Stats Optimization",
+        "name": "hiveserver2_compute_query_using_stats",
+        "value": "false"
+    },
+    {
+        "desc": "Session will be closed when not accessed for this duration of time, in milliseconds; disable by setting to zero or a negative value.",
+        "display_name": "Idle Session Timeout",
+        "name": "hiveserver2_idle_session_timeout",
+        "value": "604800000"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Stacks Collection Directory parameter.",
+        "display_name": "Suppress Parameter Validation: Stacks Collection Directory",
+        "name": "role_config_suppression_stacks_collection_directory",
+        "value": "false"
+    },
+    {
+        "desc": "Number of CPU shares to assign to this role. The greater the number of shares, the larger the share of the host's CPUs that will be given to this role when the host experiences CPU contention. Must be between 2 and 262144. Defaults to 1024 for processes not managed by Cloudera Manager.",
+        "display_name": "Cgroup CPU Shares",
+        "name": "rm_cpu_shares",
+        "value": "1024"
+    },
+    {
+        "desc": "The health test thresholds for monitoring of free space on the filesystem that contains this role's heap dump directory.",
+        "display_name": "Heap Dump Directory Free Space Monitoring Absolute Thresholds",
+        "name": "heap_dump_directory_free_space_absolute_thresholds",
+        "value": "{\"critical\":\"5.36870912E9\",\"warning\":\"1.073741824E10\"}"
+    },
+    {
+        "desc": "The health test thresholds for monitoring of free space on the filesystem that contains this role's log directory. Specified as a percentage of the capacity on that filesystem. This setting is not used if a Log Directory Free Space Monitoring Absolute Thresholds setting is configured.",
+        "display_name": "Log Directory Free Space Monitoring Percentage Thresholds",
+        "name": "log_directory_free_space_percentage_thresholds",
+        "value": "{\"critical\":\"never\",\"warning\":\"never\"}"
+    },
+    {
+        "desc": "Minimum number of worker threads in HiveServer2's thread pool",
+        "display_name": "Min HiveServer2 Threads",
+        "name": "hiveserver2_min_threads",
+        "value": "5"
+    },
+    {
+        "desc": "The desired file size after merging. This should be larger than hive.merge.smallfiles.avgsize.",
+        "display_name": "Desired File Size After Merging",
+        "name": "hiveserver2_merge_size_per_task",
+        "value": "268435456"
+    },
+    {
+        "desc": "Some select queries can be converted to a single FETCH task instead of a MapReduce task, minimizing latency. A value of none disables all conversion, minimal converts simple queries such as SELECT * and filter on partition columns, and more converts SELECT queries including FILTERS.",
+        "display_name": "Fetch Task Query Conversion",
+        "name": "hiveserver2_fetch_task_conversion",
+        "value": "minimal"
+    },
+    {
+        "desc": "Hard memory limit to assign to this role, enforced by the Linux kernel. When the limit is reached, the kernel will reclaim pages charged to the process. If reclaiming fails, the kernel may kill the process. Both anonymous as well as page cache pages contribute to the limit. Use a value of -1 B to specify no limit. By default processes not managed by Cloudera Manager will have no limit.",
+        "display_name": "Cgroup Memory Hard Limit",
+        "name": "rm_memory_hard_limit",
+        "value": "-1"
+    },
+    {
+        "desc": "Upper bound on the number of executors used by the application at any given time. This is used by dynamic executor allocation.",
+        "display_name": "Upper Bound on Number of Executors",
+        "name": "hiveserver2_spark_dynamic_allocation_max_executors",
+        "value": "2147483647"
+    },
+    {
+        "desc": "Whether to try sorted merge bucket (SMB) join.",
+        "display_name": "Hive Optimize Sorted Merge Bucket Join",
+        "name": "hiveserver2_optimize_bucketmapjoin_sortedmerge",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HiveServer2 Advanced Configuration Snippet (Safety Valve) for hive-site.xml parameter.",
+        "display_name": "Suppress Parameter Validation: HiveServer2 Advanced Configuration Snippet (Safety Valve) for hive-site.xml",
+        "name": "role_config_suppression_hive_hs2_config_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Weight for the read I/O requests issued by this role. The greater the weight, the higher the priority of the requests when the host experiences I/O contention. Must be between 100 and 1000. Defaults to 1000 for processes not managed by Cloudera Manager.",
+        "display_name": "Cgroup I/O Weight",
+        "name": "rm_io_weight",
+        "value": "500"
+    },
+    {
+        "desc": "Enables the health test that the HiveServer2's process state is consistent with the role configuration",
+        "display_name": "HiveServer2 Process Health Test",
+        "name": "hiveserver2_scm_health_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "When set, generates heap dump file when java.lang.OutOfMemoryError is thrown.",
+        "display_name": "Dump Heap When Out of Memory",
+        "name": "oom_heap_dump_enabled",
+        "value": "false"
+    },
+    {
+        "desc": "When dynamic partition is enabled, reducers keep only one record writer at all times, which lowers the memory pressure on reducers.",
+        "display_name": "Enable Sorted Dynamic Partition Optimizer",
+        "name": "hiveserver2_optimize_sort_dynamic_partition",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds for monitoring of free space on the filesystem that contains this role's log directory.",
+        "display_name": "Log Directory Free Space Monitoring Absolute Thresholds",
+        "name": "log_directory_free_space_absolute_thresholds",
+        "value": "{\"critical\":\"5.36870912E9\",\"warning\":\"1.073741824E10\"}"
+    },
+    {
+        "desc": "These arguments will be passed as part of the Java command line. Commonly, garbage collection flags or extra debugging flags would be passed here.",
+        "display_name": "Java Configuration Options for HiveServer2",
+        "name": "hiveserver2_java_opts",
+        "value": "-XX:MaxPermSize=512M -XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:CMSInitiatingOccupancyFraction=70 -XX:+CMSParallelRemarkEnabled"
+    },
+    {
+        "desc": "Number of cores per Spark executor.",
+        "display_name": "Spark Executor Cores",
+        "name": "hiveserver2_spark_executor_cores",
+        "value": "1"
+    },
+    {
+        "desc": "This is the amount of extra off-heap memory that can be requested from YARN, per executor process. This, together with spark.executor.memory, is the total memory that YARN can use to create JVM for an executor process.",
+        "display_name": "Spark Executor Memory Overhead",
+        "name": "hiveserver2_spark_yarn_executor_memory_overhead",
+        "value": "26"
+    },
+    {
+        "desc": "The frequency with which stacks are collected.",
+        "display_name": "Stacks Collection Frequency",
+        "name": "stacks_collection_frequency",
+        "value": "5.0"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>log4j.properties</strong> for this role only.",
+        "display_name": "HiveServer2 Logging Advanced Configuration Snippet (Safety Valve)",
+        "name": "log4j_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Local directory where Hive stores jars downloaded for remote file systems (HDFS). If not specified, Hive uses a default location.",
+        "display_name": "Hive Downloaded Resources Directory",
+        "name": "hiveserver2_downloaded_resources_dir",
+        "value": null
+    },
+    {
+        "desc": "This is the amount of extra off-heap memory that can be requested from YARN, per driver. This, together with spark.driver.memory, is the total memory that YARN can use to create JVM for a driver process.",
+        "display_name": "Spark Driver Memory Overhead",
+        "name": "hiveserver2_spark_yarn_driver_memory_overhead",
+        "value": "26"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hive Downloaded Resources Directory parameter.",
+        "display_name": "Suppress Parameter Validation: Hive Downloaded Resources Directory",
+        "name": "role_config_suppression_hiveserver2_downloaded_resources_dir",
+        "value": "false"
+    },
+    {
+        "desc": "Lower bound on the number of executors used by the application at any given time. This is used by dynamic executor allocation.",
+        "display_name": "Lower Bound on Number of Executors",
+        "name": "hiveserver2_spark_dynamic_allocation_min_executors",
+        "value": "1"
+    },
+    {
+        "desc": "The health test thresholds for the weighted average extra time the pause monitor spent paused. Specified as a percentage of elapsed wall clock time.",
+        "display_name": "Pause Duration Thresholds",
+        "name": "hiveserver2_pause_duration_thresholds",
+        "value": "{\"critical\":\"60.0\",\"warning\":\"30.0\"}"
+    },
+    {
+        "desc": "When enabled, Spark will add and remove executors dynamically to Hive jobs. This is done based on the workload.",
+        "display_name": "Enable Dynamic Executor Allocation",
+        "name": "hiveserver2_spark_dynamic_allocation_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress the results of the Swap Memory Usage heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Swap Memory Usage",
+        "name": "role_health_suppression_hiveserver2_swap_memory_usage",
+        "value": "false"
+    },
+    {
+        "desc": "If Hive auto convert join is on, and the sum of the size for n-1 of the tables/partitions for a n-way join is smaller than the specified size, the join is directly converted to a MapJoin (there is no conditional task).",
+        "display_name": "Hive Auto Convert Join Noconditional Size",
+        "name": "hiveserver2_auto_convert_join_noconditionaltask_size",
+        "value": "20971520"
+    },
+    {
+        "desc": "Directory in HDFS where Hive writes intermediate data between MapReduce jobs. If not specified, Hive uses a default location.",
+        "display_name": "Hive HDFS Scratch Directory",
+        "name": "hiveserver2_exec_scratchdir",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress the results of the Process Status heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Process Status",
+        "name": "role_health_suppression_hiveserver2_scm_health",
+        "value": "false"
+    },
+    {
+        "desc": "The minimum log level for HiveServer2 logs",
+        "display_name": "HiveServer2 Logging Threshold",
+        "name": "log_threshold",
+        "value": "INFO"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hive Local Scratch Directory parameter.",
+        "display_name": "Suppress Parameter Validation: Hive Local Scratch Directory",
+        "name": "role_config_suppression_hiveserver2_exec_local_scratchdir",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds for monitoring of free space on the filesystem that contains this role's Hive Local Scratch Directory. Specified as a percentage of the capacity on that filesystem. This setting is not used if a Hive Local Scratch Directory Free Space Monitoring Absolute Thresholds setting is configured.",
+        "display_name": "Hive Local Scratch Directory Free Space Monitoring Percentage Thresholds",
+        "name": "hiveserver2_exec_local_scratch_directory_free_space_percentage_thresholds",
+        "value": "{\"critical\":\"never\",\"warning\":\"never\"}"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Metrics Sample File Location parameter.",
+        "display_name": "Suppress Parameter Validation: Metrics Sample File Location",
+        "name": "role_config_suppression_hive_metrics_sample_file_location",
+        "value": "false"
+    },
+    {
+        "desc": "The frequency at which the metrics are logged to the sample file. The setting only has an effect if \"Enable Metrics Subsystem\" is set to true.",
+        "display_name": "Metrics Sample File Logging Frequency",
+        "name": "hive_metrics_sample_logging_frequency",
+        "value": "30000"
+    },
+    {
+        "desc": "Whether or not periodic stacks collection is enabled.",
+        "display_name": "Stacks Collection Enabled",
+        "name": "stacks_collection_enabled",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the CDH Version Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: CDH Version Validator",
+        "name": "role_config_suppression_cdh_version_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Controls whether the Hive metrics subsystem is enabled for the role.",
+        "display_name": "Enable Metrics Subsystem",
+        "name": "hive_metrics_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Maximum number of worker threads in HiveServer2's thread pool",
+        "display_name": "Max HiveServer2 Threads",
+        "name": "hiveserver2_max_threads",
+        "value": "100"
+    },
+    {
+        "desc": "<p>The configured triggers for this role. This is a JSON formatted list of triggers. These triggers are evaluated as part as the health system. Every trigger expression is parsed, and if the trigger condition is met, the list of actions provided in the trigger expression is executed.</p><p>Each trigger has the following fields:</p><ul><li><code>triggerName</code> <strong>(mandatory)</strong> - The name of the trigger. This value must be unique for the specific role. </li><li><code>triggerExpression</code> <strong>(mandatory)</strong> - A tsquery expression representing the trigger. </li><li><code>streamThreshold</code> <strong>(optional)</strong> - The maximum number of streams that can satisfy a condition of a trigger before the condition fires. By default set to 0, and any stream returned causes the condition to fire. </li><li><code>enabled</code> <strong> (optional)</strong> - By default set to 'true'. If set to 'false', the trigger is not evaluated.</li><li><code>expressionEditorConfig</code> <strong> (optional)</strong> - Metadata for the trigger editor. If present, the trigger should only be edited from the Edit Trigger page; editing the trigger here can lead to inconsistencies.</li></ul></p><p>For example, the following JSON formatted trigger configured for a DataNode fires if the DataNode has more than 1500 file descriptors opened:</p><p><pre>[{\"triggerName\": \"sample-trigger\",\n  \"triggerExpression\": \"IF (SELECT fd_open WHERE roleName=$ROLENAME and last(fd_open) > 1500) DO health:bad\",\n  \"streamThreshold\": 0, \"enabled\": \"true\"}]</pre></p><p>See the trigger rules documentation for more details on how to write triggers using tsquery.</p><p>The JSON format is evolving and may change and, as a result, backward compatibility is not guaranteed between releases.</p>",
+        "display_name": "Role Triggers",
+        "name": "role_triggers",
+        "value": "[]"
+    },
+    {
+        "desc": "The health test thresholds for monitoring of free space on the filesystem that contains this role's Hive Local Scratch Directory.",
+        "display_name": "Hive Local Scratch Directory Free Space Monitoring Absolute Thresholds",
+        "name": "hiveserver2_exec_local_scratch_directory_free_space_absolute_thresholds",
+        "value": "{\"critical\":\"5.36870912E9\",\"warning\":\"1.073741824E10\"}"
+    },
+    {
+        "desc": "The method used to collect stacks. The jstack option involves periodically running the jstack command against the role's daemon process. The servlet method is available for those roles that have an HTTP server endpoint exposing the current stacks traces of all threads. When the servlet method is selected, that HTTP endpoint is periodically scraped.",
+        "display_name": "Stacks Collection Method",
+        "name": "stacks_collection_method",
+        "value": "jstack"
+    },
+    {
+        "desc": "Whether to vectorize the reduce side of query execution.",
+        "display_name": "Enable Reduce-Side Vectorization",
+        "name": "hiveserver2_vectorized_reduce_enabled",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HiveServer2 Logging Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: HiveServer2 Logging Advanced Configuration Snippet (Safety Valve)",
+        "name": "role_config_suppression_log4j_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "The period to review when computing unexpected exits.",
+        "display_name": "Unexpected Exits Monitoring Period",
+        "name": "unexpected_exits_window",
+        "value": "5"
+    },
+    {
+        "desc": "The health test thresholds on the swap memory usage of the process.",
+        "display_name": "Process Swap Memory Thresholds",
+        "name": "process_swap_memory_thresholds",
+        "value": "{\"critical\":\"never\",\"warning\":\"any\"}"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Heap Dump Directory parameter.",
+        "display_name": "Suppress Parameter Validation: Heap Dump Directory",
+        "name": "role_config_suppression_oom_heap_dump_dir",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds for monitoring of free space on the filesystem that contains this role's heap dump directory. Specified as a percentage of the capacity on that filesystem. This setting is not used if a Heap Dump Directory Free Space Monitoring Absolute Thresholds setting is configured.",
+        "display_name": "Heap Dump Directory Free Space Monitoring Percentage Thresholds",
+        "name": "heap_dump_directory_free_space_percentage_thresholds",
+        "value": "{\"critical\":\"never\",\"warning\":\"never\"}"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HiveServer2 Load Balancer parameter.",
+        "display_name": "Suppress Parameter Validation: HiveServer2 Load Balancer",
+        "name": "role_config_suppression_hiverserver2_load_balancer",
+        "value": "false"
+    },
+    {
+        "desc": "Path to directory where heap dumps are generated when java.lang.OutOfMemoryError error is thrown. This directory is automatically created if it does not exist. If this directory already exists, role user must have write access to this directory. If this directory is shared among multiple roles, it should have 1777 permissions. The heap dump files are created with 600 permissions and are owned by the role user. The amount of free space in this directory should be greater than the maximum Java Process heap size configured for this role.",
+        "display_name": "Heap Dump Directory",
+        "name": "oom_heap_dump_dir",
+        "value": "/tmp"
+    },
+    {
+        "desc": "The directory in which stacks logs are placed. If not set, stacks are logged into a <span class='code'>stacks</span> subdirectory of the role's log directory.",
+        "display_name": "Stacks Collection Directory",
+        "name": "stacks_collection_directory",
+        "value": null
+    },
+    {
+        "desc": "When set, Cloudera Manager will send alerts when this entity's configuration changes.",
+        "display_name": "Enable Configuration Change Alerts",
+        "name": "enable_config_alerts",
+        "value": "false"
+    },
+    {
+        "desc": "When enabled, HiveServer2 logs EXPLAIN EXTENDED output for every query at INFO log4j level.",
+        "display_name": "Enable Explain Logging",
+        "name": "hiveserver2_enable_explain_output",
+        "value": "false"
+    },
+    {
+        "desc": "The number of rows with the same key value to be cached in memory per SMB-joined table.",
+        "display_name": "Hive SMB Join Cache Rows",
+        "name": "hiveserver2_smbjoin_cache_rows",
+        "value": "10000"
+    },
+    {
+        "desc": "Whether to use the indexing optimization for all queries.",
+        "display_name": "Enable Automatic Use of Indexes",
+        "name": "hiveserver2_optimize_index_filter",
+        "value": "true"
+    },
+    {
+        "desc": "In vectorized group-by, the number of row entries added to the hash table before re-checking average variable size for memory usage estimation.",
+        "display_name": "Vectorized GroupBy Check Interval",
+        "name": "hiveserver2_vectorized_groupby_checkinterval",
+        "value": "4096"
+    },
+    {
+        "desc": "Merge small files at the end of a map-reduce job. When enabled, a map-only job is created to merge the files in the destination table/partitions.",
+        "display_name": "Enable Merging Small Files - Map-Reduce Job",
+        "name": "hiveserver2_merge_mapredfiles",
+        "value": "false"
+    },
+    {
+        "desc": "Enable optimization that converts common join into MapJoin based on input file size.",
+        "display_name": "Enable MapJoin Optimization",
+        "name": "hiveserver2_enable_mapjoin",
+        "value": "true"
+    },
+    {
+        "desc": "Address of the load balancer used for HiveServer2 roles, specified in host:port format. If port is not specified, the port used by HiveServer2 is used. <b>Note:</b> Changing this property regenerates Kerberos keytabs for all HiveServer2 roles.",
+        "display_name": "HiveServer2 Load Balancer",
+        "name": "hiverserver2_load_balancer",
+        "value": null
+    },
+    {
+        "desc": "The maximum percentage of heap to be used for hash in ReduceSink operator for Top-K selection. 0 means the optimization is disabled. Accepted values are between 0 and 1.",
+        "display_name": "Maximum ReduceSink Top-K Memory Usage",
+        "name": "hiveserver2_limit_pushdown_memory_usage",
+        "value": "0.1"
+    },
+    {
+        "desc": "The health test thresholds of the number of file descriptors used. Specified as a percentage of file descriptor limit.",
+        "display_name": "File Descriptor Monitoring Thresholds",
+        "name": "hiveserver2_fd_thresholds",
+        "value": "{\"critical\":\"70.0\",\"warning\":\"50.0\"}"
+    },
+    {
+        "desc": "When computing the overall HiveServer2 health, consider the host's health.",
+        "display_name": "HiveServer2 Host Health Test",
+        "name": "hiveserver2_host_health_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "The maximum number of rolled log files to keep for HiveServer2 logs.  Typically used by log4j or logback.",
+        "display_name": "HiveServer2 Maximum Log File Backups",
+        "name": "max_log_backup_index",
+        "value": "10"
+    },
+    {
+        "desc": "Enable map-side partial aggregation, which cause the mapper to generate fewer rows. This reduces the data to be sorted and distributed to reducers.",
+        "display_name": "Enable Map-Side Aggregation",
+        "name": "hiveserver2_map_aggr",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HiveServer2 Log Directory parameter.",
+        "display_name": "Suppress Parameter Validation: HiveServer2 Log Directory",
+        "name": "role_config_suppression_hive_log_dir",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Role Triggers parameter.",
+        "display_name": "Suppress Parameter Validation: Role Triggers",
+        "name": "role_config_suppression_role_triggers",
+        "value": "false"
+    },
+    {
+        "desc": "Portion of total memory used in map-side partial aggregation. When exceeded, the partially aggregated results will be flushed from the map task to the reducers.",
+        "display_name": "Ratio of Memory Usage for Map-Side Aggregation",
+        "name": "hiveserver2_map_aggr_hash_memory_ratio",
+        "value": "0.5"
+    },
+    {
+        "desc": "Maximum size of each Spark executor's Java heap memory when Hive is running on Spark.",
+        "display_name": "Spark Executor Maximum Java Heap Size",
+        "name": "hiveserver2_spark_executor_memory",
+        "value": "268435456"
+    },
+    {
+        "desc": "Whether to suppress the results of the Heap Dump Directory Free Space heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Heap Dump Directory Free Space",
+        "name": "role_health_suppression_hiveserver2_heap_dump_directory_free_space",
+        "value": "false"
+    },
+    {
+        "desc": "When set, this role's process is automatically (and transparently) restarted in the event of an unexpected failure.",
+        "display_name": "Automatically Restart Process",
+        "name": "process_auto_restart",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds for monitoring of free space on the filesystem that contains this role's Hive Downloaded Resources Directory. Specified as a percentage of the capacity on that filesystem. This setting is not used if a Hive Downloaded Resources Directory Free Space Monitoring Absolute Thresholds setting is configured.",
+        "display_name": "Hive Downloaded Resources Directory Free Space Monitoring Percentage Thresholds",
+        "name": "hiveserver2_downloaded_resources_directory_free_space_percentage_thresholds",
+        "value": "{\"critical\":\"never\",\"warning\":\"never\"}"
+    },
+    {
+        "desc": "For advanced use only, key-value pairs (one on each line) to be inserted into a role's environment. Applies to configurations of this role except client configuration.",
+        "display_name": "HiveServer2 Environment Advanced Configuration Snippet (Safety Valve)",
+        "name": "hive_hs2_env_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Spark Executor Cores parameter.",
+        "display_name": "Suppress Parameter Validation: Spark Executor Cores",
+        "name": "role_config_suppression_hiveserver2_spark_executor_cores",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the Hive Local Scratch Directory Free Space heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Hive Local Scratch Directory Free Space",
+        "name": "role_health_suppression_hiveserver2_exec_local_scratch_directory_free_space",
+        "value": "false"
+    },
+    {
+        "desc": "Directory where HiveServer2 will place its log files.",
+        "display_name": "HiveServer2 Log Directory",
+        "name": "hive_log_dir",
+        "value": "/var/log/hive"
+    },
+    {
+        "desc": "Maximum size in bytes for the Java Process heap memory.  Passed to Java -Xmx.",
+        "display_name": "Java Heap Size of HiveServer2 in Bytes",
+        "name": "hiveserver2_java_heapsize",
+        "value": "4294967296"
+    }
+]

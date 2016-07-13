@@ -1,0 +1,98 @@
+[
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Deploy Directory parameter.",
+        "display_name": "Suppress Parameter Validation: Deploy Directory",
+        "name": "role_config_suppression_client_config_root_dir",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Client Java Configuration Options parameter.",
+        "display_name": "Suppress Parameter Validation: Client Java Configuration Options",
+        "name": "role_config_suppression_hive_client_java_opts",
+        "value": "false"
+    },
+    {
+        "desc": "The directory where the client configs will be deployed",
+        "display_name": "Deploy Directory",
+        "name": "client_config_root_dir",
+        "value": "/etc/hive"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hive Client Advanced Configuration Snippet (Safety Valve) for hive-site.xml parameter.",
+        "display_name": "Suppress Parameter Validation: Hive Client Advanced Configuration Snippet (Safety Valve) for hive-site.xml",
+        "name": "role_config_suppression_hive_client_config_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "The priority level that the client configuration will have in the Alternatives system on the hosts. Higher priority levels will cause Alternatives to prefer this configuration over any others.",
+        "display_name": "Alternatives Priority",
+        "name": "client_config_priority",
+        "value": "90"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Gateway Logging Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: Gateway Logging Advanced Configuration Snippet (Safety Valve)",
+        "name": "role_config_suppression_log4j_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Maximum size in bytes for the Java process heap memory.  Passed to Java -Xmx.",
+        "display_name": "Client Java Heap Size in Bytes",
+        "name": "hive_client_java_heapsize",
+        "value": "2147483648"
+    },
+    {
+        "desc": "For advanced use only, key-value pairs (one on each line) to be inserted into the client configuration for <strong>hive-env.sh</strong>",
+        "display_name": "Gateway Client Environment Advanced Configuration Snippet (Safety Valve) for hive-env.sh",
+        "name": "hive_client_env_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "When set, Cloudera Manager will send alerts when this entity's configuration changes.",
+        "display_name": "Enable Configuration Change Alerts",
+        "name": "enable_config_alerts",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Gateway Client Environment Advanced Configuration Snippet (Safety Valve) for hive-env.sh parameter.",
+        "display_name": "Suppress Parameter Validation: Gateway Client Environment Advanced Configuration Snippet (Safety Valve) for hive-env.sh",
+        "name": "role_config_suppression_hive_client_env_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into the client configuration for <strong>hive-site.xml</strong>.",
+        "display_name": "Hive Client Advanced Configuration Snippet (Safety Valve) for hive-site.xml",
+        "name": "hive_client_config_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the CDH Version Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: CDH Version Validator",
+        "name": "role_config_suppression_cdh_version_validator",
+        "value": "false"
+    },
+    {
+        "desc": "These are Java command line arguments. Commonly, garbage collection flags or extra debugging flags would be passed here.",
+        "display_name": "Client Java Configuration Options",
+        "name": "hive_client_java_opts",
+        "value": "-XX:MaxPermSize=512M -Djava.net.preferIPv4Stack=true"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>log4j.properties</strong> for this role only.",
+        "display_name": "Gateway Logging Advanced Configuration Snippet (Safety Valve)",
+        "name": "log4j_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Timeout for requests to the Hive Metastore Server. Consider increasing this if you have tables with a lot of metadata and see timeout errors. Used by most Hive Metastore clients such as Hive CLI and HiveServer2, but not by Impala. Impala has a separately configured timeout.",
+        "display_name": "Hive Metastore Connection Timeout",
+        "name": "hive_metastore_timeout",
+        "value": "300"
+    },
+    {
+        "desc": "The minimum log level for Gateway logs",
+        "display_name": "Gateway Logging Threshold",
+        "name": "log_threshold",
+        "value": "INFO"
+    }
+]

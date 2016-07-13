@@ -1,0 +1,836 @@
+[
+    {
+        "desc": "If this number of HStoreFiles in any one HStore is exceeded, then a compaction is run to rewrite all HStoreFiles files as one HStoreFile. (One HStoreFile is written per flush of memstore.) You can delay compaction by specifying a larger number, but the compaction will take longer when it does run. During a compaction, updates cannot be flushed to disk. Long compactions require memory sufficient to carry the logging of all updates across the duration of the compaction. If too large, clients timeout during compaction.",
+        "display_name": "HStore Compaction Threshold",
+        "name": "hbase_hstore_compactionThreshold",
+        "value": "3"
+    },
+    {
+        "desc": "Directory where RegionServer will place its log files.",
+        "display_name": "RegionServer Log Directory",
+        "name": "hbase_regionserver_log_dir",
+        "value": "/var/log/hbase"
+    },
+    {
+        "desc": "The health test thresholds for unexpected exits encountered within a recent period specified by the unexpected_exits_window configuration for the role.",
+        "display_name": "Unexpected Exits Thresholds",
+        "name": "unexpected_exits_thresholds",
+        "value": "{\"critical\":\"any\",\"warning\":\"never\"}"
+    },
+    {
+        "desc": "Enables the health test that the Cloudera Manager Agent can successfully contact and gather metrics from the web server.",
+        "display_name": "Web Metric Collection",
+        "name": "regionserver_web_metric_collection_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the RegionServer Advanced Configuration Snippet (Safety Valve) for hbase-site.xml parameter.",
+        "display_name": "Suppress Parameter Validation: RegionServer Advanced Configuration Snippet (Safety Valve) for hbase-site.xml",
+        "name": "role_config_suppression_hbase_regionserver_config_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "The period of time that an HRegion will block updates after reaching the HStoreFile limit that is specified by 'hbase.hstore.blockingStoreFiles'. After this time has elapsed, the HRegion will stop blocking updates even if a compaction has not been completed.",
+        "display_name": "HStore Blocking Wait Time",
+        "name": "hbase_hstore_blockingWaitTime",
+        "value": "90000"
+    },
+    {
+        "desc": "The period over which to compute the moving average of the compaction queue size.",
+        "display_name": "HBase RegionServer Compaction Queue Monitoring Period",
+        "name": "regionserver_compaction_queue_window",
+        "value": "5"
+    },
+    {
+        "desc": "If the memstores in a region are this size or larger when closing, run a pre-flush process to clear out memstores before putting up the region closed flag and taking the region offline. On close, a flush process is run under the close flag up to empty memory. During this time, the region is offline and no writes are taken. If the memstore content is large, the flush process could take a long time to complete. The pre-flush process cleans out the bulk of the memstore before putting up the close flag and taking the region offline, so that the flush process that runs under the close flag has little to do.",
+        "display_name": "HBase Memstore Pre-close Flush Size",
+        "name": "hbase_hregion_preclose_flush_size",
+        "value": "5242880"
+    },
+    {
+        "desc": "The health test thresholds of the average size of the HBase RegionServer flush queue over a recent period. See HBase RegionServer Flush Queue Monitoring Period.",
+        "display_name": "HBase RegionServer Flush Queue Monitoring Thresholds",
+        "name": "regionserver_flush_queue_thresholds",
+        "value": "{\"critical\":\"never\",\"warning\":\"10.0\"}"
+    },
+    {
+        "desc": "Enables the health test that the RegionServer is connected to the Master",
+        "display_name": "HBase RegionServer to Master Connectivity Test",
+        "name": "regionserver_master_connectivity_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "When memstores are being forced to flush to make room in memory, keep flushing until this amount is reached. If this amount is equal to 'hbase.regionserver.global.memstore.upperLimit', then minimum possible flushing will occur when updates are blocked due to memstore limiting.",
+        "display_name": "Low Watermark for Memstore Flush",
+        "name": "hbase_regionserver_global_memstore_lowerLimit",
+        "value": "0.38"
+    },
+    {
+        "desc": "The maximum number of rolled log files to keep for RegionServer logs.  Typically used by log4j or logback.",
+        "display_name": "RegionServer Maximum Log File Backups",
+        "name": "max_log_backup_index",
+        "value": "10"
+    },
+    {
+        "desc": "When set, a SIGKILL signal is sent to the role process when java.lang.OutOfMemoryError is thrown.",
+        "display_name": "Kill When Out of Memory",
+        "name": "oom_sigkill_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "The address for the HBase RegionServer web UI",
+        "display_name": "HBase RegionServer Web UI Address",
+        "name": "hbase_regionserver_info_bindAddress",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress the results of the Memstore Size heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Memstore Size",
+        "name": "role_health_suppression_region_server_memstore_size",
+        "value": "false"
+    },
+    {
+        "desc": "Number of handlers for processing priority requests in a RegionServer.",
+        "display_name": "HBase RegionServer Meta-Handler Count",
+        "name": "hbase_regionserver_metahandler_count",
+        "value": "10"
+    },
+    {
+        "desc": "If configured, overrides the process soft and hard rlimits (also called ulimits) for file descriptors to the configured value.",
+        "display_name": "Maximum Process File Descriptors",
+        "name": "rlimit_fds",
+        "value": "32768"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HLog Reader Implementation parameter.",
+        "display_name": "Suppress Parameter Validation: HLog Reader Implementation",
+        "name": "role_config_suppression_hbase_regionserver_hlog_reader_impl",
+        "value": "false"
+    },
+    {
+        "desc": "The port for the HBase RegionServer web UI. Set to -1 to disable RegionServer web UI.",
+        "display_name": "HBase RegionServer Web UI port",
+        "name": "hbase_regionserver_info_port",
+        "value": "60030"
+    },
+    {
+        "desc": "The health test thresholds of the total size of RegionServer's memstores. Specified as a percentage of the configured upper limit. See Maximum Size of All Memstores in RegionServer.",
+        "display_name": "HBase RegionServer Memstore Size Thresholds",
+        "name": "regionserver_memstore_size_thresholds",
+        "value": "{\"critical\":\"100.0\",\"warning\":\"95.0\"}"
+    },
+    {
+        "desc": "Maximum size of all memstores in a RegionServer before new updates are blocked and flushes are forced.",
+        "display_name": "Maximum Size of All Memstores in RegionServer",
+        "name": "hbase_regionserver_global_memstore_upperLimit",
+        "value": "0.4"
+    },
+    {
+        "desc": "List of coprocessors that are loaded by default on all tables. For any override coprocessor method, these classes will be called in order. After implementing your own coprocessor, just put it in HBase's classpath and add the fully qualified class name here. A coprocessor can also be loaded on demand by setting HTableDescriptor.",
+        "display_name": "HBase Coprocessor Region Classes",
+        "name": "hbase_coprocessor_region_classes",
+        "value": ""
+    },
+    {
+        "desc": "Advanced Configuration Snippet (Safety Valve) for Hadoop Metrics2. Properties will be inserted into <strong>hadoop-metrics2.properties</strong>.",
+        "display_name": "Hadoop Metrics2 Advanced Configuration Snippet (Safety Valve)",
+        "name": "hadoop_metrics2_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Soft memory limit to assign to this role, enforced by the Linux kernel. When the limit is reached, the kernel will reclaim pages charged to the process if and only if the host is facing memory pressure. If reclaiming fails, the kernel may kill the process. Both anonymous as well as page cache pages contribute to the limit. Use a value of -1 B to specify no limit. By default processes not managed by Cloudera Manager will have no limit.",
+        "display_name": "Cgroup Memory Soft Limit",
+        "name": "rm_memory_soft_limit",
+        "value": "-1"
+    },
+    {
+        "desc": "The health test thresholds on the swap memory usage of the process.",
+        "display_name": "Process Swap Memory Thresholds",
+        "name": "process_swap_memory_thresholds",
+        "value": "{\"critical\":\"never\",\"warning\":\"any\"}"
+    },
+    {
+        "desc": "For advanced use only, key-value pairs (one on each line) to be inserted into a role's environment. Applies to configurations of this role except client configuration.",
+        "display_name": "RegionServer Environment Advanced Configuration Snippet (Safety Valve)",
+        "name": "REGIONSERVER_role_env_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Maximum number of HStoreFiles to compact per minor compaction.",
+        "display_name": "Maximum Number of HStoreFiles Compaction",
+        "name": "hbase_hstore_compaction_max",
+        "value": null
+    },
+    {
+        "desc": "These arguments will be passed as part of the Java command line. Commonly, garbage collection flags or extra debugging flags would be passed here.",
+        "display_name": "Java Configuration Options for HBase RegionServer",
+        "name": "hbase_regionserver_java_opts",
+        "value": "-XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:CMSInitiatingOccupancyFraction=70 -XX:+CMSParallelRemarkEnabled"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the RegionServer File Descriptor Limit Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: RegionServer File Descriptor Limit Validator",
+        "name": "role_config_suppression_regionserver_fd_limit_validator",
+        "value": "false"
+    },
+    {
+        "desc": "The amount of stacks data that is retained. After the retention limit is reached, the oldest data is deleted.",
+        "display_name": "Stacks Collection Data Retention",
+        "name": "stacks_collection_data_retention",
+        "value": "104857600"
+    },
+    {
+        "desc": "<p>The configured triggers for this role. This is a JSON formatted list of triggers. These triggers are evaluated as part as the health system. Every trigger expression is parsed, and if the trigger condition is met, the list of actions provided in the trigger expression is executed.</p><p>Each trigger has the following fields:</p><ul><li><code>triggerName</code> <strong>(mandatory)</strong> - The name of the trigger. This value must be unique for the specific role. </li><li><code>triggerExpression</code> <strong>(mandatory)</strong> - A tsquery expression representing the trigger. </li><li><code>streamThreshold</code> <strong>(optional)</strong> - The maximum number of streams that can satisfy a condition of a trigger before the condition fires. By default set to 0, and any stream returned causes the condition to fire. </li><li><code>enabled</code> <strong> (optional)</strong> - By default set to 'true'. If set to 'false', the trigger is not evaluated.</li><li><code>expressionEditorConfig</code> <strong> (optional)</strong> - Metadata for the trigger editor. If present, the trigger should only be edited from the Edit Trigger page; editing the trigger here can lead to inconsistencies.</li></ul></p><p>For example, the following JSON formatted trigger configured for a DataNode fires if the DataNode has more than 1500 file descriptors opened:</p><p><pre>[{\"triggerName\": \"sample-trigger\",\n  \"triggerExpression\": \"IF (SELECT fd_open WHERE roleName=$ROLENAME and last(fd_open) > 1500) DO health:bad\",\n  \"streamThreshold\": 0, \"enabled\": \"true\"}]</pre></p><p>See the trigger rules documentation for more details on how to write triggers using tsquery.</p><p>The JSON format is evolving and may change and, as a result, backward compatibility is not guaranteed between releases.</p>",
+        "display_name": "Role Triggers",
+        "name": "role_triggers",
+        "value": "[]"
+    },
+    {
+        "desc": "When using Multiple HDFS WAL as the WALProvider, sets how many write-ahead-logs each region server should run. Will result in this number of HDFS pipelines. Writes for a given Region only go to a single pipeline, spreading total RegionServer load.",
+        "display_name": "Per-RegionServer Number of WAL Pipelines",
+        "name": "hbase_regionserver_wal_pipelines",
+        "value": "1"
+    },
+    {
+        "desc": "Timeout for Canary to perform its checks.",
+        "display_name": "Canary Timeout",
+        "name": "hbase_regionserver_canary_timeout",
+        "value": "15"
+    },
+    {
+        "desc": "The maximum size, in megabytes, per log file for RegionServer logs.  Typically used by log4j or logback.",
+        "display_name": "RegionServer Max Log Size",
+        "name": "max_log_size",
+        "value": "200"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HBase RegionServer Web UI Address parameter.",
+        "display_name": "Suppress Parameter Validation: HBase RegionServer Web UI Address",
+        "name": "role_config_suppression_hbase_regionserver_info_bindaddress",
+        "value": "false"
+    },
+    {
+        "desc": "Number of RPC Server instances spun up on RegionServers.",
+        "display_name": "HBase RegionServer Handler Count",
+        "name": "hbase_regionserver_handler_count",
+        "value": "30"
+    },
+    {
+        "desc": "Hard memory limit to assign to this role, enforced by the Linux kernel. When the limit is reached, the kernel will reclaim pages charged to the process. If reclaiming fails, the kernel may kill the process. Both anonymous as well as page cache pages contribute to the limit. Use a value of -1 B to specify no limit. By default processes not managed by Cloudera Manager will have no limit.",
+        "display_name": "Cgroup Memory Hard Limit",
+        "name": "rm_memory_hard_limit",
+        "value": "-1"
+    },
+    {
+        "desc": "The period over which to compute the moving average of the HDFS read latency of the HBase RegionServer.",
+        "display_name": "HBase RegionServer HDFS Read Latency Monitoring Period",
+        "name": "regionserver_read_latency_window",
+        "value": "5"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Java Configuration Options for HBase RegionServer parameter.",
+        "display_name": "Suppress Parameter Validation: Java Configuration Options for HBase RegionServer",
+        "name": "role_config_suppression_hbase_regionserver_java_opts",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds for monitoring of free space on the filesystem that contains this role's log directory.",
+        "display_name": "Log Directory Free Space Monitoring Absolute Thresholds",
+        "name": "log_directory_free_space_absolute_thresholds",
+        "value": "{\"critical\":\"5.36870912E9\",\"warning\":\"1.073741824E10\"}"
+    },
+    {
+        "desc": "Whether to suppress the results of the Heap Dump Directory Free Space heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Heap Dump Directory Free Space",
+        "name": "role_health_suppression_region_server_heap_dump_directory_free_space",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the Compaction Queue Size heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Compaction Queue Size",
+        "name": "role_health_suppression_region_server_compaction_queue",
+        "value": "false"
+    },
+    {
+        "desc": "When set, Cloudera Manager will send alerts when the health of this role reaches the threshold specified by the EventServer setting eventserver_health_events_alert_threshold",
+        "display_name": "Enable Health Alerts for this Role",
+        "name": "enable_alerts",
+        "value": "true"
+    },
+    {
+        "desc": "Number of threads for completing small compactions.",
+        "display_name": "RegionServer Small Compactions Thread Count",
+        "name": "hbase_regionserver_thread_compaction_small",
+        "value": "1"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Stacks Collection Directory parameter.",
+        "display_name": "Suppress Parameter Validation: Stacks Collection Directory",
+        "name": "role_config_suppression_stacks_collection_directory",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the RegionServer Codecs parameter.",
+        "display_name": "Suppress Parameter Validation: RegionServer Codecs",
+        "name": "role_config_suppression_hbase_regionserver_codecs",
+        "value": "false"
+    },
+    {
+        "desc": "Maximum number of Write-Ahead Log (WAL) files. This value multiplied by HDFS Block Size (dfs.blocksize) is the size of the WAL that will need to be replayed when a server crashes. This value is inversely proportional to the frequency of flushes to disk.",
+        "display_name": "Maximum number of Write-Ahead Log (WAL) files",
+        "name": "hbase_regionserver_maxlogs",
+        "value": "32"
+    },
+    {
+        "desc": "Number of CPU shares to assign to this role. The greater the number of shares, the larger the share of the host's CPUs that will be given to this role when the host experiences CPU contention. Must be between 2 and 262144. Defaults to 1024 for processes not managed by Cloudera Manager.",
+        "display_name": "Cgroup CPU Shares",
+        "name": "rm_cpu_shares",
+        "value": "1024"
+    },
+    {
+        "desc": "The health test thresholds for monitoring of free space on the filesystem that contains this role's heap dump directory.",
+        "display_name": "Heap Dump Directory Free Space Monitoring Absolute Thresholds",
+        "name": "heap_dump_directory_free_space_absolute_thresholds",
+        "value": "{\"critical\":\"5.36870912E9\",\"warning\":\"1.073741824E10\"}"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Rules to Extract Events from Log Files parameter.",
+        "display_name": "Suppress Parameter Validation: Rules to Extract Events from Log Files",
+        "name": "role_config_suppression_log_event_whitelist",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the Log Directory Free Space heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Log Directory Free Space",
+        "name": "role_health_suppression_region_server_log_directory_free_space",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds for monitoring of free space on the filesystem that contains this role's log directory. Specified as a percentage of the capacity on that filesystem. This setting is not used if a Log Directory Free Space Monitoring Absolute Thresholds setting is configured.",
+        "display_name": "Log Directory Free Space Monitoring Percentage Thresholds",
+        "name": "log_directory_free_space_percentage_thresholds",
+        "value": "{\"critical\":\"never\",\"warning\":\"never\"}"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HBase Coprocessor Region Classes parameter.",
+        "display_name": "Suppress Parameter Validation: HBase Coprocessor Region Classes",
+        "name": "role_config_suppression_hbase_coprocessor_region_classes",
+        "value": "false"
+    },
+    {
+        "desc": "The size of the chunks allocated by MSLAB, in bytes.",
+        "display_name": "Chunk Size Allocated by MSLAB Allocation Scheme",
+        "name": "hbase_hregion_memstore_mslab_chunksize",
+        "value": "2097152"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HLog Writer Implementation parameter.",
+        "display_name": "Suppress Parameter Validation: HLog Writer Implementation",
+        "name": "role_config_suppression_hbase_regionserver_hlog_writer_impl",
+        "value": "false"
+    },
+    {
+        "desc": "Limit for the number of regions after which no more region splitting should take place. This is not a hard limit for the number of regions but acts as a guideline for the RegionServer to stop splitting after a certain limit.",
+        "display_name": "HBase Region Split Limit",
+        "name": "hbase_regionserver_regionSplitLimit",
+        "value": "2147483647"
+    },
+    {
+        "desc": "Enables the health test that the RegionServer's process state is consistent with the role configuration",
+        "display_name": "RegionServer Process Health Test",
+        "name": "regionserver_scm_health_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "When computing the overall RegionServer health, consider the host's health.",
+        "display_name": "RegionServer Host Health Test",
+        "name": "regionserver_host_health_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Time period in seconds to reset long-running metrics (e.g. compactions). This is an HBase specific configuration.",
+        "display_name": "Extended Period",
+        "name": "hbase_metrics_extended_period",
+        "value": "3600"
+    },
+    {
+        "desc": "The health test thresholds on the duration of the metrics request to the web server.",
+        "display_name": "Web Metric Collection Duration",
+        "name": "regionserver_web_metric_collection_thresholds",
+        "value": "{\"critical\":\"never\",\"warning\":\"10000.0\"}"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HBase Secure Bulk Load Directory parameter.",
+        "display_name": "Suppress Parameter Validation: HBase Secure Bulk Load Directory",
+        "name": "role_config_suppression_hbase_bulkload_staging_dir",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the RegionServer DNS Network Interface parameter.",
+        "display_name": "Suppress Parameter Validation: RegionServer DNS Network Interface",
+        "name": "role_config_suppression_hbase_regionserver_dns_interface",
+        "value": "false"
+    },
+    {
+        "desc": "The period to review when computing the moving average of garbage collection time.",
+        "display_name": "Garbage Collection Duration Monitoring Period",
+        "name": "regionserver_gc_duration_window",
+        "value": "5"
+    },
+    {
+        "desc": "When set, generates heap dump file when java.lang.OutOfMemoryError is thrown.",
+        "display_name": "Dump Heap When Out of Memory",
+        "name": "oom_heap_dump_enabled",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds of the number of file descriptors used. Specified as a percentage of file descriptor limit.",
+        "display_name": "File Descriptor Monitoring Thresholds",
+        "name": "regionserver_fd_thresholds",
+        "value": "{\"critical\":\"70.0\",\"warning\":\"50.0\"}"
+    },
+    {
+        "desc": "The period over which to compute the moving average of the flush queue size.",
+        "display_name": "HBase RegionServer Flush Queue Monitoring Period",
+        "name": "regionserver_flush_queue_window",
+        "value": "5"
+    },
+    {
+        "desc": "The frequency with which stacks are collected.",
+        "display_name": "Stacks Collection Frequency",
+        "name": "stacks_collection_frequency",
+        "value": "5.0"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>log4j.properties</strong> for this role only.",
+        "display_name": "RegionServer Logging Advanced Configuration Snippet (Safety Valve)",
+        "name": "log4j_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Read threadpool size used by the RegionServer HBase IPC Server.",
+        "display_name": "RegionServer IPC Read Threadpool Size",
+        "name": "hbase_ipc_server_read_threadpool_size",
+        "value": "10"
+    },
+    {
+        "desc": "Whether to suppress the results of the Flush Queue Size heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Flush Queue Size",
+        "name": "role_health_suppression_region_server_flush_queue",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the RegionServer Environment Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: RegionServer Environment Advanced Configuration Snippet (Safety Valve)",
+        "name": "role_config_suppression_regionserver_role_env_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "The number of reservation blocks that are used to prevent unstable RegionServers caused by an OOME.",
+        "display_name": "RegionServer Reservation Blocks",
+        "name": "hbase_regionserver_nbreservationblocks",
+        "value": "4"
+    },
+    {
+        "desc": "The host name or IP address of the DNS name server which a RegionServer should use to determine the host name used by the HBase Master for communication and display purposes.",
+        "display_name": "RegionServer DNS Nameserver",
+        "name": "hbase_regionserver_dns_nameserver",
+        "value": null
+    },
+    {
+        "desc": "For advanced use only. A string to be inserted into <strong>hbase-site.xml</strong> for this role only.",
+        "display_name": "RegionServer Advanced Configuration Snippet (Safety Valve) for hbase-site.xml",
+        "name": "hbase_regionserver_config_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "The hashing algorithm for use in HashFunction. Two values are supported: 'murmur' (for MurmurHash) and 'jenkins' (for JenkinsHash).",
+        "display_name": "HBase Hash Type",
+        "name": "hbase_hash_type",
+        "value": "murmur"
+    },
+    {
+        "desc": "The time, in milliseconds, between 'major' compactions of all HStoreFiles in a region. To disable automated major compactions, set this value to 0.",
+        "display_name": "HBase HRegion Major Compaction",
+        "name": "hbase_hregion_majorcompaction",
+        "value": "604800000"
+    },
+    {
+        "desc": "Percentage of maximum heap (-Xmx setting) to allocate to block cache used by HFile/StoreFile. To disable, set this value to 0 .",
+        "display_name": "HFile Block Cache Size",
+        "name": "hfile_block_cache_size",
+        "value": "0.4"
+    },
+    {
+        "desc": "The minimum log level for RegionServer logs",
+        "display_name": "RegionServer Logging Threshold",
+        "name": "log_threshold",
+        "value": "INFO"
+    },
+    {
+        "desc": "The HLog file reader implementation.",
+        "display_name": "HLog Reader Implementation",
+        "name": "hbase_regionserver_hlog_reader_impl",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hadoop Metrics2 Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: Hadoop Metrics2 Advanced Configuration Snippet (Safety Valve)",
+        "name": "role_config_suppression_hadoop_metrics2_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the RegionServer DNS Nameserver parameter.",
+        "display_name": "Suppress Parameter Validation: RegionServer DNS Nameserver",
+        "name": "role_config_suppression_hbase_regionserver_dns_nameserver",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds of the latency that the RegionServer sees for HDFS read operations",
+        "display_name": "HBase RegionServer HDFS Read Latency Thresholds",
+        "name": "regionserver_read_latency_thresholds",
+        "value": "{\"critical\":\"100.0\",\"warning\":\"50.0\"}"
+    },
+    {
+        "desc": "The port that an HBase RegionServer binds to.",
+        "display_name": "HBase RegionServer Port",
+        "name": "hbase_regionserver_port",
+        "value": "60020"
+    },
+    {
+        "desc": "Whether or not periodic stacks collection is enabled.",
+        "display_name": "Stacks Collection Enabled",
+        "name": "stacks_collection_enabled",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the CDH Version Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: CDH Version Validator",
+        "name": "role_config_suppression_cdh_version_validator",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds for the weighted average time spent in Java garbage collection. Specified as a percentage of elapsed wall clock time.",
+        "display_name": "Garbage Collection Duration Thresholds",
+        "name": "regionserver_gc_duration_thresholds",
+        "value": "{\"critical\":\"60.0\",\"warning\":\"30.0\"}"
+    },
+    {
+        "desc": "The method used to collect stacks. The jstack option involves periodically running the jstack command against the role's daemon process. The servlet method is available for those roles that have an HTTP server endpoint exposing the current stacks traces of all threads. When the servlet method is selected, that HTTP endpoint is periodically scraped.",
+        "display_name": "Stacks Collection Method",
+        "name": "stacks_collection_method",
+        "value": "jstack"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the RegionServer Logging Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: RegionServer Logging Advanced Configuration Snippet (Safety Valve)",
+        "name": "role_config_suppression_log4j_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "The period to review when computing unexpected exits.",
+        "display_name": "Unexpected Exits Monitoring Period",
+        "name": "unexpected_exits_window",
+        "value": "5"
+    },
+    {
+        "desc": "Whether to suppress the results of the Cluster Connectivity heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Cluster Connectivity",
+        "name": "role_health_suppression_region_server_master_connectivity",
+        "value": "false"
+    },
+    {
+        "desc": "The directory for HBase secure bulk Load.",
+        "display_name": "HBase Secure Bulk Load Directory",
+        "name": "hbase_bulkload_staging_dir",
+        "value": "/tmp/hbase-staging"
+    },
+    {
+        "desc": "Duration between consecutive checks done by the Canary.",
+        "display_name": "Canary Interval",
+        "name": "hbase_regionserver_canary_interval",
+        "value": "6"
+    },
+    {
+        "desc": "The maximum size byte array that should come from the MSLAB, in bytes.",
+        "display_name": "Maximum Byte Array from MSLAB Allocation Scheme",
+        "name": "hbase_hregion_memstore_mslab_max_allocation",
+        "value": "262144"
+    },
+    {
+        "desc": "Whether to suppress the results of the Swap Memory Usage heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Swap Memory Usage",
+        "name": "role_health_suppression_region_server_swap_memory_usage",
+        "value": "false"
+    },
+    {
+        "desc": "Maximum size in bytes for the Java Process heap memory.  Passed to Java -Xmx.",
+        "display_name": "Java Heap Size of HBase RegionServer in Bytes",
+        "name": "hbase_regionserver_java_heapsize",
+        "value": "4294967296"
+    },
+    {
+        "desc": "Whether asynchronous WAL replication to the secondary region replicas is enabled.\u2028 If enabled, a replication peer named 'region_replica_replication' is created\u2028 that tails the logs and replicates the mutations to region replicas for tables that\u2028 have region replication > 1. Disabling this replication also\u2028 requires disabling the replication peer using shell or the ReplicationAdmin Java class.\u2028 Replication to secondary region replicas works over standard intercluster replication. If disabled explicitly, enable replication by setting 'hbase.replication' to true for this feature to work.\u2028",
+        "display_name": "Enable Replication To Secondary Region Replicas",
+        "name": "hbase_region_replica_replication_enabled",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds for the latency of HDFS write operations that the RegionServer detects",
+        "display_name": "HBase RegionServer HDFS Sync Latency Thresholds",
+        "name": "regionserver_sync_latency_thresholds",
+        "value": "{\"critical\":\"5000.0\",\"warning\":\"500.0\"}"
+    },
+    {
+        "desc": "When true, HBase RegionServer will bind to 0.0.0.0. Only available in CDH 4.3 and later.",
+        "display_name": "HBase RegionServer Bind to Wildcard Address",
+        "name": "hbase_regionserver_bind_to_wildcard_address",
+        "value": "true"
+    },
+    {
+        "desc": "If there are more than this number of HStoreFiles in any one HStore, then updates are blocked for this HRegion until a compaction is completed, or until the value specified for 'hbase.hstore.blockingWaitTime' has been exceeded.",
+        "display_name": "HStore Blocking Store Files",
+        "name": "hbase_hstore_blockingStoreFiles",
+        "value": "10"
+    },
+    {
+        "desc": "Enable MemStore-Local Allocation Buffer (MSLAB) Allocation Scheme. <b>Note:</b> This feature is experimental in CDH3.",
+        "display_name": "Enable MSLAB Allocation Scheme",
+        "name": "hbase_hregion_memstore_mslab_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Heap Dump Directory parameter.",
+        "display_name": "Suppress Parameter Validation: Heap Dump Directory",
+        "name": "role_config_suppression_oom_heap_dump_dir",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HBase HRegion Major Compaction parameter.",
+        "display_name": "Suppress Parameter Validation: HBase HRegion Major Compaction",
+        "name": "role_config_suppression_hbase_hregion_majorcompaction",
+        "value": "false"
+    },
+    {
+        "desc": "Sync the HLog to HDFS after this interval, in milliseconds, if it has not accumulated the number of HLog Entries specified to trigger a sync.",
+        "display_name": "Synch Interval of HLog Entries",
+        "name": "hbase_regionserver_optionallogflushinterval",
+        "value": "1000"
+    },
+    {
+        "desc": "The health test thresholds for monitoring of free space on the filesystem that contains this role's heap dump directory. Specified as a percentage of the capacity on that filesystem. This setting is not used if a Heap Dump Directory Free Space Monitoring Absolute Thresholds setting is configured.",
+        "display_name": "Heap Dump Directory Free Space Monitoring Percentage Thresholds",
+        "name": "heap_dump_directory_free_space_percentage_thresholds",
+        "value": "{\"critical\":\"never\",\"warning\":\"never\"}"
+    },
+    {
+        "desc": "Whether to suppress the results of the Store File Index Size heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Store File Index Size",
+        "name": "role_health_suppression_region_server_store_file_idx_size",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the Process Status heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Process Status",
+        "name": "role_health_suppression_region_server_scm_health",
+        "value": "false"
+    },
+    {
+        "desc": "Memstore will be flushed to disk if size of the memstore exceeds this value in number of bytes. This value is checked by a thread that runs the frequency specified by hbase.server.thread.wakefrequency.",
+        "display_name": "HBase Memstore Flush Size",
+        "name": "hbase_hregion_memstore_flush_size",
+        "value": "134217728"
+    },
+    {
+        "desc": "Whether to suppress the results of the File Descriptors heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: File Descriptors",
+        "name": "role_health_suppression_region_server_file_descriptor",
+        "value": "false"
+    },
+    {
+        "desc": "Path to directory where heap dumps are generated when java.lang.OutOfMemoryError error is thrown. This directory is automatically created if it does not exist. If this directory already exists, role user must have write access to this directory. If this directory is shared among multiple roles, it should have 1777 permissions. The heap dump files are created with 600 permissions and are owned by the role user. The amount of free space in this directory should be greater than the maximum Java Process heap size configured for this role.",
+        "display_name": "Heap Dump Directory",
+        "name": "oom_heap_dump_dir",
+        "value": "/tmp"
+    },
+    {
+        "desc": "The directory in which stacks logs are placed. If not set, stacks are logged into a <span class='code'>stacks</span> subdirectory of the role's log directory.",
+        "display_name": "Stacks Collection Directory",
+        "name": "stacks_collection_directory",
+        "value": null
+    },
+    {
+        "desc": "Number of threads to use while loading and unloading regions to or from a RegionServer. Can be used to increase the speed of decommissioning or rolling restart operations.",
+        "display_name": "Region Mover Threads",
+        "name": "hbase_regionserver_regionmover_thread_count",
+        "value": "1"
+    },
+    {
+        "desc": "When set, Cloudera Manager will send alerts when this entity's configuration changes.",
+        "display_name": "Enable Configuration Change Alerts",
+        "name": "enable_config_alerts",
+        "value": "false"
+    },
+    {
+        "desc": "The lease period, in milliseconds, for the HBase RegionServer. Clients must report in within this period or else they are considered dead.",
+        "display_name": "HBase RegionServer Lease Period",
+        "name": "hbase_regionserver_lease_period",
+        "value": "60000"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Java Heap Size of HBase RegionServer in Bytes parameter.",
+        "display_name": "Suppress Parameter Validation: Java Heap Size of HBase RegionServer in Bytes",
+        "name": "role_config_suppression_hbase_regionserver_java_heapsize",
+        "value": "false"
+    },
+    {
+        "desc": "Maximum HStoreFile size. If any one of a column families' HStoreFiles has grown to exceed this value, the hosting HRegion is split in two.",
+        "display_name": "HBase Maximum File Size",
+        "name": "hbase_hregion_max_filesize",
+        "value": "10737418240"
+    },
+    {
+        "desc": "Comma-separated list of codecs that the RegionServer requires to start. Use this setting to make sure that all RegionServers joining a cluster are installed with a particular set of codecs.",
+        "display_name": "RegionServer Codecs",
+        "name": "hbase_regionserver_codecs",
+        "value": ""
+    },
+    {
+        "desc": "The name of the DNS Network Interface from which a RegionServer should report its IP address.",
+        "display_name": "RegionServer DNS Network Interface",
+        "name": "hbase_regionserver_dns_interface",
+        "value": null
+    },
+    {
+        "desc": "The period over which to compute the moving average of the HDFS sync latency of the HBase RegionServer.",
+        "display_name": "HBase RegionServer HDFS Sync Latency Monitoring Period",
+        "name": "regionserver_sync_latency_window",
+        "value": "5"
+    },
+    {
+        "desc": "The health test thresholds of the weighted average size of the HBase RegionServer compaction queue over a recent period. See HBase RegionServer Compaction Queue Monitoring Period.",
+        "display_name": "HBase RegionServer Compaction Queue Monitoring Thresholds",
+        "name": "regionserver_compaction_queue_thresholds",
+        "value": "{\"critical\":\"never\",\"warning\":\"10.0\"}"
+    },
+    {
+        "desc": "Whether to suppress the results of the Host Health heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Host Health",
+        "name": "role_health_suppression_region_server_host_health",
+        "value": "false"
+    },
+    {
+        "desc": "Period, in milliseconds, at which to roll the commit log.",
+        "display_name": "HBase RegionServer Log Roll Period",
+        "name": "hbase_regionserver_logroll_period",
+        "value": "3600000"
+    },
+    {
+        "desc": "The HLog file writer implementation.",
+        "display_name": "HLog Writer Implementation",
+        "name": "hbase_regionserver_hlog_writer_impl",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Role Triggers parameter.",
+        "display_name": "Suppress Parameter Validation: Role Triggers",
+        "name": "role_config_suppression_role_triggers",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the RegionServer Log Directory parameter.",
+        "display_name": "Suppress Parameter Validation: RegionServer Log Directory",
+        "name": "role_config_suppression_hbase_regionserver_log_dir",
+        "value": "false"
+    },
+    {
+        "desc": "Weight for the read I/O requests issued by this role. The greater the weight, the higher the priority of the requests when the host experiences I/O contention. Must be between 100 and 1000. Defaults to 1000 for processes not managed by Cloudera Manager.",
+        "display_name": "Cgroup I/O Weight",
+        "name": "rm_io_weight",
+        "value": "500"
+    },
+    {
+        "desc": "<p>This file contains the rules which govern how log messages are turned into events by the custom log4j appender that this role loads. It is in JSON format, and is composed of a list of rules. Every log message is evaluated against each of these rules in turn to decide whether or not to send an event for that message.</p><p>Each rule has some or all of the following fields:</p><ul><li><span class='code'>alert</span> - whether or not events generated from this rule should be promoted to alerts. A value of \"true\" will cause alerts to be generated. If not specified, the default is \"false\".</li><li><span class='code'>rate</span> <strong>(mandatory)</strong> - the maximum number of log messages matching this rule that may be sent as events every minute. If more than <tt>rate</tt> matching log messages are received in a single minute, the extra messages are ignored. If rate is less than 0, the number of messages per minute is unlimited.</li><li><span class='code'>periodminutes</span>  - the number of minutes during which the publisher will only publish <tt>rate</tt> events or fewer. If not specified, the default is <strong>one minute</strong></li><li><span class='code'>threshold</span> - apply this rule only to messages with this log4j severity level or above. An example is \"WARN\" for warning level messages or higher.</li><li><span class='code'>content</span> - match only those messages whose contents match this regular expression.</li><li><span class='code'>exceptiontype</span> - match only those messages which are part of an exception message. The exception type must match this regular expression.</li></ul><br/><p>Example:<span class='code'>{\"alert\": false, \"rate\": 10, \"exceptiontype\": \"java.lang.StringIndexOutOfBoundsException\"}</span></p><p>This rule will send events to Cloudera Manager for every <span class='code'>StringIndexOutOfBoundsException</span>, up to a maximum of 10 every minute.</p>",
+        "display_name": "Rules to Extract Events from Log Files",
+        "name": "log_event_whitelist",
+        "value": "{\n  \"version\": \"0\",\n  \"rules\": [\n    {\"alert\": false, \"rate\": 1, \"periodminutes\": 1, \"threshold\":\"FATAL\"},\n    {\"alert\": false, \"rate\": 0, \"threshold\":\"WARN\", \"content\": \".* is deprecated. Instead, use .*\"},\n    {\"alert\": false, \"rate\": 0, \"threshold\":\"WARN\", \"content\": \".* is deprecated. Use .* instead\"},\n    {\"alert\": false, \"rate\": 0, \"exceptiontype\": \"java.io.IOException\"},\n    {\"alert\": false, \"rate\": 0, \"exceptiontype\": \"java.net.SocketException\"},\n    {\"alert\": false, \"rate\": 0, \"exceptiontype\": \"java.net.SocketClosedException\"},\n    {\"alert\": false, \"rate\": 0, \"exceptiontype\": \"java.io.EOFException\"},\n    {\"alert\": false, \"rate\": 0, \"exceptiontype\": \"java.nio.channels.CancelledKeyException\"},\n    {\"alert\": false, \"rate\": 0, \"threshold\":\"WARN\", \"content\": \"IPC Server handler.*took.*appending an edit to hlog.*\"},\n    {\"alert\": false, \"rate\": 1, \"periodminutes\": 1, \"threshold\":\"WARN\", \"content\": \"ABORTING region server serverName.*\"},\n    {\"alert\": false, \"rate\": 1, \"periodminutes\": 1, \"threshold\":\"WARN\", \"content\": \"DFSOutputStream ResponseProcessor exception.*\"},\n    {\"alert\": false, \"rate\": 1, \"periodminutes\": 1, \"threshold\":\"WARN\", \"content\": \"Error Recovery for block blk.*\"},\n    {\"alert\": false, \"rate\": 1, \"periodminutes\": 1, \"threshold\":\"WARN\", \"content\": \"Failed init\"},\n    {\"alert\": false, \"rate\": 1, \"periodminutes\": 1, \"threshold\":\"WARN\", \"content\": \"Problem renewing lease for DFSClient.*\"},\n    {\"alert\": false, \"rate\": 1, \"periodminutes\": 1, \"threshold\":\"WARN\", \"content\": \"remote error telling master we are up\"},\n    {\"alert\": false, \"rate\": 1, \"periodminutes\": 1, \"threshold\":\"WARN\", \"content\": \"Session.*for server.*closing socket connection and attempting reconnect.\"},\n    {\"alert\": false, \"rate\": 1, \"periodminutes\": 2, \"exceptiontype\": \".*\"},\n    {\"alert\": false, \"rate\": 0, \"threshold\":\"WARN\", \"content\":\"Error executing shell command .+ No such process.+\"},\n    {\"alert\": false, \"rate\": 0, \"threshold\":\"WARN\", \"content\":\".*attempt to override final parameter.+\"},\n    {\"alert\": false, \"rate\": 0, \"threshold\":\"WARN\", \"content\":\"[^ ]+ is a deprecated filesystem name. Use.*\"},\n    {\"alert\": false, \"rate\": -1, \"threshold\":\"INFO\", \"content\": \"^Starting .*compaction on region (.+)$\", \"attribute:CATEGORY\": \"HBASE\", \"attribute:EVENTCODE\": \"EV_HBASE_COMPACTION_REGION_STARTED\", \"attribute:SEVERITY\": \"INFORMATIONAL\", \"group0\": \"REGION\"},\n    {\"alert\": false, \"rate\": -1, \"threshold\":\"INFO\", \"content\": \"^completed compaction on region (.+) after (.+)$\", \"attribute:CATEGORY\": \"HBASE\", \"attribute:EVENTCODE\": \"EV_HBASE_COMPACTION_REGION_COMPLETED\", \"attribute:SEVERITY\": \"INFORMATIONAL\", \"group0\": \"REGION\", \"group1\": \"DURATION\"},\n    {\"alert\": false, \"rate\": -1, \"threshold\":\"INFO\", \"content\": \"^Starting compaction on (.+) in region (.+)$\", \"attribute:CATEGORY\": \"HBASE\", \"attribute:EVENTCODE\": \"EV_HBASE_COMPACTION_COLUMN_FAMILY_STARTED\", \"attribute:SEVERITY\": \"INFORMATIONAL\", \"group0\": \"COLUMN_FAMILY\", \"group1\": \"REGION\"},\n    {\"alert\": false, \"rate\": -1, \"threshold\":\"INFO\", \"content\": \"^completed compaction: regionName=(.+), storeName=(.+), fileCount=(.+), fileSize=(.+), priority=(.+), time=(.+); duration=(.+)$\", \"attribute:CATEGORY\": \"HBASE\", \"attribute:EVENTCODE\": \"EV_HBASE_COMPACTION_COLUMN_FAMILY_COMPLETED\", \"attribute:SEVERITY\": \"INFORMATIONAL\", \"group0\": \"REGION\", \"group1\": \"COLUMN_FAMILY\", \"group2\": \"FILE_COUNT\", \"group3\": \"FILE_SIZE\", \"group4\": \"PRIORITY\", \"group5\": \"REQUEST_TIME_NANOS\", \"group6\": \"DURATION\"},\n    {\"alert\": false, \"rate\": -1, \"threshold\":\"INFO\", \"content\": \"^Completed compaction: Request = regionName=(.+), storeName=(.+), fileCount=(.+), fileSize=(.+), priority=(.+), time=(.+); duration=(.+)$\", \"attribute:CATEGORY\": \"HBASE\", \"attribute:EVENTCODE\": \"EV_HBASE_COMPACTION_COLUMN_FAMILY_COMPLETED\", \"attribute:SEVERITY\": \"INFORMATIONAL\", \"group0\": \"REGION\", \"group1\": \"COLUMN_FAMILY\", \"group2\": \"FILE_COUNT\", \"group3\": \"FILE_SIZE\", \"group4\": \"PRIORITY\", \"group5\": \"REQUEST_TIME_NANOS\", \"group6\": \"DURATION\"},\n    {\"alert\": false, \"rate\": -1, \"threshold\":\"INFO\", \"content\": \"^aborted compaction: regionName=(.+), storeName=(.+), fileCount=(.+), fileSize=(.+), priority=(.+), time=(.+); duration=(.+)$\", \"attribute:CATEGORY\": \"HBASE\", \"attribute:EVENTCODE\": \"EV_HBASE_COMPACTION_COLUMN_FAMILY_ABORTED\", \"attribute:SEVERITY\": \"IMPORTANT\", \"group0\": \"REGION\", \"group1\": \"COLUMN_FAMILY\", \"group2\": \"FILE_COUNT\", \"group3\": \"FILE_SIZE\", \"group4\": \"PRIORITY\", \"group5\": \"REQUEST_TIME_NANOS\", \"group6\": \"DURATION\"},\n    {\"alert\": false, \"rate\": -1, \"threshold\":\"INFO\", \"content\": \"^Finished memstore flush of .+ for region (.+) in (.+), sequenceid=(.+), compaction requested=(.+)$\", \"attribute:CATEGORY\": \"HBASE\", \"attribute:EVENTCODE\": \"EV_HBASE_FLUSH_COMPLETED\", \"attribute:SEVERITY\": \"INFORMATIONAL\", \"group0\": \"REGION\", \"group1\": \"DURATION\", \"group2\": \"SEQUENCE_ID\", \"group3\": \"COMPACTION_REQUESTED\" },\n    {\"alert\": false, \"rate\": -1, \"threshold\":\"INFO\", \"content\": \"^Flush of region (.+) due to global heap pressure$\", \"attribute:CATEGORY\": \"HBASE\", \"attribute:EVENTCODE\": \"EV_HBASE_FLUSH_DUE_TO_HEAP_PRESSURE\", \"attribute:SEVERITY\": \"IMPORTANT\", \"group0\": \"REGION\"},\n    {\"alert\": false, \"rate\": -1, \"threshold\":\"WARN\", \"content\": \"^Region (.+) has too many store files; delaying flush up to 90000ms$\", \"attribute:CATEGORY\": \"HBASE\", \"attribute:EVENTCODE\": \"EV_HBASE_FLUSH_DELAYED_TOO_MANY_STORE_FILES\", \"attribute:SEVERITY\": \"CRITICAL\", \"group0\": \"REGION\"},\n    {\"alert\": false, \"rate\": -1, \"threshold\":\"INFO\", \"content\": \"^Starting split of region (.+)$\", \"attribute:CATEGORY\": \"HBASE\", \"attribute:EVENTCODE\": \"EV_HBASE_SPLIT_STARTED\", \"attribute:SEVERITY\": \"INFORMATIONAL\", \"group0\": \"REGION\"},\n    {\"alert\": false, \"rate\": -1, \"threshold\":\"INFO\", \"content\": \"^Running rollback/cleanup of failed split of (.+);.+$\", \"attribute:CATEGORY\": \"HBASE\", \"attribute:EVENTCODE\": \"EV_HBASE_SPLIT_ABORTED\", \"attribute:SEVERITY\": \"IMPORTANT\", \"group0\": \"REGION\"},\n    {\"alert\": false, \"rate\": -1, \"threshold\":\"INFO\", \"content\": \"^Region split, hbase:meta updated, and report to master. Parent=(.+), new regions: (.+,.*,.+), (.+,.*,.+). Split took (.+)$\", \"attribute:CATEGORY\": \"HBASE\", \"attribute:EVENTCODE\": \"EV_HBASE_SPLIT_COMPLETED\", \"attribute:SEVERITY\": \"INFORMATIONAL\", \"group0\": \"REGION\", \"group1\": \"DAUGHTER_REGIONS\", \"group2\": \"DAUGHTER_REGIONS\", \"group3\": \"DURATION\"},\n    {\"alert\": false, \"rate\": -1, \"threshold\":\"INFO\", \"content\": \"^Region split, META updated, and report to master. Parent=(.+), new regions: (.+,.*,.+), (.+,.*,.+). Split took (.+)$\", \"attribute:CATEGORY\": \"HBASE\", \"attribute:EVENTCODE\": \"EV_HBASE_SPLIT_COMPLETED\", \"attribute:SEVERITY\": \"INFORMATIONAL\", \"group0\": \"REGION\", \"group1\": \"DAUGHTER_REGIONS\", \"group2\": \"DAUGHTER_REGIONS\", \"group3\": \"DURATION\"},\n    {\"alert\": false, \"rate\": 1, \"periodminutes\": 1, \"threshold\":\"WARN\"}\n  ]\n}"
+    },
+    {
+        "desc": "The amount of time to wait for the HBase Region Server to fully start up and connect to the HBase Master before enforcing the connectivity check.",
+        "display_name": "HBase Region Server Connectivity Tolerance at Startup",
+        "name": "regionserver_connectivity_tolerance",
+        "value": "180"
+    },
+    {
+        "desc": "The health test thresholds of the size used by the HStoreFile index. Specified as a percentage of the total heap size.",
+        "display_name": "Percentage of Heap Used by HStoreFile Index",
+        "name": "regionserver_store_file_idx_size_thresholds",
+        "value": "{\"critical\":\"never\",\"warning\":\"10.0\"}"
+    },
+    {
+        "desc": "When set, this role's process is automatically (and transparently) restarted in the event of an unexpected failure.",
+        "display_name": "Automatically Restart Process",
+        "name": "process_auto_restart",
+        "value": "false"
+    },
+    {
+        "desc": "Interval, in milliseconds, between messages from the RegionServer to the HBase Master. Use a high value such as 3000 for clusters that have more than 10 hosts.",
+        "display_name": "HBase RegionServer Message Interval",
+        "name": "hbase_regionserver_msginterval",
+        "value": "3000"
+    },
+    {
+        "desc": "Whether to suppress the results of the GC Duration heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: GC Duration",
+        "name": "role_health_suppression_region_server_gc_duration",
+        "value": "false"
+    },
+    {
+        "desc": "Jitter outer bound for major compactions.\u2028 On each RegionServer, the hbase.region.majorcompaction\u2028 interval is multiplied by a random fraction that is inside the bounds of this\u2028 maximum. This + or - product is added to when the next\u2028 major compaction is to run. Major compaction\u2028 should not occur on every RegionServer at the same time. The\u2028 smaller this number, the closer together the compactions.",
+        "display_name": "HBase HRegion Major Compaction Jitter",
+        "name": "hbase_hregion_majorcompaction_jitter",
+        "value": "0.5"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HBase RegionServer Interface Class parameter.",
+        "display_name": "Suppress Parameter Validation: HBase RegionServer Interface Class",
+        "name": "role_config_suppression_hbase_regionserver_class",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the Unexpected Exits heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Unexpected Exits",
+        "name": "role_health_suppression_region_server_unexpected_exits",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the Web Server Status heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Web Server Status",
+        "name": "role_health_suppression_region_server_web_metric_collection",
+        "value": "false"
+    },
+    {
+        "desc": "The implementation that should be used by the RegionServer for the write-ahead-log.",
+        "display_name": "WAL Provider",
+        "name": "hbase_regionserver_wal_provider",
+        "value": "multiwal"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the HBase RegionServer Multiple HDFS WAL with Replication Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: HBase RegionServer Multiple HDFS WAL with Replication Validator",
+        "name": "role_config_suppression_hbase_regionserver_multiwal_replication_validator",
+        "value": "false"
+    },
+    {
+        "desc": "An interface that is assignable to HRegionInterface. Used in HBase Client for opening a proxy to a remote HBase RegionServer.",
+        "display_name": "HBase RegionServer Interface Class",
+        "name": "hbase_regionserver_class",
+        "value": null
+    },
+    {
+        "desc": "Blocks writes if the size of the memstore increases to the value of 'hbase.hregion.block.memstore' multiplied by the value of 'hbase.hregion.flush.size' bytes. This setting is useful for preventing runaway memstore during spikes in update traffic. Without an upper-bound, memstore fills such that when it flushes, the resultant process of flushing files take a long time to compact or split, or worse, an \"out of memory\" error occurs.",
+        "display_name": "HBase Memstore Block Multiplier",
+        "name": "hbase_hregion_memstore_block_multiplier",
+        "value": "2"
+    }
+]
