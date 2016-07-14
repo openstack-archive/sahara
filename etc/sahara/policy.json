@@ -25,6 +25,7 @@
     "data-processing:plugins:get": "",
     "data-processing:plugins:get_version": "",
     "data-processing:plugins:convert_config": "",
+    "data-processing:plugins:patch": "role:admin",
 
     "data-processing:images:get_all": "",
     "data-processing:images:get": "",

@@ -17,7 +17,7 @@ from oslo_config import cfg
 
 opts = [
     cfg.ListOpt('plugins',
-                default=['vanilla', 'spark', 'cdh', 'ambari'],
+                default=['vanilla', 'spark', 'cdh', 'ambari', 'storm', 'mapr'],
                 help='List of plugins to be loaded. Sahara preserves the '
                      'order of the list when returning it.'),
 ]
