@@ -24,7 +24,7 @@ conductor = c.API
 # Plugins ops
 
 def get_plugins():
-    return plugin_base.PLUGINS.get_plugins()
+    return plugin_base.PLUGINS.get_plugins(serialized=True)
 
 
 def get_plugin(plugin_name, version=None):

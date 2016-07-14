@@ -110,8 +110,10 @@ class PluginManager(object):
                 _("Plugins couldn't be loaded: %s") %
                 ", ".join(requested_plugins - loaded_plugins))
 
-    def get_plugins(self):
-        return [self.serialize_plugin(name) for name in CONF.plugins]
+    def get_plugins(self, serialized=False):
+        if serialized:
+            return [self.serialize_plugin(name) for name in CONF.plugins]
+        return [self.get_plugin(name) for name in CONF.plugins]
 
     def get_plugin(self, plugin_name):
         return self.plugins.get(plugin_name)
