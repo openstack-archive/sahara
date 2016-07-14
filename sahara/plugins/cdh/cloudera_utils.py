@@ -106,10 +106,14 @@ class ClouderaUtils(object):
 
     @cpo.event_wrapper(
         True, step=_("Decommission nodes"), param=('cluster', 1))
-    def decommission_nodes(self, cluster, process, role_names):
+    def decommission_nodes(self, cluster, process,
+                           decommission_roles, roles_to_delete=None):
         service = self.get_service_by_role(process, cluster)
-        service.decommission(*role_names).wait()
-        for role_name in role_names:
+        service.decommission(*decommission_roles).wait()
+        # not all roles should be decommissioned
+        if roles_to_delete:
+            decommission_roles.extend(roles_to_delete)
+        for role_name in decommission_roles:
             service.delete_role(role_name)
 
     @cpo.event_wrapper(
@@ -130,6 +134,15 @@ class ClouderaUtils(object):
         for nd in nds:
             for st in service.refresh(nd):
                 yield st
+
+    @cpo.event_wrapper(
+        True, step=_("Restart stale services"), param=('cluster', 1))
+    @cloudera_cmd
+    def restart_stale_services(self, cluster):
+        cm_cluster = self.get_cloudera_cluster(cluster)
+        yield cm_cluster.restart(
+            restart_only_stale_services=True,
+            redeploy_client_configuration=True)
 
     @cpo.event_wrapper(True, step=_("Deploy configs"), param=('cluster', 1))
     @cloudera_cmd
