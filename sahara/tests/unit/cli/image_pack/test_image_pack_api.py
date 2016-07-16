@@ -48,9 +48,9 @@ class TestSaharaImagePackAPI(base.SaharaTestCase):
 
         guest.add_drive_opts.assert_called_with("image_path", format="qcow2")
         guest.set_network.assert_called_with(True)
-        guest.launch.assert_called_once()
+        guest.launch.assert_called_once_with()
         guest.mount.assert_called_with('/dev/something1', '/')
         guest.sh.assert_called_with("echo Testing sudo without tty...")
-        guest.sync.assert_called_once()
-        guest.umount_all.assert_called_once()
-        guest.close.assert_called_once()
+        guest.sync.assert_called_once_with()
+        guest.umount_all.assert_called_once_with()
+        guest.close.assert_called_once_with()
