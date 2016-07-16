@@ -70,6 +70,19 @@ def validate_instance(instance, validators, reconcile=True, **kwargs):
             validator.validate(remote, reconcile=reconcile, **kwargs)
 
 
+class ImageArgument(object):
+    """An argument used by an image manifest."""
+
+    def __init__(self, name, target_variable, description=None,
+                 default=None, required=False, choices=None):
+        self.name = name
+        self.target_variable = target_variable
+        self.description = description
+        self.default = default
+        self.required = required
+        self.choices = choices
+
+
 @six.add_metaclass(abc.ABCMeta)
 class ImageValidator(object):
     """Validates the image spawned to an instance via a set of rules."""

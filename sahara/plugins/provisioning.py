@@ -94,6 +94,16 @@ class ProvisioningPluginBase(plugins_base.PluginInterface):
         pass
 
     @plugins_base.optional
+    def get_image_arguments(self, hadoop_version):
+        """Gets the argument set taken by the plugin's image generator"""
+        return NotImplemented
+
+    @plugins_base.optional
+    def pack_image(self, hadoop_version, remote,
+                   reconcile=True, image_arguments=None):
+        pass
+
+    @plugins_base.optional
     def validate_images(self, cluster, reconcile=True):
         pass
 
