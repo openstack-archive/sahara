@@ -113,8 +113,16 @@ class TestImages(b.SaharaTestCase):
                   - debian:
                       - package: nfs-common
               - any:
-                - package: java-1.8.0-openjdk-devel
-                - package: java-1.7.0-openjdk-devel
+                - all:
+                  - package: java-1.8.0-openjdk-devel
+                  - argument_set:
+                      argument_name: JAVA_VERSION
+                      value: 1.8.0
+                - all:
+                  - package: java-1.7.0-openjdk-devel
+                  - argument_set:
+                      argument_name: JAVA_VERSION
+                      value: 1.7.0
               - script: test_images.py
               - package:
                 - hadoop
@@ -126,6 +134,14 @@ class TestImages(b.SaharaTestCase):
                 - lzo
                 - lzo-devel
                 - hadoop-lzo-native
+              - argument_case:
+                  argument_name: JAVA_VERSION
+                  cases:
+                    1.7.0:
+                      - script: test_images.py
+                    1.8.0:
+                      - script: test_images.py
+
         """
         spec = yaml.safe_load(spec)
 
@@ -133,11 +149,13 @@ class TestImages(b.SaharaTestCase):
         validators = validator.validators
 
         self.assertIsInstance(validator, cls)
-        self.assertEqual(len(validators), 4)
+        self.assertEqual(len(validators), 5)
         self.assertIsInstance(validators[0], images.SaharaOSCaseValidator)
         self.assertIsInstance(validators[1], images.SaharaAnyValidator)
         self.assertIsInstance(validators[2], images.SaharaScriptValidator)
         self.assertIsInstance(validators[3], images.SaharaPackageValidator)
+        self.assertIsInstance(
+            validators[4], images.SaharaArgumentCaseValidator)
 
     def test_package_validator_redhat(self):
         cls = images.SaharaPackageValidator
@@ -367,6 +385,47 @@ class TestImages(b.SaharaTestCase):
         validator.validate(None, reconcile=True, env_map=env_map)
         self.assertEqual(centos.validator.validate.call_count, 0)
         self.assertEqual(redhat.validator.validate.call_count, 0)
+
+    def test_sahara_argument_case_validator(self):
+        cls = images.SaharaArgumentCaseValidator
+
+        # Match gets called
+        env_map = {"argument": "value"}
+        match = mock.Mock()
+        nomatch = mock.Mock()
+        cases = {"value": match,
+                 "another_value": nomatch}
+        validator = cls("argument", cases)
+        validator.validate(None, reconcile=True, env_map=env_map)
+        self.assertEqual(match.validate.call_count, 1)
+        self.assertEqual(nomatch.validate.call_count, 0)
+        match.validate.assert_called_with(
+            None, reconcile=True, env_map=env_map)
+
+        # Non-matches do nothing
+        env_map = {"argument": "value"}
+        nomatch = mock.Mock()
+        cases = {"some_value": nomatch,
+                 "another_value": nomatch}
+        validator = cls("argument", cases)
+        validator.validate(None, reconcile=True, env_map=env_map)
+        self.assertEqual(nomatch.validate.call_count, 0)
+
+    def test_sahara_argument_set_validator(self):
+        cls = images.SaharaArgumentSetterValidator
+
+        # Old variable is overwritten
+        env_map = {"argument": "value"}
+        validator = cls("argument", "new_value")
+        validator.validate(None, reconcile=True, env_map=env_map)
+        self.assertEqual(env_map["argument"], "new_value")
+
+        # New variable is set
+        env_map = {"argument": "value"}
+        validator = cls("another_argument", "value")
+        validator.validate(None, reconcile=True, env_map=env_map)
+        self.assertEqual(env_map, {"argument": "value",
+                                   "another_argument": "value"})
 
     def test_sahara_image_validator(self):
         cls = images.SaharaImageValidator
