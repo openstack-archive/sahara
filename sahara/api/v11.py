@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from oslo_log import log as logging
 
 from sahara.api import acl
 from sahara.service.api import v11 as api
@@ -30,8 +29,6 @@ from sahara.service.validations.edp import job_execution_schema as v_j_e_schema
 from sahara.service.validations.edp import job_schema as v_j_schema
 import sahara.utils.api as u
 
-
-LOG = logging.getLogger(__name__)
 
 rest = u.Rest('v11', __name__)
 
