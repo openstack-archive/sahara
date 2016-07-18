@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from oslo_log import log as logging
 import six
 
 from sahara.api import acl
@@ -30,8 +29,6 @@ from sahara.service.validations import node_group_templates as v_ngt
 from sahara.service.validations import plugins as v_p
 import sahara.utils.api as u
 
-
-LOG = logging.getLogger(__name__)
 
 rest = u.Rest('v10', __name__)
 
