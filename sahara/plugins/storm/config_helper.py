@@ -73,6 +73,14 @@ def generate_storm_config(master_hostname, zk_hostnames, version):
     return cfg
 
 
+def generate_pyleus_config():
+    separator = "\n"
+    conf = ("[storm]",
+            "storm_cmd_path: /usr/local/storm/bin/storm")
+
+    return separator.join(conf)
+
+
 def generate_slave_supervisor_conf():
     separator = "\n"
     conf = ("[program:storm-supervisor]",

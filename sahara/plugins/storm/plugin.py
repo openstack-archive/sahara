@@ -160,13 +160,15 @@ class StormProvider(p.ProvisioningPluginBase):
         supervisor_conf = c_helper.generate_slave_supervisor_conf()
         nimbus_ui_conf = c_helper.generate_master_supervisor_conf()
         zk_conf = c_helper.generate_zookeeper_conf()
+        pyleus_conf = c_helper.generate_pyleus_config()
 
         for ng in cluster.node_groups:
             extra[ng.id] = {
                 'st_instances': config,
                 'slave_sv_conf': supervisor_conf,
                 'master_sv_conf': nimbus_ui_conf,
-                'zk_conf': zk_conf
+                'zk_conf': zk_conf,
+                'pyleus_conf': pyleus_conf
             }
 
         return extra
@@ -265,6 +267,9 @@ class StormProvider(p.ProvisioningPluginBase):
         files_supervisor_master = {
             '/etc/supervisor/supervisord.conf': ng_extra['master_sv_conf']
         }
+        file_pyleus_conf = {
+            '/home/ubuntu/.pyleus.conf': ng_extra['pyleus_conf']
+        }
 
         with remote.get_remote(instance) as r:
             node_processes = instance.node_group.node_processes
@@ -273,6 +278,7 @@ class StormProvider(p.ProvisioningPluginBase):
                 self._push_zk_configs(r, files_zk)
             if 'nimbus' in node_processes:
                 self._push_supervisor_configs(r, files_supervisor_master)
+                self._push_supervisor_configs(r, file_pyleus_conf)
             if 'supervisor' in node_processes:
                 self._push_supervisor_configs(r, files_supervisor)
 
