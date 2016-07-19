@@ -18,18 +18,35 @@ from sahara.i18n import _
 from sahara.service.edp.storm import engine as edp_engine
 
 
-class EdpEngine(edp_engine.StormJobEngine):
+class EdpStormEngine(edp_engine.StormJobEngine):
 
     edp_base_version = "0.9.2"
 
     @staticmethod
     def edp_supported(version):
-        return version >= EdpEngine.edp_base_version
+        return version >= EdpStormEngine.edp_base_version
 
     def validate_job_execution(self, cluster, job, data):
         if not self.edp_supported(cluster.hadoop_version):
             raise ex.InvalidDataException(
                 _('Storm {base} required to run {type} jobs').format(
-                    base=EdpEngine.edp_base_version, type=job.type))
+                    base=EdpStormEngine.edp_base_version, type=job.type))
 
-        super(EdpEngine, self).validate_job_execution(cluster, job, data)
+        super(EdpStormEngine, self).validate_job_execution(cluster, job, data)
+
+
+class EdpPyleusEngine(edp_engine.StormPyleusJobEngine):
+
+    edp_base_version = "0.9.2"
+
+    @staticmethod
+    def edp_supported(version):
+        return version >= EdpPyleusEngine.edp_base_version
+
+    def validate_job_execution(self, cluster, job, data):
+        if not self.edp_supported(cluster.hadoop_version):
+            raise ex.InvalidDataException(
+                _('Storm {base} required to run {type} jobs').format(
+                    base=EdpPyleusEngine.edp_base_version, type=job.type))
+
+        super(EdpPyleusEngine, self).validate_job_execution(cluster, job, data)

@@ -206,10 +206,18 @@ class StormPluginTest(base.SaharaWithDbTestCase):
         plugin = pb.PLUGINS.get_plugin(cluster.plugin_name)
         self.assertIsInstance(plugin.get_edp_engine(cluster, job_type), eng)
 
-    def test_plugin092_edp_engine(self):
+    def test_plugin092_edp_storm_engine(self):
         self._test_engine('0.9.2', edp.JOB_TYPE_STORM,
                           engine.StormJobEngine)
 
-    def test_plugin101_edp_engine(self):
+    def test_plugin092_edp_storm_pyleus_engine(self):
+        self._test_engine('0.9.2', edp.JOB_TYPE_PYLEUS,
+                          engine.StormJobEngine)
+
+    def test_plugin101_edp_storm_engine(self):
         self._test_engine('1.0.1', edp.JOB_TYPE_STORM,
+                          engine.StormJobEngine)
+
+    def test_plugin101_edp_storm_pyleus_engine(self):
+        self._test_engine('1.0.1', edp.JOB_TYPE_PYLEUS,
                           engine.StormJobEngine)

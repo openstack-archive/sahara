@@ -155,7 +155,7 @@ class TestStorm(base.SaharaTestCase):
                                                     edp.JOB_STATUS_RUNNING}
         status = eng.get_job_status(job_exec)
         _get_job_status_from_remote.assert_called_with(eng,
-                                                       job_exec)
+                                                       job_exec, 3)
         self.assertEqual({"status": edp.JOB_STATUS_RUNNING}, status)
 
     @mock.patch.object(se.StormJobEngine,

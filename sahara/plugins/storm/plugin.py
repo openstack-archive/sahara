@@ -103,22 +103,27 @@ class StormProvider(p.ProvisioningPluginBase):
         self._set_cluster_info(cluster)
 
     def get_edp_engine(self, cluster, job_type):
-        if job_type in edp_engine.EdpEngine.get_supported_job_types():
-            return edp_engine.EdpEngine(cluster)
-
+        if job_type in edp_engine.EdpStormEngine.get_supported_job_types():
+            return edp_engine.EdpStormEngine(cluster)
+        if job_type in edp_engine.EdpPyleusEngine.get_supported_job_types():
+            return edp_engine.EdpPyleusEngine(cluster)
         return None
 
     def get_edp_job_types(self, versions=None):
         res = {}
         for vers in self.get_versions():
             if not versions or vers in versions:
-                if edp_engine.EdpEngine.edp_supported(vers):
-                    res[vers] = edp_engine.EdpEngine.get_supported_job_types()
+                storm_engine = edp_engine.EdpStormEngine
+                pyleus_engine = edp_engine.EdpPyleusEngine
+                res[vers] = (storm_engine.get_supported_job_types() +
+                             pyleus_engine.get_supported_job_types())
         return res
 
     def get_edp_config_hints(self, job_type, version):
-        if edp_engine.EdpEngine.edp_supported(version):
-            return edp_engine.EdpEngine.get_possible_job_config(job_type)
+        if edp_engine.EdpStormEngine.edp_supported(version):
+            return edp_engine.EdpStormEngine.get_possible_job_config(job_type)
+        if edp_engine.EdpPyleusEngine.edp_supported(version):
+            return edp_engine.EdpPyleusEngine.get_possible_job_config(job_type)
         return {}
 
     def get_open_ports(self, node_group):

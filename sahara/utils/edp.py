@@ -57,6 +57,7 @@ JOB_TYPE_JAVA = 'Java'
 JOB_TYPE_MAPREDUCE = 'MapReduce'
 JOB_TYPE_SPARK = 'Spark'
 JOB_TYPE_STORM = 'Storm'
+JOB_TYPE_PYLEUS = 'Storm.Pyleus'
 JOB_TYPE_MAPREDUCE_STREAMING = (JOB_TYPE_MAPREDUCE + JOB_TYPE_SEP +
                                 JOB_SUBTYPE_STREAMING)
 JOB_TYPE_PIG = 'Pig'
@@ -71,7 +72,8 @@ JOB_TYPES_ALL = [
     JOB_TYPE_PIG,
     JOB_TYPE_SHELL,
     JOB_TYPE_SPARK,
-    JOB_TYPE_STORM
+    JOB_TYPE_STORM,
+    JOB_TYPE_PYLEUS
 ]
 
 JOB_TYPES_ACCEPTABLE_CONFIGS = {
@@ -82,7 +84,8 @@ JOB_TYPES_ACCEPTABLE_CONFIGS = {
     JOB_TYPE_JAVA: {"configs", "args"},
     JOB_TYPE_SHELL: {"configs", "params", "args"},
     JOB_TYPE_SPARK: {"configs", "args"},
-    JOB_TYPE_STORM: {"args"}
+    JOB_TYPE_STORM: {"args"},
+    JOB_TYPE_PYLEUS: {}
 }
 
 # job actions

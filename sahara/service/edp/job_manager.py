@@ -43,7 +43,8 @@ conductor = c.API
 
 ENGINES = [oozie_engine.OozieJobEngine,
            spark_engine.SparkJobEngine,
-           storm_engine.StormJobEngine]
+           storm_engine.StormJobEngine,
+           storm_engine.StormPyleusJobEngine]
 
 
 def _get_job_type(job_execution):
