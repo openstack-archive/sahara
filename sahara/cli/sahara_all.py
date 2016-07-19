@@ -20,7 +20,6 @@ import os
 import sys
 
 import oslo_i18n
-from oslo_log import log as logging
 
 
 # If ../sahara/__init__.py exists, add ../ to Python search path, so that
@@ -41,9 +40,6 @@ oslo_i18n.enable_lazy()
 
 
 import sahara.main as server
-
-
-LOG = logging.getLogger(__name__)
 
 
 def main():
