@@ -1,0 +1,11 @@
+[libdefaults]
+ default_realm = %(realm_name)s
+ forwardable = true
+ proxiable = true
+[realms]
+ %(realm_name)s = {
+  kdc = %(server)s
+  admin_server = %(server)s
+ }
+[domain_realm]
+ .%(node_domain)s = %(realm_name)s

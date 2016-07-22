@@ -77,7 +77,21 @@ def start_process_event_message(process):
         process=process)
 
 
-def get_config_value_or_default(service, name, cluster):
+def get_config_value_or_default(
+        service=None, name=None, cluster=None, config=None):
+    if not config:
+        if not service or not name:
+            raise RuntimeError(_("Unable to retrieve config details"))
+        default_value = None
+    else:
+        service = config.applicable_target
+        name = config.name
+        default_value = config.default_value
+
+    cluster_configs = cluster.cluster_configs
+    if cluster_configs.get(service, {}).get(name, None) is not None:
+        return cluster_configs.get(service, {}).get(name, None)
+
     # Try getting config from the cluster.
     for ng in cluster.node_groups:
         if (ng.configuration().get(service) and
@@ -85,6 +99,8 @@ def get_config_value_or_default(service, name, cluster):
             return ng.configuration()[service][name]
 
     # Find and return the default
+    if default_value is not None:
+        return default_value
 
     plugin = plugins_base.PLUGINS.get_plugin(cluster.plugin_name)
     configs = plugin.get_all_configs(cluster.hadoop_version)

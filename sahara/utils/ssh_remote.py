@@ -357,13 +357,13 @@ def _get_os_distrib():
     return _execute_command(
         ('printf "import platform\nprint(platform.linux_distribution('
          'full_distribution_name=0)[0])" | python'),
-        run_as_root=False)[1].lower()
+        run_as_root=False)[1].lower().strip()
 
 
 def _get_os_version():
     return _execute_command(
         ('printf "import platform\nprint(platform.linux_distribution()[1])"'
-         ' | python'), run_as_root=False)
+         ' | python'), run_as_root=False)[1].strip()
 
 
 def _install_packages(packages):
@@ -837,6 +837,9 @@ class InstanceInteropHelper(remote.Remote):
 
     def get_os_distrib(self, timeout=None):
         return self._run_s(_get_os_distrib, timeout, "get_os_distrib")
+
+    def get_os_version(self, timeout=None):
+        return self._run_s(_get_os_version, timeout, "get_os_version")
 
     def install_packages(self, packages, timeout=None):
         description = _('Installing packages "%s"') % list(packages)

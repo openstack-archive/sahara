@@ -17,6 +17,7 @@ from sahara import context
 from sahara.i18n import _
 from sahara.plugins import exceptions as pex
 from sahara.plugins.fake import edp_engine
+from sahara.plugins import kerberos as krb
 from sahara.plugins import provisioning as p
 from sahara.plugins import utils as plugin_utils
 
@@ -49,11 +50,12 @@ class FakePluginProvider(p.ProvisioningPluginBase):
         return {
             "HDFS": ["namenode", "datanode"],
             "MapReduce": ["tasktracker", "jobtracker"],
+            "Kerberos": [],
         }
 
     def get_configs(self, hadoop_version):
-        # no need to expose any configs, it could be checked using real plugins
-        return []
+        # returning kerberos configs
+        return krb.get_config_list()
 
     def configure_cluster(self, cluster):
         with context.ThreadGroup() as tg:
@@ -62,10 +64,22 @@ class FakePluginProvider(p.ProvisioningPluginBase):
                          self._write_ops, instance)
 
     def start_cluster(self, cluster):
+        self.deploy_kerberos(cluster)
         with context.ThreadGroup() as tg:
             for instance in plugin_utils.get_instances(cluster):
                 tg.spawn('fake-check-%s' % instance.id,
                          self._check_ops, instance)
+
+    def deploy_kerberos(self, cluster):
+        all_instances = plugin_utils.get_instances(cluster)
+        namenodes = plugin_utils.get_instances(cluster, 'namenode')
+        server = None
+        if len(namenodes) > 0:
+            server = namenodes[0]
+        elif len(all_instances) > 0:
+            server = all_instances[0]
+        if server:
+            krb.deploy_infrastructure(cluster, server)
 
     def scale_cluster(self, cluster, instances):
         with context.ThreadGroup() as tg:
