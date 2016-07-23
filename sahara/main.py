@@ -26,7 +26,6 @@ from sahara.api import acl
 from sahara.common import config as common_config
 from sahara import config
 from sahara.i18n import _LI
-from sahara.i18n import _LW
 from sahara.plugins import base as plugins_base
 from sahara.service import api
 from sahara.service.castellan import config as castellan
@@ -49,12 +48,6 @@ opts = [
     cfg.IntOpt('api_workers', default=1,
                help="Number of workers for Sahara API service (0 means "
                     "all-in-one-thread configuration)."),
-    # TODO(vgridnev): Remove in N release
-    cfg.StrOpt('infrastructure_engine',
-               default='heat',
-               help='An engine which will be used to provision '
-                    'infrastructure for Hadoop cluster.',
-               deprecated_for_removal=True),
 ]
 
 INFRASTRUCTURE_ENGINE = 'heat'
@@ -131,10 +124,6 @@ def _load_driver(namespace, name):
 
 def _get_infrastructure_engine():
     """Import and return one of sahara.service.*_engine.py modules."""
-    if CONF.infrastructure_engine != "heat":
-        LOG.warning(_LW("Engine {engine} is not supported. Loading Heat "
-                        "infrastructure engine instead.").format(
-            engine=CONF.infrastructure_engine))
     LOG.debug("Infrastructure engine {engine} is loading".format(
         engine=INFRASTRUCTURE_ENGINE))
     return _load_driver('sahara.infrastructure.engine', INFRASTRUCTURE_ENGINE)
