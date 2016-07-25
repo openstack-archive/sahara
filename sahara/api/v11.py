@@ -41,7 +41,8 @@ rest = u.Rest('v11', __name__)
 @rest.get('/job-executions')
 @acl.enforce("data-processing:job-executions:get_all")
 @v.check_exists(api.get_job_execution, 'marker')
-@v.validate(None, v.validate_pagination_limit)
+@v.validate(None, v.validate_pagination_limit,
+            v.validate_sorting_job_executions)
 def job_executions_list():
     result = api.job_execution_list(
         **u.get_request_args().to_dict())
@@ -94,7 +95,8 @@ def job_executions_delete(job_execution_id):
 @rest.get('/data-sources')
 @acl.enforce("data-processing:data-sources:get_all")
 @v.check_exists(api.get_data_source, 'marker')
-@v.validate(None, v.validate_pagination_limit)
+@v.validate(None, v.validate_pagination_limit,
+            v.validate_sorting_data_sources)
 def data_sources_list():
     result = api.get_data_sources(**u.get_request_args().to_dict())
     return u.render(res=result, name='data_sources')
@@ -136,7 +138,8 @@ def data_source_update(data_source_id, data):
 @rest.get('/jobs')
 @acl.enforce("data-processing:jobs:get_all")
 @v.check_exists(api.get_job, 'marker')
-@v.validate(None, v.validate_pagination_limit)
+@v.validate(None, v.validate_pagination_limit,
+            v.validate_sorting_jobs)
 def job_list():
 
     result = api.get_jobs(**u.get_request_args().to_dict())
@@ -211,7 +214,8 @@ def job_binary_create(data):
 @rest.get('/job-binaries')
 @acl.enforce("data-processing:job-binaries:get_all")
 @v.check_exists(api.get_job_binaries, 'marker')
-@v.validate(None, v.validate_pagination_limit)
+@v.validate(None, v.validate_pagination_limit,
+            v.validate_sorting_job_binaries)
 def job_binary_list():
     result = api.get_job_binaries(**u.get_request_args().to_dict())
 
@@ -263,7 +267,8 @@ def job_binary_internal_create(**values):
 @rest.get('/job-binary-internals')
 @acl.enforce("data-processing:job-binary-internals:get_all")
 @v.check_exists(api.get_job_binary_internal, 'marker')
-@v.validate(None, v.validate_pagination_limit)
+@v.validate(None, v.validate_pagination_limit,
+            v.validate_sorting_job_binary_internals)
 def job_binary_internal_list():
     result = api.get_job_binary_internals(**u.get_request_args().to_dict())
     return u.render(res=result, name='binaries')

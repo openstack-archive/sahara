@@ -36,7 +36,8 @@ def job_binary_create(data):
 @rest.get('/job-binaries')
 @acl.enforce("data-processing:job-binaries:get_all")
 @v.check_exists(api.get_job_binary, 'marker')
-@v.validate(None, v.validate_pagination_limit)
+@v.validate(None, v.validate_pagination_limit,
+            v.validate_sorting_job_binaries)
 def job_binary_list():
     result = api.get_job_binaries(**u.get_request_args().to_dict())
     return u.render(res=result, name='binaries')
