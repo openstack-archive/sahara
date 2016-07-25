@@ -109,4 +109,5 @@ def execute_with_retries(method, *args, **kwargs):
                               method=method.__name__, error_msg=e))
                 raise e
     else:
+        attempts = CONF.retries.retries_number
         raise ex.MaxRetriesExceeded(attempts, method.__name__)
