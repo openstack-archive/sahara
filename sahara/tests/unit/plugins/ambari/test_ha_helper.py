@@ -169,7 +169,7 @@ class HAHelperTestCase(base.SaharaTestCase):
                 "%s:50470" % i.fqdn())
             prop["dfs.namenode.rpc-address.hdfs-ha.%s" % i.instance_name] = (
                 "%s:8020" % i.fqdn())
-        self.assertDictEqual(result["hdfs-site"], ha._find_hdfs_site(bp))
+        self.assertEqual(result["hdfs-site"], ha._find_hdfs_site(bp))
 
     @mock.patch("sahara.plugins.utils.get_instance")
     @mock.patch("sahara.plugins.utils.get_instances")
@@ -225,7 +225,7 @@ class HAHelperTestCase(base.SaharaTestCase):
                 i.instance_name)] = "{}:8088".format(i.fqdn())
             props["yarn.resourcemanager.webapp.https.address.{}".format(
                 i.instance_name)] = "{}:8090".format(i.fqdn())
-        self.assertDictEqual(result["yarn-site"], ha._find_yarn_site(bp))
+        self.assertEqual(result["yarn-site"], ha._find_yarn_site(bp))
 
     @mock.patch("sahara.plugins.utils.get_instances")
     def test__confgure_hbase_site(self, mock_get_instances):
@@ -253,4 +253,4 @@ class HAHelperTestCase(base.SaharaTestCase):
                     ",".join([i.fqdn() for i in mock_get_instances()])
             }
         }
-        self.assertDictEqual(result["hbase-site"], ha._find_hbase_site(bp))
+        self.assertEqual(result["hbase-site"], ha._find_hbase_site(bp))

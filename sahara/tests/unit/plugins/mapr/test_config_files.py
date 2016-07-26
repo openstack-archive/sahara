@@ -42,7 +42,7 @@ class TestHadoopXML(b.SaharaTestCase):
         foo = conf_f.HadoopXML('foo')
         foo.parse(self.content)
         expected = {'key1': 'value1', 'key2': 'value2'}
-        self.assertDictEqual(expected, foo._config_dict)
+        self.assertEqual(expected, foo._config_dict)
 
     def test_render(self):
         foo = conf_f.HadoopXML('foo')
@@ -51,16 +51,16 @@ class TestHadoopXML(b.SaharaTestCase):
         actual = foo.render()
         bar = conf_f.HadoopXML('bar')
         bar.parse(actual)
-        self.assertDictEqual(expected, bar._config_dict)
+        self.assertEqual(expected, bar._config_dict)
 
     def test_add_property(self):
         foo = conf_f.HadoopXML('foo')
-        self.assertDictEqual(foo._config_dict, {})
+        self.assertEqual(foo._config_dict, {})
         foo.add_property('key1', 'value1')
-        self.assertDictEqual(foo._config_dict, {'key1': 'value1'})
+        self.assertEqual(foo._config_dict, {'key1': 'value1'})
         foo.add_property('key2', 'value2')
         expected = {'key1': 'value1', 'key2': 'value2'}
-        self.assertDictEqual(expected, foo._config_dict)
+        self.assertEqual(expected, foo._config_dict)
 
     def test_get_config_value(self):
         foo = conf_f.HadoopXML('foo')
@@ -83,7 +83,7 @@ class TestRawFile(b.SaharaTestCase):
         foo = conf_f.RawFile('foo')
         foo.parse(self.content)
         expected = {'content': self.content}
-        self.assertDictEqual(expected, foo._config_dict)
+        self.assertEqual(expected, foo._config_dict)
 
     def test_render(self):
         foo = conf_f.RawFile('foo')
@@ -92,7 +92,7 @@ class TestRawFile(b.SaharaTestCase):
         actual = foo.render()
         bar = conf_f.RawFile('bar')
         bar.parse(actual)
-        self.assertDictEqual(expected, bar._config_dict)
+        self.assertEqual(expected, bar._config_dict)
 
 
 class TestPropertiesFile(b.SaharaTestCase):
@@ -112,7 +112,7 @@ key2=value2
         foo = conf_f.PropertiesFile('foo')
         foo.parse(self.content)
         expected = {'key1': 'value1', 'key2': 'value2'}
-        self.assertDictEqual(expected, foo._config_dict)
+        self.assertEqual(expected, foo._config_dict)
 
     def test_render(self):
         foo = conf_f.PropertiesFile('foo')
@@ -121,20 +121,20 @@ key2=value2
         actual = foo.render()
         bar = conf_f.PropertiesFile('bar')
         bar.parse(actual)
-        self.assertDictEqual(expected, bar._config_dict)
+        self.assertEqual(expected, bar._config_dict)
 
     def test_add_property(self):
         foo = conf_f.PropertiesFile('foo')
         expected = {}
-        self.assertDictEqual(expected, foo._config_dict)
+        self.assertEqual(expected, foo._config_dict)
 
         foo.add_property('key1', 'value1')
         expected = {'key1': 'value1'}
-        self.assertDictEqual(expected, foo._config_dict)
+        self.assertEqual(expected, foo._config_dict)
 
         foo.add_property('key2', 'value2')
         expected = {'key1': 'value1', 'key2': 'value2'}
-        self.assertDictEqual(expected, foo._config_dict)
+        self.assertEqual(expected, foo._config_dict)
 
     def test_get_config_value(self):
         foo = conf_f.PropertiesFile('foo')
@@ -174,15 +174,15 @@ key2=value2'''
     def test_add_property(self):
         foo = conf_f.TemplateFile('foo')
         expected = {}
-        self.assertDictEqual(expected, foo._config_dict)
+        self.assertEqual(expected, foo._config_dict)
 
         foo.add_property('key1', 'value1')
         expected = {'key1': 'value1'}
-        self.assertDictEqual(expected, foo._config_dict)
+        self.assertEqual(expected, foo._config_dict)
 
         foo.add_property('key2', 'value2')
         expected = {'key1': 'value1', 'key2': 'value2'}
-        self.assertDictEqual(expected, foo._config_dict)
+        self.assertEqual(expected, foo._config_dict)
 
 
 class TestEnvironmentConfig(b.SaharaTestCase):
@@ -204,7 +204,7 @@ export key
         foo = conf_f.EnvironmentConfig('foo')
         foo.parse(self.content)
         expected = {'key1': 'value1', 'key2': 'value2'}
-        self.assertDictEqual(expected, foo._config_dict)
+        self.assertEqual(expected, foo._config_dict)
 
     def test_render(self):
         foo = conf_f.EnvironmentConfig('foo')
@@ -213,7 +213,7 @@ export key
         actual = foo.render()
         bar = conf_f.EnvironmentConfig('bar')
         bar.parse(actual)
-        self.assertDictEqual(expected, bar._config_dict)
+        self.assertEqual(expected, bar._config_dict)
 
     def test_render_extra_properties(self):
         foo = conf_f.EnvironmentConfig('foo')
@@ -223,16 +223,16 @@ export key
         bar = conf_f.EnvironmentConfig('bar')
         bar.parse(foo_content)
         expected = {'key1': 'value1', 'key2': 'value2', 'key3': 'value3'}
-        self.assertDictEqual(expected, bar._config_dict)
+        self.assertEqual(expected, bar._config_dict)
 
     def test_add_property(self):
         foo = conf_f.EnvironmentConfig('foo')
-        self.assertDictEqual({}, foo._config_dict)
+        self.assertEqual({}, foo._config_dict)
         foo.add_property('key1', 'value1')
-        self.assertDictEqual({'key1': 'value1'}, foo._config_dict)
+        self.assertEqual({'key1': 'value1'}, foo._config_dict)
         foo.add_property('key2', 'value2')
         expected = {'key1': 'value1', 'key2': 'value2'}
-        self.assertDictEqual(expected, foo._config_dict)
+        self.assertEqual(expected, foo._config_dict)
 
     def test_get_config_value(self):
         foo = conf_f.EnvironmentConfig('foo')
