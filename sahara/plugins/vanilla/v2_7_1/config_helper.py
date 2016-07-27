@@ -15,7 +15,9 @@
 
 from oslo_config import cfg
 from oslo_log import log as logging
+import six
 
+from sahara.plugins import provisioning as p
 from sahara.plugins.vanilla.hadoop2 import config_helper as c_helper
 from sahara.utils import xmlutils as x
 
@@ -69,7 +71,6 @@ ENV_CONFS = {
     }
 }
 
-
 # Initialise plugin Hadoop configurations
 PLUGIN_XML_CONFIGS = c_helper.init_xml_configs(XML_CONFS)
 PLUGIN_ENV_CONFIGS = c_helper.init_env_configs(ENV_CONFS)
@@ -80,7 +81,22 @@ def _init_all_configs():
     configs.extend(PLUGIN_XML_CONFIGS)
     configs.extend(PLUGIN_ENV_CONFIGS)
     configs.extend(c_helper.PLUGIN_GENERAL_CONFIGS)
+    configs.extend(_get_spark_configs())
     return configs
+
+
+def _get_spark_configs():
+    spark_configs = []
+    for service, config_items in six.iteritems(c_helper.SPARK_CONFS):
+        for item in config_items['OPTIONS']:
+            cfg = p.Config(name=item["name"],
+                           description=item["description"],
+                           default_value=item["default"],
+                           applicable_target=service,
+                           scope="cluster", is_optional=True,
+                           priority=item["priority"])
+            spark_configs.append(cfg)
+    return spark_configs
 
 
 PLUGIN_CONFIGS = _init_all_configs()

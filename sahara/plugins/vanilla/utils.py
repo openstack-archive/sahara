@@ -37,6 +37,10 @@ def get_oozie(cluster):
     return u.get_instance(cluster, "oozie")
 
 
+def get_spark_history_server(cluster):
+    return u.get_instance(cluster, "spark history server")
+
+
 def get_hiveserver(cluster):
     return u.get_instance(cluster, "hiveserver")
 
