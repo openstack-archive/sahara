@@ -1,0 +1,7 @@
+---
+features:
+  - Versions 5.5.0 and 5.7.0 of Cloudera plugin are declared as stable.
+deprecations:
+  - Versions 5, 5.3.0, 5.4.0 of Cloudera plugin are deprecated.
+    It is no longer maintainted and supposed to be removed in P
+    release.

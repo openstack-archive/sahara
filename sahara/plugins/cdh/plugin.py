@@ -35,8 +35,14 @@ class CDHPluginProvider(p.ProvisioningPluginBase):
     def get_labels(self):
         default = {'enabled': {'status': True}, 'stable': {'status': True}}
         result = {'plugin_labels': copy.deepcopy(default)}
+        deprecated = {'enabled': {'status': True},
+                      'deprecated': {'status': True}}
         result['version_labels'] = {
-            version: copy.deepcopy(default) for version in self.get_versions()
+            '5.7.0': copy.deepcopy(default),
+            '5.5.0': copy.deepcopy(default),
+            '5.4.0': copy.deepcopy(deprecated),
+            '5.3.0': copy.deepcopy(deprecated),
+            '5': copy.deepcopy(deprecated),
         }
         return result
 
