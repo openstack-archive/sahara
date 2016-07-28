@@ -106,29 +106,41 @@ def scale_cluster(cluster, instances):
     CU.configure_instances(instances, cluster)
     CU.update_configs(instances)
     CU.pu.configure_swift(cluster, instances)
-    CU.refresh_datanodes(cluster)
     _start_roles(cluster, instances)
+    CU.refresh_datanodes(cluster)
+    CU.refresh_yarn_nodes(cluster)
+    CU.restart_stale_services(cluster)
 
 
 def decommission_cluster(cluster, instances):
     dns = []
+    dns_to_delete = []
     nms = []
+    nms_to_delete = []
     for i in instances:
         if 'HDFS_DATANODE' in i.node_group.node_processes:
             dns.append(CU.pu.get_role_name(i, 'DATANODE'))
+            dns_to_delete.append(
+                CU.pu.get_role_name(i, 'HDFS_GATEWAY'))
+
         if 'YARN_NODEMANAGER' in i.node_group.node_processes:
             nms.append(CU.pu.get_role_name(i, 'NODEMANAGER'))
+            nms_to_delete.append(
+                CU.pu.get_role_name(i, 'YARN_GATEWAY'))
 
     if dns:
-        CU.decommission_nodes(cluster, 'DATANODE', dns)
+        CU.decommission_nodes(
+            cluster, 'DATANODE', dns, dns_to_delete)
 
     if nms:
-        CU.decommission_nodes(cluster, 'NODEMANAGER', nms)
+        CU.decommission_nodes(
+            cluster, 'NODEMANAGER', nms, nms_to_delete)
 
     CU.delete_instances(cluster, instances)
 
     CU.refresh_datanodes(cluster)
     CU.refresh_yarn_nodes(cluster)
+    CU.restart_stale_services(cluster)
 
 
 @cpo.event_wrapper(True, step=_("Prepare cluster"), param=('cluster', 0))

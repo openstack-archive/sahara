@@ -119,16 +119,20 @@ class DeployCDHV550(base.SaharaTestCase):
     def test_decommission_cluster(self, mock_cu):
         deploy.decommission_cluster(self.cluster, self.instances)
         dns = []
+        dns_2 = []
         nms = []
+        nms_2 = []
         for i in self.instances:
             if 'HDFS_DATANODE' in i.node_group.node_processes:
                 dns.append(mock_cu.pu.get_role_name(i, 'DATANODE'))
+                dns_2.append(mock_cu.pu.get_role_name(i, 'HDFS_GATEWAY'))
             if 'YARN_NODEMANAGER' in i.node_group.node_processes:
                 nms.append(mock_cu.pu.get_role_name(i, 'NODEMANAGER'))
+                nms_2.append(mock_cu.pu.get_role_name(i, 'YARN_GATEWAY'))
         mock_cu.decommission_nodes.assert_any_call(
-            self.cluster, 'DATANODE', dns)
+            self.cluster, 'DATANODE', dns, dns_2)
         mock_cu.decommission_nodes.assert_any_call(
-            self.cluster, 'NODEMANAGER', nms)
+            self.cluster, 'NODEMANAGER', nms, nms_2)
         mock_cu.delete_instances.assert_called_once_with(self.cluster,
                                                          self.instances)
         mock_cu.refresh_datanodes.assert_called_once_with(self.cluster)

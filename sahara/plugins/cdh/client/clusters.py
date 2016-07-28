@@ -138,6 +138,32 @@ class ApiCluster(types.BaseApiResource):
         """
         return self._cmd('start')
 
+    def restart(self, restart_only_stale_services=None,
+                redeploy_client_configuration=None,
+                restart_service_names=None):
+        """Restart all services in the cluster. Services are restarted in the
+
+        appropriate order given their dependencies.
+        :param restart_only_stale_services: Only restart services that
+        have stale configuration and their dependent
+        services. Default is False.
+        :param redeploy_client_configuration: Re-deploy client configuration
+        for all services in the cluster. Default is False.
+        :param restart_service_names: Only restart services that are specified
+        and their dependent services.
+        :return: Reference to the submitted command.
+        """
+        if self._get_resource_root().version < 6:
+            return self._cmd('restart')
+
+        args = dict()
+        args['restartOnlyStaleServices'] = restart_only_stale_services
+        args['redeployClientConfiguration'] = redeploy_client_configuration
+        if self._get_resource_root().version >= 11:
+            args['restartServiceNames'] = restart_service_names
+
+        return self._cmd('restart', data=args, api_version=6)
+
     def deploy_client_config(self):
         """Deploys Service client configuration to the hosts on the cluster
 
