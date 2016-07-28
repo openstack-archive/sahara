@@ -24,6 +24,7 @@ from sahara import context
 from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.i18n import _LE
+from sahara.utils import types
 from sahara.utils import wsgi
 
 
@@ -183,11 +184,19 @@ def _init_resp_type(file_upload):
     flask.request.file_upload = file_upload
 
 
-def render(res=None, resp_type=None, status=None, **kwargs):
-    if not res:
+def render(res=None, resp_type=None, status=None, name=None, **kwargs):
+    if not res and type(res) is not types.Page:
         res = {}
     if type(res) is dict:
         res.update(kwargs)
+
+    elif type(res) is types.Page:
+
+        result = {name: [item.to_dict() for item in res]}
+        result.update(kwargs)
+        if res.prev or res.next or ('marker' in get_request_args()):
+            result["markers"] = {"prev": res.prev, "next": res.next}
+        res = result
     elif kwargs:
         # can't merge kwargs into the non-dict res
         abort_and_log(500,

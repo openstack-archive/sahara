@@ -21,6 +21,7 @@ from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.utils import api as u
 from sahara.utils import api_validator
+from sahara.utils import types
 
 
 def _get_path(path):
@@ -36,6 +37,18 @@ def _generate_error(errors):
     message = [_get_path(list(e.path)) + e.message for e in errors]
     if message:
         return ex.SaharaException('\n'.join(message), "VALIDATION_ERROR")
+
+
+def validate_pagination_limit():
+    request_args = u.get_request_args()
+    if 'limit' in request_args:
+        if types.is_int(request_args['limit']):
+            if not int(request_args['limit']) > 0:
+                raise ex.SaharaException(
+                    _("'limit' must be positive integer"), 400)
+        else:
+            raise ex.SaharaException(
+                _("'limit' must be positive integer"), 400)
 
 
 def validate(schema, *validators):
@@ -73,6 +86,11 @@ def check_exists(get_func, *id_prop, **get_args):
             if id_prop and not get_args:
                 get_args['id'] = id_prop[0]
 
+            if 'marker' in id_prop:
+                if 'marker' not in u.get_request_args():
+                    return func(*args, **kwargs)
+                kwargs['marker'] = u.get_request_args()['marker']
+
             get_kwargs = {}
             for get_arg in get_args:
                 get_kwargs[get_arg] = kwargs[get_args[get_arg]]
@@ -88,7 +106,8 @@ def check_exists(get_func, *id_prop, **get_args):
                 e = ex.NotFoundException(get_kwargs,
                                          _('Object with %s not found'))
                 return u.not_found(e)
-
+            if 'marker' in kwargs:
+                del(kwargs['marker'])
             return func(*args, **kwargs)
 
         return handler

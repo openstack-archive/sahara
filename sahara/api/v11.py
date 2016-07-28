@@ -37,10 +37,12 @@ rest = u.Rest('v11', __name__)
 
 @rest.get('/job-executions')
 @acl.enforce("data-processing:job-executions:get_all")
+@v.check_exists(api.get_job_execution, 'marker')
+@v.validate(None, v.validate_pagination_limit)
 def job_executions_list():
-    job_executions = [je.to_dict() for je in api.job_execution_list(
-        **u.get_request_args().to_dict())]
-    return u.render(job_executions=job_executions)
+    result = api.job_execution_list(
+        **u.get_request_args().to_dict())
+    return u.render(res=result, name='job_executions')
 
 
 @rest.get('/job-executions/<job_execution_id>')
@@ -88,10 +90,11 @@ def job_executions_delete(job_execution_id):
 
 @rest.get('/data-sources')
 @acl.enforce("data-processing:data-sources:get_all")
+@v.check_exists(api.get_data_source, 'marker')
+@v.validate(None, v.validate_pagination_limit)
 def data_sources_list():
-    return u.render(
-        data_sources=[ds.to_dict() for ds in api.get_data_sources(
-            **u.get_request_args().to_dict())])
+    result = api.get_data_sources(**u.get_request_args().to_dict())
+    return u.render(res=result, name='data_sources')
 
 
 @rest.post('/data-sources')
@@ -129,9 +132,13 @@ def data_source_update(data_source_id, data):
 
 @rest.get('/jobs')
 @acl.enforce("data-processing:jobs:get_all")
+@v.check_exists(api.get_job, 'marker')
+@v.validate(None, v.validate_pagination_limit)
 def job_list():
-    return u.render(jobs=[j.to_dict() for j in api.get_jobs(
-        **u.get_request_args().to_dict())])
+
+    result = api.get_jobs(**u.get_request_args().to_dict())
+
+    return u.render(res=result, name='jobs')
 
 
 @rest.post('/jobs')
@@ -200,9 +207,12 @@ def job_binary_create(data):
 
 @rest.get('/job-binaries')
 @acl.enforce("data-processing:job-binaries:get_all")
+@v.check_exists(api.get_job_binaries, 'marker')
+@v.validate(None, v.validate_pagination_limit)
 def job_binary_list():
-    return u.render(binaries=[j.to_dict() for j in api.get_job_binaries(
-        **u.get_request_args().to_dict())])
+    result = api.get_job_binaries(**u.get_request_args().to_dict())
+
+    return u.render(res=result, name='binaries')
 
 
 @rest.get('/job-binaries/<job_binary_id>')
@@ -234,8 +244,8 @@ def job_binary_data(job_binary_id):
 @acl.enforce("data-processing:job-binaries:modify")
 @v.validate(v_j_b_schema.JOB_BINARY_UPDATE_SCHEMA, v_j_b.check_job_binary)
 def job_binary_update(job_binary_id, data):
-    return u.render(
-        api.update_job_binary(job_binary_id, data).to_wrapped_dict())
+    return u.render(api.update_job_binary(job_binary_id,
+                                          data).to_wrapped_dict())
 
 
 # Job binary internals ops
@@ -249,10 +259,11 @@ def job_binary_internal_create(**values):
 
 @rest.get('/job-binary-internals')
 @acl.enforce("data-processing:job-binary-internals:get_all")
+@v.check_exists(api.get_job_binary_internal, 'marker')
+@v.validate(None, v.validate_pagination_limit)
 def job_binary_internal_list():
-    return u.render(binaries=[j.to_dict() for j in
-                              api.get_job_binary_internals(
-                                  **u.get_request_args().to_dict())])
+    result = api.get_job_binary_internals(**u.get_request_args().to_dict())
+    return u.render(res=result, name='binaries')
 
 
 @rest.get('/job-binary-internals/<job_binary_internal_id>')

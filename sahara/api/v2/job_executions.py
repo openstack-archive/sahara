@@ -27,10 +27,11 @@ rest = u.RestV2('job-executions', __name__)
 
 @rest.get('/jobs')
 @acl.enforce("data-processing:job-executions:get_all")
+@v.check_exists(api.get_job_execution, 'marker')
+@v.validate(None, v.validate_pagination_limit)
 def job_executions_list():
-    jobs = [je.to_dict() for je in api.job_execution_list(
-        **u.get_request_args().to_dict())]
-    return u.render(jobs=jobs)
+    result = api.job_execution_list(**u.get_request_args().to_dict())
+    return u.render(res=result, name='jobs')
 
 
 @rest.get('/jobs/<job_execution_id>')

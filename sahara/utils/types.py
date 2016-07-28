@@ -100,3 +100,10 @@ def transform_to_num(s):
             return float(str(s))
         except ValueError:
             return s
+
+
+class Page(list):
+    def __init__(self, l, prev=None, next=None):
+        super(Page, self).__init__(l)
+        self.prev = prev
+        self.next = next

@@ -26,10 +26,11 @@ rest = u.RestV2('data-sources', __name__)
 
 @rest.get('/data-sources')
 @acl.enforce("data-processing:data-sources:get_all")
+@v.check_exists(api.get_data_source, 'marker')
+@v.validate(None, v.validate_pagination_limit)
 def data_sources_list():
-    return u.render(
-        data_sources=[ds.to_dict() for ds in api.get_data_sources(
-            **u.get_request_args().to_dict())])
+    result = api.get_data_sources(**u.get_request_args().to_dict())
+    return u.render(res=result, name='data_sources')
 
 
 @rest.post('/data-sources')

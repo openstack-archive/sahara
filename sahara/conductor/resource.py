@@ -40,7 +40,10 @@ def wrap(resource_class):
     def decorator(func):
         def handle(*args, **kwargs):
             ret = func(*args, **kwargs)
-            if isinstance(ret, list):
+            if isinstance(ret, types.Page):
+                return types.Page([resource_class(el) for el in ret],
+                                  ret.prev, ret.next)
+            elif isinstance(ret, list):
                 return [resource_class(el) for el in ret]
             elif ret:
                 return resource_class(ret)

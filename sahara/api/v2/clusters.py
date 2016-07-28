@@ -29,9 +29,11 @@ rest = u.RestV2('clusters', __name__)
 
 @rest.get('/clusters')
 @acl.enforce("data-processing:clusters:get_all")
+@v.check_exists(api.get_cluster, 'marker')
+@v.validate(None, v.validate_pagination_limit)
 def clusters_list():
-    return u.render(clusters=[c.to_dict() for c in api.get_clusters(
-        **u.get_request_args().to_dict())])
+    result = api.get_clusters(**u.get_request_args().to_dict())
+    return u.render(res=result, name='clusters')
 
 
 @rest.post('/clusters')

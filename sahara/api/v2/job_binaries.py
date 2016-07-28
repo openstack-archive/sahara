@@ -35,9 +35,11 @@ def job_binary_create(data):
 
 @rest.get('/job-binaries')
 @acl.enforce("data-processing:job-binaries:get_all")
+@v.check_exists(api.get_job_binary, 'marker')
+@v.validate(None, v.validate_pagination_limit)
 def job_binary_list():
-    return u.render(binaries=[j.to_dict() for j in api.get_job_binaries(
-        **u.get_request_args().to_dict())])
+    result = api.get_job_binaries(**u.get_request_args().to_dict())
+    return u.render(res=result, name='binaries')
 
 
 @rest.get('/job-binaries/<job_binary_id>')
@@ -69,8 +71,8 @@ def job_binary_data(job_binary_id):
 @acl.enforce("data-processing:job-binaries:modify")
 @v.validate(v_j_b_schema.JOB_BINARY_UPDATE_SCHEMA, v_j_b.check_job_binary)
 def job_binary_update(job_binary_id, data):
-    return u.render(
-        api.update_job_binary(job_binary_id, data).to_wrapped_dict())
+    return u.render(api.update_job_binary(job_binary_id,
+                                          data).to_wrapped_dict())
 
 
 # Job binary internals ops
@@ -79,8 +81,7 @@ def job_binary_update(job_binary_id, data):
 @acl.enforce("data-processing:job-binary-internals:create")
 @v.validate(None, v_j_b_i.check_job_binary_internal)
 def job_binary_internal_create(**values):
-    return u.render(
-        api.create_job_binary_internal(values).to_wrapped_dict())
+    return u.render(api.create_job_binary_internal(values).to_wrapped_dict())
 
 
 @rest.get('/job-binary-internals')
