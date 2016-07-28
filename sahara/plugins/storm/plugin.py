@@ -298,7 +298,7 @@ class StormProvider(p.ProvisioningPluginBase):
             r.write_files_to(files_storm)
 
         if need_zookeeper_update:
-            zk_path = '/opt/zookeeper/zookeeper-3.4.6/conf/zoo.cfg'
+            zk_path = '/opt/zookeeper/zookeeper/conf/zoo.cfg'
             files_zookeeper = {zk_path: ng_extra['zk_conf']}
             self._push_zk_configs(r, files_zookeeper)
 
