@@ -16,50 +16,36 @@ import sys
 
 from oslo_config import cfg
 from oslo_log import log
+import six
 
 from sahara.cli.image_pack import api
+from sahara.i18n import _
 from sahara.i18n import _LI
 
 LOG = log.getLogger(__name__)
 
 CONF = cfg.CONF
 
-
 CONF.register_cli_opts([
-    cfg.StrOpt(
-        'plugin',
-        required=True,
-        help="The name of the Sahara plugin for which you would like to "
-             "generate an image. Use sahara-image-create -p PLUGIN -h to "
-             "see a set of versions for a specific plugin."),
-    cfg.StrOpt(
-        'plugin-version',
-        dest='plugin_version',
-        required=True,
-        help="The version of the Sahara plugin for which you would like to "
-             "generate an image. Use sahara-image-create -p PLUGIN -v "
-             "VERSION -h to see a full set of arguments for a specific plugin "
-             "and version."),
     cfg.StrOpt(
         'image',
         required=True,
-        help="The path to an image to modify. This image will be modified "
-             "in-place: be sure to target a copy if you wish to maintain a "
-             "clean master image."),
+        help=_("The path to an image to modify. This image will be modified "
+               "in-place: be sure to target a copy if you wish to maintain a "
+               "clean master image.")),
     cfg.StrOpt(
         'root-filesystem',
         dest='root_fs',
         required=False,
-        help="The filesystem to mount as the root volume on the image. No"
-             "value is required if only one filesystem is detected."),
+        help=_("The filesystem to mount as the root volume on the image. No"
+               "value is required if only one filesystem is detected.")),
     cfg.BoolOpt(
         'test-only',
         dest='test_only',
         default=False,
-        help="If this flag is set, no changes will be made to the image; "
-             "instead, the script will fail if discrepancies are found "
-             "between the image and the intended state."),
-])
+        help=_("If this flag is set, no changes will be made to the image; "
+               "instead, the script will fail if discrepancies are found "
+               "between the image and the intended state."))])
 
 
 def unregister_extra_cli_opt(name):
@@ -75,6 +61,47 @@ for extra_opt in ["log-exchange", "host", "port"]:
     unregister_extra_cli_opt(extra_opt)
 
 
+def add_plugin_parsers(subparsers):
+    api.setup_plugins()
+    for plugin in CONF.plugins:
+        args_by_version = api.get_plugin_arguments(plugin)
+        if all(args is NotImplemented for version, args
+               in six.iteritems(args_by_version)):
+            continue
+        plugin_parser = subparsers.add_parser(
+            plugin, help=_('Image generation for the {plugin} plugin').format(
+                plugin=plugin))
+        version_parsers = plugin_parser.add_subparsers(
+            title=_("Plugin version"),
+            dest="version",
+            help=_("Available versions"))
+        for version, args in six.iteritems(args_by_version):
+            if not args:
+                continue
+            version_parser = version_parsers.add_parser(
+                version, help=_('{plugin} version {version}').format(
+                    plugin=plugin, version=version))
+            for arg in args:
+                arg_token = ("--%s" % arg.name if len(arg.name) > 1 else
+                             "-%s" % arg.name)
+                version_parser.add_argument(arg_token,
+                                            dest=arg.target_variable,
+                                            help=arg.description,
+                                            default=arg.default,
+                                            required=arg.required,
+                                            choices=arg.choices)
+            version_parser.set_defaults(args={arg.target_variable
+                                              for arg in args})
+
+
+command_opt = cfg.SubCommandOpt('plugin',
+                                title=_('Plugin'),
+                                help=_('Available plugins'),
+                                handler=add_plugin_parsers)
+
+CONF.register_cli_opt(command_opt)
+
+
 def main():
     CONF(project='sahara')
 
@@ -86,8 +113,13 @@ def main():
     api.set_logger(LOG)
     api.set_conf(CONF)
 
-    api.pack_image(CONF.plugin, CONF.plugin_version, CONF.image,
+    plugin = CONF.plugin.name
+    version = CONF.plugin.version
+    args = CONF.plugin.args
+    image_arguments = {arg: getattr(CONF.plugin, arg) for arg in args}
+
+    api.pack_image(CONF.image, plugin, version, image_arguments,
                    CONF.root_fs, CONF.test_only)
 
-    LOG.info(_LI("Finished packing image for {plugin} at version {version}"
-                 ).format(plugin=CONF.plugin, version=CONF.plugin_version))
+    LOG.info(_LI("Finished packing image for {plugin} at version {version}")
+             .format(plugin=plugin, version=version))

@@ -104,10 +104,22 @@ class ImageRemote(remote.TerminalOnlyRemote):
         return self.guest.inspect_get_distro()
 
 
-def pack_image(plugin_name, plugin_version, image_path, root_drive=None,
-               test_only=False, **kwargs):
+def setup_plugins():
     plugins_base.setup_plugins()
+
+
+def get_plugin_arguments(plugin_name):
+    """Gets plugin arguments, as a dict of version to argument list."""
+    plugin = plugins_base.PLUGINS.get_plugin(plugin_name)
+    versions = plugin.get_versions()
+    return {version: plugin.get_image_arguments(version)
+            for version in versions}
+
+
+def pack_image(image_path, plugin_name, plugin_version, image_arguments,
+               root_drive=None, test_only=False):
     with ImageRemote(image_path, root_drive) as image_remote:
-        plugin = plugins_base.PLUGINS.get_plugin(plugin_name)
         reconcile = not test_only
-        plugin.pack_image(image_remote, reconcile=reconcile, env_map=kwargs)
+        plugin = plugins_base.PLUGINS.get_plugin(plugin_name)
+        plugin.pack_image(plugin_version, image_remote, reconcile=reconcile,
+                          image_arguments=image_arguments)

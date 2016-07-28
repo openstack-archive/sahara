@@ -43,8 +43,8 @@ class TestSaharaImagePackAPI(base.SaharaTestCase):
             get_plugin=mock.Mock(return_value=plugin))
 
         api.pack_image(
-            "plugin_name", "plugin_version", "image_path",
-            root_drive=None, test_only=False)
+            "image_path", "plugin_name", "plugin_version",
+            {"anarg": "avalue"}, root_drive=None, test_only=False)
 
         guest.add_drive_opts.assert_called_with("image_path", format="qcow2")
         guest.set_network.assert_called_with(True)
@@ -54,3 +54,19 @@ class TestSaharaImagePackAPI(base.SaharaTestCase):
         guest.sync.assert_called_once_with()
         guest.umount_all.assert_called_once_with()
         guest.close.assert_called_once_with()
+
+    @mock.patch('sahara.cli.image_pack.api.plugins_base')
+    def test_get_plugin_arguments(self, mock_plugins_base):
+        api.setup_plugins()
+        mock_plugins_base.setup_plugins.assert_called_once_with()
+        mock_PLUGINS = mock.Mock()
+        mock_plugins_base.PLUGINS = mock_PLUGINS
+        mock_plugin = mock.Mock()
+        mock_plugin.get_versions = mock.Mock(return_value=['1'])
+        mock_plugin.get_image_arguments = mock.Mock(
+            return_value=["Argument!"])
+        mock_PLUGINS.get_plugin = mock.Mock(return_value=mock_plugin)
+        result = api.get_plugin_arguments('Plugin!')
+        mock_plugin.get_versions.assert_called_once_with()
+        mock_plugin.get_image_arguments.assert_called_once_with('1')
+        self.assertEqual(result, {'1': ['Argument!']})
