@@ -140,6 +140,8 @@ class SaharaImageValidatorBase(ImageValidator):
             'any': SaharaAnyValidator,
             'all': SaharaAllValidator,
             'os_case': SaharaOSCaseValidator,
+            'argument_case': SaharaArgumentCaseValidator,
+            'argument_set': SaharaArgumentSetterValidator,
         }
         if custom_validator_map:
             default_validator_map.update(custom_validator_map)
@@ -741,6 +743,142 @@ class SaharaOSCaseValidator(SaharaImageValidatorBase):
                 validator.validate(
                     remote, reconcile=reconcile, env_map=env_map)
                 break
+
+
+class SaharaArgumentCaseValidator(SaharaImageValidatorBase):
+    """A validator which will take different actions depending on distro."""
+
+    SPEC_SCHEMA = {
+        "type": "object",
+        "properties": {
+            "argument_name": {
+                "type": "string",
+                "minLength": 1
+            },
+            "cases": {
+                "type": "object",
+                "minProperties": 1,
+                "additionalProperties":
+                    SaharaImageValidator.ORDERED_VALIDATORS_SCHEMA,
+            },
+        },
+        "additionalProperties": False,
+        "required": ["argument_name", "cases"]
+    }
+
+    @classmethod
+    def from_spec(cls, spec, validator_map, resource_roots):
+        """Builds an argument_case validator from a specification.
+
+        :param spec: A dictionary with two items: "argument_name", containing
+            a string indicating the argument to be checked, and "cases", a
+            dictionary. The key of each item in the dictionary is a value
+            which may or may not match the argument value, and the value is
+            a list of validators to be run in case it does.
+        :param validator_map: A map of validator name to class.
+        :param resource_roots: The roots from which relative paths to
+            resources (scripts and such) will be referenced. Any resource will
+            be pulled from the first path in the list at which a file exists.
+        :return: A SaharaArgumentCaseValidator.
+        """
+        jsonschema.validate(spec, cls.SPEC_SCHEMA)
+        argument_name = spec['argument_name']
+        cases = {key: SaharaAllValidator.from_spec(
+                 value, validator_map, resource_roots)
+                 for key, value in six.iteritems(spec['cases'])}
+
+        return cls(argument_name, cases)
+
+    def __init__(self, argument_name, cases):
+        """Constructor method.
+
+        :param argument_name: The name of an argument.
+        :param cases: A dictionary of possible argument value to a
+            sub-validator to run in case of a match.
+        """
+        self.argument_name = argument_name
+        self.cases = cases
+
+    def validate(self, remote, reconcile=True, env_map=None, **kwargs):
+        """Attempts to validate depending on argument value.
+
+        :param remote: A remote socket to the instance.
+        :param reconcile: If false, all validators will only verify that a
+            desired state is present, and fail if it is not. If true, all
+            validators will attempt to enforce the desired state if possible,
+            and succeed if this enforcement succeeds.
+        :param env_map: A map of environment variables to pass to scripts.
+
+        :raises ImageValidationError: If validation fails.
+        """
+        arg = self.argument_name
+        if arg not in env_map:
+            raise p_ex.ImageValidationError(
+                _("Argument {name} not found.").format(name=arg))
+        value = env_map[arg]
+        if value in self.cases:
+            self.cases[value].validate(
+                remote, reconcile=reconcile, env_map=env_map)
+
+
+class SaharaArgumentSetterValidator(SaharaImageValidatorBase):
+    """A validator which sets a specific argument to a specific value."""
+
+    SPEC_SCHEMA = {
+        "type": "object",
+        "properties": {
+            "argument_name": {
+                "type": "string",
+                "minLength": 1
+            },
+            "value": {
+                "type": "string",
+                "minLength": 1
+            },
+        },
+        "additionalProperties": False,
+        "required": ["argument_name", "value"]
+    }
+
+    @classmethod
+    def from_spec(cls, spec, validator_map, resource_roots):
+        """Builds an argument_set validator from a specification.
+
+        :param spec: A dictionary with two items: "argument_name", containing
+            a string indicating the argument to be set, and "value", a value
+            to which to set that argument.
+        :param validator_map: A map of validator name to class.
+        :param resource_roots: The roots from which relative paths to
+            resources (scripts and such) will be referenced. Any resource will
+            be pulled from the first path in the list at which a file exists.
+        :return: A SaharaArgumentSetterValidator.
+        """
+        jsonschema.validate(spec, cls.SPEC_SCHEMA)
+        argument_name = spec['argument_name']
+        value = spec['value']
+
+        return cls(argument_name, value)
+
+    def __init__(self, argument_name, value):
+        """Constructor method.
+
+        :param argument_name: The name of an argument.
+        :param value: A value to which to set that argument.
+        """
+        self.argument_name = argument_name
+        self.value = value
+
+    def validate(self, remote, reconcile=True, env_map=None, **kwargs):
+        """Attempts to validate depending on argument value.
+
+        :param remote: A remote socket to the instance.
+        :param reconcile: If false, all validators will only verify that a
+            desired state is present, and fail if it is not. If true, all
+            validators will attempt to enforce the desired state if possible,
+            and succeed if this enforcement succeeds.
+        :param env_map: A map of environment variables to pass to scripts.
+        """
+        env_map[self.argument_name] = self.value
 
 
 def _sudo(remote, cmd, **kwargs):
