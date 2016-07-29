@@ -95,16 +95,68 @@ class ProvisioningPluginBase(plugins_base.PluginInterface):
 
     @plugins_base.optional
     def get_image_arguments(self, hadoop_version):
-        """Gets the argument set taken by the plugin's image generator"""
+        """Gets the argument set taken by the plugin's image generator
+
+        Note: If the plugin can generate or validate an image but takes no
+        arguments, please return an empty sequence rather than NotImplemented
+        for all versions that support image generation or validation. This is
+        used as a flag to determine whether the plugin has implemented this
+        optional feature.
+
+        :returns: A sequence with items of type
+            sahara.plugins.images.ImageArgument
+        """
         return NotImplemented
 
     @plugins_base.optional
     def pack_image(self, hadoop_version, remote,
                    reconcile=True, image_arguments=None):
+        """Packs an image for registration in Glance and use by Sahara
+
+        :param remote: A remote (usually of type
+            sahara.cli.image_pack.api.ImageRemote) that serves as a handle to
+            the image to modify. Note that this image will be modified
+            in-place, not copied.
+        :param reconcile: If set to False, this method will only test to
+            ensure that the image already meets the plugin's requirements.
+            This can be used to test images without modification. If set to
+            True per the default, this method will modify the image if any
+            requirements are not met.
+        :param image_arguments: A dict of image argument target variable (not
+            the friendly name used for documentation purposes) to argument
+            value.
+        :raises: sahara.plugins.exceptions.ImageValidationError: If the method
+            fails to modify the image to specification (if reconcile is True),
+            or if the method finds that the image does not meet the
+            specification (if reconcile is False).
+        :raises: sahara.plugins.exceptions.ImageValidationSpecificationError:
+            If the specification for image generation or validation is itself
+            in error and cannot be executed without repair.
+        """
         pass
 
     @plugins_base.optional
-    def validate_images(self, cluster, reconcile=True):
+    def validate_images(self, cluster, reconcile=True, image_arguments=None):
+        """Validates the image to be used by a cluster.
+
+        :param cluster: The object handle to a cluster which has active
+            instances ready to generate remote handles.
+        :param reconcile: If set to False, this method will only test to
+            ensure that the image already meets the plugin's requirements.
+            This can be used to test images without modification. If set to
+            True per the default, this method will modify the image if any
+            requirements are not met.
+        :param image_arguments: A dict of image argument target variable (not
+            the friendly name used for documentation purposes) to argument
+            value.
+        :raises: sahara.plugins.exceptions.ImageValidationError: If the method
+            fails to modify the image to specification (if reconcile is True),
+            or if the method finds that the image does not meet the
+            specification (if reconcile is False).
+        :raises: sahara.plugins.exceptions.ImageValidationSpecificationError:
+            If the specification for image generation or validation is itself
+            in error and cannot be executed without repair.
+        """
         pass
 
     @plugins_base.required_with_default
