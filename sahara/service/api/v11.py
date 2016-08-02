@@ -132,7 +132,7 @@ def execute_job(job_id, data):
             LOG.error(_LE("Can't run job execution. "
                           "(Reasons: {reason})").format(reason=e))
             conductor.job_execution_destroy(context.ctx(), job_execution)
-            raise e
+            raise
 
     api.OPS.run_edp_job(job_execution.id)
 
