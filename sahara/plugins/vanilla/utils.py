@@ -13,7 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import uuid
+
+import six
+
 from sahara.plugins import utils as u
+from sahara.service.castellan import utils as castellan
 
 
 def get_namenode(cluster):
@@ -50,3 +55,8 @@ def get_historyserver(cluster):
 
 def get_instance_hostname(instance):
     return instance.hostname() if instance else None
+
+
+def generate_random_password():
+    password = six.text_type(uuid.uuid4())
+    return castellan.store_secret(password)

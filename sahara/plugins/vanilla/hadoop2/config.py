@@ -144,7 +144,7 @@ def _get_hadoop_configs(pctx, instance):
 
         oozie_cfg = o_helper.get_oozie_required_xml_configs(HADOOP_CONF_DIR)
         if c_helper.is_mysql_enabled(pctx, cluster):
-            oozie_cfg.update(o_helper.get_oozie_mysql_configs())
+            oozie_cfg.update(o_helper.get_oozie_mysql_configs(cluster))
 
         confs['JobFlow'] = oozie_cfg
 

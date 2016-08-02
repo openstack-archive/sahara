@@ -22,6 +22,7 @@ from sahara.i18n import _
 from sahara.i18n import _LI
 from sahara.plugins import utils as pu
 from sahara.plugins.vanilla.hadoop2 import config_helper as c_helper
+from sahara.plugins.vanilla.hadoop2 import oozie_helper
 from sahara.plugins.vanilla import utils as vu
 from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils import edp
@@ -88,6 +89,12 @@ def start_oozie_process(pctx, instance):
                 LOG.debug("Creating Oozie DB Schema")
                 sql_script = files.get_file_text(
                     'plugins/vanilla/hadoop2/resources/create_oozie_db.sql')
+
+                password = oozie_helper.get_oozie_mysql_configs(
+                    instance.cluster)[
+                    'oozie.service.JPAService.jdbc.password']
+                sql_script = sql_script.replace("password", password)
+
                 script_location = "create_oozie_db.sql"
                 r.write_file_to(script_location, sql_script)
                 r.execute_command('mysql -u root < %(script_location)s && '

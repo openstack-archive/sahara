@@ -26,6 +26,7 @@ from sahara.plugins.vanilla.hadoop2 import recommendations_utils as ru
 from sahara.plugins.vanilla.hadoop2 import run_scripts as run
 from sahara.plugins.vanilla.hadoop2 import scaling as sc
 from sahara.plugins.vanilla.hadoop2 import starting_scripts as s_scripts
+from sahara.plugins.vanilla.hadoop2 import utils as u
 from sahara.plugins.vanilla.hadoop2 import validation as vl
 from sahara.plugins.vanilla import utils as vu
 from sahara.plugins.vanilla.v2_7_1 import config_helper as c_helper
@@ -142,6 +143,7 @@ class VersionHandler(avm.AbstractVersionHandler):
         return edp_engine.EdpOozieEngine.get_possible_job_config(job_type)
 
     def on_terminate_cluster(self, cluster):
+        u.delete_oozie_password(cluster)
         keypairs.drop_key(cluster)
 
     def get_open_ports(self, node_group):
