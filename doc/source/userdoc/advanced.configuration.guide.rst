@@ -40,6 +40,59 @@ a custom network namespace:
     [DEFAULT]
     proxy_command='ip netns exec ns_for_{network_id} nc {host} {port}'
 
+.. _dns_hostname_resolution:
+
+DNS Hostname Resolution
+-----------------------
+
+Sahara can resolve hostnames of cluster instances by using DNS. For this Sahara
+uses Designate. With this feature, for each instance of the cluster Sahara will
+create two ``A`` records (for internal and external ips) under one hostname
+and one ``PTR`` record. Also all links in the Sahara dashboard will be
+displayed as hostnames instead of just ip addresses.
+
+You should configure DNS server with Designate. Designate service should be
+properly installed and registered in Keystone catalog. The detailed
+instructions about Designate configuration can be found here: `Designate manual
+installation`_ and here: `Configuring OpenStack Networking with Designate`_.
+Also if you use devstack you can just enable Designate plugin:
+`Designate devstack`_.
+
+When Designate is configured you should create domain(s) for hostname
+resolution. This can be done by using the Designate dashboard or by CLI. Also
+you have to create ``in-addr.arpa.`` domain for reverse hostname resolution
+because some plugins (e.g. ``HDP``) determine hostname by ip.
+
+Sahara also should be properly configured. In ``sahara.conf`` you must specify
+two config properties:
+
+.. sourcecode:: cfg
+
+    [DEFAULT]
+    # Use Designate for internal and external hostnames resolution:
+    use_designate=true
+    # IP addresses of Designate nameservers:
+    nameservers=1.1.1.1,2.2.2.2
+
+An OpenStack operator should properly configure the network. It must enable
+DHCP and specify DNS server ip addresses (e.g. 1.1.1.1 and 2.2.2.2) in
+``DNS Name Servers`` field in the ``Subnet Details``. If the subnet already
+exists and changing it or creating new one is impossible then Sahara will
+manually change ``/etc/resolv.conf`` file on every instance of the cluster (if
+``nameservers`` list have been specified in ``sahara.conf``). In this case,
+though, Sahara cannot guarantee that these changes will not be overwritten by
+DHCP or other services of the existing network. Sahara has a health check for
+track this situation (and if it occurs the health status will be red).
+
+In order to resolve hostnames from your local machine you should properly
+change your ``/etc/resolv.conf`` file by adding appropriate ip addresses of
+DNS servers (e.g. 1.1.1.1 and 2.2.2.2). Also the VMs with DNS servers should
+be available from your local machine.
+
+.. _Designate manual installation: http://docs.openstack.org/developer/designate/install/ubuntu-liberty.html
+.. _Configuring OpenStack Networking with Designate: http://docs.openstack.org/mitaka/networking-guide/adv-config-dns.html#configuring-openstack-networking-for-integration-with-an-external-dns-service
+.. _Designate devstack: http://docs.openstack.org/developer/designate/devstack.html
+
 .. _data_locality_configuration:
 
 Data-locality configuration
