@@ -36,12 +36,12 @@ class BaseTestClusterTemplate(base.SaharaWithDbTestCase):
                               floating_ip_pool=floating_ip_pool, image_id=None,
                               volumes_per_node=0, volumes_size=0, id="1",
                               image_username='root', volume_type=None,
-                              auto_security_group=True)
+                              boot_from_volume=False, auto_security_group=True)
         ng2 = tu.make_ng_dict('worker', 42, ['datanode'], 1,
                               floating_ip_pool=floating_ip_pool, image_id=None,
                               volumes_per_node=2, volumes_size=10, id="2",
                               image_username='root', volume_type=volume_type,
-                              auto_security_group=True)
+                              boot_from_volume=False, auto_security_group=True)
         return ng1, ng2
 
     def _make_cluster(self, mng_network, ng1, ng2, anti_affinity=None,

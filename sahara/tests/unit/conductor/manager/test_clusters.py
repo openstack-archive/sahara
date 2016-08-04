@@ -132,6 +132,7 @@ class ClusterTest(test_base.ConductorManagerTestCase):
             ng.pop("volumes_availability_zone")
             ng.pop("volume_type")
             ng.pop("floating_ip_pool")
+            ng.pop("boot_from_volume")
             ng.pop("image_username")
             ng.pop("open_ports")
             ng.pop("auto_security_group")
