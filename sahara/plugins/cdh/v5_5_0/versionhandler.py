@@ -21,6 +21,7 @@ from sahara.plugins.cdh.v5_5_0 import deploy
 from sahara.plugins.cdh.v5_5_0 import edp_engine
 from sahara.plugins.cdh.v5_5_0 import plugin_utils
 from sahara.plugins.cdh.v5_5_0 import validation
+from sahara.plugins import kerberos
 
 
 class VersionHandler(avm.BaseVersionHandler):
@@ -33,6 +34,11 @@ class VersionHandler(avm.BaseVersionHandler):
         self.deploy = deploy
         self.edp_engine = edp_engine
         self.validation = validation.ValidatorV550()
+
+    def get_plugin_configs(self):
+        result = super(VersionHandler, self).get_plugin_configs()
+        result.extend(kerberos.get_config_list())
+        return result
 
     def get_node_processes(self):
         return {
@@ -76,6 +82,7 @@ class VersionHandler(avm.BaseVersionHandler):
             'CATALOGSERVER': [],
             'STATESTORE': [],
             'IMPALAD': [],
+            'Kerberos': [],
         }
 
     def get_edp_engine(self, cluster, job_type):

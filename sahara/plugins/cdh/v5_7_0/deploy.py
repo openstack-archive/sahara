@@ -15,6 +15,7 @@
 
 from sahara.i18n import _
 from sahara.plugins.cdh import commands as cmd
+from sahara.plugins.cdh import deploy as common_deploy
 from sahara.plugins.cdh.v5_7_0 import cloudera_utils as cu
 from sahara.plugins import utils as gu
 from sahara.service.edp import hdfs_helper as h
@@ -105,6 +106,8 @@ def scale_cluster(cluster, instances):
     CU.await_agents(cluster, instances)
     CU.configure_instances(instances, cluster)
     CU.update_configs(instances)
+    common_deploy.prepare_scaling_kerberized_cluster(cluster, CU)
+
     CU.pu.configure_swift(cluster, instances)
     _start_roles(cluster, instances)
     CU.refresh_datanodes(cluster)
@@ -190,6 +193,8 @@ def start_cluster(cluster):
         CU.update_role_config(CU.pu.get_stdb_rm(cluster), 'YARN_STANDBYRM')
 
     _finish_cluster_starting(cluster)
+
+    common_deploy.setup_kerberos_for_cluster(cluster, CU)
 
 
 def get_open_ports(node_group):
