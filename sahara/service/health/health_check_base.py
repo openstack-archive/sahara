@@ -14,7 +14,10 @@
 # limitations under the License.
 
 import abc
+import functools
+import threading
 
+from oslo_config import cfg
 from oslo_log import log as logging
 import six
 
@@ -29,6 +32,7 @@ from sahara.utils import cluster as cluster_utils
 from sahara.utils.notification import sender
 
 cond = conductor.API
+CONF = cfg.CONF
 LOG = logging.getLogger(__name__)
 
 
@@ -47,13 +51,13 @@ class BaseHealthError(exceptions.SaharaException):
 class RedHealthError(BaseHealthError):
     """Exception to indicate red state of the health check."""
     code = "RED_STATE"
-    status = 'RED'
+    status = common.HEALTH_STATUS_RED
 
 
 class YellowHealthError(BaseHealthError):
     """Exception to indicate yellow state of health check."""
     code = "YELLOW_STATE"
-    status = 'YELLOW'
+    status = common.HEALTH_STATUS_YELLOW
 
 
 @six.add_metaclass(abc.ABCMeta)
@@ -121,7 +125,8 @@ class BasicHealthCheck(object):
 
 
 class AllInstancesAccessible(BasicHealthCheck):
-    def __init__(self, cluster):
+    def __init__(self, cluster, provider):
+        self.provider = provider
         super(AllInstancesAccessible, self).__init__(cluster)
 
     def is_available(self):
@@ -131,26 +136,116 @@ class AllInstancesAccessible(BasicHealthCheck):
     def get_health_check_name(self):
         return "Check of instances accessibility"
 
-    @staticmethod
-    def _check_health_for_instance(instance):
-        with instance.remote() as r:
-            r.execute_command("cd /tmp/")
-
     def check_health(self):
-        instances = cluster_utils.get_instances(self.cluster)
-        try:
-            for inst in instances:
-                self._check_health_for_instance(inst)
-        except Exception:
-            LOG.exception(_LE(
-                "Some instances in the cluster are not available"))
-            raise RedHealthError(_("Some instances are not available"))
-
+        inst_ips_or_names = self.provider.get_accessibility_data()
+        if inst_ips_or_names:
+            insts = ', '.join(inst_ips_or_names)
+            LOG.exception(
+                _LE("Instances (%s) are not available in the cluster") % insts)
+            raise RedHealthError(
+                _("Instances (%s) are not available in the cluster.") % insts)
         return _("All instances are available")
 
 
+class ResolvConfIsUnchanged(BasicHealthCheck):
+    def __init__(self, cluster, provider):
+        self.provider = provider
+        super(ResolvConfIsUnchanged, self).__init__(cluster)
+
+    def is_available(self):
+        return True
+
+    def get_health_check_name(self):
+        return "Check of '/etc/resolv.conf' files"
+
+    def check_health(self):
+        bad_inst, bad_res_conf = self.provider.get_resolv_conf_data()
+        bad_inst_msg = ''
+        res_conf_msg = ''
+        if bad_inst:
+            insts = ', '.join(bad_inst)
+            bad_inst_msg = _("Couldn't read '/etc/resolv.conf' "
+                             "on instances: {}.").format(insts)
+        if bad_res_conf:
+            insts = ', '.join(bad_res_conf)
+            ns = ', '.join(CONF.nameservers)
+            res_conf_msg = _(
+                "Instances ({}) have incorrect '/etc/resolv.conf' "
+                "file, expected nameservers: {}.").format(insts, ns)
+        if bad_inst_msg or res_conf_msg:
+            LOG.exception(_LE("{} {}").format(res_conf_msg, bad_inst_msg))
+            raise RedHealthError(_("{} {}").format(res_conf_msg, bad_inst_msg))
+        return _("All instances have correct '/etc/resolv.conf' file")
+
+
+class AlertsProvider(object):
+    def __init__(self, cluster):
+        self._data = None
+        self._cluster = cluster
+        self._instances = None
+        self.get_alerts_data()
+
+    def _instance_get_data(self, instance, lock):
+        try:
+            with instance.remote() as r:
+                data = self._get_resolv_conf(r)
+        except Exception:
+            data = None
+            LOG.exception(_LE("Couldn't read '/etc/resolv.conf'"))
+        with lock:
+            self._data[instance.get_ip_or_dns_name()] = data
+
+    def get_accessibility_data(self):
+        bad_instances = []
+        for el in self._data:
+            if self._data[el] is None:
+                bad_instances.append(el)
+        return bad_instances
+
+    def get_resolv_conf_data(self):
+        bad_instances = []
+        bad_resolv_conf = []
+        for inst_ip_or_name, data in self._data.iteritems():
+            if data is None:
+                bad_instances.append(inst_ip_or_name)
+                continue
+            for nameserver in CONF.nameservers:
+                if nameserver not in data:
+                    bad_resolv_conf.append(inst_ip_or_name)
+                    break
+        return bad_instances, bad_resolv_conf
+
+    @staticmethod
+    def _get_resolv_conf(inst_r):
+        # returns None if error occurred while reading resolv.conf
+        # otherwise returns content of this file
+        code, resolv_conf = inst_r.execute_command(
+            "cat /etc/resolv.conf", raise_when_error=False)
+        if code != 0:
+            return None
+        return resolv_conf
+
+    def get_alerts_data(self, check_type=None):
+        if check_type and self._data is not None:
+            # return cached data
+            return self._data.get(check_type, [])
+        self._data = {}
+        self._instances = cluster_utils.get_instances(self._cluster)
+        lock = threading.Lock()
+        with context.ThreadGroup() as tg:
+            for ins in self._instances:
+                tg.spawn('Get health check data of instance %s' % ins.id,
+                         self._instance_get_data, ins, lock)
+        return self._data
+
+
 def get_basic(cluster):
-    return [AllInstancesAccessible]
+    provider = AlertsProvider(cluster)
+    basic = [functools.partial(AllInstancesAccessible, provider=provider)]
+    if cluster.use_designate_feature():
+        basic.append(functools.partial(
+            ResolvConfIsUnchanged, provider=provider))
+    return basic
 
 
 def get_health_checks(cluster):

@@ -44,7 +44,7 @@ class AlertsProvider(object):
     def is_ambari_active(self):
         if self._exception_store:
             raise health_check_base.RedHealthError(self._exception_store)
-        return _("Ambari Monitor healthy")
+        return _("Ambari Monitor is healthy")
 
     def get_alerts_data(self, service=None):
         if self._data is not None:
