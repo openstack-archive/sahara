@@ -1,0 +1,7 @@
+---
+features:
+  - MapR 5.1.0.mrv2 is now Enabled.
+deprecations:
+  - MapR 5.0.0.mrv2 is now Deprecated. It is not
+    recommended for usage. It is better to use MapR 5.1.0.mrv2
+    instead. This version of plugin will be removed in Ocata release.

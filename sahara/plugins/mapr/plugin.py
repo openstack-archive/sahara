@@ -34,6 +34,16 @@ class MapRPlugin(p.ProvisioningPluginBase):
     def get_description(self):
         return MapRPlugin.description
 
+    def get_labels(self):
+        return {
+            'plugin_labels': {'enabled': {'status': True}},
+            'version_labels': {
+                '5.1.0.mrv2': {'enabled': {'status': True}},
+                '5.0.0.mrv2': {'enabled': {'status': False},
+                               'deprecated': {'status': True}}
+            }
+        }
+
     def get_versions(self):
         return vhf.VersionHandlerFactory.get().get_versions()
 
