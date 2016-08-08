@@ -76,7 +76,7 @@ def add_plugin_parsers(subparsers):
             dest="version",
             help=_("Available versions"))
         for version, args in six.iteritems(args_by_version):
-            if not args:
+            if args is NotImplemented:
                 continue
             version_parser = version_parsers.add_parser(
                 version, help=_('{plugin} version {version}').format(
@@ -85,12 +85,12 @@ def add_plugin_parsers(subparsers):
                 arg_token = ("--%s" % arg.name if len(arg.name) > 1 else
                              "-%s" % arg.name)
                 version_parser.add_argument(arg_token,
-                                            dest=arg.target_variable,
+                                            dest=arg.name,
                                             help=arg.description,
                                             default=arg.default,
                                             required=arg.required,
                                             choices=arg.choices)
-            version_parser.set_defaults(args={arg.target_variable
+            version_parser.set_defaults(args={arg.name
                                               for arg in args})
 
 

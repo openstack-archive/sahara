@@ -47,15 +47,15 @@ class TestImages(b.SaharaTestCase):
 
         validator = cls.from_spec('test_images.py', {}, resource_roots)
         self.assertIsInstance(validator, cls)
-        self.assertEqual(validator.env_vars, ['SIV_RECONCILE', 'SIV_DISTRO'])
+        self.assertEqual(validator.env_vars, ['reconcile', 'distro'])
 
         validator = cls.from_spec(
-            {'test_images.py': {'env_vars': ['EXTRA_FILE', 'USER']}},
+            {'test_images.py': {'env_vars': ['extra-file', 'user']}},
             {}, resource_roots)
         self.assertIsInstance(validator, cls)
         self.assertEqual(validator.env_vars,
-                         ['SIV_RECONCILE', 'SIV_DISTRO',
-                          'EXTRA_FILE', 'USER'])
+                         ['reconcile', 'distro',
+                          'extra-file', 'user'])
 
     def test_all_spec(self):
         cls = images.SaharaAllValidator
@@ -106,6 +106,15 @@ class TestImages(b.SaharaTestCase):
         resource_roots = ['tests/unit/plugins']
 
         spec = """
+            arguments:
+              java-version:
+                description: The version of java.
+                default: openjdk
+                required: false
+                choices:
+                  - openjdk
+                  - oracle-java
+
             validators:
               - os_case:
                   - redhat:
@@ -116,12 +125,12 @@ class TestImages(b.SaharaTestCase):
                 - all:
                   - package: java-1.8.0-openjdk-devel
                   - argument_set:
-                      argument_name: JAVA_VERSION
+                      argument_name: java-version
                       value: 1.8.0
                 - all:
                   - package: java-1.7.0-openjdk-devel
                   - argument_set:
-                      argument_name: JAVA_VERSION
+                      argument_name: java-version
                       value: 1.7.0
               - script: test_images.py
               - package:
@@ -156,33 +165,43 @@ class TestImages(b.SaharaTestCase):
         self.assertIsInstance(validators[3], images.SaharaPackageValidator)
         self.assertIsInstance(
             validators[4], images.SaharaArgumentCaseValidator)
+        self.assertEqual(1, len(validator.arguments))
+        self.assertEqual(validator.arguments['java-version'].required, False)
+        self.assertEqual(validator.arguments['java-version'].default,
+                         'openjdk')
+        self.assertEqual(validator.arguments['java-version'].description,
+                         'The version of java.')
+        self.assertEqual(validator.arguments['java-version'].choices,
+                         ['openjdk', 'oracle-java'])
 
     def test_package_validator_redhat(self):
         cls = images.SaharaPackageValidator
-        env_map = {"SIV_DISTRO": 'centos'}
+        image_arguments = {"distro": 'centos'}
 
         packages = [cls.Package("java", "8")]
         validator = images.SaharaPackageValidator(packages)
         remote = mock.Mock()
-        validator.validate(remote, reconcile=False, env_map=env_map)
+        validator.validate(remote, reconcile=False,
+                           image_arguments=image_arguments)
         remote.execute_command.assert_called_with(
             "rpm -q java-8", run_as_root=True)
 
-        env_map = {"SIV_DISTRO": 'fedora'}
+        image_arguments = {"distro": 'fedora'}
         packages = [cls.Package("java", "8"), cls.Package("hadoop")]
         validator = images.SaharaPackageValidator(packages)
         remote = mock.Mock()
         remote.execute_command.side_effect = (
             ex.RemoteCommandException("So bad!"))
         try:
-            validator.validate(remote, reconcile=False, env_map=env_map)
+            validator.validate(remote, reconcile=False,
+                               image_arguments=image_arguments)
         except p_ex.ImageValidationError as e:
             self.assertIn("So bad!", e.message)
         remote.execute_command.assert_called_with(
             "rpm -q java-8 hadoop", run_as_root=True)
         self.assertEqual(remote.execute_command.call_count, 1)
 
-        env_map = {"SIV_DISTRO": 'redhatenterpriseserver'}
+        image_arguments = {"distro": 'redhatenterpriseserver'}
         packages = [cls.Package("java", "8"), cls.Package("hadoop")]
         validator = images.SaharaPackageValidator(packages)
         remote = mock.Mock()
@@ -193,7 +212,8 @@ class TestImages(b.SaharaTestCase):
 
         remote.execute_command.side_effect = side_effect
         try:
-            validator.validate(remote, reconcile=True, env_map=env_map)
+            validator.validate(remote, reconcile=True,
+                               image_arguments=image_arguments)
         except p_ex.ImageValidationError as e:
             self.assertIn("So bad!", e.message)
         self.assertEqual(remote.execute_command.call_count, 3)
@@ -204,37 +224,40 @@ class TestImages(b.SaharaTestCase):
 
     def test_package_validator_debian(self):
         cls = images.SaharaPackageValidator
-        env_map = {"SIV_DISTRO": 'ubuntu'}
+        image_arguments = {"distro": 'ubuntu'}
 
         packages = [cls.Package("java", "8")]
         validator = images.SaharaPackageValidator(packages)
         remote = mock.Mock()
-        validator.validate(remote, reconcile=False, env_map=env_map)
+        validator.validate(remote, reconcile=False,
+                           image_arguments=image_arguments)
         remote.execute_command.assert_called_with(
             "dpkg -s java-8", run_as_root=True)
 
-        env_map = {"SIV_DISTRO": 'ubuntu'}
+        image_arguments = {"distro": 'ubuntu'}
         packages = [cls.Package("java", "8"), cls.Package("hadoop")]
         validator = images.SaharaPackageValidator(packages)
         remote = mock.Mock()
         remote.execute_command.side_effect = (
             ex.RemoteCommandException("So bad!"))
         try:
-            validator.validate(remote, reconcile=False, env_map=env_map)
+            validator.validate(remote, reconcile=False,
+                               image_arguments=image_arguments)
         except p_ex.ImageValidationError as e:
             self.assertIn("So bad!", e.message)
         remote.execute_command.assert_called_with(
             "dpkg -s java-8 hadoop", run_as_root=True)
         self.assertEqual(remote.execute_command.call_count, 1)
 
-        env_map = {"SIV_DISTRO": 'ubuntu'}
+        image_arguments = {"distro": 'ubuntu'}
         packages = [cls.Package("java", "8"), cls.Package("hadoop")]
         validator = images.SaharaPackageValidator(packages)
         remote = mock.Mock()
         remote.execute_command.side_effect = (
             ex.RemoteCommandException("So bad!"))
         try:
-            validator.validate(remote, reconcile=True, env_map=env_map)
+            validator.validate(remote, reconcile=True,
+                               image_arguments=image_arguments)
         except p_ex.ImageValidationError as e:
             self.assertIn("So bad!", e.message)
         self.assertEqual(remote.execute_command.call_count, 2)
@@ -246,20 +269,22 @@ class TestImages(b.SaharaTestCase):
 
     def test_script_validator(self):
         cls = images.SaharaScriptValidator
-        env_map = {"SIV_DISTRO": 'centos'}
-        map_rep = "export SIV_DISTRO=centos\n"
+        image_arguments = {"distro": 'centos'}
+        map_rep = "export distro=centos\n"
         cmd = "It's dangerous to go alone. Run this."
         expected_cmd = "bash <<_SIV_\n%s\n_SIV_" % cmd
-        validator = cls(cmd, env_vars=env_map.keys(), output_var="SIV_DISTRO")
+        validator = cls(cmd, env_vars=image_arguments.keys(),
+                        output_var="distro")
 
         remote = mock.Mock(
             execute_command=mock.Mock(
                 return_value=(0, 'fedora')))
 
-        validator.validate(remote, reconcile=True, env_map=env_map)
+        validator.validate(remote, reconcile=True,
+                           image_arguments=image_arguments)
         call = [mock.call(map_rep + expected_cmd, run_as_root=True)]
         remote.execute_command.assert_has_calls(call)
-        self.assertEqual(env_map['SIV_DISTRO'], 'fedora')
+        self.assertEqual(image_arguments['distro'], 'fedora')
 
     def test_any_validator(self):
         cls = images.SaharaAnyValidator
@@ -316,7 +341,7 @@ class TestImages(b.SaharaTestCase):
         validator.validate(None, reconcile=True)
         self.assertEqual(always_tells_the_truth.validate.call_count, 2)
         always_tells_the_truth.validate.assert_called_with(
-            None, reconcile=True, env_map=None)
+            None, reconcile=True, image_arguments=None)
 
         # Second fails
         always_tells_the_truth = mock.Mock()
@@ -330,9 +355,9 @@ class TestImages(b.SaharaTestCase):
         self.assertEqual(always_tells_the_truth.validate.call_count, 1)
         self.assertEqual(always_lies.validate.call_count, 1)
         always_tells_the_truth.validate.assert_called_with(
-            None, reconcile=False, env_map=None)
+            None, reconcile=False, image_arguments=None)
         always_lies.validate.assert_called_with(
-            None, reconcile=False, env_map=None)
+            None, reconcile=False, image_arguments=None)
 
         # First fails
         always_tells_the_truth = mock.Mock()
@@ -340,12 +365,12 @@ class TestImages(b.SaharaTestCase):
             side_effect=p_ex.ImageValidationError("Boom!")))
         validator = cls([always_lies, always_tells_the_truth])
         try:
-            validator.validate(None, reconcile=False, env_map={})
+            validator.validate(None, reconcile=False, image_arguments={})
         except p_ex.ImageValidationError:
             pass
         self.assertEqual(always_lies.validate.call_count, 1)
         always_lies.validate.assert_called_with(
-            None, reconcile=False, env_map={})
+            None, reconcile=False, image_arguments={})
         self.assertEqual(always_tells_the_truth.validate.call_count, 0)
 
     def test_os_case_validator(self):
@@ -356,33 +381,36 @@ class TestImages(b.SaharaTestCase):
         centos = Distro("centos", mock.Mock())
         redhat = Distro("redhat", mock.Mock())
         distros = [centos, redhat]
-        env_map = {images.SaharaImageValidator.DISTRO_KEY: "centos"}
+        image_arguments = {images.SaharaImageValidator.DISTRO_KEY: "centos"}
         validator = cls(distros)
-        validator.validate(None, reconcile=True, env_map=env_map)
+        validator.validate(None, reconcile=True,
+                           image_arguments=image_arguments)
         self.assertEqual(centos.validator.validate.call_count, 1)
         self.assertEqual(redhat.validator.validate.call_count, 0)
         centos.validator.validate.assert_called_with(
-            None, reconcile=True, env_map=env_map)
+            None, reconcile=True, image_arguments=image_arguments)
 
         # Familes match
         centos = Distro("centos", mock.Mock())
         redhat = Distro("redhat", mock.Mock())
         distros = [centos, redhat]
-        env_map = {images.SaharaImageValidator.DISTRO_KEY: "fedora"}
+        image_arguments = {images.SaharaImageValidator.DISTRO_KEY: "fedora"}
         validator = cls(distros)
-        validator.validate(None, reconcile=True, env_map=env_map)
+        validator.validate(None, reconcile=True,
+                           image_arguments=image_arguments)
         self.assertEqual(centos.validator.validate.call_count, 0)
         self.assertEqual(redhat.validator.validate.call_count, 1)
         redhat.validator.validate.assert_called_with(
-            None, reconcile=True, env_map=env_map)
+            None, reconcile=True, image_arguments=image_arguments)
 
         # Non-matches do nothing
         centos = Distro("centos", mock.Mock())
         redhat = Distro("redhat", mock.Mock())
         distros = [centos, redhat]
-        env_map = {images.SaharaImageValidator.DISTRO_KEY: "ubuntu"}
+        image_arguments = {images.SaharaImageValidator.DISTRO_KEY: "ubuntu"}
         validator = cls(distros)
-        validator.validate(None, reconcile=True, env_map=env_map)
+        validator.validate(None, reconcile=True,
+                           image_arguments=image_arguments)
         self.assertEqual(centos.validator.validate.call_count, 0)
         self.assertEqual(redhat.validator.validate.call_count, 0)
 
@@ -390,59 +418,59 @@ class TestImages(b.SaharaTestCase):
         cls = images.SaharaArgumentCaseValidator
 
         # Match gets called
-        env_map = {"argument": "value"}
+        image_arguments = {"argument": "value"}
         match = mock.Mock()
         nomatch = mock.Mock()
         cases = {"value": match,
                  "another_value": nomatch}
         validator = cls("argument", cases)
-        validator.validate(None, reconcile=True, env_map=env_map)
+        validator.validate(None, reconcile=True,
+                           image_arguments=image_arguments)
         self.assertEqual(match.validate.call_count, 1)
         self.assertEqual(nomatch.validate.call_count, 0)
         match.validate.assert_called_with(
-            None, reconcile=True, env_map=env_map)
+            None, reconcile=True, image_arguments=image_arguments)
 
         # Non-matches do nothing
-        env_map = {"argument": "value"}
+        image_arguments = {"argument": "value"}
         nomatch = mock.Mock()
         cases = {"some_value": nomatch,
                  "another_value": nomatch}
         validator = cls("argument", cases)
-        validator.validate(None, reconcile=True, env_map=env_map)
+        validator.validate(None, reconcile=True,
+                           image_arguments=image_arguments)
         self.assertEqual(nomatch.validate.call_count, 0)
 
     def test_sahara_argument_set_validator(self):
         cls = images.SaharaArgumentSetterValidator
 
         # Old variable is overwritten
-        env_map = {"argument": "value"}
+        image_arguments = {"argument": "value"}
         validator = cls("argument", "new_value")
-        validator.validate(None, reconcile=True, env_map=env_map)
-        self.assertEqual(env_map["argument"], "new_value")
+        validator.validate(None, reconcile=True,
+                           image_arguments=image_arguments)
+        self.assertEqual(image_arguments["argument"], "new_value")
 
         # New variable is set
-        env_map = {"argument": "value"}
+        image_arguments = {"argument": "value"}
         validator = cls("another_argument", "value")
-        validator.validate(None, reconcile=True, env_map=env_map)
-        self.assertEqual(env_map, {"argument": "value",
-                                   "another_argument": "value"})
+        validator.validate(None, reconcile=True,
+                           image_arguments=image_arguments)
+        self.assertEqual(image_arguments,
+                         {"argument": "value", "another_argument": "value"})
 
     def test_sahara_image_validator(self):
         cls = images.SaharaImageValidator
 
         sub_validator = mock.Mock(validate=mock.Mock())
-        remote = mock.Mock(execute_command=mock.Mock(
-            return_value=(None, "CENTOS ")))
-        validator = cls(sub_validator)
-        validator.validate(remote, reconcile=True, env_map={})
-        expected_map = {images.SaharaImageValidatorBase.DISTRO_KEY: "centos",
-                        images.SaharaImageValidatorBase.RECONCILE_KEY: 1}
-        remote.execute_command.assert_called_with('lsb_release -is')
+        remote = mock.Mock(get_os_distrib=mock.Mock(
+            return_value="centos"))
+        validator = cls(sub_validator, {})
+        validator.validate(remote, reconcile=True, image_arguments={})
+        expected_map = {images.SaharaImageValidatorBase.DISTRO_KEY: "centos"}
         sub_validator.validate.assert_called_with(
-            remote, reconcile=True, env_map=expected_map)
-
-        expected_map = {images.SaharaImageValidatorBase.DISTRO_KEY: "centos",
-                        images.SaharaImageValidatorBase.RECONCILE_KEY: 0}
-        validator.validate(remote, reconcile=False, env_map={})
+            remote, reconcile=True, image_arguments=expected_map)
+        expected_map = {images.SaharaImageValidatorBase.DISTRO_KEY: "centos"}
+        validator.validate(remote, reconcile=False, image_arguments={})
         sub_validator.validate.assert_called_with(
-            remote, reconcile=False, env_map=expected_map)
+            remote, reconcile=False, image_arguments=expected_map)

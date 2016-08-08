@@ -101,7 +101,7 @@ class ImageRemote(remote.TerminalOnlyRemote):
                 return 1, ex.message
 
     def get_os_distrib(self):
-        return self.guest.inspect_get_distro()
+        return self.guest.inspect_get_distro(self.root_drive)
 
 
 def setup_plugins():

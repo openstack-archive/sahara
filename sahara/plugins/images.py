@@ -73,10 +73,72 @@ def validate_instance(instance, validators, reconcile=True, **kwargs):
 class ImageArgument(object):
     """An argument used by an image manifest."""
 
-    def __init__(self, name, target_variable, description=None,
-                 default=None, required=False, choices=None):
+    SPEC_SCHEMA = {
+        "type": "object",
+        "items": {
+            "type": "object",
+            "properties": {
+                "target_variable": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "description": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "default": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "required": {
+                    "type": "boolean",
+                    "minLength": 1
+                },
+                "choices": {
+                    "type": "array",
+                    "minLength": 1,
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+
+    @classmethod
+    def from_spec(cls, spec):
+        """Constructs and returns a set of arguments from a specification.
+
+        :param spec: The specification for the argument set.
+        :return A dict of arguments built to the specification.
+        """
+
+        jsonschema.validate(spec, cls.SPEC_SCHEMA)
+        arguments = {name: cls(name,
+                               arg.get('description'),
+                               arg.get('default'),
+                               arg.get('required'),
+                               arg.get('choices'))
+                     for name, arg in six.iteritems(spec)}
+        reserved_names = ['distro', 'reconcile']
+        for name, arg in six.iteritems(arguments):
+            if name in reserved_names:
+                raise p_ex.ImageValidationSpecificationError(
+                    _("The following argument names are reserved: "
+                      "{names}").format(reserved_names))
+            if not arg.default and not arg.required:
+                raise p_ex.ImageValidationSpecificationError(
+                    _("Argument {name} is not required and must specify a "
+                      "default value.").format(name=arg.name))
+            if arg.choices and arg.default and arg.default not in arg.choices:
+                raise p_ex.ImageValidationSpecificationError(
+                    _("Argument {name} specifies a default which is not one "
+                      "of its choices.").format(name=arg.name))
+        return arguments
+
+    def __init__(self, name, description=None, default=None, required=False,
+                 choices=None):
         self.name = name
-        self.target_variable = target_variable
         self.description = description
         self.default = default
         self.required = required
@@ -105,8 +167,8 @@ class ImageValidator(object):
 class SaharaImageValidatorBase(ImageValidator):
     """Base class for Sahara's native image validation."""
 
-    DISTRO_KEY = 'SIV_DISTRO'
-    RECONCILE_KEY = 'SIV_RECONCILE'
+    DISTRO_KEY = 'distro'
+    RECONCILE_KEY = 'reconcile'
 
     ORDERED_VALIDATORS_SCHEMA = {
         "type": "array",
@@ -231,7 +293,8 @@ class SaharaImageValidatorBase(ImageValidator):
         def __nonzero__(self):
             return False
 
-    def try_validate(self, remote, reconcile=True, env_map=None, **kwargs):
+    def try_validate(self, remote, reconcile=True,
+                     image_arguments=None, **kwargs):
         """Attempts to validate, but returns rather than raising on failure.
 
         :param remote: A remote socket to the instance.
@@ -239,12 +302,14 @@ class SaharaImageValidatorBase(ImageValidator):
             desired state is present, and fail if it is not. If true, all
             validators will attempt to enforce the desired state if possible,
             and succeed if this enforcement succeeds.
-        :param env_map: A map of environment variables to pass to scripts.
+        :param image_arguments: A dictionary of image argument values keyed by
+            argument name.
         :return True if successful, ValidationAttemptFailed object if failed.
         """
         try:
             self.validate(
-                remote, reconcile=reconcile, env_map=env_map, **kwargs)
+                remote, reconcile=reconcile,
+                image_arguments=image_arguments, **kwargs)
             return True
         except p_ex.ImageValidationError as exc:
             return self.ValidationAttemptFailed(exc)
@@ -266,6 +331,10 @@ class SaharaImageValidator(SaharaImageValidatorBase):
         "required": ["validators"]
     }
 
+    def get_argument_list(self):
+        return [argument for name, argument
+                in six.iteritems(self.arguments)]
+
     @classmethod
     def from_spec(cls, spec, validator_map, resource_roots):
         """Constructs and returns a validator from a specification object.
@@ -280,12 +349,14 @@ class SaharaImageValidator(SaharaImageValidatorBase):
         :return A SaharaImageValidator containing all specified validators.
         """
         jsonschema.validate(spec, cls.SPEC_SCHEMA)
-        specs = spec['validators']
+        arguments_spec = spec.get('arguments', {})
+        arguments = ImageArgument.from_spec(arguments_spec)
+        validators_spec = spec['validators']
         validator = SaharaAllValidator.from_spec(
-            specs, validator_map, resource_roots)
-        return cls(validator)
+            validators_spec, validator_map, resource_roots)
+        return cls(validator, arguments)
 
-    def __init__(self, validator):
+    def __init__(self, validator, arguments):
         """Constructor method.
 
         :param validator: A SaharaAllValidator containing the specified
@@ -293,9 +364,11 @@ class SaharaImageValidator(SaharaImageValidatorBase):
         """
         self.validator = validator
         self.validators = validator.validators
+        self.arguments = arguments
 
     @transform_exception(ex.RemoteCommandException, p_ex.ImageValidationError)
-    def validate(self, remote, reconcile=True, env_map=None, **kwargs):
+    def validate(self, remote, reconcile=True,
+                 image_arguments=None, **kwargs):
         """Attempts to validate the image.
 
         Before deferring to contained validators, performs one-time setup
@@ -306,15 +379,31 @@ class SaharaImageValidator(SaharaImageValidatorBase):
             desired state is present, and fail if it is not. If true, all
             validators will attempt to enforce the desired state if possible,
             and succeed if this enforcement succeeds.
-        :param env_map: A map of environment variables to pass to scripts.
+        :param image_arguments: A dictionary of image argument values keyed by
+            argument name.
         :raises ImageValidationError: If validation fails.
         """
-        env_map = copy.deepcopy(env_map) if env_map else {}
-        env_map[self.RECONCILE_KEY] = 1 if reconcile else 0
-        raw_distro = remote.execute_command('lsb_release -is')
-        distro = raw_distro[1].strip().lower()
-        env_map[self.DISTRO_KEY] = distro
-        self.validator.validate(remote, reconcile=reconcile, env_map=env_map)
+        argument_values = {}
+        for name, argument in six.iteritems(self.arguments):
+            if name not in image_arguments:
+                if argument.required:
+                    raise p_ex.ImageValidationError(
+                        _("Argument {name} is required for image "
+                          "processing.").format(name=name))
+                else:
+                    argument_values[name] = argument.default
+            else:
+                value = image_arguments[name]
+                choices = argument.choices
+                if choices and value not in choices:
+                    raise p_ex.ImageValidationError(
+                        _("Value for argument {name} must be one of "
+                          "{choices}.").format(name=name, choices=choices))
+                else:
+                    argument_values[name] = value
+        argument_values[self.DISTRO_KEY] = remote.get_os_distrib()
+        self.validator.validate(remote, reconcile=reconcile,
+                                image_arguments=argument_values)
 
 
 class SaharaPackageValidator(SaharaImageValidatorBase):
@@ -406,7 +495,8 @@ class SaharaPackageValidator(SaharaImageValidatorBase):
         self.packages = packages
 
     @transform_exception(ex.RemoteCommandException, p_ex.ImageValidationError)
-    def validate(self, remote, reconcile=True, env_map=None, **kwargs):
+    def validate(self, remote, reconcile=True,
+                 image_arguments=None, **kwargs):
         """Attempts to validate package installation on the image.
 
         Even if reconcile=True, attempts to verify previous package
@@ -418,10 +508,11 @@ class SaharaPackageValidator(SaharaImageValidatorBase):
             desired state is present, and fail if it is not. If true, all
             validators will attempt to enforce the desired state if possible,
             and succeed if this enforcement succeeds.
-        :param env_map: A map of environment variables to pass to scripts.
+        :param image_arguments: A dictionary of image argument values keyed by
+            argument name.
         :raises ImageValidationError: If validation fails.
         """
-        env_distro = env_map[self.DISTRO_KEY]
+        env_distro = image_arguments[self.DISTRO_KEY]
         env_family = self._DISTRO_FAMILES[env_distro]
         check, install = self._DISTRO_TOOLS[env_family]
         if not env_family:
@@ -513,7 +604,7 @@ class SaharaScriptValidator(SaharaImageValidatorBase):
             env_vars: A list of environment variable names to send to the
                 script.
             output: A key into which to put the stdout of the script in the
-                env_map of the validation run.
+                image_arguments of the validation run.
         :param validator_map: A map of validator name to class.
         :param resource_roots: The roots from which relative paths to
             resources (scripts and such) will be referenced. Any resource will
@@ -552,7 +643,7 @@ class SaharaScriptValidator(SaharaImageValidatorBase):
         :param env_vars: A list of environment variables to send to the
             script.
         :param output_var: A key into which to put the stdout of the script in
-            the env_map of the validation run.
+            the image_arguments of the validation run.
         :return: A SaharaScriptValidator.
         """
         self.script_contents = script_contents
@@ -560,7 +651,8 @@ class SaharaScriptValidator(SaharaImageValidatorBase):
         self.output_var = output_var
 
     @transform_exception(ex.RemoteCommandException, p_ex.ImageValidationError)
-    def validate(self, remote, reconcile=True, env_map=None, **kwargs):
+    def validate(self, remote, reconcile=True,
+                 image_arguments=None, **kwargs):
         """Attempts to validate by running a script on the image.
 
         :param remote: A remote socket to the instance.
@@ -568,25 +660,28 @@ class SaharaScriptValidator(SaharaImageValidatorBase):
             desired state is present, and fail if it is not. If true, all
             validators will attempt to enforce the desired state if possible,
             and succeed if this enforcement succeeds.
-        :param env_map: A map of environment variables to pass to scripts.
+        :param image_arguments: A dictionary of image argument values keyed by
+            argument name.
             Note that the key SIV_RECONCILE will be set to 1 if the script
             should reconcile and 0 otherwise; all scripts should act on this
             input if possible. The key SIV_DISTRO will also contain the
             distro representation, per `lsb_release -is`.
         :raises ImageValidationError: If validation fails.
         """
+        arguments = copy.deepcopy(image_arguments)
+        arguments[self.RECONCILE_KEY] = 1 if reconcile else 0
         script = "\n".join(["%(env_vars)s",
                             "bash <<_SIV_",
                             "%(script)s",
                             "_SIV_"])
         env_vars = "\n".join("export %s=%s" % (key, value) for (key, value)
-                             in six.iteritems(env_map)
+                             in six.iteritems(image_arguments)
                              if key in self.env_vars)
         script = script % {"env_vars": env_vars,
                            "script": self.script_contents}
         code, stdout = _sudo(remote, script)
         if self.output_var:
-            env_map[self.output_var] = stdout
+            image_arguments[self.output_var] = stdout
 
 
 @six.add_metaclass(abc.ABCMeta)
@@ -618,17 +713,20 @@ class SaharaAggregateValidator(SaharaImageValidatorBase):
 class SaharaAnyValidator(SaharaAggregateValidator):
     """A list of validators, only one of which must succeed."""
 
-    def _try_all(self, remote, reconcile=True, env_map=None, **kwargs):
+    def _try_all(self, remote, reconcile=True,
+                 image_arguments=None, **kwargs):
         results = []
         for validator in self.validators:
             result = validator.try_validate(remote, reconcile=reconcile,
-                                            env_map=env_map, **kwargs)
+                                            image_arguments=image_arguments,
+                                            **kwargs)
             results.append(result)
             if result:
                 break
         return results
 
-    def validate(self, remote, reconcile=True, env_map=None, **kwargs):
+    def validate(self, remote, reconcile=True,
+                 image_arguments=None, **kwargs):
         """Attempts to validate any of the contained validators.
 
         Note that if reconcile=True, this validator will first run all
@@ -641,13 +739,15 @@ class SaharaAnyValidator(SaharaAggregateValidator):
             desired state is present, and fail if it is not. If true, all
             validators will attempt to enforce the desired state if possible,
             and succeed if this enforcement succeeds.
-        :param env_map: A map of environment variables to pass to scripts.
-
+        :param image_arguments: A dictionary of image argument values keyed by
+            argument name.
         :raises ImageValidationError: If validation fails.
         """
-        results = self._try_all(remote, reconcile=False, env_map=env_map)
+        results = self._try_all(remote, reconcile=False,
+                                image_arguments=image_arguments)
         if reconcile and not any(results):
-            results = self._try_all(remote, reconcile=True, env_map=env_map)
+            results = self._try_all(remote, reconcile=True,
+                                    image_arguments=image_arguments)
         if not any(results):
             raise p_ex.AllValidationsFailedError(result.exception for result
                                                  in results)
@@ -656,7 +756,7 @@ class SaharaAnyValidator(SaharaAggregateValidator):
 class SaharaAllValidator(SaharaAggregateValidator):
     """A list of validators, all of which must succeed."""
 
-    def validate(self, remote, reconcile=True, env_map=None, **kwargs):
+    def validate(self, remote, reconcile=True, image_arguments=None, **kwargs):
         """Attempts to validate all of the contained validators.
 
         :param remote: A remote socket to the instance.
@@ -664,12 +764,13 @@ class SaharaAllValidator(SaharaAggregateValidator):
             desired state is present, and fail if it is not. If true, all
             validators will attempt to enforce the desired state if possible,
             and succeed if this enforcement succeeds.
-        :param env_map: A map of environment variables to pass to scripts.
-
+        :param image_arguments: A dictionary of image argument values keyed by
+            argument name.
         :raises ImageValidationError: If validation fails.
         """
         for validator in self.validators:
-            validator.validate(remote, reconcile=reconcile, env_map=env_map)
+            validator.validate(remote, reconcile=reconcile,
+                               image_arguments=image_arguments)
 
 
 class SaharaOSCaseValidator(SaharaImageValidatorBase):
@@ -718,7 +819,8 @@ class SaharaOSCaseValidator(SaharaImageValidatorBase):
         """
         self.distros = distros
 
-    def validate(self, remote, reconcile=True, env_map=None, **kwargs):
+    def validate(self, remote, reconcile=True,
+                 image_arguments=None, **kwargs):
         """Attempts to validate depending on distro.
 
         May match the OS by specific distro or by family (centos may match
@@ -731,17 +833,18 @@ class SaharaOSCaseValidator(SaharaImageValidatorBase):
             desired state is present, and fail if it is not. If true, all
             validators will attempt to enforce the desired state if possible,
             and succeed if this enforcement succeeds.
-        :param env_map: A map of environment variables to pass to scripts.
-
+        :param image_arguments: A dictionary of image argument values keyed by
+            argument name.
         :raises ImageValidationError: If validation fails.
         """
-        env_distro = env_map[self.DISTRO_KEY]
+        env_distro = image_arguments[self.DISTRO_KEY]
         family = self._DISTRO_FAMILES.get(env_distro)
         matches = {env_distro, family} if family else {env_distro}
         for distro, validator in self.distros:
             if distro in matches:
                 validator.validate(
-                    remote, reconcile=reconcile, env_map=env_map)
+                    remote, reconcile=reconcile,
+                    image_arguments=image_arguments)
                 break
 
 
@@ -799,7 +902,8 @@ class SaharaArgumentCaseValidator(SaharaImageValidatorBase):
         self.argument_name = argument_name
         self.cases = cases
 
-    def validate(self, remote, reconcile=True, env_map=None, **kwargs):
+    def validate(self, remote, reconcile=True,
+                 image_arguments=None, **kwargs):
         """Attempts to validate depending on argument value.
 
         :param remote: A remote socket to the instance.
@@ -807,18 +911,19 @@ class SaharaArgumentCaseValidator(SaharaImageValidatorBase):
             desired state is present, and fail if it is not. If true, all
             validators will attempt to enforce the desired state if possible,
             and succeed if this enforcement succeeds.
-        :param env_map: A map of environment variables to pass to scripts.
-
+        :param image_arguments: A dictionary of image argument values keyed by
+            argument name.
         :raises ImageValidationError: If validation fails.
         """
         arg = self.argument_name
-        if arg not in env_map:
+        if arg not in image_arguments:
             raise p_ex.ImageValidationError(
                 _("Argument {name} not found.").format(name=arg))
-        value = env_map[arg]
+        value = image_arguments[arg]
         if value in self.cases:
             self.cases[value].validate(
-                remote, reconcile=reconcile, env_map=env_map)
+                remote, reconcile=reconcile,
+                image_arguments=image_arguments)
 
 
 class SaharaArgumentSetterValidator(SaharaImageValidatorBase):
@@ -868,7 +973,8 @@ class SaharaArgumentSetterValidator(SaharaImageValidatorBase):
         self.argument_name = argument_name
         self.value = value
 
-    def validate(self, remote, reconcile=True, env_map=None, **kwargs):
+    def validate(self, remote, reconcile=True,
+                 image_arguments=None, **kwargs):
         """Attempts to validate depending on argument value.
 
         :param remote: A remote socket to the instance.
@@ -876,9 +982,10 @@ class SaharaArgumentSetterValidator(SaharaImageValidatorBase):
             desired state is present, and fail if it is not. If true, all
             validators will attempt to enforce the desired state if possible,
             and succeed if this enforcement succeeds.
-        :param env_map: A map of environment variables to pass to scripts.
+        :param image_arguments: A dictionary of image argument values keyed by
+            argument name.
         """
-        env_map[self.argument_name] = self.value
+        image_arguments[self.argument_name] = self.value
 
 
 def _sudo(remote, cmd, **kwargs):

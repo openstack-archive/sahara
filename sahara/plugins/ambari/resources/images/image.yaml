@@ -1,0 +1,6 @@
+arguments:
+  fish:
+    description: awesome
+    default: trout
+
+validators: []
