@@ -23,6 +23,7 @@ from sahara.plugins.ambari import deploy
 from sahara.plugins.ambari import edp_engine
 from sahara.plugins.ambari import health
 from sahara.plugins.ambari import validation
+from sahara.plugins import kerberos
 from sahara.plugins import provisioning as p
 from sahara.plugins import utils as plugin_utils
 from sahara.swift import swift_helper
@@ -71,10 +72,13 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
                 p_common.APP_TIMELINE_SERVER, p_common.HISTORYSERVER,
                 p_common.NODEMANAGER, p_common.RESOURCEMANAGER],
             p_common.ZOOKEEPER_SERVICE: [p_common.ZOOKEEPER_SERVER],
+            'Kerberos': [],
         }
 
     def get_configs(self, hadoop_version):
-        return configs.load_configs(hadoop_version)
+        cfgs = kerberos.get_config_list()
+        cfgs.extend(configs.load_configs(hadoop_version))
+        return cfgs
 
     def configure_cluster(self, cluster):
         deploy.disable_repos(cluster)
@@ -85,6 +89,7 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
         cluster = conductor.cluster_get(context.ctx(), cluster.id)
         deploy.wait_host_registration(cluster,
                                       plugin_utils.get_instances(cluster))
+        deploy.prepare_kerberos(cluster)
         deploy.set_up_hdp_repos(cluster)
         deploy.create_blueprint(cluster)
 
@@ -178,6 +183,7 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
         validation.validate(cluster.id)
 
     def scale_cluster(self, cluster, instances):
+        deploy.prepare_kerberos(cluster, instances)
         deploy.setup_agents(cluster, instances)
         cluster = conductor.cluster_get(context.ctx(), cluster.id)
         deploy.wait_host_registration(cluster, instances)

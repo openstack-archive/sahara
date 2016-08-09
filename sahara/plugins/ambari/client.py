@@ -27,6 +27,10 @@ from sahara.plugins import exceptions as p_exc
 LOG = logging.getLogger(__name__)
 
 
+class AmbariNotFound(Exception):
+    pass
+
+
 class AmbariClient(object):
     def __init__(self, instance, port="8080", **kwargs):
         kwargs.setdefault("username", "admin")
@@ -74,7 +78,9 @@ class AmbariClient(object):
         return data.get('items', [])
 
     @staticmethod
-    def check_response(resp):
+    def check_response(resp, handle_not_found=False):
+        if handle_not_found and resp.status_code == 404:
+            raise AmbariNotFound()
         resp.raise_for_status()
         if resp.text:
             return jsonutils.loads(resp.text)
@@ -89,6 +95,24 @@ class AmbariClient(object):
             raise p_exc.HadoopProvisionError("Cannot find request id. "
                                              "Unexpected response format")
         return body["Requests"]["id"]
+
+    def import_credential(self, cl_name, alias, data):
+        url = self._base_url + "/clusters/%s/credentials/%s" % (cl_name, alias)
+        resp = self.post(url, data=jsonutils.dumps(data))
+        self.check_response(resp)
+
+    def get_credential(self, cl_name, alias):
+        url = self._base_url + "/clusters/%s/credentials/%s" % (cl_name, alias)
+        resp = self.get(url)
+        self.check_response(resp, handle_not_found=True)
+
+    def regenerate_keytabs(self, cl_name):
+        url = (self._base_url +
+               "/clusters/%s?regenerate_keytabs=missing" % cl_name)
+        data = jsonutils.dumps({"Clusters": {"security_type": "KERBEROS"}})
+        resp = self.put(url, data=data)
+        self.check_response(resp)
+        return self.req_id(resp)
 
     def get_registered_hosts(self):
         url = self._base_url + "/hosts"
