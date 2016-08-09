@@ -28,7 +28,7 @@ def get_sentry_db_password(cluster):
 def create_hive_database(cluster, remote):
     db_password = get_hive_db_password(cluster)
     create_db_script = files.get_file_text(
-        'plugins/cdh/v5_5_0/resources/create_hive_db.sql')
+        'plugins/cdh/v5_7_0/resources/create_hive_db.sql')
     create_db_script = create_db_script % db_password
     dh.remote_execute_db_script(remote, create_db_script)
 
@@ -36,6 +36,6 @@ def create_hive_database(cluster, remote):
 def create_sentry_database(cluster, remote):
     db_password = get_sentry_db_password(cluster)
     create_db_script = files.get_file_text(
-        'plugins/cdh/v5_5_0/resources/create_sentry_db.sql')
+        'plugins/cdh/v5_7_0/resources/create_sentry_db.sql')
     create_db_script = create_db_script % db_password
     dh.remote_execute_db_script(remote, create_db_script)
