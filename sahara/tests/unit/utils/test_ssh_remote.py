@@ -33,11 +33,13 @@ class TestEscapeQuotes(testtools.TestCase):
 class TestGetOsDistrib(testtools.TestCase):
     @mock.patch('sahara.utils.ssh_remote._execute_command',
                 return_value=[1, 'Ubuntu'])
-    def test_get_os_distrib(self, p_execute_command):
+    @mock.patch('sahara.utils.ssh_remote.__get_python_to_execute',
+                return_value='python3')
+    def test_get_os_distrib(self, python, p_execute_command):
         d = ssh_remote._get_os_distrib()
         p_execute_command.assert_called_once_with(
             ('printf "import platform\nprint(platform.linux_distribution('
-             'full_distribution_name=0)[0])" | python'),
+             'full_distribution_name=0)[0])" | python3'),
             run_as_root=False)
         self.assertEqual('ubuntu', d)
 

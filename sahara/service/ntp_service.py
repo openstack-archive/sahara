@@ -38,16 +38,12 @@ ntp_opts = [
 CONF.register_opts(ntp_opts)
 
 
-def _get_os_distrib(remote):
-    return remote.execute_command('lsb_release -is')[1].strip().lower()
-
-
 def _sudo(remote, cmd):
     remote.execute_command(cmd, run_as_root=True)
 
 
 def _restart_ntp(remote):
-    distrib = _get_os_distrib(remote)
+    distrib = remote.get_os_distrib()
     cmd = "service %s restart"
     if distrib == 'ubuntu':
         cmd = cmd % "ntp"
@@ -58,7 +54,7 @@ def _restart_ntp(remote):
 
 
 def _verify_installation(remote):
-    distrib = _get_os_distrib(remote)
+    distrib = remote.get_os_distrib()
     if distrib == 'ubuntu':
         return remote.execute_command("dpkg -s ntp")
     else:

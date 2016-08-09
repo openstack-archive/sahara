@@ -45,7 +45,7 @@ def _mock_node_group(ips, share_list):
     # Returns a mocked node group and a list of mocked
     # execute_command functions for its instances.
 
-    execute_mocks = [mock.Mock(return_value=(None, "centos")) for ip in ips]
+    execute_mocks = [mock.Mock(return_value="centos") for ip in ips]
     get_id = mock.Mock(return_value=uuid.uuid4())
     instances = [
         mock.Mock(
@@ -54,7 +54,8 @@ def _mock_node_group(ips, share_list):
                 return_value=mock.Mock(
                     __enter__=mock.Mock(
                         return_value=mock.Mock(
-                            execute_command=execute_mocks[index])),
+                            execute_command=execute_mocks[index],
+                            get_os_distrib=execute_mocks[index])),
                     __exit__=mock.Mock())))
         for index, ip in enumerate(ips)]
 
@@ -66,7 +67,6 @@ def _mock_node_group(ips, share_list):
 
 def _setup_calls():
     return [
-        mock.call('lsb_release -is'),
         mock.call('rpm -q nfs-utils || yum install -y nfs-utils',
                   run_as_root=True)]
 

@@ -22,7 +22,7 @@ def _root(remote, cmd, **kwargs):
 
 
 def _get_os_distrib(remote):
-    return remote.execute_command('lsb_release -is')[1].strip().lower()
+    return remote.get_os_distrib()
 
 
 def is_centos_os(remote):

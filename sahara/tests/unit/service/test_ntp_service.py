@@ -45,6 +45,9 @@ class FakeRemote(object):
     def append_to_file(self, file, text, run_as_root=False):
         return self.execute_command(file, run_as_root)
 
+    def get_os_distrib(self):
+        return self.execute_command('get_os_distrib')
+
 
 class FakeInstance(object):
     def __init__(self, effects, id):
