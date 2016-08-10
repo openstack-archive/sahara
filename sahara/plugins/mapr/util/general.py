@@ -66,11 +66,11 @@ def unpack_archive(instance, src, dest, cleanup=False, run_as=None):
             r.execute_command(_run_as(run_as, 'rm -r %s' % src))
 
 
-def copy_file(s_path, s_instance, d_path, d_instance, run_as=None):
+def copy_file(s_path, s_instance, d_path, d_instance, run_as=None, owner=None):
     with s_instance.remote() as sr:
         data = sr.read_file_from(s_path, run_as_root=(run_as == 'root'))
     with d_instance.remote() as dr:
-        dr.write_file_to(d_path, data, run_as_root=(run_as == 'root'))
+        write_file(dr, d_path, data, owner=owner)
 
 
 def copy_dir(s_path, s_instance, d_path, d_instance, run_as=None):

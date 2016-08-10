@@ -17,7 +17,7 @@ import sahara.plugins.mapr.domain.configuration_file as bcf
 import sahara.plugins.mapr.domain.node_process as np
 import sahara.plugins.mapr.domain.service as s
 import sahara.plugins.mapr.services.hive.hive as hive
-import sahara.plugins.mapr.util.maprfs_helper as mfs
+import sahara.plugins.mapr.util.general as g
 import sahara.plugins.mapr.util.validation_utils as vu
 import sahara.utils.files as files
 
@@ -56,21 +56,17 @@ class Impala(s.Service):
         return {}
 
     def post_start(self, cluster_context, instances):
-        self._copy_hive_site(cluster_context)
+        self._copy_hive_site(cluster_context, instances)
 
-    def _copy_hive_site(self, cluster_context):
+    def _copy_hive_site(self, cluster_context, instances):
         hive_site_path = self._hive(cluster_context).conf_dir(
             cluster_context) + "/hive-site.xml"
         path = self.conf_dir(cluster_context) + "/hive-site.xml"
-        with cluster_context.get_instance(hive.HIVE_METASTORE).remote() as r1:
-            for instance in cluster_context.get_instances(IMPALA_SERVER):
-                with instance.remote() as r2:
-                    mfs.exchange(r1, r2, hive_site_path, path, 'mapr')
-            with cluster_context.get_instance(IMPALA_CATALOG).remote() as r3:
-                mfs.exchange(r1, r3, hive_site_path, path, 'mapr')
-            with cluster_context.get_instance(
-                    IMPALA_STATE_STORE).remote() as r4:
-                mfs.exchange(r1, r4, hive_site_path, path, 'mapr')
+        hive_instance = cluster_context.get_instance(hive.HIVE_METASTORE)
+        impalas = cluster_context.filter_instances(instances, service=self)
+        for instance in impalas:
+            g.copy_file(hive_site_path, hive_instance, path, instance,
+                        run_as='root', owner='mapr')
 
     # hive service instance
     def _hive(self, context):

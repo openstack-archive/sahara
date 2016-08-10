@@ -20,6 +20,7 @@ import sahara.plugins.mapr.domain.node_process as np
 import sahara.plugins.mapr.domain.service as s
 import sahara.plugins.mapr.services.hbase.hbase as hbase
 import sahara.plugins.mapr.services.hive.hive as hive
+import sahara.plugins.mapr.util.general as g
 import sahara.plugins.mapr.util.maprfs_helper as mfs
 import sahara.plugins.mapr.util.validation_utils as vu
 import sahara.utils.files as files
@@ -145,25 +146,26 @@ class SparkOnYarn(s.Service):
     def _copy_hive_site(self, cluster_context):
         if not self._hive(cluster_context):
             return
-        hive_conf = self._hive(cluster_context).conf_dir(cluster_context)
-        with cluster_context.get_instance(hive.HIVE_SERVER_2).remote() as h:
-            with cluster_context.get_instance(
-                    SPARK_HISTORY_SERVER).remote() as s:
-                mfs.exchange(h, s, hive_conf + '/hive-site.xml',
-                             self.conf_dir(cluster_context) + '/hive-site.xml',
-                             hdfs_user='mapr')
+        hive_site = self._hive(cluster_context).conf_dir(
+            cluster_context) + '/hive-site.xml'
+        path = self.conf_dir(cluster_context) + '/hive-site.xml'
+        hive_instance = cluster_context.get_instance(hive.HIVE_SERVER_2)
+        spark_instance = cluster_context.get_instance(
+            SPARK_HISTORY_SERVER)
+        g.copy_file(hive_site, hive_instance, path, spark_instance,
+                    run_as='root', owner='mapr')
 
     def _copy_hbase_site(self, cluster_context):
         if not self._hbase(cluster_context):
             return
-        hbase_conf = self._hbase(cluster_context).conf_dir(cluster_context)
-        with cluster_context.get_instance(hbase.HBASE_MASTER).remote() as h:
-            with cluster_context.get_instance(
-                    SPARK_HISTORY_SERVER).remote() as s:
-                mfs.exchange(h, s, hbase_conf + '/hbase-site.xml',
-                             self.conf_dir(
-                                 cluster_context) + '/hbase-site.xml',
-                             hdfs_user='mapr')
+        hbase_site = self._hive(cluster_context).conf_dir(
+            cluster_context) + '/hbase-site.xml'
+        path = self.conf_dir(cluster_context) + '/hbase-site.xml'
+        hbase_instance = cluster_context.get_instance(hbase.HBASE_MASTER)
+        spark_instance = cluster_context.get_instance(
+            SPARK_HISTORY_SERVER)
+        g.copy_file(hbase_site, hbase_instance, path, spark_instance,
+                    run_as='root', owner='mapr')
 
     def _create_hadoop_spark_dirs(self, cluster_context):
         home = '/apps/spark'
