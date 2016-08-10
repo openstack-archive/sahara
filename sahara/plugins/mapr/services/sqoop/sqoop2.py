@@ -42,5 +42,5 @@ class Sqoop2(s.Service):
             vu.exactly(1, SQOOP_2_SERVER),
         ]
 
-    def post_install(self, context, instances):
-        self._set_service_dir_owner(context, instances)
+    def post_install(self, cluster_context, instances):
+        self._set_service_dir_owner(cluster_context, instances)

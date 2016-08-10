@@ -155,8 +155,9 @@ class MySQL(s.Service):
         return list()
 
     @staticmethod
-    def get_db_instance(context):
-        return context.oozie_server or context.get_instance(spark.SPARK_MASTER)
+    def get_db_instance(cluster_context):
+        return cluster_context.oozie_server or cluster_context.get_instance(
+            spark.SPARK_MASTER)
 
     @staticmethod
     def create_databases(cluster_context, instances):

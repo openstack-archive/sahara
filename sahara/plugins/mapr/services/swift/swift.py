@@ -37,16 +37,17 @@ class Swift(s.Service):
         # swift does not require any package
         pass
 
-    def configure(self, context, instances=None):
-        instances = instances or context.get_instances()
-        file_servers = context.filter_instances(instances, maprfs.FILE_SERVER)
-        self._install_swift_jar(context, file_servers)
+    def configure(self, cluster_context, instances=None):
+        instances = instances or cluster_context.get_instances()
+        file_servers = cluster_context.filter_instances(instances,
+                                                        maprfs.FILE_SERVER)
+        self._install_swift_jar(cluster_context, file_servers)
 
     @el.provision_step("Install Swift service")
-    def _install_swift_jar(self, context, instances):
+    def _install_swift_jar(self, cluster_context, instances):
         LOG.debug('Installing Swift jar')
         jar = f.get_file_text(Swift.HADOOP_SWIFT_JAR)
-        path = '%s/swift.jar' % context.hadoop_lib
+        path = '%s/swift.jar' % cluster_context.hadoop_lib
 
         @el.provision_event()
         def install_on_instance(inst):

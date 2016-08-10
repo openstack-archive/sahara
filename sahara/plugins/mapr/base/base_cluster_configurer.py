@@ -167,16 +167,16 @@ class BaseConfigurer(ac.AbstractConfigurer):
         util.execute_on_instances(instances, install_java)
 
     @el.provision_step(_("Configure cluster topology"))
-    def _configure_topology(self, context, instances):
+    def _configure_topology(self, cluster_context, instances):
         LOG.debug("Configuring cluster topology")
 
-        topology_map = context.topology_map
+        topology_map = cluster_context.topology_map
         topology_map = ("%s %s" % item for item in six.iteritems(topology_map))
         topology_map = "\n".join(topology_map) + "\n"
 
-        data_path = "%s/topology.data" % context.mapr_home
+        data_path = "%s/topology.data" % cluster_context.mapr_home
         script = files.get_file_text(_TOPO_SCRIPT)
-        script_path = '%s/topology.sh' % context.mapr_home
+        script_path = '%s/topology.sh' % cluster_context.mapr_home
 
         @el.provision_event()
         def write_topology_data(instance):
@@ -309,10 +309,11 @@ class BaseConfigurer(ac.AbstractConfigurer):
         LOG.debug('Executing configure.sh successfully completed')
 
     @el.provision_event(instance_reference=2)
-    def _configure_sh_instance(self, context, instance, command, specs):
+    def _configure_sh_instance(self, cluster_context, instance, command,
+                               specs):
         if not self.mapr_user_exists(instance):
             command += ' --create-user'
-        if context.check_for_process(instance, mng.METRICS):
+        if cluster_context.check_for_process(instance, mng.METRICS):
             command += (' -d %(host)s:%(port)s -du %(user)s -dp %(password)s '
                         '-ds %(db_name)s') % specs
         with instance.remote() as r:
@@ -338,12 +339,13 @@ class BaseConfigurer(ac.AbstractConfigurer):
                 'mapr', run_as_root=True, raise_when_error=False)
         return ec == 0
 
-    def post_start(self, c_context, instances=None):
-        instances = instances or c_context.get_instances()
+    def post_start(self, cluster_context, instances=None):
+        instances = instances or cluster_context.get_instances()
         LOG.debug('Executing service post start hooks')
-        for service in c_context.cluster_services:
-            updated = c_context.filter_instances(instances, service=service)
-            service.post_start(c_context, updated)
+        for service in cluster_context.cluster_services:
+            updated = cluster_context.filter_instances(instances,
+                                                       service=service)
+            service.post_start(cluster_context, updated)
         LOG.info(_LI('Post start hooks successfully executed'))
 
     @el.provision_step(_("Set cluster mode"))
@@ -372,10 +374,11 @@ class BaseConfigurer(ac.AbstractConfigurer):
 
         util.execute_on_instances(instances, install_mapr_repos)
 
-    def _update_services(self, c_context, instances):
-        for service in c_context.cluster_services:
-            updated = c_context.filter_instances(instances, service=service)
-            service.update(c_context, updated)
+    def _update_services(self, cluster_context, instances):
+        for service in cluster_context.cluster_services:
+            updated = cluster_context.filter_instances(instances,
+                                                       service=service)
+            service.update(cluster_context, updated)
 
     def _restart_services(self, cluster_context):
         restart = cluster_context.should_be_restarted

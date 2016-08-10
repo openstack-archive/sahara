@@ -25,7 +25,7 @@ from sahara.utils import edp
 class MapROozieJobEngine(e.OozieJobEngine):
     def __init__(self, cluster):
         super(MapROozieJobEngine, self).__init__(cluster)
-        self.ctx = self._get_cluster_context(self.cluster)
+        self.cluster_context = self._get_cluster_context(self.cluster)
 
     hdfs_user = 'mapr'
 
@@ -69,16 +69,16 @@ class MapROozieJobEngine(e.OozieJobEngine):
         return uploaded_paths
 
     def get_name_node_uri(self, cluster):
-        return self.ctx.name_node_uri
+        return self.cluster_context.name_node_uri
 
     def get_oozie_server_uri(self, cluster):
-        return self.ctx.oozie_server_uri
+        return self.cluster_context.oozie_server_uri
 
     def get_oozie_server(self, cluster):
-        return self.ctx.oozie_server
+        return self.cluster_context.oozie_server
 
     def get_resource_manager_uri(self, cluster):
-        return self.ctx.resource_manager_uri
+        return self.cluster_context.resource_manager_uri
 
     def _get_cluster_context(self, cluster):
         h_version = cluster.hadoop_version

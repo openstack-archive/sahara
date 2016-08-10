@@ -66,38 +66,41 @@ class Hive(s.Service):
     def require_no_sasl(self, version):
         return version not in ['3.9.0']
 
-    def _get_hive_site_props(self, context):
+    def _get_hive_site_props(self, cluster_context):
         # Import here to resolve circular dependency
         from sahara.plugins.mapr.services.mysql import mysql
 
-        zookeepers = context.get_zookeeper_nodes_ip()
+        zookeepers = cluster_context.get_zookeeper_nodes_ip()
         metastore_specs = mysql.MySQL.METASTORE_SPECS
 
         return {
             'javax.jdo.option.ConnectionDriverName': mysql.MySQL.DRIVER_CLASS,
-            'javax.jdo.option.ConnectionURL': self._get_jdbc_uri(context),
+            'javax.jdo.option.ConnectionURL': self._get_jdbc_uri(
+                cluster_context),
             'javax.jdo.option.ConnectionUserName': metastore_specs.user,
             'javax.jdo.option.ConnectionPassword': metastore_specs.password,
-            'hive.metastore.uris': self._get_metastore_uri(context),
+            'hive.metastore.uris': self._get_metastore_uri(cluster_context),
             'hive.zookeeper.quorum': zookeepers,
             'hbase.zookeeper.quorum': zookeepers,
         }
 
-    def _get_jdbc_uri(self, context):
+    def _get_jdbc_uri(self, cluster_context):
         # Import here to resolve circular dependency
         from sahara.plugins.mapr.services.mysql import mysql
 
         jdbc_uri = ('jdbc:mysql://%(db_host)s:%(db_port)s/%(db_name)s?'
                     'createDatabaseIfNotExist=true')
         jdbc_args = {
-            'db_host': mysql.MySQL.get_db_instance(context).internal_ip,
+            'db_host': mysql.MySQL.get_db_instance(
+                cluster_context).internal_ip,
             'db_port': mysql.MySQL.MYSQL_SERVER_PORT,
             'db_name': mysql.MySQL.METASTORE_SPECS.db_name,
         }
         return jdbc_uri % jdbc_args
 
-    def _get_metastore_uri(self, context):
-        return 'thrift://%s:9083' % context.get_instance_ip(HIVE_METASTORE)
+    def _get_metastore_uri(self, cluster_context):
+        return 'thrift://%s:9083' % cluster_context.get_instance_ip(
+            HIVE_METASTORE)
 
     def post_start(self, cluster_context, instances):
         # Import here to resolve circular dependency

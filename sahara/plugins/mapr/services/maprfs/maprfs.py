@@ -148,6 +148,6 @@ class MapRFS(s.Service):
 
         return [cldb_conf, warden_conf]
 
-    def _get_cldb_conf_props(self, context):
-        zookeepers = context.get_zookeeper_nodes_ip_with_port()
+    def _get_cldb_conf_props(self, cluster_context):
+        zookeepers = cluster_context.get_zookeeper_nodes_ip_with_port()
         return {'cldb.zookeeper.servers': zookeepers}

@@ -27,9 +27,7 @@ import sahara.plugins.mapr.abstract.node_manager as s
 import sahara.plugins.mapr.services.management.management as mng
 import sahara.plugins.mapr.services.maprfs.maprfs as mfs
 
-
 LOG = logging.getLogger(__name__)
-
 
 GET_SERVER_ID_CMD = ('maprcli node list -json -filter [ip==%s] -columns id'
                      ' | grep id | grep -o \'[0-9]*\'')
@@ -59,15 +57,16 @@ class BaseNodeManager(s.AbstractNodeManager):
                     cldb_remote.execute_command(command, run_as_root=True)
         LOG.info(_LI("Nodes successfully moved"))
 
-    def remove_nodes(self, c_context, instances):
+    def remove_nodes(self, cluster_context, instances):
         LOG.debug("Removing nodes from cluster")
-        cldb_instances = self._get_cldb_instances(c_context, instances)
+        cldb_instances = self._get_cldb_instances(cluster_context, instances)
         with random.choice(cldb_instances).remote() as cldb_remote:
             for instance in instances:
                 args = {
                     'ip': instance.internal_ip,
                     'nodes': instance.fqdn(),
-                    'zookeepers': c_context.get_zookeeper_nodes_ip_with_port(),
+                    'zookeepers':
+                        cluster_context.get_zookeeper_nodes_ip_with_port(),
                 }
                 command = REMOVE_NODE_CMD % args
                 cldb_remote.execute_command(command, run_as_root=True)
@@ -109,11 +108,11 @@ class BaseNodeManager(s.AbstractNodeManager):
                     ips = [n['ip'] for n in resp['data']]
                     retry_count += 1
                     for i in instances:
-                        if (i.internal_ip not in ips
-                                and retry_count > DEFAULT_RETRY_COUNT):
-                            raise ex.HadoopProvisionError(_(
-                                "Node failed to connect to CLDB: %s") %
-                                i.internal_ip)
+                        if (i.internal_ip not in ips and
+                                (retry_count > DEFAULT_RETRY_COUNT)):
+                            msg = _("Node failed to connect to CLDB: %s"
+                                    ) % i.internal_ip
+                            raise ex.HadoopProvisionError(msg)
                     break
                 else:
                     context.sleep(DELAY)
@@ -170,9 +169,10 @@ class BaseNodeManager(s.AbstractNodeManager):
     def _stop_service(self, instance, service):
         return self._do_service_action(instance, service, STOP)
 
-    def _get_cldb_instances(self, c_context, instances):
-        current = self._get_current_cluster_instances(c_context, instances)
-        return c_context.filter_instances(current, mfs.CLDB)
+    def _get_cldb_instances(self, cluster_context, instances):
+        current = self._get_current_cluster_instances(cluster_context,
+                                                      instances)
+        return cluster_context.filter_instances(current, mfs.CLDB)
 
     @staticmethod
     def await_no_heartbeat():

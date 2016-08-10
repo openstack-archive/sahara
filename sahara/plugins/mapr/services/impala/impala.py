@@ -52,7 +52,7 @@ class Impala(s.Service):
             IMPALA_STATE_STORE,
         ]
 
-    def _get_impala_env_props(self, context):
+    def _get_impala_env_props(self, cluster_context):
         return {}
 
     def post_start(self, cluster_context, instances):
@@ -69,9 +69,9 @@ class Impala(s.Service):
                         run_as='root', owner='mapr')
 
     # hive service instance
-    def _hive(self, context):
-        hive_version = context.get_chosen_service_version('Hive')
-        return context._find_service_instance('Hive', hive_version)
+    def _hive(self, cluster_context):
+        hive_version = cluster_context.get_chosen_service_version('Hive')
+        return cluster_context._find_service_instance('Hive', hive_version)
 
     def get_config_files(self, cluster_context, configs, instance=None):
         defaults = 'plugins/mapr/services/impala/resources/impala-env.sh.j2'
@@ -104,11 +104,12 @@ class ImpalaV141(Impala):
             vu.at_least(1, IMPALA_SERVER),
         ]
 
-    def _get_impala_env_props(self, context):
+    def _get_impala_env_props(self, cluster_context):
         return {
             'impala_version': self.version,
-            'statestore_host': context.get_instance_ip(IMPALA_STATE_STORE),
-            'catalog_host': context.get_instance_ip(IMPALA_CATALOG),
+            'statestore_host': cluster_context.get_instance_ip(
+                IMPALA_STATE_STORE),
+            'catalog_host': cluster_context.get_instance_ip(IMPALA_CATALOG),
         }
 
 
@@ -128,11 +129,12 @@ class ImpalaV220(Impala):
             vu.required_os('centos', self)
         ]
 
-    def _get_impala_env_props(self, context):
+    def _get_impala_env_props(self, cluster_context):
         return {
             'impala_version': self.version,
-            'statestore_host': context.get_instance_ip(IMPALA_STATE_STORE),
-            'catalog_host': context.get_instance_ip(IMPALA_CATALOG),
+            'statestore_host': cluster_context.get_instance_ip(
+                IMPALA_STATE_STORE),
+            'catalog_host': cluster_context.get_instance_ip(IMPALA_CATALOG),
         }
 
     def _get_packages(self, cluster_context, node_processes):

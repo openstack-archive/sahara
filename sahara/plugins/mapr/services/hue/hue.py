@@ -122,9 +122,9 @@ class Hue(s.Service):
 
         return [hue_ini, hue_sh]
 
-    def _get_hue_ini_props(self, context):
-        db_instance = mysql.MySQL.get_db_instance(context)
-        is_yarn = context.cluster_mode == 'yarn'
+    def _get_hue_ini_props(self, cluster_context):
+        db_instance = mysql.MySQL.get_db_instance(cluster_context)
+        is_yarn = cluster_context.cluster_mode == 'yarn'
         hue_specs = mysql.MySQL.HUE_SPECS
         rdbms_specs = mysql.MySQL.RDBMS_SPECS
 
@@ -136,36 +136,39 @@ class Hue(s.Service):
             'rdbms_name': rdbms_specs.db_name,
             'rdbms_user': rdbms_specs.user,
             'rdbms_password': rdbms_specs.password,
-            'resource_manager_uri': context.resource_manager_uri,
+            'resource_manager_uri': cluster_context.resource_manager_uri,
             'yarn_mode': is_yarn,
-            'rm_host': context.get_instance_ip(yarn.RESOURCE_MANAGER),
-            'webhdfs_url': context.get_instance_ip(httpfs.HTTP_FS),
-            'jt_host': context.get_instance_ip(mr.JOB_TRACKER),
-            'oozie_host': context.get_instance_ip(oozie.OOZIE),
-            'sqoop_host': context.get_instance_ip(sqoop.SQOOP_2_SERVER),
-            'impala_host': context.get_instance_ip(impala.IMPALA_STATE_STORE),
-            'zk_hosts_with_port': context.get_zookeeper_nodes_ip_with_port(),
+            'rm_host': cluster_context.get_instance_ip(yarn.RESOURCE_MANAGER),
+            'webhdfs_url': cluster_context.get_instance_ip(httpfs.HTTP_FS),
+            'jt_host': cluster_context.get_instance_ip(mr.JOB_TRACKER),
+            'oozie_host': cluster_context.get_instance_ip(oozie.OOZIE),
+            'sqoop_host': cluster_context.get_instance_ip(
+                sqoop.SQOOP_2_SERVER),
+            'impala_host': cluster_context.get_instance_ip(
+                impala.IMPALA_STATE_STORE),
+            'zk_hosts_with_port':
+                cluster_context.get_zookeeper_nodes_ip_with_port(),
             'secret_key': self._generate_secret_key()
         }
 
-        hive_host = context.get_instance(hive.HIVE_SERVER_2)
+        hive_host = cluster_context.get_instance(hive.HIVE_SERVER_2)
         if hive_host:
-            hive_service = context.get_service(hive.HIVE_SERVER_2)
+            hive_service = cluster_context.get_service(hive.HIVE_SERVER_2)
             result.update({
                 'hive_host': hive_host.internal_ip,
                 'hive_version': hive_service.version,
-                'hive_conf_dir': hive_service.conf_dir(context),
+                'hive_conf_dir': hive_service.conf_dir(cluster_context),
             })
 
-        hbase_host = context.get_instance(hbase.HBASE_THRIFT)
+        hbase_host = cluster_context.get_instance(hbase.HBASE_THRIFT)
         if hbase_host:
-            hbase_service = context.get_service(hbase.HBASE_THRIFT)
+            hbase_service = cluster_context.get_service(hbase.HBASE_THRIFT)
             result.update({
                 'hbase_host': hbase_host.internal_ip,
-                'hbase_conf_dir': hbase_service.conf_dir(context),
+                'hbase_conf_dir': hbase_service.conf_dir(cluster_context),
             })
 
-        livy_host = context.get_instance(HUE_LIVY)
+        livy_host = cluster_context.get_instance(HUE_LIVY)
         if livy_host:
             result.update({
                 'livy_host': livy_host.internal_ip
@@ -176,7 +179,7 @@ class Hue(s.Service):
     def post_install(self, cluster_context, instances):
         hue_instance = cluster_context.get_instance(HUE)
 
-        def migrate_database(remote, context):
+        def migrate_database(remote, cluster_context):
             hue_home = self.home_dir(cluster_context)
             cmd = '%(activate)s && %(syncdb)s && %(migrate)s'
             args = {
@@ -217,7 +220,7 @@ class Hue(s.Service):
             if filtered_instances:
                 node_process.restart(filtered_instances)
 
-    def _should_restart(self, c_context, instances):
+    def _should_restart(self, cluster_context, instances):
         app_services = [
             impala.Impala(),
             hive.Hive(),
@@ -225,8 +228,9 @@ class Hue(s.Service):
             sqoop.Sqoop2(),
             spark.SparkOnYarn(),
         ]
-        instances = [c_context.filter_instances(instances, service=service)
-                     for service in app_services]
+        instances = [
+            cluster_context.filter_instances(instances, service=service)
+            for service in app_services]
         return bool(g.unique_list(itertools.chain(*instances)))
 
     def jt_plugin_path(self, cluster_context):

@@ -177,66 +177,67 @@ class SparkOnYarn(s.Service):
             mfs.chmod(r, home, 777, run_as=run_as_user)
             mfs.chmod(r, libs, 777, run_as=run_as_user)
 
-    def _hive_properties(self, context):
-        hive_version = self._hive(context).version
-        hive_conf = self._hive(context).conf_dir(context)
+    def _hive_properties(self, cluster_context):
+        hive_version = self._hive(cluster_context).version
+        hive_conf = self._hive(cluster_context).conf_dir(cluster_context)
         hive_site = hive_conf + '/hive-site.xml'
-        hive_datanucleus_libs = self._hive_datanucleus_libs_path(context)
-        hive_libs = self._hive_libs_path(context)
-        hadoop_libs = self._hadoop_libs_path(context)
+        hive_datanucleus_libs = self._hive_datanucleus_libs_path(
+            cluster_context)
+        hive_libs = self._hive_libs_path(cluster_context)
+        hadoop_libs = self._hadoop_libs_path(cluster_context)
         hive_datanucleus_libs.insert(0, hive_site)
-        mfs_paths = self._hive_datanucleus_libs_path(context)
+        mfs_paths = self._hive_datanucleus_libs_path(cluster_context)
         return {
             'spark.yarn.dist.files': ','.join(mfs_paths),
             'spark.sql.hive.metastore.version': hive_version + '.0',
             'spark.sql.hive.metastore.jars': ':'.join(hadoop_libs + hive_libs)
         }
 
-    def _hadoop_libs_path(self, context):
+    def _hadoop_libs_path(self, cluster_context):
         cmd = 'echo $(hadoop classpath)'
-        with context.get_instance(SPARK_HISTORY_SERVER).remote() as r:
+        with cluster_context.get_instance(SPARK_HISTORY_SERVER).remote() as r:
             result = r.execute_command(cmd, run_as_root=True, timeout=600)
         return result[1].replace('\n', '').split(':')
 
-    def _hive_libs_path(self, context):
+    def _hive_libs_path(self, cluster_context):
         cmd = "find %s -name '*.jar'" % (
-            self._hive(context).home_dir(context) + '/lib')
-        with context.get_instance(hive.HIVE_METASTORE).remote() as r:
+            self._hive(cluster_context).home_dir(cluster_context) + '/lib')
+        with cluster_context.get_instance(hive.HIVE_METASTORE).remote() as r:
             result = r.execute_command(cmd, run_as_root=True, timeout=600)
         return [x for x in list(result[1].split('\n')) if x]
 
-    def _assembly_jar_path(self, context):
+    def _assembly_jar_path(self, cluster_context):
         cmd = "find %s -name 'spark-assembly*.jar'" % (
-            self.home_dir(context) + '/lib')
-        with context.get_instance(SPARK_HISTORY_SERVER).remote() as r:
+            self.home_dir(cluster_context) + '/lib')
+        with cluster_context.get_instance(SPARK_HISTORY_SERVER).remote() as r:
             result = r.execute_command(cmd, run_as_root=True, timeout=600)
         if result[1]:
             return result[1].strip()
         else:
             raise Exception("no spark-assembly lib found!")
 
-    def _hive_datanucleus_libs_path(self, context):
+    def _hive_datanucleus_libs_path(self, cluster_context):
         cmd = "find %s -name 'datanucleus-*.jar'" % (
-            self._hive(context).home_dir(context) + '/lib')
-        with context.get_instance(hive.HIVE_METASTORE).remote() as r:
+            self._hive(cluster_context).home_dir(cluster_context) + '/lib')
+        with cluster_context.get_instance(hive.HIVE_METASTORE).remote() as r:
             result = r.execute_command(cmd, run_as_root=True, timeout=600)
         return [x for x in list(result[1].split('\n')) if x]
 
     # hive installed service instance
-    def _hive(self, context):
-        hive_instance = context.get_instance(hive.HIVE_SERVER_2)
+    def _hive(self, cluster_context):
+        hive_instance = cluster_context.get_instance(hive.HIVE_SERVER_2)
         if not hive_instance:
             return None
-        hive_version = context.get_chosen_service_version('Hive')
-        return context._find_service_instance('Hive', hive_version)
+        hive_version = cluster_context.get_chosen_service_version('Hive')
+        return cluster_context._find_service_instance('Hive', hive_version)
 
     # hbase installed service instance
-    def _hbase(self, context):
-        hbase_instance = context.get_instance(hbase.HBASE_MASTER)
+    def _hbase(self, cluster_context):
+        hbase_instance = cluster_context.get_instance(hbase.HBASE_MASTER)
         if not hbase_instance:
             return None
-        hbase_version = context.get_chosen_service_version('HBase')
-        return context._find_service_instance('HBase', hbase_version)
+        hbase_version = cluster_context.get_chosen_service_version('HBase')
+        return cluster_context._find_service_instance('HBase', hbase_version)
 
     def _get_hbase_version(self, cluster_context):
         return (self._hbase(cluster_context).version
@@ -247,20 +248,20 @@ class SparkOnYarn(s.Service):
                 if self._hive(cluster_context) else None)
 
     # hue installed service instance
-    def _hue(self, context):
-        hue_instance = context.get_instance('Hue')
+    def _hue(self, cluster_context):
+        hue_instance = cluster_context.get_instance('Hue')
         if not hue_instance:
             return None
-        hue_version = context.get_chosen_service_version('Hue')
-        return context._find_service_instance('Hue', hue_version)
+        hue_version = cluster_context.get_chosen_service_version('Hue')
+        return cluster_context._find_service_instance('Hue', hue_version)
 
-    def _copy_jar_from_hue(self, context):
-        if not self._hue(context):
+    def _copy_jar_from_hue(self, cluster_context):
+        if not self._hue(cluster_context):
             return
         jar_path = "%s/apps/spark/java-lib/javax.servlet-api-*.jar" % \
-                   self._hue(context).home_dir(context)
-        path = '%s/lib/' % self.home_dir(context) + self.SERVLET_JAR
-        with context.get_instance('Hue').remote() as r1:
-            for instance in context.get_instances(SPARK_SLAVE):
+                   self._hue(cluster_context).home_dir(cluster_context)
+        path = '%s/lib/' % self.home_dir(cluster_context) + self.SERVLET_JAR
+        with cluster_context.get_instance('Hue').remote() as r1:
+            for instance in cluster_context.get_instances(SPARK_SLAVE):
                 with instance.remote() as r2:
                     mfs.exchange(r1, r2, jar_path, path, 'mapr')

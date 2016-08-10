@@ -77,12 +77,12 @@ class YARN(s.Service):
 
         return [yarn_site, core_site]
 
-    def _get_core_site_props(self, context):
+    def _get_core_site_props(self, cluster_context):
         result = {
             'hadoop.proxyuser.mapr.groups': '*',
             'hadoop.proxyuser.mapr.hosts': '*',
         }
-        if context.is_node_aware:
+        if cluster_context.is_node_aware:
             result.update(self._get_core_site_node_aware_props())
         for conf in swift_helper.get_swift_configs():
             result[conf['name']] = conf['value']
@@ -97,7 +97,7 @@ class YARN(s.Service):
         })
         return result
 
-    def _get_yarn_site_props(self, context):
+    def _get_yarn_site_props(self, cluster_context):
         return {
             'hadoop.proxyuser.mapr.groups': '*',
             'hadoop.proxyuser.mapr.hosts': '*',

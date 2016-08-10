@@ -14,14 +14,13 @@
 
 from oslo_log import log as logging
 
-import sahara.context as con
+import sahara.context as context
 import sahara.plugins.mapr.domain.configuration_file as bcf
 import sahara.plugins.mapr.domain.node_process as np
 import sahara.plugins.mapr.domain.service as s
 import sahara.plugins.mapr.services.mysql.mysql as mysql
 import sahara.plugins.mapr.util.general as g
 import sahara.plugins.mapr.util.validation_utils as vu
-
 
 LOG = logging.getLogger(__name__)
 OOZIE_START_DELAY = 30
@@ -57,25 +56,27 @@ class Oozie(s.Service):
         oozie_site.add_properties(self._get_oozie_site_props(cluster_context))
         return [oozie_site]
 
-    def _get_oozie_site_props(self, context):
+    def _get_oozie_site_props(self, cluster_context):
         oozie_specs = mysql.MySQL.OOZIE_SPECS
 
         return {
             'oozie.db.schema.name': oozie_specs.db_name,
             'oozie.service.JPAService.create.db.schema': True,
             'oozie.service.JPAService.jdbc.driver': mysql.MySQL.DRIVER_CLASS,
-            'oozie.service.JPAService.jdbc.url': self._get_jdbc_uri(context),
+            'oozie.service.JPAService.jdbc.url': self._get_jdbc_uri(
+                cluster_context),
             'oozie.service.JPAService.jdbc.username': oozie_specs.user,
             'oozie.service.JPAService.jdbc.password': oozie_specs.password,
             'oozie.service.HadoopAccessorService.hadoop.configurations':
-                '*=%s' % context.hadoop_conf
+                '*=%s' % cluster_context.hadoop_conf
         }
 
-    def _get_jdbc_uri(self, context):
+    def _get_jdbc_uri(self, cluster_context):
         jdbc_uri = ('jdbc:mysql://%(db_host)s:%(db_port)s/%(db_name)s?'
                     'createDatabaseIfNotExist=true')
         jdbc_args = {
-            'db_host': mysql.MySQL.get_db_instance(context).internal_ip,
+            'db_host': mysql.MySQL.get_db_instance(
+                cluster_context).internal_ip,
             'db_port': mysql.MySQL.MYSQL_SERVER_PORT,
             'db_name': mysql.MySQL.OOZIE_SPECS.db_name,
         }
@@ -132,7 +133,7 @@ class Oozie(s.Service):
         g.execute_on_instances(
             instances, self._rebuild_oozie_war, cluster_context)
         OOZIE.start(instances)
-        con.sleep(OOZIE_START_DELAY)
+        context.sleep(OOZIE_START_DELAY)
 
 
 class OozieV401(Oozie):
