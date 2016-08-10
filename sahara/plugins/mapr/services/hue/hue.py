@@ -86,7 +86,7 @@ class Hue(s.Service):
     def get_ui_info(self, cluster_context):
         # Hue uses credentials of the administrative user (PAM auth)
         return [('HUE', HUE, {s.SERVICE_UI: 'http://%s:8888',
-                              'Username': pu.MAPR_USER_NAME,
+                              'Username': 'mapr',
                               'Password': pu.get_mapr_password(cluster_context
                                                                .cluster)})]
 
