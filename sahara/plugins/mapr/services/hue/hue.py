@@ -223,7 +223,7 @@ class Hue(s.Service):
             hive.Hive(),
             hbase.HBase(),
             sqoop.Sqoop2(),
-            spark.Spark(),
+            spark.SparkOnYarn(),
         ]
         instances = [c_context.filter_instances(instances, service=service)
                      for service in app_services]
