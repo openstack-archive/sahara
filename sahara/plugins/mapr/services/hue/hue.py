@@ -202,8 +202,15 @@ class Hue(s.Service):
             }
             remote.execute_command(cmd % args, run_as_root=True, timeout=600)
 
+        def hue_syncdb_workround(remote):
+            cmd = 'printf "/opt/mapr/lib\n$JAVA_HOME/jre/lib/amd64/server\n"' \
+                  ' | tee /etc/ld.so.conf.d/mapr-hue.conf && ldconfig'
+            remote.execute_command(cmd, run_as_root=True)
+
         with hue_instance.remote() as r:
             LOG.debug("Executing Hue database migration")
+            # temporary workaround to prevent failure of db migrate on mapr 5.2
+            hue_syncdb_workround(r)
             migrate_database(r, cluster_context)
         self._copy_hive_configs(cluster_context, hue_instance)
         self._install_jt_plugin(cluster_context, hue_instance)
