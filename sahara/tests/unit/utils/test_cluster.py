@@ -94,8 +94,13 @@ class UtilsClusterTest(base.SaharaWithDbTestCase):
         cluster = self.api.cluster_get(ctx, cluster.id)
         self.assertEqual(ng_len - 1, len(cluster.node_groups))
 
-    def test_generate_etc_hosts(self):
+    @mock.patch("sahara.conductor.objects.Cluster.use_designate_feature")
+    @mock.patch("socket.gethostbyname")
+    @mock.patch("sahara.utils.openstack.base.url_for")
+    def test_generate_etc_hosts(self, mock_url, mock_get_host,
+                                mock_use_designate):
         cluster = self._make_sample()
+        mock_use_designate.return_value = False
         ctx = context.ctx()
         idx = 0
         for ng in cluster.node_groups:
@@ -107,12 +112,13 @@ class UtilsClusterTest(base.SaharaWithDbTestCase):
                     'internal_ip': str(idx),
                 })
         cluster = self.api.cluster_get(ctx, cluster)
-        with mock.patch("sahara.utils.openstack.base.url_for") as mock_url:
-            mock_url.side_effect = ["http://keystone.local:1234/v13",
-                                    "http://swift.local:5678/v42"]
-            with mock.patch("socket.gethostbyname") as mock_get_host:
-                mock_get_host.side_effect = ["1.2.3.4", "5.6.7.8"]
-                value = cluster_utils.generate_etc_hosts(cluster)
+
+        mock_url.side_effect = ["http://keystone.local:1234/v13",
+                                "http://swift.local:5678/v42"]
+        mock_get_host.side_effect = ["1.2.3.4", "5.6.7.8"]
+
+        value = cluster_utils.generate_etc_hosts(cluster)
+
         expected = ("127.0.0.1 localhost\n"
                     "1 1.novalocal 1\n"
                     "2 2.novalocal 2\n"
@@ -120,4 +126,36 @@ class UtilsClusterTest(base.SaharaWithDbTestCase):
                     "4 4.novalocal 4\n"
                     "1.2.3.4 keystone.local\n"
                     "5.6.7.8 swift.local\n")
+        self.assertEqual(expected, value)
+
+    @mock.patch("sahara.conductor.objects.Cluster.use_designate_feature")
+    @mock.patch("socket.gethostbyname")
+    @mock.patch("sahara.utils.openstack.base.url_for")
+    def test_generate_etc_hosts_with_designate(self, mock_url, mock_get_host,
+                                               mock_use_designate):
+        cluster = self._make_sample()
+        mock_use_designate.return_value = True
+        mock_url.side_effect = ["http://keystone.local:1234/v13",
+                                "http://swift.local:5678/v42"]
+        mock_get_host.side_effect = ["1.2.3.4", "5.6.7.8"]
+
+        value = cluster_utils.generate_etc_hosts(cluster)
+
+        expected = ("127.0.0.1 localhost\n"
+                    "1.2.3.4 keystone.local\n"
+                    "5.6.7.8 swift.local\n")
+        self.assertEqual(expected, value)
+
+    def test_generate_resolv_conf_diff(self):
+        curr_resolv_conf = "search openstacklocal\nnameserver 8.8.8.8\n"
+
+        self.override_config("nameservers", ['1.1.1.1'])
+        value = cluster_utils.generate_resolv_conf_diff(curr_resolv_conf)
+        expected = "nameserver 1.1.1.1\n"
+        self.assertEqual(expected, value)
+
+        self.override_config("nameservers", ['1.1.1.1', '8.8.8.8', '2.2.2.2'])
+        value = cluster_utils.generate_resolv_conf_diff(curr_resolv_conf)
+        expected = ("nameserver 1.1.1.1\n"
+                    "nameserver 2.2.2.2\n")
         self.assertEqual(expected, value)

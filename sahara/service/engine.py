@@ -142,10 +142,10 @@ class Engine(object):
         """Configure active instances.
 
         * generate /etc/hosts
+        * change /etc/resolv.conf
         * setup passwordless login
         * etc.
         """
-        hosts_file = cluster_utils.generate_etc_hosts(cluster)
         cpo.add_provisioning_step(
             cluster.id, _("Configure instances"),
             cluster_utils.count_instances(cluster))
@@ -154,20 +154,43 @@ class Engine(object):
             for node_group in cluster.node_groups:
                 for instance in node_group.instances:
                     with context.set_current_instance_id(instance.instance_id):
-                        tg.spawn(
-                            "configure-instance-%s" % instance.instance_name,
-                            self._configure_instance, instance, hosts_file)
+                        tg.spawn("configure-instance-{}".format(
+                            instance.instance_name),
+                            self._configure_instance, instance, cluster
+                        )
 
     @cpo.event_wrapper(mark_successful_on_exit=True)
-    def _configure_instance(self, instance, hosts_file):
-        LOG.debug('Configuring instance')
+    def _configure_instance(self, instance, cluster):
+        self._configure_instance_etc_hosts(instance, cluster)
+        if cluster.use_designate_feature():
+            self._configure_instance_resolve_conf(instance)
 
+    def _configure_instance_etc_hosts(self, instance, cluster):
+        LOG.debug('Configuring "/etc/hosts" of instance.')
+        hosts_file = cluster_utils.generate_etc_hosts(cluster)
         with instance.remote() as r:
             r.write_file_to('etc-hosts', hosts_file)
             r.execute_command('sudo hostname %s' % instance.fqdn())
             r.execute_command('sudo mv etc-hosts /etc/hosts')
 
             r.execute_command('sudo usermod -s /bin/bash $USER')
+
+    def _configure_instance_resolve_conf(self, instance):
+        LOG.debug('Setting up those name servers from sahara.conf '
+                  'which are lacked in the /etc/resolv.conf.')
+        with instance.remote() as r:
+            code, curr_resolv_conf = r.execute_command('cat /etc/resolv.conf')
+            diff = cluster_utils.generate_resolv_conf_diff(curr_resolv_conf)
+            if diff.strip():
+                position = curr_resolv_conf.find('nameserver')
+                if position == -1:
+                    position = 0
+                new_resolv_conf = "{}\n{}{}".format(
+                    curr_resolv_conf[:position],
+                    diff,
+                    curr_resolv_conf[position:])
+                r.write_file_to('resolv-conf', new_resolv_conf)
+                r.execute_command('sudo mv resolv-conf /etc/resolv.conf')
 
     def _generate_user_data_script(self, node_group, instance_name):
         script = """#!/bin/bash

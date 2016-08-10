@@ -156,7 +156,8 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
                         "name": "test",
                         'count': 3
                     }
-                ]
+                ],
+                'domain_name': 'domain.org.'
             },
 
         )
@@ -226,7 +227,8 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
                 ],
                 'anti_affinity': ['datanode'],
                 'description': 'my template',
-                'neutron_management_network': str(uuid.uuid4())
+                'neutron_management_network': str(uuid.uuid4()),
+                'domain_name': 'domain.org.'
             })
 
     @mock.patch("sahara.service.validations.base.check_network_exists")
@@ -244,7 +246,8 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
                 'node_groups': None,
                 'anti_affinity': None,
                 'description': None,
-                'neutron_management_network': None
+                'neutron_management_network': None,
+                'domain_name': None
             })
 
     def test_cluster_template_create_v_plugin_name_exists(self):

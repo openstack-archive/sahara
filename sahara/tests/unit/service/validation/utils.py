@@ -421,7 +421,8 @@ class ValidationTestCase(base.SaharaTestCase):
             'name': 'test-cluster',
             'plugin_name': 'fake',
             'hadoop_version': '0.1',
-            'default_image_id': '550e8400-e29b-41d4-a716-446655440000'
+            'default_image_id': '550e8400-e29b-41d4-a716-446655440000',
+            'domain_name': 'domain.org.'
         }
         self._assert_create_object_validation(data=data)
         data = {

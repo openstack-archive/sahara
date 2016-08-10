@@ -99,6 +99,9 @@ CLUSTER_TEMPLATE_SCHEMA = {
         },
         "is_protected": {
             "type": ["boolean", "null"],
+        },
+        "domain_name": {
+            "type": ["string", "null"],
         }
     },
     "additionalProperties": False,

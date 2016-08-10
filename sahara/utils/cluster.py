@@ -16,6 +16,7 @@
 import socket
 
 from keystoneauth1 import exceptions as keystone_ex
+from oslo_config import cfg
 from oslo_log import log as logging
 from six.moves.urllib import parse
 
@@ -28,6 +29,8 @@ from sahara.utils.openstack import base as auth_base
 
 conductor = c.API
 LOG = logging.getLogger(__name__)
+
+CONF = cfg.CONF
 
 # cluster status
 CLUSTER_STATUS_VALIDATING = "Validating"
@@ -132,13 +135,7 @@ def clean_cluster_from_empty_ng(cluster):
             conductor.node_group_remove(ctx, ng)
 
 
-def generate_etc_hosts(cluster):
-    hosts = "127.0.0.1 localhost\n"
-    for node_group in cluster.node_groups:
-        for instance in node_group.instances:
-            hosts += "%s %s %s\n" % (instance.internal_ip,
-                                     instance.fqdn(),
-                                     instance.hostname())
+def _etc_hosts_for_services(hosts):
     # add alias for keystone and swift
     for service in ["identity", "object-store"]:
         try:
@@ -149,5 +146,31 @@ def generate_etc_hosts(cluster):
             LOG.debug("Endpoint not found for service: \"%s\"", service)
             continue
         hosts += "%s %s\n" % (socket.gethostbyname(hostname), hostname)
-
     return hosts
+
+
+def _etc_hosts_for_instances(hosts, cluster):
+    for node_group in cluster.node_groups:
+        for instance in node_group.instances:
+            hosts += "%s %s %s\n" % (instance.internal_ip,
+                                     instance.fqdn(),
+                                     instance.hostname())
+    return hosts
+
+
+def generate_etc_hosts(cluster):
+    hosts = "127.0.0.1 localhost\n"
+    if not cluster.use_designate_feature():
+        hosts = _etc_hosts_for_instances(hosts, cluster)
+    hosts = _etc_hosts_for_services(hosts)
+    return hosts
+
+
+def generate_resolv_conf_diff(curr_resolv_conf):
+    # returns string that contains nameservers
+    # which are lacked in the 'curr_resolve_conf'
+    resolv_conf = ""
+    for ns in CONF.nameservers:
+        if ns not in curr_resolv_conf:
+            resolv_conf += "nameserver {}\n".format(ns)
+    return resolv_conf
