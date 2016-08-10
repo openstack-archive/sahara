@@ -14,7 +14,6 @@
 
 
 import abc
-import os
 
 from oslo_log import log as logging
 import six
@@ -199,9 +198,8 @@ class BaseConfigurer(ac.AbstractConfigurer):
         @el.provision_event()
         def write_config_files(instance, config_files):
             for file in config_files:
-                util.mkdir(instance, os.path.dirname(file.path), owner="root")
                 util.write_file(instance, file.path, file.data, mode=file.mode,
-                                owner="root")
+                                owner="mapr")
 
         node_groups = util.unique_list(instances, lambda i: i.node_group)
         for node_group in node_groups:
