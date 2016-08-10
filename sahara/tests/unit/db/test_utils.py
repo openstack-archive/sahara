@@ -29,7 +29,7 @@ class TestPaginationUtils(testtools.TestCase):
         query = [mock.MagicMock(id=i) for i in range(100)]
 
         res = api._get_prev_and_next_objects(query, 5, None)
-        self.assertEqual((None, 5), res)
+        self.assertEqual((None, 4), res)
 
         res = api._get_prev_and_next_objects(query, None, None)
         self.assertEqual((None, None), res)
