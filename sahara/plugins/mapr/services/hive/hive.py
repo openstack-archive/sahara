@@ -18,6 +18,7 @@ from oslo_log import log as logging
 import sahara.plugins.mapr.domain.configuration_file as bcf
 import sahara.plugins.mapr.domain.node_process as np
 import sahara.plugins.mapr.domain.service as s
+import sahara.plugins.mapr.services.sentry.sentry as sentry
 import sahara.plugins.mapr.util.validation_utils as vu
 import sahara.utils.files as files
 
@@ -57,14 +58,29 @@ class Hive(s.Service):
             hive_site.fetch(instance)
         hive_site.parse(files.get_file_text(hive_default))
         hive_site.add_properties(self._get_hive_site_props(cluster_context))
-        hue_version = cluster_context.get_chosen_service_version('Hue')
-        if self.require_no_sasl(hue_version):
-            hive_site.add_property('hive.server2.authentication', 'NOSASL')
+        sentry_host = cluster_context.get_instance(sentry.SENTRY)
+        if sentry_host:
+            sentry_mode = cluster_context._get_cluster_config_value(
+                sentry.Sentry().SENTRY_STORAGE_MODE)
+            ui_name = sentry.Sentry().ui_name
+            sentry_version = cluster_context.get_chosen_service_version(
+                ui_name)
+            sentry_service = cluster_context. \
+                _find_service_instance(ui_name, sentry_version)
+            if sentry_service.supports(self, sentry_mode):
+                sentry_default = 'plugins/mapr/services/hive/resources/' \
+                                 'sentry-default.xml'
+                sentry_db = \
+                    'plugins/mapr/services/hive/resources/sentry-db.xml'
+                hive_site.parse(files.get_file_text(sentry_default))
+                hive_site.add_property('hive.sentry.conf.url',
+                                       'file://%s/sentry-site.xml' %
+                                       sentry_service.conf_dir(
+                                           cluster_context))
+                if sentry_mode == sentry.DB_STORAGE_SENTRY_MODE:
+                    hive_site.parse(files.get_file_text(sentry_db))
 
         return [hive_site]
-
-    def require_no_sasl(self, version):
-        return version not in ['3.9.0']
 
     def _get_hive_site_props(self, cluster_context):
         # Import here to resolve circular dependency
@@ -118,6 +134,26 @@ class Hive(s.Service):
         with cldb_node.remote() as r:
             LOG.debug("Creating Hive warehouse dir")
             r.execute_command(cmd % args, raise_when_error=False)
+        self._create_sentry_role(cluster_context)
+
+    def _create_sentry_role(self, cluster_context):
+        instance = cluster_context.get_instance(HIVE_METASTORE)
+        sentry_host = cluster_context.get_instance(sentry.SENTRY)
+        if sentry_host:
+            sentry_mode = cluster_context._get_cluster_config_value(
+                sentry.Sentry().SENTRY_STORAGE_MODE)
+            ui_name = sentry.Sentry().ui_name
+            sentry_version = cluster_context.get_chosen_service_version(
+                ui_name)
+            sentry_service = cluster_context. \
+                _find_service_instance(ui_name, sentry_version)
+            if sentry_service.supports(self, sentry_mode):
+                cmd = 'sudo -u mapr hive -e "create role admin_role;' \
+                      'grant all on server HS2 to role admin_role;' \
+                      'grant role admin_role to group mapr;"'
+                with instance.remote() as r:
+                    LOG.debug("Creating hive role for sentry")
+                    r.execute_command(cmd, raise_when_error=False)
 
 
 class HiveV013(Hive):

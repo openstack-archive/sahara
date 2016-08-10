@@ -42,7 +42,7 @@
     </property>
 
     <property>
-        <name>hive.zookeeper.property.clientPort</name>
+        <name>hive.zookeeper.client.port</name>
         <value>5181</value>
     </property>
 

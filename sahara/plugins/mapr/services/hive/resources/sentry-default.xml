@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+
+    <property>
+        <name>hive.server2.session.hook</name>
+        <value>org.apache.sentry.binding.hive.HiveAuthzBindingSessionHook</value>
+    </property>
+
+    <property>
+        <name>hive.metastore.rawstore.impl</name>
+        <value>org.apache.sentry.binding.metastore.AuthorizingObjectStore</value>
+    </property>
+
+    <property>
+        <name>hive.server2.enable.doAs</name>
+        <value>false</value>
+        <description>Set this property to enable impersonation in Hive Server2</description>
+    </property>
+
+    <property>
+        <name>hive.metastore.execute.setugi</name>
+        <value>true</value>
+    </property>
+
+    <property>
+        <name>hive.internal.ss.authz.settings.applied.marker</name>
+        <value>true</value>
+    </property>
+
+    <property>
+        <name>hive.sentry.subject.name</name>
+        <value>mapr</value>
+    </property>
+
+    <property>
+        <name>hive.metastore.filter.hook</name>
+        <value>org.apache.sentry.binding.metastore.SentryMetaStoreFilterHook</value>
+    </property>
+
+    <property>
+        <name>hive.internal.ss.authz.settings.applied.marker</name>
+        <value>true</value>
+    </property>
+</configuration>

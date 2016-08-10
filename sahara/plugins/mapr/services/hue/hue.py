@@ -30,6 +30,7 @@ import sahara.plugins.mapr.services.impala.impala as impala
 import sahara.plugins.mapr.services.mapreduce.mapreduce as mr
 import sahara.plugins.mapr.services.mysql.mysql as mysql
 import sahara.plugins.mapr.services.oozie.oozie as oozie
+import sahara.plugins.mapr.services.sentry.sentry as sentry
 import sahara.plugins.mapr.services.spark.spark as spark
 import sahara.plugins.mapr.services.sqoop.sqoop2 as sqoop
 import sahara.plugins.mapr.services.yarn.yarn as yarn
@@ -172,6 +173,18 @@ class Hue(s.Service):
         if livy_host:
             result.update({
                 'livy_host': livy_host.internal_ip
+            })
+
+        sentry_host = cluster_context.get_instance(sentry.SENTRY)
+        if sentry_host:
+            ui_name = sentry.Sentry().ui_name
+            sentry_version = cluster_context.get_chosen_service_version(
+                ui_name)
+            sentry_service = cluster_context. \
+                _find_service_instance(ui_name, sentry_version)
+            result.update({
+                'sentry_host': sentry_host.internal_ip,
+                'sentry_conf': sentry_service.conf_dir(cluster_context)
             })
 
         return result

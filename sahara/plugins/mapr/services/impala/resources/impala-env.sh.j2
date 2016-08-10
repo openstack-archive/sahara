@@ -24,16 +24,30 @@ IMPALA_SERVER_ARGS=" \
     -use_statestore \
     -state_store_host=${IMPALA_STATE_STORE_HOST} \
     -catalog_service_host=${CATALOG_SERVICE_HOST} \
-    -be_port=${IMPALA_BACKEND_PORT}"
+    -be_port=${IMPALA_BACKEND_PORT}
+{%- if sentry_db %}
+    -server_name=HS2 \
+    -sentry_config={{ sentry_home }}/conf/sentry-site.xml
+{%- endif %}
+{%- if sentry_policy_file %}
+    -server_name=HS2 \
+    -authorization_policy_file={{ sentry_policy_file }}
+{%- endif %}"
 
 # These impact the state store daemon and can be optionally changed
 IMPALA_STATE_STORE_ARGS=" -log_dir=${IMPALA_LOG_DIR} \
                             -state_store_port=${IMPALA_STATE_STORE_PORT} \
-                            -catalog_service_host=${CATALOG_SERVICE_HOST} "
+                            -catalog_service_host=${CATALOG_SERVICE_HOST}
+{%- if sentry_db %}
+                            -sentry_config={{ sentry_home }}/conf/sentry-site.xml
+{%- endif %}"
 IMPALA_CATALOG_ARGS=" -log_dir=${IMPALA_LOG_DIR} \
     -state_store_port=${IMPALA_STATE_STORE_PORT} \
     -use_statestore \
-    -state_store_host=${IMPALA_STATE_STORE_HOST} "
+    -state_store_host=${IMPALA_STATE_STORE_HOST}
+{%- if sentry_db %}
+    -sentry_config={{ sentry_home }}/conf/sentry-site.xml
+{%- endif %}"
 
 # for troubleshooting
 ENABLE_CORE_DUMPS=false

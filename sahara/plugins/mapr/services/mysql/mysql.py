@@ -20,8 +20,6 @@ import six
 
 import sahara.plugins.mapr.domain.configuration_file as cf
 import sahara.plugins.mapr.domain.service as s
-import sahara.plugins.mapr.services.hive.hive as hive
-from sahara.plugins.mapr.services.spark import spark
 import sahara.plugins.mapr.util.general as g
 import sahara.utils.files as f
 
@@ -36,6 +34,7 @@ class MySQL(s.Service):
     METASTORE_SPECS = db_spec('metastore', 'maprmetastore', 'mapr')
     RDBMS_SPECS = db_spec('rdbms', 'maprrdbms', 'mapr')
     OOZIE_SPECS = db_spec('oozie', 'maproozie', 'mapr')
+    SENTRY_SPECS = db_spec('sentry', 'maprsentry', 'mapr')
 
     SELECT_DATA = 'mysql -uroot --skip-column-names -e "%s"| grep -E "\w+"'
     GET_DBS_LIST = SELECT_DATA % 'SHOW DATABASES'
@@ -109,7 +108,7 @@ class MySQL(s.Service):
 
     @staticmethod
     def _create_metastore_db(instance, cluster_context, databases, instances):
-        hive_meta = cluster_context.get_instance(hive.HIVE_METASTORE)
+        hive_meta = cluster_context.get_instance('HiveMetastore')
 
         if not hive_meta:
             return
@@ -124,6 +123,15 @@ class MySQL(s.Service):
         if MySQL.OOZIE_SPECS.db_name not in databases:
             MySQL._create_service_db(instance, MySQL.OOZIE_SPECS)
         MySQL._grant_access(instance, MySQL.OOZIE_SPECS, instances)
+
+    @staticmethod
+    def _create_sentry_db(instance, cluster_context, databases, instances):
+        sentry_instance = cluster_context.get_instance('Sentry')
+        if not sentry_instance:
+            return
+        if MySQL.SENTRY_SPECS.db_name not in databases:
+            MySQL._create_service_db(instance, MySQL.SENTRY_SPECS)
+        MySQL._grant_access(instance, MySQL.SENTRY_SPECS, instances)
 
     @staticmethod
     def start_mysql_server(cluster_context):
@@ -156,8 +164,7 @@ class MySQL(s.Service):
 
     @staticmethod
     def get_db_instance(cluster_context):
-        return cluster_context.oozie_server or cluster_context.get_instance(
-            spark.SPARK_MASTER)
+        return cluster_context.oozie_server
 
     @staticmethod
     def create_databases(cluster_context, instances):
@@ -169,6 +176,8 @@ class MySQL(s.Service):
         MySQL._create_oozie_db(db_instance, databases, instances)
         MySQL._create_metastore_db(
             db_instance, cluster_context, databases, instances)
+        MySQL._create_sentry_db(db_instance, cluster_context, databases,
+                                instances)
 
     @staticmethod
     def _create_script_obj(filename, template, **kwargs):

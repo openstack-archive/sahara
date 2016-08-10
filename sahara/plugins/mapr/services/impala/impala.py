@@ -17,6 +17,7 @@ import sahara.plugins.mapr.domain.configuration_file as bcf
 import sahara.plugins.mapr.domain.node_process as np
 import sahara.plugins.mapr.domain.service as s
 import sahara.plugins.mapr.services.hive.hive as hive
+import sahara.plugins.mapr.services.sentry.sentry as sentry
 import sahara.plugins.mapr.util.general as g
 import sahara.plugins.mapr.util.validation_utils as vu
 import sahara.utils.files as files
@@ -82,7 +83,22 @@ class Impala(s.Service):
             impala_env.fetch(instance)
         impala_env.parse(files.get_file_text(defaults))
         impala_env.add_properties(self._get_impala_env_props(cluster_context))
-
+        sentry_host = cluster_context.get_instance(sentry.SENTRY)
+        if sentry_host:
+            sentry_mode = cluster_context._get_cluster_config_value(
+                sentry.Sentry().SENTRY_STORAGE_MODE)
+            ui_name = sentry.Sentry().ui_name
+            sentry_version = cluster_context.get_chosen_service_version(
+                ui_name)
+            sentry_service = cluster_context. \
+                _find_service_instance(ui_name, sentry_version)
+            if sentry_service.supports(self, sentry_mode):
+                impala_env.add_properties({
+                    'sentry_home': sentry_service.home_dir(cluster_context),
+                    'sentry_db': sentry_mode == sentry.DB_STORAGE_SENTRY_MODE,
+                    'sentry_policy_file': 'maprfs://'
+                                          + sentry_service.GLOBAL_POLICY_FILE,
+                })
         return [impala_env]
 
     def post_install(self, cluster_context, instances):

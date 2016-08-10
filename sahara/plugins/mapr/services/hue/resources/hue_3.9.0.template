@@ -124,7 +124,7 @@
 
   # Comma separated list of apps to not load at server startup.
   # e.g.: pig,zookeeper
-  app_blacklist=search,zookeeper,security{{ ",impala" if not impala_host }}{{ ",hbase" if not hbase_host }}{{ ",sqoop" if not sqoop_host }}{{ ",spark" if not livy_host }}{{ ",hive" if not hive_host }}
+  app_blacklist=search,zookeeper {{ ",security" if not sentry_host }}{{ ",impala" if not impala_host }}{{ ",hbase" if not hbase_host }}{{ ",sqoop" if not sqoop_host }}{{ ",spark" if not livy_host }}{{ ",hive" if not hive_host }}
 
   # The directory where to store the auditing logs. Auditing is disable if the value is empty.
   # e.g. /var/log/hue/audit.log
@@ -1159,16 +1159,17 @@
 # Settings for the Sentry lib
 ###########################################################################
 
+{%- if sentry_host %}
 [libsentry]
   # Hostname or IP of server.
-  ## hostname=localhost
+  hostname={{ sentry_host }}
 
   # Port the sentry service is running on.
-  ## port=8038
+  port=8038
 
   # Sentry configuration directory, where sentry-site.xml is located.
-  ## sentry_conf_dir=/opt/mapr/sentry/sentry-1.4.0/conf
-
+  sentry_conf_dir={{ sentry_conf }}
+{%- endif %}
 
   ###########################################################################
   # Settings to configure the ZooKeeper Lib
