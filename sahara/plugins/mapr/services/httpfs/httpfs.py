@@ -15,7 +15,6 @@
 
 import sahara.plugins.mapr.domain.node_process as np
 import sahara.plugins.mapr.domain.service as s
-import sahara.plugins.mapr.util.commands as cmd
 import sahara.plugins.mapr.util.validation_utils as vu
 
 
@@ -38,5 +37,4 @@ class HttpFS(s.Service):
         self._validation_rules = [vu.exactly(1, HTTP_FS)]
 
     def post_install(self, cluster_context, instances):
-        instance = cluster_context.get_instance(HTTP_FS)
-        cmd.chown(instance, 'mapr:mapr', self.service_dir(cluster_context))
+        self._set_service_dir_owner(cluster_context, instances)

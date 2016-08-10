@@ -81,10 +81,6 @@ class Oozie(s.Service):
         }
         return jdbc_uri % jdbc_args
 
-    def _set_owner(self, remote):
-        remote.execute_command('chown -R mapr:mapr /opt/mapr/oozie',
-                               run_as_root=True)
-
     def install(self, cluster_context, instances):
         # oozie requires executed configure.sh
         pass
@@ -112,7 +108,7 @@ class Oozie(s.Service):
                 LOG.debug('Installing MySQL connector for Oozie')
                 r.execute_command(symlink_cmd, run_as_root=True,
                                   raise_when_error=False)
-                self._set_owner(r)
+        self._set_service_dir_owner(cluster_context, instances)
 
     def post_start(self, cluster_context, instances):
         instances = cluster_context.filter_instances(instances, OOZIE)

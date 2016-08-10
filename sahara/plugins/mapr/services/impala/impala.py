@@ -17,7 +17,6 @@ import sahara.plugins.mapr.domain.configuration_file as bcf
 import sahara.plugins.mapr.domain.node_process as np
 import sahara.plugins.mapr.domain.service as s
 import sahara.plugins.mapr.services.hive.hive as hive
-import sahara.plugins.mapr.util.commands as cmd
 import sahara.plugins.mapr.util.maprfs_helper as mfs
 import sahara.plugins.mapr.util.validation_utils as vu
 import sahara.utils.files as files
@@ -91,9 +90,7 @@ class Impala(s.Service):
         return [impala_env]
 
     def post_install(self, cluster_context, instances):
-        impalas = cluster_context.filter_instances(instances, IMPALA_SERVER)
-        for instance in impalas:
-            cmd.chown(instance, 'mapr:mapr', self.service_dir(cluster_context))
+        self._set_service_dir_owner(cluster_context, instances)
 
 
 class ImpalaV141(Impala):

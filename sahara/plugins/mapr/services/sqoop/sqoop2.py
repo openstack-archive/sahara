@@ -15,7 +15,6 @@
 
 import sahara.plugins.mapr.domain.node_process as np
 import sahara.plugins.mapr.domain.service as s
-import sahara.plugins.mapr.util.commands as cmd
 import sahara.plugins.mapr.util.validation_utils as vu
 
 
@@ -44,6 +43,4 @@ class Sqoop2(s.Service):
         ]
 
     def post_install(self, context, instances):
-        sqoop_servers = context.filter_instances(instances, SQOOP_2_SERVER)
-        for instance in sqoop_servers:
-            cmd.chown(instance, 'mapr:mapr', self.service_dir(context))
+        self._set_service_dir_owner(context, instances)
