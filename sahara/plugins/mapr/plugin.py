@@ -93,3 +93,7 @@ class MapRPlugin(p.ProvisioningPluginBase):
     def get_open_ports(self, node_group):
         v_handler = self._get_handler(node_group.cluster.hadoop_version)
         return v_handler.get_open_ports(node_group)
+
+    def get_health_checks(self, cluster):
+        v_handler = self._get_handler(cluster.hadoop_version)
+        return v_handler.get_cluster_checks(cluster)

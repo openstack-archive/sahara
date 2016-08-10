@@ -207,6 +207,20 @@ class BaseClusterContext(cc.AbstractClusterContext):
         else:
             return config.default_value
 
+    def get_node_processes(self):
+        node_processes = []
+        for ng in self.cluster.node_groups:
+            for np in ng.node_processes:
+                if np not in node_processes:
+                    node_processes.append(self.get_node_process_by_name(np))
+        return node_processes
+
+    def get_node_process_by_name(self, name):
+        for service in self.cluster_services:
+            for node_process in service.node_processes:
+                if node_process.ui_name == name:
+                    return node_process
+
     def get_instances(self, node_process=None):
         if node_process is not None:
             node_process = su.get_node_process_name(node_process)

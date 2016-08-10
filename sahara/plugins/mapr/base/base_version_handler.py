@@ -19,6 +19,7 @@ import sahara.plugins.mapr.abstract.version_handler as vh
 import sahara.plugins.mapr.base.base_cluster_configurer as base_conf
 import sahara.plugins.mapr.base.base_cluster_validator as bv
 import sahara.plugins.mapr.base.base_edp_engine as edp
+import sahara.plugins.mapr.base.base_health_checker as health
 import sahara.plugins.mapr.base.base_node_manager as bs
 import sahara.plugins.mapr.util.general as util
 import sahara.plugins.utils as u
@@ -28,6 +29,7 @@ class BaseVersionHandler(vh.AbstractVersionHandler):
     def __init__(self):
         self._validator = bv.BaseValidator()
         self._configurer = base_conf.BaseConfigurer()
+        self._health_checker = health.BaseHealthChecker()
         self._node_manager = bs.BaseNodeManager()
         self._version = None
         self._required_services = []
@@ -130,3 +132,7 @@ class BaseVersionHandler(vh.AbstractVersionHandler):
                 if node_process.ui_name in node_group.node_processes:
                     result += node_process.open_ports
         return util.unique_list(result)
+
+    def get_cluster_checks(self, cluster):
+        cluster_context = self.get_context(cluster)
+        return self._health_checker.get_checks(cluster_context)
