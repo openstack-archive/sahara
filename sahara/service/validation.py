@@ -51,6 +51,91 @@ def validate_pagination_limit():
                 _("'limit' must be positive integer"), 400)
 
 
+def get_sorting_field():
+    request_args = u.get_request_args()
+    if 'sort_by' in request_args:
+        sort_by = request_args['sort_by']
+        if sort_by:
+            sort_by = sort_by[1:] if sort_by[0] == '-' else sort_by
+            return sort_by
+    return None
+
+
+def validate_sorting_clusters():
+    field = get_sorting_field()
+    if field is None:
+        return
+    if field not in ['id', 'name', 'plugin_name', 'hadoop_version',
+                     'status']:
+        raise ex.SaharaException(
+            _("Unknown field for sorting %s") % field, 400)
+
+
+def validate_sorting_cluster_templates():
+    field = get_sorting_field()
+    if field is None:
+        return
+    if field not in ['id', 'name', 'plugin_name', 'hadoop_version',
+                     'created_at', 'updated_at']:
+        raise ex.SaharaException(
+            _("Unknown field for sorting %s") % field, 400)
+
+
+def validate_sorting_node_group_templates():
+    field = get_sorting_field()
+    if field is None:
+        return
+    if field not in ['id', 'name', 'plugin_name', 'hadoop_version',
+                     'created_at', 'updated_at']:
+        raise ex.SaharaException(
+            _("Unknown field for sorting %s") % field, 400)
+
+
+def validate_sorting_job_binaries():
+    field = get_sorting_field()
+    if field is None:
+        return
+    if field not in ['id', 'name', 'created_at', 'updated_at']:
+        raise ex.SaharaException(
+            _("Unknown field for sorting %s") % field, 400)
+
+
+def validate_sorting_job_binary_internals():
+    field = get_sorting_field()
+    if field is None:
+        return
+    if field not in ['id', 'name', 'created_at', 'updated_at']:
+        raise ex.SaharaException(
+            _("Unknown field for sorting %s") % field, 400)
+
+
+def validate_sorting_data_sources():
+    field = get_sorting_field()
+    if field is None:
+        return
+    if field not in ['id', 'name', 'type', 'created_at', 'updated_at']:
+        raise ex.SaharaException(
+            _("Unknown field for sorting %s") % field, 400)
+
+
+def validate_sorting_jobs():
+    field = get_sorting_field()
+    if field is None:
+        return
+    if field not in ['id', 'name', 'type', 'created_at', 'updated_at']:
+        raise ex.SaharaException(
+            _("Unknown field for sorting %s") % field, 400)
+
+
+def validate_sorting_job_executions():
+    field = get_sorting_field()
+    if field is None:
+        return
+    if field not in ['id', 'job_template', 'cluster', 'status']:
+        raise ex.SaharaException(
+            _("Unknown field for sorting %s") % field, 400)
+
+
 def validate(schema, *validators):
     def decorator(func):
         @functools.wraps(func)
