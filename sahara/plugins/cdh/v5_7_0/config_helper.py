@@ -23,9 +23,9 @@ class ConfigHelperV570(c_h.ConfigHelper):
 
     CDH5_UBUNTU_REPO = (
         'deb [arch=amd64] http://archive.cloudera.com/cdh5'
-        '/ubuntu/trusty/amd64/cdh trusty-cdh5.5.0 contrib'
+        '/ubuntu/trusty/amd64/cdh trusty-cdh5.7.0 contrib'
         '\ndeb-src http://archive.cloudera.com/cdh5/ubuntu'
-        '/trusty/amd64/cdh trusty-cdh5.5.0 contrib')
+        '/trusty/amd64/cdh trusty-cdh5.7.0 contrib')
 
     DEFAULT_CDH5_UBUNTU_REPO_KEY_URL = (
         'http://archive.cloudera.com/cdh5/ubuntu'
@@ -33,9 +33,9 @@ class ConfigHelperV570(c_h.ConfigHelper):
 
     CM5_UBUNTU_REPO = (
         'deb [arch=amd64] http://archive.cloudera.com/cm5'
-        '/ubuntu/trusty/amd64/cm trusty-cm5.5.0 contrib'
+        '/ubuntu/trusty/amd64/cm trusty-cm5.7.0 contrib'
         '\ndeb-src http://archive.cloudera.com/cm5/ubuntu'
-        '/trusty/amd64/cm trusty-cm5.5.0 contrib')
+        '/trusty/amd64/cm trusty-cm5.7.0 contrib')
 
     DEFAULT_CM5_UBUNTU_REPO_KEY_URL = (
         'http://archive.cloudera.com/cm5/ubuntu'
@@ -45,7 +45,7 @@ class ConfigHelperV570(c_h.ConfigHelper):
         '[cloudera-cdh5]'
         '\nname=Cloudera\'s Distribution for Hadoop, Version 5'
         '\nbaseurl=http://archive.cloudera.com/cdh5/redhat/6'
-        '/x86_64/cdh/5.5.0/'
+        '/x86_64/cdh/5.7.0/'
         '\ngpgkey = http://archive.cloudera.com/cdh5/redhat/6'
         '/x86_64/cdh/RPM-GPG-KEY-cloudera'
         '\ngpgcheck = 1')
@@ -54,7 +54,7 @@ class ConfigHelperV570(c_h.ConfigHelper):
         '[cloudera-manager]'
         '\nname=Cloudera Manager'
         '\nbaseurl=http://archive.cloudera.com/cm5/redhat/6'
-        '/x86_64/cm/5.5.0/'
+        '/x86_64/cm/5.7.0/'
         '\ngpgkey = http://archive.cloudera.com/cm5/redhat/6'
         '/x86_64/cm/RPM-GPG-KEY-cloudera'
         '\ngpgcheck = 1')
@@ -77,8 +77,8 @@ class ConfigHelperV570(c_h.ConfigHelper):
 
     DEFAULT_SWIFT_LIB_URL = (
         'https://repository.cloudera.com/artifactory/repo/org'
-        '/apache/hadoop/hadoop-openstack/2.6.0-cdh5.5.0'
-        '/hadoop-openstack-2.6.0-cdh5.5.0.jar')
+        '/apache/hadoop/hadoop-openstack/2.6.0-cdh5.7.0'
+        '/hadoop-openstack-2.6.0-cdh5.7.0.jar')
 
     HIVE_SERVER2_SENTRY_SAFETY_VALVE = f.get_file_text(
         path_to_config + 'hive-server2-sentry-safety.xml')
