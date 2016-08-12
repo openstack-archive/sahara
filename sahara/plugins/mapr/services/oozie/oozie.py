@@ -91,6 +91,14 @@ class Oozie(s.Service):
 
     def post_configure(self, cluster_context, instances):
         super(Oozie, self).install(cluster_context, instances)
+        oozie_instances = cluster_context.filter_instances(instances,
+                                                           service=self)
+        for instance in oozie_instances:
+            with instance.remote() as r:
+                r.execute_command(
+                    'sudo cp '
+                    '/opt/mapr/oozie/oozie-%s/conf/warden.oozie.conf '
+                    '/opt/mapr/conf/conf.d' % self.version)
 
     def post_install(self, cluster_context, instances):
         oozie_inst = cluster_context.get_instance(OOZIE)
