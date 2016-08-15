@@ -1,0 +1,34 @@
+#!/bin/bash
+
+set -xe
+export SAHARA_SCRIPT_BASE_OS=%(os)s
+if [ "$SAHARA_SCRIPT_BASE_OS" = "ubuntu" ]; then
+    sudo dpkg -s krb5-admin-server || sudo DEBIAN_FRONTEND=noninteractive apt-get install -y krb5-admin-server
+    sudo dpkg -s rng-tools || sudo apt-get install rng-tools -y
+else
+    sudo rpm -q krb5-server || sudo yum install -y krb5-server
+    sudo rpm -q krb5-libs || sudo yum install -y krb5-libs
+    sudo rpm -q krb5-workstation || sudo yum install -y krb5-workstation
+    sudo rpm -q rng-tools || sudo yum install -y rng-tools
+fi
+
+sudo rngd -r /dev/urandom -W 4096
+
+sudo echo "%(krb5_conf)s" | sudo tee /etc/krb5.conf
+sudo echo "%(kdc_conf)s" | sudo tee %(kdc_conf_path)s
+sudo echo "%(acl_conf)s" | sudo tee %(acl_conf_path)s
+
+
+sudo %(realm_create)s <<EOF
+%(password)s
+%(password)s
+EOF
+
+sudo kadmin.local <<EOF
+addprinc %(admin_principal)s
+%(password)s
+%(password)s
+exit
+EOF
+
+%(start_command)s

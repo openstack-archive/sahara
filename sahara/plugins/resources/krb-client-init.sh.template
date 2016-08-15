@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -xe
+export SAHARA_SCRIPT_BASE_OS=%(os)s
+if [ "$SAHARA_SCRIPT_BASE_OS" = "ubuntu" ]; then
+
+    sudo dpkg -s krb5-user || sudo DEBIAN_FRONTEND=noninteractive apt-get install -y krb5-user
+    sudo dpkg -s libpam-krb5 || sudo DEBIAN_FRONTEND=noninteractive apt-get install -y libpam-krb5
+    sudo dpkg -s ldap-utils || sudo DEBIAN_FRONTEND=noninteractive apt-get install -y ldap-utils
+
+else
+    sudo rpm -q krb5-workstation || sudo yum install -y krb5-workstation
+fi
+sudo echo "%(krb5_conf)s" | sudo tee /etc/krb5.conf
