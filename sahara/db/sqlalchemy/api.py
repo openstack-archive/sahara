@@ -87,13 +87,13 @@ def _get_prev_and_next_objects(objects, limit, marker, order=None):
             prev_marker = objects[position - limit].id
         else:
             prev_marker = None
-        if position + limit <= len(objects):
+        if position + limit < len(objects):
             next_marker = objects[position + limit].id
         else:
             next_marker = None
     else:
         if limit < len(objects):
-            next_marker = objects[limit].id
+            next_marker = objects[limit - 1].id
         else:
             next_marker = None
         prev_marker = None
@@ -964,10 +964,11 @@ def job_execution_get_all(context, regex_search=False,
                 n = i
         if n:
             res_page = res[n:]
-
     if limit:
-        res_page = res_page[limit:] if limit < len(res_page) else res_page
+        limit = int(limit)
+        res_page = res_page[:limit] if limit < len(res_page) else res_page
 
+    marker = job_execution_get(context, marker)
     prev_marker, next_marker = _get_prev_and_next_objects(
         res, limit, marker)
     return types.Page(res_page, prev_marker, next_marker)
