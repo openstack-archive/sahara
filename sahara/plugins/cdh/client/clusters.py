@@ -81,11 +81,14 @@ def get_all_clusters(resource_root, view=None):
 class ApiCluster(types.BaseApiResource):
     _ATTRIBUTES = {
         'name': None,
+        'clusterUrl': None,
         'displayName': None,
         'version': None,
         'fullVersion': None,
+        'hostsUrl': types.ROAttr(),
         'maintenanceMode': types.ROAttr(),
         'maintenanceOwners': types.ROAttr(),
+        'entityStatus': types.ROAttr(),
     }
 
     def __init__(self, resource_root, name=None, version=None,
@@ -164,6 +167,13 @@ class ApiCluster(types.BaseApiResource):
 
         return self._cmd('restart', data=args, api_version=6)
 
+    def stop(self):
+        """Stop all services in a cluster, respecting dependencies
+
+        :return: Reference to the submitted command.
+        """
+        return self._cmd('stop')
+
     def deploy_client_config(self):
         """Deploys Service client configuration to the hosts on the cluster
 
@@ -204,3 +214,27 @@ class ApiCluster(types.BaseApiResource):
                 'summary': curr.get_health_summary(),
                 'checks': curr.get_health_checks_status()}
         return health_dict
+
+    def configure_for_kerberos(self, datanode_transceiver_port=None,
+                               datanode_web_port=None):
+        """Command to configure the cluster to use Kerberos for authentication.
+
+        This command will configure all relevant services on a cluster for
+        Kerberos usage.  This command will trigger a GenerateCredentials
+        command to create Kerberos keytabs for all roles in the cluster.
+        :param datanode_transceiver_port: The HDFS DataNode transceiver port
+               to use. This will be applied to all DataNode role
+               configuration groups. If not specified, this will default to
+               1004.
+        :param datanode_web_port: The HDFS DataNode web port to use. This will
+               be applied to all DataNode role configuration groups. If not
+               specified, this will default to 1006.
+        :return: Reference to the submitted command.
+        :since: API v11
+        """
+        args = dict()
+        if datanode_transceiver_port:
+            args['datanodeTransceiverPort'] = datanode_transceiver_port
+        if datanode_web_port:
+            args['datanodeWebPort'] = datanode_web_port
+        return self._cmd('configureForKerberos', data=args, api_version=11)

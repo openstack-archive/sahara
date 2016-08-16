@@ -60,3 +60,25 @@ class ClouderaManager(types.BaseApiResource):
         :since: API v2
         """
         return self._cmd('hostsStartRoles', data=host_names)
+
+    def update_config(self, config):
+        """Update the CM configuration.
+
+        :param config: Dictionary with configuration to update.
+        :return: Dictionary with updated configuration.
+        """
+        return self._update_config("config", config)
+
+    def import_admin_credentials(self, username, password):
+        """Imports the KDC Account Manager credentials needed by Cloudera
+
+        Manager to create kerberos principals needed by CDH services.
+
+        :param username Username of the Account Manager. Full name including
+            the Kerberos realm must be specified.
+        :param password Password for the Account Manager.
+        :return: Information about the submitted command.
+        :since: API v7
+        """
+        return self._cmd('importAdminCredentials', params=dict(
+            username=username, password=password))

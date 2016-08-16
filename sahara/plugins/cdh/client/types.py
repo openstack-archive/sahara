@@ -540,6 +540,7 @@ class ApiCommand(BaseApiObject):
                 'children': ROAttr(ApiCommand, is_api_list=True),
                 'parent': ROAttr(ApiCommand),
                 'resultDataUrl': ROAttr(),
+                'canRetry': ROAttr(),
             }
         return cls._ATTRIBUTES
 
