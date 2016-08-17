@@ -15,10 +15,8 @@
 
 import sahara.plugins.mapr.domain.node_process as np
 import sahara.plugins.mapr.domain.service as s
-import sahara.plugins.mapr.util.commands as cmd
 import sahara.plugins.mapr.util.password_utils as pu
 import sahara.plugins.mapr.util.validation_utils as vu
-
 
 ZK_CLIENT_PORT = 5181
 
@@ -45,8 +43,6 @@ METRICS = np.NodeProcess(
 
 
 class Management(s.Service):
-    SSL_KEYSTORE = '/opt/mapr/conf/ssl_keystore'
-
     def __init__(self):
         super(Management, self).__init__()
         self._ui_name = 'Management'
@@ -58,10 +54,6 @@ class Management(s.Service):
             vu.at_least(1, WEB_SERVER),
             vu.odd_count_of(ZOOKEEPER),
         ]
-
-    def post_install(self, cluster_context, instances):
-        instance = cluster_context.get_instance(WEB_SERVER)
-        cmd.chown(instance, 'mapr:mapr', self.SSL_KEYSTORE)
 
     def get_ui_info(self, cluster_context):
         # MCS uses credentials of the administrative user (PAM auth)
