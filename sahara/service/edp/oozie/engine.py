@@ -47,7 +47,13 @@ class OozieJobEngine(base_engine.JobEngine):
         self.cluster = cluster
         self.plugin = job_utils.get_plugin(self.cluster)
 
-    def _get_client(self):
+    def get_remote_client(self):
+        return o.RemoteOozieClient(self.get_oozie_server_uri(self.cluster),
+                                   self.get_oozie_server(self.cluster),
+                                   self.get_hdfs_user())
+
+    def get_client(self):
+        # by default engine will return standard oozie client implementation
         return o.OozieClient(self.get_oozie_server_uri(self.cluster),
                              self.get_oozie_server(self.cluster))
 
@@ -110,13 +116,13 @@ class OozieJobEngine(base_engine.JobEngine):
 
     def cancel_job(self, job_execution):
         if job_execution.engine_job_id is not None:
-            client = self._get_client()
+            client = self.get_client()
             client.kill_job(job_execution)
             return client.get_job_info(job_execution)
 
     def get_job_status(self, job_execution):
         if job_execution.engine_job_id is not None:
-            return self._get_client().get_job_info(job_execution)
+            return self.get_client().get_job_info(job_execution)
 
     def _prepare_run_job(self, job_execution):
         ctx = context.ctx()
@@ -219,7 +225,7 @@ class OozieJobEngine(base_engine.JobEngine):
                                                 oozie_params,
                                                 use_hbase_lib)
 
-        client = self._get_client()
+        client = self.get_client()
         oozie_job_id = client.add_job(x.create_hadoop_xml(job_params),
                                       job_execution)
         job_execution = conductor.job_execution_get(ctx, job_execution.id)
@@ -260,7 +266,7 @@ class OozieJobEngine(base_engine.JobEngine):
             job_execution.job_configs.job_execution_info, wf_dir,
             "scheduled")
 
-        client = self._get_client()
+        client = self.get_client()
         oozie_job_id = client.add_job(x.create_hadoop_xml(job_params),
                                       job_execution)
 
@@ -442,7 +448,7 @@ class OozieJobEngine(base_engine.JobEngine):
 
     def _manage_job(self, job_execution, action):
         if job_execution.oozie_job_id is not None:
-            client = self._get_client()
+            client = self.get_client()
             if action == edp.JOB_ACTION_SUSPEND:
                 client.suspend_job(job_execution)
             return client.get_job_status(job_execution)

@@ -17,6 +17,7 @@ from sahara import exceptions as exc
 from sahara.i18n import _
 from sahara.plugins.ambari import common as p_common
 from sahara.plugins import exceptions as pex
+from sahara.plugins import kerberos
 from sahara.plugins import utils as plugin_utils
 from sahara.service.edp import hdfs_helper
 from sahara.service.edp.oozie import engine as oozie_engine
@@ -44,6 +45,11 @@ def _get_jackson_core(instance):
 class EDPOozieEngine(oozie_engine.OozieJobEngine):
     def get_hdfs_user(self):
         return "oozie"
+
+    def get_client(self):
+        if kerberos.is_kerberos_security_enabled(self.cluster):
+            return super(EDPOozieEngine, self).get_remote_client()
+        return super(EDPOozieEngine, self).get_client()
 
     def create_hdfs_dir(self, remote, dir_name):
         hdfs_helper.create_dir_hadoop2(remote, dir_name, self.get_hdfs_user())

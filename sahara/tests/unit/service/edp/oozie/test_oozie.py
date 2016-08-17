@@ -34,7 +34,7 @@ class TestOozieEngine(base.SaharaTestCase):
         client_class.add_job = mock.MagicMock(return_value=1)
         client_class.get_job_info = mock.MagicMock(
             return_value={'status': 'PENDING'})
-        oje._get_client = mock.MagicMock(return_value=client_class)
+        oje.get_client = mock.MagicMock(return_value=client_class)
 
         _, job_exec = u.create_job_exec(edp.JOB_TYPE_PIG)
         self.assertIsNone(oje.get_job_status(job_exec))
@@ -235,7 +235,7 @@ class TestOozieEngine(base.SaharaTestCase):
         client_class.add_job = mock.MagicMock(return_value=1)
         client_class.get_job_info = mock.MagicMock(
             return_value={'status': 'PENDING'})
-        oje._get_client = mock.MagicMock(return_value=client_class)
+        oje.get_client = mock.MagicMock(return_value=client_class)
 
         _, job_exec = u.create_job_exec(edp.JOB_TYPE_PIG)
         update.return_value = job_exec

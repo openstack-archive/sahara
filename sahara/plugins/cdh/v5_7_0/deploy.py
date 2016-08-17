@@ -110,7 +110,8 @@ def scale_cluster(cluster, instances):
     CU.configure_rack_awareness(cluster)
     CU.configure_instances(instances, cluster)
     CU.update_configs(instances)
-    common_deploy.prepare_scaling_kerberized_cluster(cluster, CU)
+    common_deploy.prepare_scaling_kerberized_cluster(cluster, CU,
+                                                     instances)
 
     CU.pu.configure_swift(cluster, instances)
     _start_roles(cluster, instances)

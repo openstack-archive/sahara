@@ -343,3 +343,57 @@ def _prepare_policy_files(instance, remote_url):
         r.execute_command(
             'sudo cp %s/*.jar %s/lib/security/'
             % (POLICY_FILES_DIR, java_home))
+
+
+def _get_script_for_user_creation(cluster, instance, user):
+    data = files.get_file_text(
+        'plugins/resources/create-principal-keytab')
+    cron_file = files.get_file_text('plugins/resources/cron-file')
+    cron_script = files.get_file_text('plugins/resources/cron-script')
+    data = data % {
+        'user': user, 'admin_principal': get_admin_principal(cluster),
+        'admin_password': get_server_password(cluster),
+        'principal': "%s/sahara-%s@%s" % (
+            user, instance.fqdn(), get_realm_name(cluster)),
+        'keytab': '%s-sahara-%s.keytab' % (user, instance.fqdn())
+    }
+    cron_script_location = '/tmp/sahara-kerberos/%s.sh' % _get_short_uuid()
+    cron_file = cron_file % {'refresher': cron_script_location, 'user': user}
+    cron_script = cron_script % {
+        'principal': "%s/sahara-%s@%s" % (
+            user, instance.fqdn(), get_realm_name(cluster)),
+        'keytab': '%s-sahara-%s.keytab' % (user, instance.fqdn()),
+        'user': user,
+    }
+    return data, cron_file, cron_script, cron_script_location
+
+
+def _create_keytabs_for_user(instance, user):
+    script, cron, cron_script, cs_location = _get_script_for_user_creation(
+        instance.cluster, instance, user)
+    _execute_script(instance, script)
+    # setting up refresher
+    with instance.remote() as r:
+        tmp_location = '/tmp/%s' % _get_short_uuid()
+        r.write_file_to(tmp_location, cron_script, run_as_root=True)
+        r.execute_command(
+            "cat {0} | sudo tee {1} "
+            "&& rm -rf {0} && sudo chmod +x {1}".format(
+                tmp_location, cs_location))
+        r.execute_command(
+            'echo "%s" | sudo tee /etc/cron.d/%s.cron' % (
+                cron, _get_short_uuid()))
+        # executing script
+        r.execute_command('sudo bash %s' % cs_location)
+
+
+@cpo.event_wrapper(
+    True, step=_('Setting up keytabs for users'), param=('cluster', 0))
+def create_keytabs_for_map(cluster, mapper):
+    # cluster parameter is used by event log feature
+    with context.ThreadGroup() as tg:
+        for user, instances in mapper.items():
+            for instance in instances:
+                tg.spawn(
+                    'create-keytabs', _create_keytabs_for_user,
+                    instance, user)

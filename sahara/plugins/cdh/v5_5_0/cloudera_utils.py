@@ -407,7 +407,11 @@ class ClouderaUtilsV550(cu.ClouderaUtils):
                 },
                 'NODEMANAGER': {
                     'yarn_nodemanager_local_dirs':
-                        get_hadoop_dirs(paths, '/yarn/local')
+                        get_hadoop_dirs(paths, '/yarn/local'),
+                    'container_executor_allowed_system_users':
+                        "nobody,impala,hive,llama,hdfs,yarn,mapred,"
+                        "spark,oozie",
+                    "container_executor_banned_users": "bin"
                 },
                 'SERVER': {
                     'maxSessionTimeout': 60000

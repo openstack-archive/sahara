@@ -657,3 +657,21 @@ def add_hadoop_swift_jar(instances):
                               len(instances))
     for inst in instances:
         _add_hadoop_swift_jar(inst, new_jar)
+
+
+def deploy_kerberos_principals(cluster, instances=None):
+    if not kerberos.is_kerberos_security_enabled(cluster):
+        return
+    if instances is None:
+        instances = plugin_utils.get_instances(cluster)
+    mapper = {
+        'hdfs': plugin_utils.instances_with_services(
+            instances, [p_common.SECONDARY_NAMENODE, p_common.NAMENODE,
+                        p_common.DATANODE, p_common.JOURNAL_NODE]),
+        'spark': plugin_utils.instances_with_services(
+            instances, [p_common.SPARK_JOBHISTORYSERVER]),
+        'oozie': plugin_utils.instances_with_services(
+            instances, [p_common.OOZIE_SERVER]),
+    }
+
+    kerberos.create_keytabs_for_map(cluster, mapper)

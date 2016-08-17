@@ -17,6 +17,26 @@ from sahara import context
 from sahara.plugins import kerberos as krb
 from sahara.tests.unit import base
 
+ADD_PRINCIPAL_SCRIPT = """#!/bin/bash
+
+mkdir -p /tmp/sahara-kerberos/
+
+kadmin -p sahara/admin <<EOF
+strong
+addprinc -randkey bond/sahara-in.loc@SK
+xst -k /tmp/sahara-kerberos/bond-sahara-in.loc.keytab bond/sahara-in.loc@SK
+exit
+EOF
+
+sudo chown bond:bond /tmp/sahara-kerberos/bond-sahara-in.loc.keytab
+"""
+CRON_FILE = """# Once per hour refreshes tickets for user bond
+0 * * * * root /tmp/sahara-kerberos/e1.sh
+"""
+CRON_SCRIPT = ('#!/bin/bash\n\n'
+               'sudo -u bond kinit -p bond/sahara-in.loc@SK -kt '
+               '/tmp/sahara-kerberos/bond-sahara-in.loc.keytab\n')
+
 
 class FakeObject(dict):
     def __init__(self, dict):
@@ -91,3 +111,20 @@ class TestKerberosBase(base.SaharaTestCase):
         get.return_value = 'password'
         krb._get_server_installation_script(
             cluster, 'server.novalocal', 'centos', '6.7')
+
+    @mock.patch('sahara.plugins.kerberos.get_realm_name')
+    @mock.patch('sahara.plugins.kerberos._get_short_uuid')
+    @mock.patch('sahara.plugins.kerberos.get_server_password')
+    def test_create_keytabs_for_user(self, get_password, get_uuid, realm):
+        get_uuid.return_value = 'e1'
+        realm.return_value = 'SK'
+        get_password.return_value = "strong"
+        cluster = mock.Mock(node_groups=[], cluster_configs={})
+        instance = mock.Mock()
+        instance.fqdn = mock.Mock()
+        instance.fqdn.return_value = "in.loc"
+        data = krb._get_script_for_user_creation(cluster, instance, 'bond')
+        self.assertEqual(ADD_PRINCIPAL_SCRIPT, data[0])
+        self.assertEqual(CRON_FILE, data[1])
+        self.assertEqual(CRON_SCRIPT, data[2])
+        self.assertEqual('/tmp/sahara-kerberos/e1.sh', data[3])
