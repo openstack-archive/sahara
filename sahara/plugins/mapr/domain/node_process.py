@@ -59,6 +59,8 @@ class NodeProcess(object):
         self.execute_action(instances, Action.STOP)
 
     def execute_action(self, instances, action):
+        if len(instances) == 0:
+            return
         nodes = ','.join(map(lambda i: i.internal_ip, instances))
         args = {'service': self.name, 'action': action.name, 'nodes': nodes}
         command = WARDEN_MANAGED_CMD % args
