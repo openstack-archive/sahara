@@ -194,6 +194,8 @@ def check_floatingip_pool_exists(ng_name, pool_id):
     if CONF.use_neutron:
         network = nova.get_network(id=pool_id)
     else:
+        # tmckay-fp, whoa, this suggests that we allow floating_ip_pools with
+        # nova?  Can that be true? Scour for this
         for net in nova.client().floating_ip_pools.list():
             if net.name == pool_id:
                 network = net.name
@@ -309,9 +311,6 @@ def check_node_groups_in_cluster_templates(cluster_name, plugin_name,
                                            cluster_template_id):
     c_t = api.get_cluster_template(id=cluster_template_id)
     n_groups = c_t.to_wrapped_dict()['cluster_template']['node_groups']
-    proxy_gateway_used = len([ng for ng in n_groups if
-                              ng.get('is_proxy_gateway', False)]) > 0
-    check_network_config(n_groups, proxy_gateway_used)
     for node_group in n_groups:
         check_node_group_basic_fields(plugin_name, hadoop_version, node_group)
     check_cluster_hostnames_lengths(cluster_name, n_groups)
@@ -331,18 +330,9 @@ def check_node_group_template_exists(ng_tmpl_id):
             ng_tmpl_id, _("NodeGroup template with id '%s' not found"))
 
 
-def check_network_config(node_groups, proxy_gateway_used=False):
-    if CONF.use_floating_ips and CONF.use_neutron:
-        for ng in node_groups:
-            require_floating = True
-            if proxy_gateway_used:
-                require_floating = ng.get('is_proxy_gateway', False)
-
-            if require_floating and not _get_floating_ip_pool(ng):
-                raise ex.MissingFloatingNetworkException(ng.get('name'))
-
-
 def _get_floating_ip_pool(node_group):
+    # tmckay-fp I think this would be the method we needed to
+    # get floating_ip_pool for instances
     if node_group.get('floating_ip_pool'):
         return node_group['floating_ip_pool']
 

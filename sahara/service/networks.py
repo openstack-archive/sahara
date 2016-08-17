@@ -20,7 +20,6 @@ import six
 from sahara import conductor as c
 from sahara import context
 from sahara.utils.openstack import base as b
-from sahara.utils.openstack import neutron
 from sahara.utils.openstack import nova
 
 LOG = logging.getLogger(__name__)
@@ -50,40 +49,19 @@ def init_instances_ips(instance):
             else:
                 management_ip = management_ip or address['addr']
 
+    # tmckay-fp okay
+    # conf.use_floating_ips becomes
+    # "use a floating ip for the management ip if one is defined"
+    # assignment comes from nova conf setting, or from floating_ip_pool value
+
+    # tmckay-fp log an extra warning here in the neutron
+    # case that the node group has a floating ip pool but
+    # we don't have a management ip yet ...
     cluster = instance.cluster
-    if (not CONF.use_floating_ips or
+    if (not CONF.use_floating_ips or not management_ip or
             (cluster.has_proxy_gateway() and
              not instance.node_group.is_proxy_gateway)):
         management_ip = internal_ip
-
-    # NOTE(aignatov): Once bug #1262529 is fixed this 'if' block should be
-    # reviewed and reformatted again, probably removed completely.
-    if CONF.use_neutron and not (management_ip and internal_ip):
-        LOG.debug("Instance doesn't yet contain Floating IP or Internal IP. "
-                  "Floating IP={mgmt_ip}, Internal IP={internal_ip}. "
-                  "Trying to get via Neutron.".format(
-                      mgmt_ip=management_ip, internal_ip=internal_ip))
-        neutron_client = neutron.client()
-        ports = b.execute_with_retries(
-            neutron_client.list_ports, device_id=server.id)["ports"]
-        if ports:
-            target_port_id = ports[0]['id']
-            fl_ips = b.execute_with_retries(
-                neutron_client.list_floatingips,
-                port_id=target_port_id)['floatingips']
-            if fl_ips:
-                fl_ip = fl_ips[0]
-                if not internal_ip:
-                    internal_ip = fl_ip['fixed_ip_address']
-                    LOG.debug('Found fixed IP {internal_ip}'
-                              .format(internal_ip=internal_ip))
-                # Zeroing management_ip if Sahara in private network
-                if not CONF.use_floating_ips:
-                    management_ip = internal_ip
-                elif not management_ip:
-                    management_ip = fl_ip['floating_ip_address']
-                    LOG.debug('Found floating IP {mgmt_ip}'
-                              .format(mgmt_ip=management_ip))
 
     conductor.instance_update(context.ctx(), instance,
                               {"management_ip": management_ip,

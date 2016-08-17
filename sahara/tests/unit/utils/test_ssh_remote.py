@@ -160,10 +160,12 @@ class FakeNodeGroup(object):
 
 
 class FakeInstance(object):
-    def __init__(self, inst_name, inst_id, management_ip, user, priv_key):
+    def __init__(self, inst_name, inst_id, management_ip, internal_ip, user,
+                 priv_key):
         self.instance_name = inst_name
         self.instance_id = inst_id
         self.management_ip = management_ip
+        self.internal_ip = internal_ip
         self.node_group = FakeNodeGroup(user, priv_key)
 
     @property
@@ -219,7 +221,8 @@ class TestInstanceInteropHelper(base.SaharaTestCase):
     def test_use_floating_ips(self, p_adapter):
         self.override_config('use_floating_ips', True)
 
-        instance = FakeInstance('inst1', '123', '10.0.0.1', 'user1', 'key1')
+        instance = FakeInstance('inst1', '123', '10.0.0.1', '10.0.0.1',
+                                'user1', 'key1')
         remote = ssh_remote.InstanceInteropHelper(instance)
 
         # Test SSH
@@ -243,7 +246,8 @@ class TestInstanceInteropHelper(base.SaharaTestCase):
         self.override_config('use_floating_ips', False)
         self.override_config('use_namespaces', True)
 
-        instance = FakeInstance('inst2', '123', '10.0.0.2', 'user2', 'key2')
+        instance = FakeInstance('inst2', '123', '10.0.0.2', '10.0.0.2',
+                                'user2', 'key2')
         remote = ssh_remote.InstanceInteropHelper(instance)
 
         # Test SSH
@@ -267,7 +271,8 @@ class TestInstanceInteropHelper(base.SaharaTestCase):
     def test_proxy_command(self, p_adapter, p_simple_exec_func):
         self.override_config('proxy_command', 'ssh fakerelay nc {host} {port}')
 
-        instance = FakeInstance('inst3', '123', '10.0.0.3', 'user3', 'key3')
+        instance = FakeInstance('inst3', '123', '10.0.0.3', '10.0.0.3',
+                                'user3', 'key3')
         remote = ssh_remote.InstanceInteropHelper(instance)
 
         # Test SSH
@@ -286,7 +291,8 @@ class TestInstanceInteropHelper(base.SaharaTestCase):
     def test_proxy_command_bad(self):
         self.override_config('proxy_command', '{bad_kw} nc {host} {port}')
 
-        instance = FakeInstance('inst4', '123', '10.0.0.4', 'user4', 'key4')
+        instance = FakeInstance('inst4', '123', '10.0.0.4', '10.0.0.4',
+                                'user4', 'key4')
         remote = ssh_remote.InstanceInteropHelper(instance)
 
         # Test SSH
@@ -296,7 +302,8 @@ class TestInstanceInteropHelper(base.SaharaTestCase):
 
     @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._run_s')
     def test_get_os_distrib(self, p_run_s):
-        instance = FakeInstance('inst4', '123', '10.0.0.4', 'user4', 'key4')
+        instance = FakeInstance('inst4', '123', '10.0.0.4', '10.0.0.4',
+                                'user4', 'key4')
         remote = ssh_remote.InstanceInteropHelper(instance)
 
         remote.get_os_distrib()
@@ -306,7 +313,8 @@ class TestInstanceInteropHelper(base.SaharaTestCase):
     @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._run_s')
     @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._log_command')
     def test_install_packages(self, p_log_command, p_run_s):
-        instance = FakeInstance('inst5', '123', '10.0.0.5', 'user5', 'key5')
+        instance = FakeInstance('inst5', '123', '10.0.0.5', '10.0.0.5',
+                                'user5', 'key5')
         remote = ssh_remote.InstanceInteropHelper(instance)
 
         packages = ['pkg1', 'pkg2']
@@ -320,7 +328,8 @@ class TestInstanceInteropHelper(base.SaharaTestCase):
     @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._run_s')
     @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._log_command')
     def test_update_repository(self, p_log_command, p_run_s):
-        instance = FakeInstance('inst6', '123', '10.0.0.6', 'user6', 'key6')
+        instance = FakeInstance('inst6', '123', '10.0.0.6', '10.0.0.6',
+                                'user6', 'key6')
         remote = ssh_remote.InstanceInteropHelper(instance)
 
         remote.update_repository()
@@ -332,7 +341,8 @@ class TestInstanceInteropHelper(base.SaharaTestCase):
     @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._run_s')
     @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._log_command')
     def test_write_file_to(self, p_log_command, p_run_s):
-        instance = FakeInstance('inst7', '123', '10.0.0.7', 'user7', 'key7')
+        instance = FakeInstance('inst7', '123', '10.0.0.7', '10.0.0.7',
+                                'user7', 'key7')
         remote = ssh_remote.InstanceInteropHelper(instance)
         description = 'Writing file "file"'
 
@@ -345,7 +355,8 @@ class TestInstanceInteropHelper(base.SaharaTestCase):
     @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._run_s')
     @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._log_command')
     def test_write_files_to(self, p_log_command, p_run_s):
-        instance = FakeInstance('inst8', '123', '10.0.0.8', 'user8', 'key8')
+        instance = FakeInstance('inst8', '123', '10.0.0.8', '10.0.0.8',
+                                'user8', 'key8')
         remote = ssh_remote.InstanceInteropHelper(instance)
         description = 'Writing files "[\'file\']"'
 
@@ -358,7 +369,8 @@ class TestInstanceInteropHelper(base.SaharaTestCase):
     @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._run_s')
     @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._log_command')
     def test_append_to_file(self, p_log_command, p_run_s):
-        instance = FakeInstance('inst9', '123', '10.0.0.9', 'user9', 'key9')
+        instance = FakeInstance('inst9', '123', '10.0.0.9', '10.0.0.9',
+                                'user9', 'key9')
         remote = ssh_remote.InstanceInteropHelper(instance)
         description = 'Appending to file "file"'
 
@@ -372,7 +384,7 @@ class TestInstanceInteropHelper(base.SaharaTestCase):
     @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._log_command')
     def test_append_to_files(self, p_log_command, p_run_s):
         instance = FakeInstance('inst10', '123',
-                                '10.0.0.10', 'user10', 'key10')
+                                '10.0.0.10', '10.0.0.10', 'user10', 'key10')
         remote = ssh_remote.InstanceInteropHelper(instance)
         description = 'Appending to files "[\'file\']"'
 
@@ -386,7 +398,7 @@ class TestInstanceInteropHelper(base.SaharaTestCase):
     @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._log_command')
     def test_read_file_from(self, p_log_command, p_run_s):
         instance = FakeInstance('inst11', '123',
-                                '10.0.0.11', 'user11', 'key11')
+                                '10.0.0.11', '10.0.0.11', 'user11', 'key11')
         remote = ssh_remote.InstanceInteropHelper(instance)
         description = 'Reading file "file"'
 
@@ -400,7 +412,7 @@ class TestInstanceInteropHelper(base.SaharaTestCase):
     @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._log_command')
     def test_replace_remote_string(self, p_log_command, p_run_s):
         instance = FakeInstance('inst12', '123',
-                                '10.0.0.12', 'user12', 'key12')
+                                '10.0.0.12', '10.0.0.12', 'user12', 'key12')
         remote = ssh_remote.InstanceInteropHelper(instance)
         description = 'In file "file" replacing string "str1" with "str2"'
 
@@ -415,7 +427,7 @@ class TestInstanceInteropHelper(base.SaharaTestCase):
     @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._log_command')
     def test_execute_on_vm_interactive(self, p_log_command, p_run_s):
         instance = FakeInstance('inst13', '123',
-                                '10.0.0.13', 'user13', 'key13')
+                                '10.0.0.13', '10.0.0.13', 'user13', 'key13')
         remote = ssh_remote.InstanceInteropHelper(instance)
         description = 'Executing interactively "factor 42"'
 

@@ -76,9 +76,6 @@ def _check_cluster_create(data):
                                data['anti_affinity'])
 
     if data.get('node_groups'):
-        proxy_gateway_used = len([ng for ng in data['node_groups'] if
-                                  ng.get('is_proxy_gateway', False)]) > 0
-        b.check_network_config(data['node_groups'], proxy_gateway_used)
         b.check_cluster_hostnames_lengths(data['name'], data['node_groups'])
 
     neutron_net_id = _get_cluster_field(data, 'neutron_management_network')
