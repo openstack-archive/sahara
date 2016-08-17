@@ -115,7 +115,6 @@ full sample is presented for context.
     arguments:
       java-distro:
         description: The java distribution.
-        target_variable: JAVA_DISTRO
         default: openjdk
         required: false
         choices:
@@ -167,9 +166,8 @@ to adjust properties of the image:
 ::
 
     arguments:                                 # The section header
-      - java-distro:                           # The friendly name of the argument
+      - java-distro:                           # The friendly name of the argument, and the name of the variable passed to scripts
           description: The java distribution.  # A friendly description to be used in help text
-          target_variable: JAVA_DISTRO         # The value of the argument will be passed to scripts as an environment variable with this name
           default: openjdk                     # A default value for the argument
           required: false                      # Whether or not the argument is required
           choices:                             # The argument value must match an element of this list
@@ -245,21 +243,22 @@ as well:
       - script: simple_script.sh        # Runs this file
       - script:
           set_java_home:                # The name of a script file
-            env_vars:                   # Only the named environment variables are passed, for clarity
-              - JDK_HOME
-              - JRE_HOME
+            arguments:                  # Only the named environment arguments are passed, for clarity
+              - jdk-home
+              - jre-home
             output: OUTPUT_VAR
       - script:
           store_nfs_version:            # Because inline is set, this is just a friendly name
             - inline: rpm -q nfs-utils  # Runs this text directly, rather than reading a file
-            - output: NFS_VERSION       # Places the stdout of this script into a variable
-                                        # for future scripts to consume
+            - output: nfs-version       # Places the stdout of this script into an argument
+                                        # for future scripts to consume; if none exists, the
+                                        # argument is created
 
 Two variables are always available to scripts run under this framework:
 
-* SIV_DISTRO: The distro of the image, in case you want to switch on distro
+* ``distro``: The distro of the image, in case you want to switch on distro
   within your script (rather than by using the os_case validator).
-* SIV_RECONCILE: If this value equates to boolean true, then the script should
+* ``reconcile``: If this value equates to boolean true, then the script should
   attempt to change the image or instance if it does not already meet the
   specification. If this equates to boolean false, the script should exit with
   a failure code if the image or instance does not already meet the

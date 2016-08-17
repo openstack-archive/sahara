@@ -122,8 +122,7 @@ class ProvisioningPluginBase(plugins_base.PluginInterface):
             This can be used to test images without modification. If set to
             True per the default, this method will modify the image if any
             requirements are not met.
-        :param image_arguments: A dict of image argument target variable (not
-            the friendly name used for documentation purposes) to argument
+        :param image_arguments: A dict of image argument name to argument
             value.
         :raises: sahara.plugins.exceptions.ImageValidationError: If the method
             fails to modify the image to specification (if reconcile is True),
@@ -146,8 +145,7 @@ class ProvisioningPluginBase(plugins_base.PluginInterface):
             This can be used to test images without modification. If set to
             True per the default, this method will modify the image if any
             requirements are not met.
-        :param image_arguments: A dict of image argument target variable (not
-            the friendly name used for documentation purposes) to argument
+        :param image_arguments: A dict of image argument name to argument
             value.
         :raises: sahara.plugins.exceptions.ImageValidationError: If the method
             fails to modify the image to specification (if reconcile is True),
