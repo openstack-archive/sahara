@@ -236,6 +236,13 @@ class ConfigHelperV550(c_h.ConfigHelper):
         self.kms_kms_confs = self._load_and_init_configs(
             'kms-kms.json', 'KMS', 'node')
 
+        self.kafka_service = self._load_and_init_configs(
+            'kafka-service.json', 'KAFKA', 'cluster')
+        self.kafka_kafka_broker = self._load_and_init_configs(
+            'kafka-kafka_broker.json', 'KAFKA', 'node')
+        self.kafka_kafka_mirror_maker = self._load_and_init_configs(
+            'kafka-kafka_mirror_maker.json', 'KAFKA', 'node')
+
     def get_required_anti_affinity(self, cluster):
         return self._get_config_value(cluster, self.REQUIRE_ANTI_AFFINITY)
 

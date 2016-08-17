@@ -65,7 +65,10 @@ json_files = [
     'impala-impalad.json',
     'impala-statestore.json',
     'kms-service.json',
-    'kms-kms.json'
+    'kms-kms.json',
+    'kafka-kafka_broker.json',
+    'kafka-kafka_mirror_maker.json',
+    'kafka-service.json'
 ]
 
 

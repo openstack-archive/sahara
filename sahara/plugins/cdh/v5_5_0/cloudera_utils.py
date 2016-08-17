@@ -39,6 +39,7 @@ SQOOP_SERVICE_TYPE = 'SQOOP'
 KS_INDEXER_SERVICE_TYPE = 'KS_INDEXER'
 IMPALA_SERVICE_TYPE = 'IMPALA'
 KMS_SERVICE_TYPE = 'KMS'
+KAFKA_SERVICE_TYPE = 'KAFKA'
 
 c_helper = config_helper.ConfigHelperV550()
 
@@ -53,6 +54,7 @@ class ClouderaUtilsV550(cu.ClouderaUtils):
     KMS_SERVICE_NAME = 'kms01'
     CM_API_VERSION = 8
     NAME_SERVICE = 'nameservice01'
+    KAFKA_SERVICE_NAME = 'kafka01'
 
     def __init__(self):
         cu.ClouderaUtils.__init__(self)
@@ -86,6 +88,8 @@ class ClouderaUtilsV550(cu.ClouderaUtils):
             return cm_cluster.get_service(self.HDFS_SERVICE_NAME)
         elif role in ['YARN_STANDBYRM']:
             return cm_cluster.get_service(self.YARN_SERVICE_NAME)
+        elif role in ['KAFKA_BROKER']:
+            return cm_cluster.get_service(self.KAFKA_SERVICE_NAME)
         else:
             return super(ClouderaUtilsV550, self).get_service_by_role(
                 role, cluster, instance)
@@ -141,6 +145,9 @@ class ClouderaUtilsV550(cu.ClouderaUtils):
         if self.pu.get_kms(cluster):
             cm_cluster.create_service(self.KMS_SERVICE_NAME,
                                       KMS_SERVICE_TYPE)
+        if len(self.pu.get_kafka_brokers(cluster)) > 0:
+            cm_cluster.create_service(self.KAFKA_SERVICE_NAME,
+                                      KAFKA_SERVICE_TYPE)
 
     def await_agents(self, cluster, instances):
         self._await_agents(cluster, instances, c_helper.AWAIT_AGENTS_TIMEOUT)
@@ -221,6 +228,11 @@ class ClouderaUtilsV550(cu.ClouderaUtils):
             kms = cm_cluster.get_service(self.KMS_SERVICE_NAME)
             kms.update_config(self._get_configs(KMS_SERVICE_TYPE,
                                                 cluster=cluster))
+
+        if len(self.pu.get_kafka_brokers(cluster)) > 0:
+            kafka = cm_cluster.get_service(self.KAFKA_SERVICE_NAME)
+            kafka.update_config(self._get_configs(KAFKA_SERVICE_TYPE,
+                                                  cluster=cluster))
 
     def _get_configs(self, service, cluster=None, instance=None):
         def get_hadoop_dirs(mount_points, suffix):
@@ -364,10 +376,15 @@ class ClouderaUtilsV550(cu.ClouderaUtils):
                         self.pu.db_helper.get_sentry_db_password(cluster)
                 }
             }
-
+            kafka_confs = {
+                'KAFKA': {
+                    'zookeeper_service': self.ZOOKEEPER_SERVICE_NAME
+                }
+            }
             all_confs = s_cfg.merge_configs(all_confs, hue_confs)
             all_confs = s_cfg.merge_configs(all_confs, hive_confs)
             all_confs = s_cfg.merge_configs(all_confs, sentry_confs)
+            all_confs = s_cfg.merge_configs(all_confs, kafka_confs)
             all_confs = s_cfg.merge_configs(all_confs, cluster.cluster_configs)
 
         if instance:
