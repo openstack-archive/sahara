@@ -14,12 +14,16 @@
 # limitations under the License.
 
 from oslo_config import cfg
+from oslo_log import log as logging
 
 import sahara.exceptions as e
+from sahara.i18n import _LW
 import sahara.service.validations.edp.base as b
+import sahara.service.validations.edp.job_binary_internal as j_b_i
 from sahara.swift import utils as su
 
 CONF = cfg.CONF
+LOG = logging.getLogger(__name__)
 
 
 def check_job_binary(data, **kwargs):
@@ -28,6 +32,9 @@ def check_job_binary(data, **kwargs):
 
     if job_binary_url:
         if job_binary_url.startswith("internal-db"):
+            if not j_b_i.is_internal_db_enabled():
+                LOG.warning(_LW(
+                    'Sahara inernal db is disabled for storing job binaries.'))
             internal_uid = job_binary_url.replace(
                 "internal-db://", '')
             b.check_job_binary_internal_exists(internal_uid)

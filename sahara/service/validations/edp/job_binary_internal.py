@@ -13,12 +13,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from oslo_config import cfg
+
 import sahara.exceptions as e
 from sahara.i18n import _
 from sahara.utils import api_validator as a
 
+CONF = cfg.CONF
+
+
+def is_internal_db_enabled():
+    if not CONF.edp_internal_db_enabled:
+        return False
+    return True
+
 
 def check_job_binary_internal(data, **kwargs):
+    if not is_internal_db_enabled():
+        raise e.BadJobBinaryInternalException(
+            _("Sahara internal db is disabled for storing job binaries."))
     if not (type(data) is str and len(data) > 0):
         raise e.BadJobBinaryInternalException()
     if "name" in kwargs:
