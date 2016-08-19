@@ -24,6 +24,7 @@ from sahara import conductor as c
 from sahara import context
 from sahara import exceptions as e
 from sahara.i18n import _LI
+from sahara.i18n import _LW
 from sahara.utils.notification import sender
 from sahara.utils.openstack import base as auth_base
 
@@ -145,7 +146,12 @@ def _etc_hosts_for_services(hosts):
         except keystone_ex.EndpointNotFound:
             LOG.debug("Endpoint not found for service: \"%s\"", service)
             continue
-        hosts += "%s %s\n" % (socket.gethostbyname(hostname), hostname)
+        try:
+            hosts += "%s %s\n" % (socket.gethostbyname(hostname), hostname)
+        except socket.gaierror:
+            LOG.warning(_LW("Failed to resolve hostname of service: \"%s\""),
+                        service)
+            hosts += "#Failed to resolve %s during deployment\n" % hostname
     return hosts
 
 
