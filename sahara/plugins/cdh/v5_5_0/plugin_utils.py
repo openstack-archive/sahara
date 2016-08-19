@@ -42,6 +42,7 @@ class PluginUtilsV550(pu.AbstractPluginUtils):
             'IMPALAD': 'ID',
             'JOBHISTORY': 'JS',
             'JOURNALNODE': 'JN',
+            'KAFKA_BROKER': 'KB',
             'KMS': 'KMS',
             'MASTER': 'M',
             'NAMENODE': 'NN',
@@ -97,6 +98,9 @@ class PluginUtilsV550(pu.AbstractPluginUtils):
     def get_stdb_rm(self, cluster):
         return u.get_instance(cluster, 'YARN_STANDBYRM')
 
+    def get_kafka_brokers(self, cluster):
+        return u.get_instances(cluster, 'KAFKA_BROKER')
+
     def convert_process_configs(self, configs):
         p_dict = {
             "CLOUDERA": ['MANAGER'],
@@ -124,9 +128,10 @@ class PluginUtilsV550(pu.AbstractPluginUtils):
             "SOLR": ['SOLR_SERVER'],
             "SQOOP": ['SQOOP_SERVER'],
             "KMS": ['KMS'],
-            'YARN_GATEWAY': ['YARN_GATEWAY'],
-            'HDFS_GATEWAY': ['HDFS_GATEWAY'],
-            "JOURNALNODE": ['JOURNALNODE']
+            "YARN_GATEWAY": ['YARN_GATEWAY'],
+            "HDFS_GATEWAY": ['HDFS_GATEWAY'],
+            "JOURNALNODE": ['JOURNALNODE'],
+            "KAFKA": ['KAFKA_BROKER']
         }
         if isinstance(configs, res.Resource):
             configs = configs.to_dict()

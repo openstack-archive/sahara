@@ -60,6 +60,7 @@ class VersionHandler(avm.BaseVersionHandler):
             "SQOOP": ['SQOOP_SERVER'],
             "SENTRY": ['SENTRY_SERVER'],
             "KMS": ['KMS'],
+            "KAFKA": ['KAFKA_BROKER'],
 
             "YARN_GATEWAY": [],
             "RESOURCEMANAGER": [],

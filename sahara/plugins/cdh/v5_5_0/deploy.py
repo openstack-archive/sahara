@@ -47,6 +47,8 @@ PACKAGES = [
     'impala-state-store',
     'impala-catalog',
     'impala-shell',
+    'kafka',
+    'kafka-server'
     'keytrustee-keyprovider',
     'oozie',
     'oracle-j2sdk1.7',
