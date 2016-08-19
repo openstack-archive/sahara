@@ -1,8 +1,0 @@
-{
-    "name": "cluster-grenade",
-    "plugin_name": "fake",
-    "hadoop_version": "0.1",
-    "cluster_template_id" : "CLUSTER_TEMPLATE_ID",
-    "user_keypair_id": "KEYPAIR",
-    "default_image_id": "IMAGE_ID"
-}
