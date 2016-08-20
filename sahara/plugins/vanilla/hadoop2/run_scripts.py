@@ -23,6 +23,7 @@ from sahara.i18n import _LI
 from sahara.plugins import utils as pu
 from sahara.plugins.vanilla.hadoop2 import config_helper as c_helper
 from sahara.plugins.vanilla.hadoop2 import oozie_helper
+from sahara.plugins.vanilla.hadoop2 import utils as u
 from sahara.plugins.vanilla import utils as vu
 from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils import edp
@@ -232,6 +233,8 @@ def start_hiveserver_process(pctx, instance):
                     'plugins/vanilla/hadoop2/resources/create_hive_db.sql'
                 )
 
+                sql_script = sql_script.replace(
+                    '{{password}}', u.get_hive_password(instance.cluster))
                 r.write_file_to('/tmp/create_hive_db.sql', sql_script)
                 _hive_create_db(r)
                 _hive_metastore_start(r)
