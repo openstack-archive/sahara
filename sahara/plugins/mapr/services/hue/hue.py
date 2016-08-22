@@ -50,7 +50,7 @@ HUE = np.NodeProcess(
 )
 
 HUE_LIVY = np.NodeProcess(
-    name="hue-livy",
+    name="livy",
     ui_name="Hue Livy",
     package="mapr-hue-livy",
     open_ports=[8998]
@@ -122,13 +122,6 @@ class Hue(s.Service):
 
         return [hue_ini, hue_sh]
 
-    def _get_packages(self, cluster_context, node_processes):
-        result = []
-
-        result += self.dependencies
-        result += [(np.package, self.version) for np in [HUE]]
-        return result
-
     def _get_hue_ini_props(self, context):
         db_instance = mysql.MySQL.get_db_instance(context)
         is_yarn = context.cluster_mode == 'yarn'
@@ -186,8 +179,7 @@ class Hue(s.Service):
         hue_instance = cluster_context.get_instance(HUE)
 
         def migrate_database(remote, context):
-            hue_service = context.get_service(HUE)
-            hue_home = '/opt/mapr/hue/hue-%s' % hue_service.version
+            hue_home = self.home_dir(cluster_context)
             cmd = '%(activate)s && %(syncdb)s && %(migrate)s'
             args = {
                 'activate': 'source %s/build/env/bin/activate' % hue_home,
@@ -237,7 +229,6 @@ class Hue(s.Service):
             self.restart([hue_instance])
 
     def post_start(self, cluster_context, instances):
-        self._install_livy(cluster_context, instances=instances)
         self.update(cluster_context, instances=instances)
 
     def restart(self, instances):
@@ -246,18 +237,6 @@ class Hue(s.Service):
                                                            node_process)
             if filtered_instances:
                 node_process.restart(filtered_instances)
-
-    # need to be installed after cldb start
-    def _install_livy(self, cluster_context, instances):
-        hue_livy_instance = cluster_context.get_instance(HUE_LIVY)
-        spark_instance = cluster_context.get_instance(
-            spark.SPARK_HISTORY_SERVER)
-        if hue_livy_instance and spark_instance:
-            with hue_livy_instance.remote() as r:
-                cmd = cluster_context.distro.create_install_cmd(
-                    [(HUE_LIVY.package, self.version)])
-                r.execute_command(cmd, run_as_root=True,
-                                  timeout=s._INSTALL_PACKAGES_TIMEOUT)
 
     def _should_restart(self, c_context, instances):
         app_services = [
