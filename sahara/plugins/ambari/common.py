@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from sahara.plugins import kerberos
 
 # define service names
 
@@ -114,6 +115,7 @@ CLIENT_MAP = {
     ZOOKEEPER_SERVER: ["ZOOKEEPER_CLIENT"]
 }
 
+KERBEROS_CLIENT = 'KERBEROS_CLIENT'
 ALL_LIST = ["METRICS_MONITOR"]
 
 # types of HA
@@ -139,6 +141,8 @@ def get_clients(cluster):
         clients.extend(CLIENT_MAP.get(proc, []))
     clients = list(set(clients))
     clients.extend(ALL_LIST)
+    if kerberos.is_kerberos_security_enabled(cluster):
+        clients.append(KERBEROS_CLIENT)
     return clients
 
 

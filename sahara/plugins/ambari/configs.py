@@ -220,8 +220,9 @@ def _serialize_ambari_configs(configs):
 def _create_ambari_configs(sahara_configs, plugin_version):
     configs = {}
     for service, params in six.iteritems(sahara_configs):
-        if service == "general":
-            # General configs are designed for Sahara, not for the plugin
+        if service == "general" or service == "Kerberos":
+            # General and Kerberos configs are designed for Sahara, not for
+            # the plugin
             continue
         for k, v in six.iteritems(params):
             group = _get_config_group(service, k, plugin_version)

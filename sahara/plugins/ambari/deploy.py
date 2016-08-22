@@ -27,6 +27,7 @@ from sahara.plugins.ambari import client as ambari_client
 from sahara.plugins.ambari import common as p_common
 from sahara.plugins.ambari import configs
 from sahara.plugins.ambari import ha_helper
+from sahara.plugins import kerberos
 from sahara.plugins import utils as plugin_utils
 from sahara.utils import poll_utils
 
@@ -217,6 +218,68 @@ def set_up_hdp_repos(cluster):
                                  hdp_utils_repo)
 
 
+def get_kdc_server(cluster):
+    return plugin_utils.get_instance(
+        cluster, p_common.AMBARI_SERVER)
+
+
+def prepare_kerberos(cluster, instances=None):
+    if not kerberos.is_kerberos_security_enabled(cluster):
+        return
+
+    if instances is None:
+        kerberos.deploy_infrastructure(cluster, get_kdc_server(cluster))
+        kerberos.prepare_policy_files(cluster)
+    else:
+        server = None
+        if not kerberos.using_existing_kdc(cluster):
+            server = get_kdc_server(cluster)
+        kerberos.setup_clients(cluster, server)
+        kerberos.prepare_policy_files(cluster)
+
+
+def _serialize_mit_kdc_kerberos_env(cluster):
+    return {
+        'kerberos-env': {
+            "realm": kerberos.get_realm_name(cluster),
+            "kdc_type": "mit-kdc",
+            "kdc_host": kerberos.get_kdc_host(
+                cluster, get_kdc_server(cluster)),
+            "admin_server_host": kerberos.get_kdc_host(
+                cluster, get_kdc_server(cluster)),
+            'encryption_types': 'aes256-cts-hmac-sha1-96',
+            'ldap_url': '', 'container_dn': '',
+        }
+    }
+
+
+def _serialize_krb5_configs(cluster):
+    return {
+        "krb5-conf": {
+            "properties_attributes": {},
+            "properties": {
+                "manage_krb5_conf": "false"
+            }
+        }
+    }
+
+
+def _get_credentials(cluster):
+    return [{
+        "alias": "kdc.admin.credential",
+        "principal": kerberos.get_admin_principal(cluster),
+        "key": kerberos.get_server_password(cluster),
+        "type": "TEMPORARY"
+    }]
+
+
+def get_host_group_components(cluster, processes):
+    result = []
+    for proc in processes:
+        result.append({'name': proc})
+    return result
+
+
 def create_blueprint(cluster):
     _prepare_ranger(cluster)
     cluster = conductor.cluster_get(context.ctx(), cluster.id)
@@ -228,19 +291,24 @@ def create_blueprint(cluster):
             hg = {
                 "name": instance.instance_name,
                 "configurations": configs.get_instance_params(instance),
-                "components": []
+                "components": get_host_group_components(cluster, procs)
             }
-            for proc in procs:
-                hg["components"].append({"name": proc})
             host_groups.append(hg)
     bp = {
         "Blueprints": {
             "stack_name": "HDP",
-            "stack_version": cluster.hadoop_version
+            "stack_version": cluster.hadoop_version,
         },
         "host_groups": host_groups,
         "configurations": configs.get_cluster_params(cluster)
     }
+
+    if kerberos.is_kerberos_security_enabled(cluster):
+        bp['configurations'].extend([
+            _serialize_mit_kdc_kerberos_env(cluster),
+            _serialize_krb5_configs(cluster)
+        ])
+        bp['Blueprints']['security'] = {'type': 'KERBEROS'}
 
     general_configs = cluster.cluster_configs.get("general", {})
     if (general_configs.get(p_common.NAMENODE_HA) or
@@ -267,6 +335,10 @@ def _build_ambari_cluster_template(cluster):
         "default_password": uuidutils.generate_uuid(),
         "host_groups": []
     }
+    if kerberos.is_kerberos_security_enabled(cluster):
+        cl_tmpl["credentials"] = _get_credentials(cluster)
+        cl_tmpl["security"] = {"type": "KERBEROS"}
+
     for ng in cluster.node_groups:
         for instance in ng.instances:
             cl_tmpl["host_groups"].append({
@@ -313,6 +385,30 @@ def cleanup_config_groups(cluster, instances):
                 client.remove_config_group(cluster, cfg_id)
 
 
+def _regenerate_keytabs(cluster):
+    if not kerberos.is_kerberos_security_enabled(cluster):
+        return
+
+    with _get_ambari_client(cluster) as client:
+        alias = "kdc.admin.credential"
+        try:
+            client.get_credential(cluster.name, alias)
+        except ambari_client.AmbariNotFound:
+            # credentials are missing
+            data = {
+                'Credential': {
+                    "principal": kerberos.get_admin_principal(cluster),
+                    "key": kerberos.get_server_password(cluster),
+                    "type": "TEMPORARY"
+                }
+            }
+
+            client.import_credential(cluster.name, alias, data)
+
+        req_id = client.regenerate_keytabs(cluster.name)
+        client.wait_ambari_request(req_id, cluster.name)
+
+
 def manage_host_components(cluster, instances):
     requests_ids = []
     with _get_ambari_client(cluster) as client:
@@ -326,6 +422,10 @@ def manage_host_components(cluster, instances):
                     client.start_service_on_host(
                         instance, service, 'INSTALLED'))
         client.wait_ambari_requests(requests_ids, cluster.name)
+
+    _regenerate_keytabs(cluster)
+
+    with _get_ambari_client(cluster) as client:
         # all services added and installed, let's start them
         requests_ids = []
         for instance in instances:
