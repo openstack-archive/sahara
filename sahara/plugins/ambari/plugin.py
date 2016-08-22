@@ -91,6 +91,7 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
                                       plugin_utils.get_instances(cluster))
         deploy.prepare_kerberos(cluster)
         deploy.set_up_hdp_repos(cluster)
+        deploy.resolve_package_conflicts(cluster)
         deploy.create_blueprint(cluster)
 
     def start_cluster(self, cluster):
@@ -189,6 +190,7 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
         deploy.setup_agents(cluster, instances)
         cluster = conductor.cluster_get(context.ctx(), cluster.id)
         deploy.wait_host_registration(cluster, instances)
+        deploy.resolve_package_conflicts(cluster, instances)
         deploy.add_new_hosts(cluster, instances)
         deploy.manage_config_groups(cluster, instances)
         deploy.manage_host_components(cluster, instances)
