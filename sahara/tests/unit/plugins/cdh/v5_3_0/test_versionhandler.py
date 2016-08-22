@@ -16,8 +16,7 @@
 import mock
 import six
 
-from sahara.plugins.cdh.v5_3_0.edp_engine import EdpOozieEngine
-from sahara.plugins.cdh.v5_3_0.edp_engine import EdpSparkEngine
+from sahara.plugins.cdh.v5_3_0 import edp_engine
 from sahara.plugins.cdh.v5_3_0 import versionhandler
 from sahara.tests.unit import base
 
@@ -98,11 +97,11 @@ class VersionHandlerTestCase(base.SaharaTestCase):
         cluster = mock.Mock()
         job_type = 'Java'
         ret = self.vh.get_edp_engine(cluster, job_type)
-        self.assertIsInstance(ret, EdpOozieEngine)
+        self.assertIsInstance(ret, edp_engine.EdpOozieEngine)
 
         job_type = 'Spark'
         ret = self.vh.get_edp_engine(cluster, job_type)
-        self.assertIsInstance(ret, EdpSparkEngine)
+        self.assertIsInstance(ret, edp_engine.EdpSparkEngine)
 
         job_type = 'unsupported'
         ret = self.vh.get_edp_engine(cluster, job_type)
@@ -110,8 +109,8 @@ class VersionHandlerTestCase(base.SaharaTestCase):
 
     def test_get_edp_job_types(self):
         ret = self.vh.get_edp_job_types()
-        expect = EdpOozieEngine.get_supported_job_types() + \
-            EdpSparkEngine.get_supported_job_types()
+        expect = edp_engine.EdpOozieEngine.get_supported_job_types() + \
+            edp_engine.EdpSparkEngine.get_supported_job_types()
         self.assertEqual(expect, ret)
 
     @mock.patch(plugin_path +
