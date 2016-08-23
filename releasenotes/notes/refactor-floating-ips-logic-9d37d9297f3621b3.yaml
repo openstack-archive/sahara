@@ -1,0 +1,5 @@
+---
+features:
+  - Refactoring the logic on how floating ips are used by Sahara. This
+    change will allow the coexistence of cluster using floating ips with
+    cluster that do not.
