@@ -335,6 +335,10 @@ def _build_ambari_cluster_template(cluster):
         "default_password": uuidutils.generate_uuid(),
         "host_groups": []
     }
+
+    if cluster.use_autoconfig:
+        cl_tmpl["config_recommendation_strategy"] = "ALWAYS_APPLY"
+
     if kerberos.is_kerberos_security_enabled(cluster):
         cl_tmpl["credentials"] = _get_credentials(cluster)
         cl_tmpl["security"] = {"type": "KERBEROS"}

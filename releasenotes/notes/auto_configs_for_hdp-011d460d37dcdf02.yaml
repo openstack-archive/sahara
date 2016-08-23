@@ -1,0 +1,4 @@
+---
+features:
+  - Add ability to automaticaly generate better configurations for
+    Ambari cluster by using 'ALWAYS_APPLY' strategy
