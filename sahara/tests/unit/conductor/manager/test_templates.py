@@ -691,14 +691,14 @@ class ClusterTemplates(test_base.ConductorManagerTestCase):
                 self.api.cluster_template_update(ctx, clt_id, {"name": "tmpl"})
             except ex.UpdateFailedException as e:
                 self.assert_protected_resource_exception(e)
-                raise e
+                raise
 
         with testtools.ExpectedException(ex.DeletionFailed):
             try:
                 self.api.cluster_template_destroy(ctx, clt_id)
             except ex.DeletionFailed as e:
                 self.assert_protected_resource_exception(e)
-                raise e
+                raise
 
         self.api.cluster_template_update(ctx, clt_id,
                                          {"name": "tmpl",
@@ -718,14 +718,14 @@ class ClusterTemplates(test_base.ConductorManagerTestCase):
                                                  {"name": "tmpl"})
             except ex.UpdateFailedException as e:
                 self.assert_created_in_another_tenant_exception(e)
-                raise e
+                raise
 
         with testtools.ExpectedException(ex.DeletionFailed):
             try:
                 self.api.cluster_template_destroy(ctx, clt_id)
             except ex.DeletionFailed as e:
                 self.assert_created_in_another_tenant_exception(e)
-                raise e
+                raise
 
     def test_update_clt_on_ngt_update(self):
         # Prove that cluster templates get updated with proper values

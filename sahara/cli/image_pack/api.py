@@ -96,7 +96,7 @@ class ImageRemote(remote.TerminalOnlyRemote):
             return 0, stdout
         except RuntimeError as ex:
             if raise_when_error:
-                raise ex
+                raise
             else:
                 return 1, ex.message
 

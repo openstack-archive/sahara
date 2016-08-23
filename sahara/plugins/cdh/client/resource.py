@@ -92,9 +92,9 @@ class Resource(object):
             try:
                 json_dict = json.loads(body)
                 return json_dict
-            except Exception as ex:
+            except Exception:
                 LOG.error(_LE('JSON decode error: {body}').format(body=body))
-                raise ex
+                raise
         else:
             return body
 
@@ -122,7 +122,7 @@ class Resource(object):
                                         "{path}. No retries left").format(
                                             path=self._join_uri(relpath)))
                 else:
-                    raise e
+                    raise
         else:
             raise ex.CMApiException(_("Get retry max time reached."))
 
