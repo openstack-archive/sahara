@@ -354,17 +354,28 @@ def _read_file_from(remote_file, run_as_root=False):
                 'rm %s' % fl, run_as_root=True, raise_when_error=False)
 
 
+def __get_python_to_execute():
+    try:
+        _execute_command('python3 --version')
+    except Exception:
+        _execute_command('python2 --version')
+        return 'python2'
+    return 'python3'
+
+
 def _get_os_distrib():
+    python_version = __get_python_to_execute()
     return _execute_command(
         ('printf "import platform\nprint(platform.linux_distribution('
-         'full_distribution_name=0)[0])" | python'),
+         'full_distribution_name=0)[0])" | {}'.format(python_version)),
         run_as_root=False)[1].lower().strip()
 
 
 def _get_os_version():
+    python_version = __get_python_to_execute()
     return _execute_command(
         ('printf "import platform\nprint(platform.linux_distribution()[1])"'
-         ' | python'), run_as_root=False)[1].strip()
+         ' | {}'.format(python_version)), run_as_root=False)[1].strip()
 
 
 def _install_packages(packages):

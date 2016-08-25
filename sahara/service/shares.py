@@ -231,8 +231,7 @@ class _NFSMounter(_ShareHandler):
     @classmethod
     def setup_instance(cls, remote):
         """Prepares an instance to mount this type of share."""
-        response = remote.execute_command('lsb_release -is')
-        distro = response[1].strip().lower()
+        distro = remote.get_os_distrib()
         if distro in cls._NFS_CHECKS:
             command = cls._NFS_CHECKS[distro]
             remote.execute_command(command, run_as_root=True)
