@@ -195,8 +195,8 @@ class TestClusterContext(b.SaharaTestCase):
             oozie.Oozie().ui_name,
             swift.Swift().ui_name,
         ]
-        self.assertListEqual(sorted(actual_services_names),
-                             sorted(expected_services_names))
+        self.assertEqual(sorted(actual_services_names),
+                         sorted(expected_services_names))
 
     def test_get_service(self):
         ctx = self._get_context()
