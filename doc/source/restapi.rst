@@ -48,9 +48,44 @@ or
     GET /v1.1/{tenant_id}/clusters
     Accept: application/json
 
-1.3 Faults
-----------
+1.3 Navigation by response
+--------------------------
+Sahara API supports delivering response data by pages. User can pass
+two parameters in API GET requests which return an array of objects.
+The parameters are:
 
+``limit`` - maximum number of objects in response data.
+This parameter must be a positive integer number.
+
+``marker`` - ID of the last element on the list which won't be in response.
+
+Example:
+Get 15 clusters after cluster with id=d62ad147-5c10-418c-a21a-3a6597044f29:
+
+.. soursecode:: http
+
+    GET /v1.1/{tenant_id}/clusters?limit=15&marker=d62ad147-5c10-418c-a21a-3a6597044f29
+
+For convenience, response contains markers of previous and following pages
+which are named 'prev' and 'next' fields. Also there is ``sort_by`` parameter
+for sorting objects. Sahara API supports ascending and descending sorting.
+
+Examples:
+Sort clusters by name:
+
+.. soursecode:: http
+
+    GET /v1.1/{tenant_id}/clusters?sort_by=name
+
+Sort clusters by date of creation in descending order:
+
+.. soursecode:: http
+
+    GET /v1.1/{tenant_id}/clusters?sort_by=-created_at
+
+
+1.4 Faults
+----------
 The sahara API returns an error response if a failure occurs while
 processing a request. Sahara uses only standard HTTP error codes. 4xx errors
 indicate problems in the particular request being sent from the client and
