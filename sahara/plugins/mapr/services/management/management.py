@@ -59,5 +59,5 @@ class Management(s.Service):
         # MCS uses credentials of the administrative user (PAM auth)
         return [('MapR Control System (MCS)', WEB_SERVER,
                  {s.SERVICE_UI: 'https://%s:8443',
-                  'Username': pu.MAPR_USER_NAME,
+                  'Username': 'mapr',
                   'Password': pu.get_mapr_password(cluster_context.cluster)})]

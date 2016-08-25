@@ -39,9 +39,6 @@ import sahara.utils.files as files
 LOG = logging.getLogger(__name__)
 conductor = conductor.API
 
-
-_MAPR_GROUP_NAME = 'mapr'
-_MAPR_HOME = '/opt/mapr'
 _JAVA_HOME = '/usr/java/jdk1.7.0_51'
 _CONFIGURE_SH_TIMEOUT = 600
 _SET_MODE_CMD = 'maprcli cluster mapreduce set -mode '
@@ -229,7 +226,7 @@ class BaseConfigurer(ac.AbstractConfigurer):
 
     def _update_cluster_info(self, cluster_context):
         LOG.debug('Updating UI information.')
-        info = {'Admin user credentials': {'Username': pu.MAPR_USER_NAME,
+        info = {'Admin user credentials': {'Username': 'mapr',
                                            'Password': pu.get_mapr_password
                                            (cluster_context.cluster)}}
         for service in cluster_context.cluster_services:
@@ -263,23 +260,22 @@ class BaseConfigurer(ac.AbstractConfigurer):
             instances = cluster_context.get_instances()
 
         def set_user_password(instance):
-            LOG.debug('Setting password for user "%s"' % pu.MAPR_USER_NAME)
+            LOG.debug('Setting password for user "mapr"')
             if self.mapr_user_exists(instance):
                 with instance.remote() as r:
                     r.execute_command(
                         'echo "%s:%s"|chpasswd' %
-                        (pu.MAPR_USER_NAME, mapr_user_pass),
+                        ('mapr', mapr_user_pass),
                         run_as_root=True)
             else:
                 LOG.warning(_LW('User "mapr" does not exists'))
 
         def create_home_mapr(instance):
-            target_path = '/home/%s' % pu.MAPR_USER_NAME
-            LOG.debug("Creating home directory for user '%s'" %
-                      pu.MAPR_USER_NAME)
+            target_path = '/home/mapr'
+            LOG.debug("Creating home directory for user 'mapr'")
             args = {'path': target_path,
-                    'user': pu.MAPR_USER_NAME,
-                    'group': _MAPR_GROUP_NAME}
+                    'user': 'mapr',
+                    'group': 'mapr'}
             cmd = ('mkdir -p %(path)s && chown %(user)s:%(group)s %(path)s'
                    % args)
             if self.mapr_user_exists(instance):
@@ -339,7 +335,7 @@ class BaseConfigurer(ac.AbstractConfigurer):
         with instance.remote() as r:
             ec, __ = r.execute_command(
                 "id -u %s" %
-                pu.MAPR_USER_NAME, run_as_root=True, raise_when_error=False)
+                'mapr', run_as_root=True, raise_when_error=False)
         return ec == 0
 
     def post_start(self, c_context, instances=None):
@@ -361,7 +357,7 @@ class BaseConfigurer(ac.AbstractConfigurer):
         @el.provision_event()
         def set_cluster_mode(instance):
             return util.execute_command([instance], command,
-                                        run_as=pu.MAPR_USER_NAME)
+                                        run_as='mapr')
 
         util.execute_on_instances(instances, set_cluster_mode)
 

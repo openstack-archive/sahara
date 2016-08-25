@@ -21,7 +21,6 @@ from sahara import conductor
 from sahara import context
 from sahara.service.castellan import utils as key_manager
 
-MAPR_USER_NAME = 'mapr'
 MAPR_USER_PASSWORD = 'mapr_password'
 
 conductor = conductor.API
