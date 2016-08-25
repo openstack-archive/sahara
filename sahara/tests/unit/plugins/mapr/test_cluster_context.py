@@ -184,7 +184,6 @@ class TestClusterContext(b.SaharaTestCase):
         self.assertEqual('1.1', version)
 
     def test_get_cluster_services(self):
-        pass
         ctx = self._get_context()
         actual_services = ctx.get_cluster_services()
         actual_services_names = map(lambda s: s.ui_name, actual_services)
