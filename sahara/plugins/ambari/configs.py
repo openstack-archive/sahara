@@ -121,6 +121,14 @@ hdp_repo_cfg = provisioning.Config(
     "HDP repo URL", "general", "cluster", priority=1, default_value="")
 hdp_utils_repo_cfg = provisioning.Config(
     "HDP-UTILS repo URL", "general", "cluster", priority=1, default_value="")
+autoconfigs_strategy = provisioning.Config(
+    "Auto-configuration strategy", 'general', 'cluster', priority=1,
+    config_type='dropdown',
+    default_value='NEVER_APPLY',
+    config_values=[(v, v) for v in [
+        'ALWAYS_APPLY', 'NEVER_APPLY', 'ONLY_STACK_DEFAULTS_APPLY',
+    ]],
+)
 
 
 def _get_service_name(service):
@@ -211,6 +219,10 @@ def get_hdp_repo_url(cluster):
 
 def get_hdp_utils_repo_url(cluster):
     return _get_config_value(cluster, hdp_utils_repo_cfg)
+
+
+def get_auto_configuration_strategy(cluster):
+    return _get_config_value(cluster, autoconfigs_strategy)
 
 
 def _serialize_ambari_configs(configs):

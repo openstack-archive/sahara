@@ -337,7 +337,8 @@ def _build_ambari_cluster_template(cluster):
     }
 
     if cluster.use_autoconfig:
-        cl_tmpl["config_recommendation_strategy"] = "ALWAYS_APPLY"
+        strategy = configs.get_auto_configuration_strategy(cluster)
+        cl_tmpl["config_recommendation_strategy"] = strategy
 
     if kerberos.is_kerberos_security_enabled(cluster):
         cl_tmpl["credentials"] = _get_credentials(cluster)
