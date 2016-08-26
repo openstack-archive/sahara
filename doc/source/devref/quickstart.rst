@@ -154,7 +154,7 @@ with the ``plugin show`` command. For example:
 
 .. sourcecode:: console
 
-    $ openstack dataprocessing plugin show vanilla --version <plugin_version>
+    $ openstack dataprocessing plugin show vanilla --plugin-version <plugin_version>
     +---------------------+-----------------------------------------------------------------------------------------------------------------------+
     | Field               | Value                                                                                                                 |
     +---------------------+-----------------------------------------------------------------------------------------------------------------------+
