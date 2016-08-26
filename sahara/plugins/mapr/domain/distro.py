@@ -77,5 +77,5 @@ def get(instance):
     with instance.remote() as r:
         name = r.get_os_distrib()
         for d in get_all():
-            if d.name in name:
+            if d.name.lower() in name:
                 return d
