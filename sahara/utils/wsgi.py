@@ -21,14 +21,11 @@
 import datetime
 
 from oslo_config import cfg
-from oslo_log import log as logging
 from oslo_serialization import jsonutils
 import six
 
 from sahara import exceptions
 from sahara.i18n import _
-
-LOG = logging.getLogger(__name__)
 
 CONF = cfg.CONF
 
