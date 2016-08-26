@@ -14,7 +14,6 @@
 # limitations under the License.
 
 from oslo_config import cfg
-from oslo_log import log as logging
 
 from sahara import conductor as c
 from sahara import exceptions as ex
@@ -22,7 +21,6 @@ from sahara.i18n import _
 
 
 conductor = c.API
-LOG = logging.getLogger(__name__)
 CONF = cfg.CONF
 
 
