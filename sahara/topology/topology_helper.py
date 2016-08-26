@@ -162,3 +162,7 @@ def vm_awareness_mapred_config():
 
 def vm_awareness_all_config():
     return vm_awareness_core_config() + vm_awareness_mapred_config()
+
+
+def is_data_locality_enabled():
+    return CONF.enable_data_locality

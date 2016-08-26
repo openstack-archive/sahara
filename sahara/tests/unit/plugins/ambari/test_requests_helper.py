@@ -15,14 +15,14 @@
 
 import mock
 
-from sahara.plugins.ambari import decomission_helper
+from sahara.plugins.ambari import requests_helper
 from sahara.tests.unit import base
 
 
-class DecommissionHelperTestCase(base.SaharaTestCase):
+class RequestsHelperTestCase(base.SaharaTestCase):
 
     def setUp(self):
-        super(DecommissionHelperTestCase, self).setUp()
+        super(RequestsHelperTestCase, self).setUp()
         self.i1 = mock.MagicMock()
         self.i1.fqdn.return_value = "i1"
 
@@ -33,8 +33,8 @@ class DecommissionHelperTestCase(base.SaharaTestCase):
         c_name = "c1"
         instances = [self.i1, self.i2]
 
-        res = decomission_helper.build_datanode_decommission_request(c_name,
-                                                                     instances)
+        res = requests_helper.build_datanode_decommission_request(c_name,
+                                                                  instances)
         self.assertEqual("i1,i2",
                          res["RequestInfo"]["parameters"]["excluded_hosts"])
         self.assertEqual("c1",
@@ -44,7 +44,7 @@ class DecommissionHelperTestCase(base.SaharaTestCase):
         c_name = "c1"
         instances = [self.i1, self.i2]
 
-        res = decomission_helper.build_nodemanager_decommission_request(
+        res = requests_helper.build_nodemanager_decommission_request(
             c_name, instances)
 
         self.assertEqual("i1,i2",
@@ -53,16 +53,44 @@ class DecommissionHelperTestCase(base.SaharaTestCase):
                          res["RequestInfo"]["operation_level"]["cluster_name"])
 
     def test_build_namenode_restart_request(self):
-        res = decomission_helper.build_namenode_restart_request("c1", self.i1)
+        res = requests_helper.build_namenode_restart_request("c1", self.i1)
 
         self.assertEqual("i1", res["Requests/resource_filters"][0]["hosts"])
         self.assertEqual("c1",
                          res["RequestInfo"]["operation_level"]["cluster_name"])
 
     def test_build_resourcemanager_restart_request(self):
-        res = decomission_helper.build_resourcemanager_restart_request("c1",
-                                                                       self.i1)
+        res = requests_helper.build_resourcemanager_restart_request("c1",
+                                                                    self.i1)
 
         self.assertEqual("i1", res["Requests/resource_filters"][0]["hosts"])
         self.assertEqual("c1",
                          res["RequestInfo"]["operation_level"]["cluster_name"])
+
+    def test_build_stop_service_request(self):
+        res = requests_helper.build_stop_service_request("HDFS")
+        expected = {
+            "RequestInfo": {
+                "context": "Restart HDFS service (stopping)",
+            },
+            "Body": {
+                "ServiceInfo": {
+                    "state": "INSTALLED"
+                }
+            }
+        }
+        self.assertEqual(res, expected)
+
+    def test_build_start_service_request(self):
+        res = requests_helper.build_start_service_request("HDFS")
+        expected = {
+            "RequestInfo": {
+                "context": "Restart HDFS service (starting)",
+            },
+            "Body": {
+                "ServiceInfo": {
+                    "state": "STARTED"
+                }
+            }
+        }
+        self.assertEqual(res, expected)

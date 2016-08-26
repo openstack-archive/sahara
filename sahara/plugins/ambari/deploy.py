@@ -29,6 +29,7 @@ from sahara.plugins.ambari import configs
 from sahara.plugins.ambari import ha_helper
 from sahara.plugins import kerberos
 from sahara.plugins import utils as plugin_utils
+from sahara.topology import topology_helper as t_helper
 from sahara.utils import poll_utils
 
 
@@ -342,12 +343,15 @@ def _build_ambari_cluster_template(cluster):
     if kerberos.is_kerberos_security_enabled(cluster):
         cl_tmpl["credentials"] = _get_credentials(cluster)
         cl_tmpl["security"] = {"type": "KERBEROS"}
-
+    topology = _configure_topology_data(cluster)
     for ng in cluster.node_groups:
         for instance in ng.instances:
+            host = {"fqdn": instance.fqdn()}
+            if t_helper.is_data_locality_enabled():
+                host["rack_info"] = topology[instance.instance_name]
             cl_tmpl["host_groups"].append({
                 "name": instance.instance_name,
-                "hosts": [{"fqdn": instance.fqdn()}]
+                "hosts": [host]
             })
     return cl_tmpl
 
@@ -467,18 +471,12 @@ def decommission_datanodes(cluster, instances):
 
 
 def restart_namenode(cluster, instance):
-    ambari = plugin_utils.get_instance(cluster, p_common.AMBARI_SERVER)
-    password = cluster.extra["ambari_password"]
-
-    with ambari_client.AmbariClient(ambari, password=password) as client:
+    with _get_ambari_client(cluster) as client:
         client.restart_namenode(cluster.name, instance)
 
 
 def restart_resourcemanager(cluster, instance):
-    ambari = plugin_utils.get_instance(cluster, p_common.AMBARI_SERVER)
-    password = cluster.extra["ambari_password"]
-
-    with ambari_client.AmbariClient(ambari, password=password) as client:
+    with _get_ambari_client(cluster) as client:
         client.restart_resourcemanager(cluster.name, instance)
 
 
@@ -490,6 +488,11 @@ def restart_nns_and_rms(cluster):
     rms = plugin_utils.get_instances(cluster, p_common.RESOURCEMANAGER)
     for rm in rms:
         restart_resourcemanager(cluster, rm)
+
+
+def restart_service(cluster, service_name):
+    with _get_ambari_client(cluster) as client:
+        client.restart_service(cluster.name, service_name)
 
 
 def remove_services_from_hosts(cluster, instances):
@@ -533,6 +536,29 @@ def _get_ambari_client(cluster):
     ambari = plugin_utils.get_instance(cluster, p_common.AMBARI_SERVER)
     password = cluster.extra["ambari_password"]
     return ambari_client.AmbariClient(ambari, password=password)
+
+
+def _configure_topology_data(cluster):
+    if not t_helper.is_data_locality_enabled():
+        return {}
+
+    LOG.warning(_LW("Node group awareness is not implemented in YARN yet "
+                    "so enable_hypervisor_awareness set to False "
+                    "explicitly"))
+    return t_helper.generate_topology_map(cluster, is_node_awareness=False)
+
+
+def configure_rack_awareness(cluster, instances):
+    if not t_helper.is_data_locality_enabled():
+        return
+
+    topology = _configure_topology_data(cluster)
+    with _get_ambari_client(cluster) as client:
+        for inst in instances:
+            client.set_rack_info_for_instance(
+                cluster.name, inst, topology[inst.instance_name])
+        client.restart_service(cluster.name, p_common.HDFS_SERVICE)
+        client.restart_service(cluster.name, p_common.MAPREDUCE2_SERVICE)
 
 
 def add_hadoop_swift_jar(instances):

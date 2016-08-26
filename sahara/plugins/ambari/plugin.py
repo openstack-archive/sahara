@@ -191,6 +191,7 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
         deploy.add_new_hosts(cluster, instances)
         deploy.manage_config_groups(cluster, instances)
         deploy.manage_host_components(cluster, instances)
+        deploy.configure_rack_awareness(cluster, instances)
         swift_helper.install_ssl_certs(instances)
         deploy.add_hadoop_swift_jar(instances)
 

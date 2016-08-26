@@ -20,7 +20,7 @@ from requests import auth
 
 from sahara import context
 from sahara.i18n import _
-from sahara.plugins.ambari import decomission_helper as d_helper
+from sahara.plugins.ambari import requests_helper as r_helper
 from sahara.plugins import exceptions as p_exc
 
 
@@ -204,14 +204,14 @@ class AmbariClient(object):
 
     def decommission_nodemanagers(self, cluster_name, instances):
         url = self._base_url + "/clusters/%s/requests" % cluster_name
-        data = d_helper.build_nodemanager_decommission_request(cluster_name,
+        data = r_helper.build_nodemanager_decommission_request(cluster_name,
                                                                instances)
         resp = self.post(url, data=jsonutils.dumps(data))
         self.wait_ambari_request(self.req_id(resp), cluster_name)
 
     def decommission_datanodes(self, cluster_name, instances):
         url = self._base_url + "/clusters/%s/requests" % cluster_name
-        data = d_helper.build_datanode_decommission_request(cluster_name,
+        data = r_helper.build_datanode_decommission_request(cluster_name,
                                                             instances)
         resp = self.post(url, data=jsonutils.dumps(data))
         self.wait_ambari_request(self.req_id(resp), cluster_name)
@@ -237,15 +237,27 @@ class AmbariClient(object):
 
     def restart_namenode(self, cluster_name, instance):
         url = self._base_url + "/clusters/%s/requests" % cluster_name
-        data = d_helper.build_namenode_restart_request(cluster_name, instance)
+        data = r_helper.build_namenode_restart_request(cluster_name, instance)
         resp = self.post(url, data=jsonutils.dumps(data))
         self.wait_ambari_request(self.req_id(resp), cluster_name)
 
     def restart_resourcemanager(self, cluster_name, instance):
         url = self._base_url + "/clusters/%s/requests" % cluster_name
-        data = d_helper.build_resourcemanager_restart_request(cluster_name,
+        data = r_helper.build_resourcemanager_restart_request(cluster_name,
                                                               instance)
         resp = self.post(url, data=jsonutils.dumps(data))
+        self.wait_ambari_request(self.req_id(resp), cluster_name)
+
+    def restart_service(self, cluster_name, service_name):
+        url = self._base_url + "/clusters/{}/services/{}".format(
+            cluster_name, service_name)
+
+        data = r_helper.build_stop_service_request(service_name)
+        resp = self.put(url, data=jsonutils.dumps(data))
+        self.wait_ambari_request(self.req_id(resp), cluster_name)
+
+        data = r_helper.build_start_service_request(service_name)
+        resp = self.put(url, data=jsonutils.dumps(data))
         self.wait_ambari_request(self.req_id(resp), cluster_name)
 
     def delete_host(self, cluster_name, instance):
@@ -278,6 +290,17 @@ class AmbariClient(object):
             "Repositories": {
                 "base_url": repo_url,
                 "verify_base_url": True
+            }
+        }
+        resp = self.put(url, data=jsonutils.dumps(data))
+        self.check_response(resp)
+
+    def set_rack_info_for_instance(self, cluster_name, instance, rack_name):
+        url = self._base_url + "/clusters/%s/hosts/%s" % (
+            cluster_name, instance.fqdn())
+        data = {
+            "Hosts": {
+                "rack_info": rack_name
             }
         }
         resp = self.put(url, data=jsonutils.dumps(data))
