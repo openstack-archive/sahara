@@ -79,3 +79,9 @@ def get(instance):
         for d in get_all():
             if d.name.lower() in name:
                 return d
+
+
+def get_version(instance):
+    with instance.remote() as r:
+        version = r.get_os_version()
+        return version
