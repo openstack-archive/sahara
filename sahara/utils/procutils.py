@@ -19,12 +19,9 @@ import sys
 
 from eventlet.green import subprocess
 from eventlet import timeout as e_timeout
-from oslo_log import log as logging
 
 from sahara import context
 from sahara import exceptions
-
-LOG = logging.getLogger(__name__)
 
 
 def _get_sub_executable():

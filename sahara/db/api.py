@@ -34,7 +34,6 @@ interface.
 from oslo_config import cfg
 from oslo_db import api as db_api
 from oslo_db import options
-from oslo_log import log as logging
 
 from sahara.utils import types
 
@@ -47,7 +46,6 @@ _BACKEND_MAPPING = {
 }
 
 IMPL = db_api.DBAPI.from_config(CONF, backend_mapping=_BACKEND_MAPPING)
-LOG = logging.getLogger(__name__)
 
 
 def setup_db():

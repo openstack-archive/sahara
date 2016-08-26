@@ -16,7 +16,6 @@
 """Handles all requests to the conductor service."""
 
 from oslo_config import cfg
-from oslo_log import log as logging
 
 from sahara.conductor import manager
 from sahara.conductor import resource as r
@@ -34,8 +33,6 @@ conductor_group = cfg.OptGroup(name='conductor',
 CONF = cfg.CONF
 CONF.register_group(conductor_group)
 CONF.register_opts(conductor_opts, conductor_group)
-
-LOG = logging.getLogger(__name__)
 
 
 def _get_id(obj):

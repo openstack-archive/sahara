@@ -14,15 +14,12 @@
 # limitations under the License.
 
 from oslo_config import cfg
-from oslo_log import log as logging
 import six
 
 from sahara import conductor as c
 from sahara import context
 from sahara.utils.openstack import base as b
 from sahara.utils.openstack import nova
-
-LOG = logging.getLogger(__name__)
 
 conductor = c.API
 CONF = cfg.CONF
