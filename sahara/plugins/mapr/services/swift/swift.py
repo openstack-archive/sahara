@@ -17,6 +17,7 @@ from oslo_log import log as logging
 
 import sahara.plugins.mapr.domain.service as s
 import sahara.plugins.mapr.services.maprfs.maprfs as maprfs
+import sahara.plugins.mapr.util.event_log as el
 import sahara.utils.files as f
 
 LOG = logging.getLogger(__name__)
@@ -32,15 +33,25 @@ class Swift(s.Service):
         self._ui_name = 'Swift'
         self._cluster_defaults = ['swift-default.json']
 
+    def install(self, cluster_context, instances):
+        # swift does not require any package
+        pass
+
     def configure(self, context, instances=None):
         instances = instances or context.get_instances()
         file_servers = context.filter_instances(instances, maprfs.FILE_SERVER)
         self._install_swift_jar(context, file_servers)
 
+    @el.provision_step("Install Swift service")
     def _install_swift_jar(self, context, instances):
         LOG.debug('Installing Swift jar')
         jar = f.get_file_text(Swift.HADOOP_SWIFT_JAR)
         path = '%s/swift.jar' % context.hadoop_lib
-        for instance in instances:
-            with instance.remote() as r:
+
+        @el.provision_event()
+        def install_on_instance(inst):
+            with inst.remote() as r:
                 r.write_file_to(path, jar, run_as_root=True)
+
+        for instance in instances:
+            install_on_instance(instance)

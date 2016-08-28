@@ -80,6 +80,9 @@ class Service(object):
         return self._ui_info
 
     def install(self, cluster_context, instances):
+        service_instances = cluster_context.filter_instances(instances,
+                                                             service=self)
+
         @el.provision_step(_("Install %s service") % self.ui_name,
                            cluster_context_reference=0, instances_reference=1)
         def _install(_context, _instances):
@@ -87,7 +90,7 @@ class Service(object):
                                    self._install_packages_on_instance,
                                    _context)
 
-        _install(cluster_context, instances)
+        _install(cluster_context, service_instances)
 
     @el.provision_event(instance_reference=1)
     def _install_packages_on_instance(self, instance, cluster_context):
