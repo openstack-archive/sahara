@@ -33,8 +33,8 @@ EOF
         rpm -q epel-release-6-8 || \
             rpm -i http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
     elif [[ $release =~ 7\.[0-9] ]]; then
-        rpm -q epel-release-7-5 || \
-            rpm -i http://download.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm
+        rpm -q epel-release-7-8 || \
+            rpm -i http://download.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-8.noarch.rpm
     else
         echo "Unsupported distribution version"
         exit 1
