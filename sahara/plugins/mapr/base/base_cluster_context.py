@@ -44,6 +44,7 @@ class BaseClusterContext(cc.AbstractClusterContext):
     def __init__(self, cluster, version_handler, added=None, removed=None):
         self._cluster = cluster
         self._distro = None
+        self._distro_version = None
         self._all_services = version_handler.get_services()
         self._required_services = version_handler.get_required_services()
         self._cluster_services = None
@@ -152,6 +153,12 @@ class BaseClusterContext(cc.AbstractClusterContext):
         if not self._some_instance:
             self._some_instance = self.cluster.node_groups[0].instances[0]
         return self._some_instance
+
+    @property
+    def distro_version(self):
+        if not self._distro_version:
+            self._distro_version = distro.get_version(self.some_instance)
+        return self._distro_version
 
     @property
     def distro(self):

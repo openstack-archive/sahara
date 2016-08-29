@@ -54,10 +54,14 @@ class MySQL(s.Service):
         self._ui_name = 'MySQL'
 
     @staticmethod
-    def _get_db_daemon_name(distro):
+    def _get_db_daemon_name(distro, distro_version):
         if distro.lower() == 'ubuntu':
             return 'mysql'
-        if distro.lower() in ['centos', 'redhatenterpriseserver', 'suse']:
+        if distro.lower() == 'suse':
+            return 'mysqld'
+        if distro.lower() in ['centos', 'redhatenterpriseserver']:
+            if distro_version.split('.')[0] == '7':
+                return 'mariadb'
             return 'mysqld'
         return None
 
@@ -126,9 +130,11 @@ class MySQL(s.Service):
         LOG.debug('Starting MySQL Server')
         instance = MySQL.get_db_instance(cluster_context)
         distro = cluster_context.distro
+        distro_version = cluster_context.distro_version
         with instance.remote() as r:
             r.execute_command(('service %s restart' %
-                               MySQL._get_db_daemon_name(distro.name)),
+                               MySQL._get_db_daemon_name(distro.name,
+                                                         distro_version)),
                               run_as_root=True)
         LOG.debug('MySQL Server successfully started')
 
