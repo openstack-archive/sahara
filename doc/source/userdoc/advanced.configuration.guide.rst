@@ -420,6 +420,8 @@ steps:
 
     sahara ALL = (root) NOPASSWD: /usr/bin/sahara-rootwrap /etc/sahara/rootwrap.conf *
 
+When using devstack to deploy sahara, please pay attention that you need to
+change user in script from ``sahara`` to ``stack``.
 
 * Copy the provided rootwrap configuration file from the local project file
   ``etc/sahara/rootwrap.conf`` to the system specific location, usually
