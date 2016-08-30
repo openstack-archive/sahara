@@ -105,8 +105,8 @@ shell(SSH). To establish this connection it may use either the fixed
 or floating IP address of an instance. By default sahara is configured
 to use floating IP addresses for access. This is controlled by the
 ``use_floating_ips`` configuration parameter. With this setup the user
-has two options for ensuring that all instances gain a floating IP
-address:
+has two options for ensuring that the instances in the node groups
+templates that requires floating IPs gain a floating IP address:
 
 * If using the nova-network, it may be configured to assign floating
   IP addresses automatically by setting the ``auto_assign_floating_ip``
@@ -114,13 +114,16 @@ address:
   (usually ``nova.conf``).
 
 * The user may specify a floating IP address pool for each node
-  group directly.
+  group that requires floating IPs directly.
 
-.. warning::
-    When using floating IP addresses for management
-    (``use_floating_ips=True``) **every** instance in the cluster must have
-    a floating IP address, otherwise sahara will not be able to utilize
-    that cluster.
+From Newton changes were made to allow the coexistence of clusters using
+floating IPs and clusters using fixed IPs. If ``use_floating_ips`` is
+True it means that the floating IPs can be used by Sahara to spawn clusters.
+But, differently from previous versions, this does not mean that all
+instances in the cluster must have floating IPs and that all clusters
+must use floating IPs. It is possible in a single Sahara deploy to have
+clusters setup using fixed IPs, clusters using floating IPs and cluster that
+use both.
 
 If not using floating IP addresses (``use_floating_ips=False``) sahara
 will use fixed IP addresses for instance management. When using neutron
