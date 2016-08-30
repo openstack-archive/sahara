@@ -136,8 +136,8 @@ def run_job(job_execution_id):
     try:
         _run_job(job_execution_id)
     except Exception as ex:
-        LOG.warning(
-            _LW("Can't run job execution (reason: {reason})").format(
+        LOG.exception(
+            _LE("Can't run job execution (reason: {reason})").format(
                 reason=ex))
 
         job_execution = conductor.job_execution_get(
@@ -218,8 +218,8 @@ def update_job_status(job_execution_id):
     try:
         get_job_status(job_execution_id)
     except Exception as e:
-        LOG.error(_LE("Error during update job execution {job}: {error}")
-                  .format(job=job_execution_id, error=e))
+        LOG.exception(_LE("Error during update job execution {job}: {error}")
+                      .format(job=job_execution_id, error=e))
 
 
 def update_job_statuses(cluster_id=None):
