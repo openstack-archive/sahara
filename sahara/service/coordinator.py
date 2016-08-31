@@ -88,8 +88,9 @@ class Coordinator(object):
                 except coordination.GroupNotCreated:
                     self.join_group(group_id)
                 except coordination.ToozError as e:
-                    LOG.error("Couldn't get members of {group} group. "
-                              "Reason: {ex}".format(group=group_id, ex=str(e)))
+                    LOG.error(_LE("Couldn't get members of {group} group. "
+                              "Reason: {ex}").format(
+                                  group=group_id, ex=str(e)))
         return []
 
 
