@@ -1,0 +1,3 @@
+---
+features:
+  - Remove support for Spark standalone in MapR plugin
