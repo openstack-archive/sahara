@@ -722,8 +722,8 @@
 
       #Enable mutual ssl authentication
       mutual_ssl_auth=False
-      ssl_cert={{ssl_cert}}
-      ssl_key={{ssl_key}}
+      ssl_cert=
+      ssl_key=
 
       # In secure mode (HTTPS), if SSL certificates from YARN Rest APIs
       # have to be verified against certificate authority

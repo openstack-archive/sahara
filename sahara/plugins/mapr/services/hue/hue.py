@@ -283,15 +283,3 @@ class HueV390(Hue):
         self._dependencies = [("mapr-hue-base", self.version)]
         self._node_processes = [HUE, HUE_LIVY]
         self._validation_rules.append(vu.at_most(1, HUE_LIVY))
-
-    def _get_hue_ini_props(self, context):
-        result = super(HueV390, self)._get_hue_ini_props(context)
-        ssl_cert_file = 'cert.pem'
-        ssl_key_file = 'hue_private_keystore.pem'
-        result.update({
-            'ssl_cert': '%(home)s/%(file)s' % {'home': self.home_dir(context),
-                                               'file': ssl_cert_file},
-            'ssl_key': '%(home)s/%(file)s' % {'home': self.home_dir(context),
-                                              'file': ssl_key_file}
-        })
-        return result
