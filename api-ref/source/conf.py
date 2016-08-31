@@ -85,6 +85,14 @@ master_doc = 'index'
 project = u'Compute API Reference'
 copyright = u'2010-present, OpenStack Foundation'
 
+# Config logABug feature
+giturl = u'http://git.openstack.org/cgit/openstack/sahara/tree/api-ref/source'
+# source tree
+# html_context allows us to pass arbitrary values into the html template
+html_context = {"bug_tag": "api-ref",
+                "giturl": giturl,
+                "bug_project": "sahara"}
+
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
