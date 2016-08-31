@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from oslo_config import cfg
 from oslo_log import log as logging
 import six
 import yaml
@@ -34,7 +33,6 @@ from sahara.utils import remote
 
 conductor = conductor.API
 LOG = logging.getLogger(__name__)
-CONF = cfg.CONF
 
 
 class StormProvider(p.ProvisioningPluginBase):
