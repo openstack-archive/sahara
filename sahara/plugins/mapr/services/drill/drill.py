@@ -42,8 +42,8 @@ class Drill(s.Service):
     def post_start(self, cluster_context, instances):
         instances = instances or cluster_context.get_instances(DRILL)
         super(Drill, self).install(cluster_context, instances)
+        self._set_service_dir_owner(cluster_context, instances)
         for instance in instances:
-            cmd.chown(instance, 'mapr:mapr', self.service_dir(cluster_context))
             cmd.re_configure_sh(instance, cluster_context)
 
 

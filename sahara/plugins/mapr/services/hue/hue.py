@@ -166,9 +166,7 @@ class Hue(s.Service):
             })
 
         livy_host = context.get_instance(HUE_LIVY)
-        spark_instance = context.get_instance(
-            spark.SPARK_HISTORY_SERVER)
-        if livy_host and spark_instance:
+        if livy_host:
             result.update({
                 'livy_host': livy_host.internal_ip
             })
@@ -188,31 +186,12 @@ class Hue(s.Service):
             }
             remote.execute_command(cmd % args, run_as_root=True, timeout=600)
 
-        def set_owner(remote):
-            remote.execute_command('chown -R mapr:mapr /opt/mapr/hue',
-                                   run_as_root=True)
-
-        if hue_instance:
-            with hue_instance.remote() as r:
-                LOG.debug("Executing Hue database migration")
-                migrate_database(r, cluster_context)
-                LOG.debug("Changing Hue home dir owner")
-                set_owner(r)
-            self._copy_hive_configs(cluster_context, hue_instance)
-            self._install_jt_plugin(cluster_context, hue_instance)
-
-        hue_livy_instance = cluster_context.get_instance(HUE_LIVY)
-        if hue_livy_instance:
-            with hue_livy_instance.remote() as r:
-                LOG.debug("Changing Hue home dir owner")
-                set_owner(r)
-
-    def _set_hue_sh_chmod(self, cluster_context):
-        cmd = 'chmod 777 %s' % (self.home_dir(cluster_context) + '/bin/hue.sh')
-        hue_instance = cluster_context.get_instance(HUE)
-        if hue_instance:
-            with hue_instance.remote() as r:
-                r.execute_command(cmd, run_as_root=True)
+        with hue_instance.remote() as r:
+            LOG.debug("Executing Hue database migration")
+            migrate_database(r, cluster_context)
+        self._copy_hive_configs(cluster_context, hue_instance)
+        self._install_jt_plugin(cluster_context, hue_instance)
+        self._set_service_dir_owner(cluster_context, instances)
 
     def _copy_hive_configs(self, cluster_context, hue_instance):
         hive_server = cluster_context.get_instance(hive.HIVE_SERVER_2)
