@@ -51,7 +51,10 @@ edp_opts = [
                default=300,
                help='Timeout for canceling job execution (in seconds). '
                     'Sahara will try to cancel job execution during '
-                    'this time.')
+                    'this time.'),
+    cfg.BoolOpt('edp_internal_db_enabled',
+                default=True,
+                help='Use Sahara internal db to store job binaries.')
 ]
 
 db_opts = [
