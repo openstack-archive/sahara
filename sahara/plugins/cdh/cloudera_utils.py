@@ -25,6 +25,7 @@ from sahara.plugins.cdh.client import services
 from sahara.plugins.cdh import db_helper
 from sahara.plugins import exceptions as ex
 from sahara.plugins import kerberos
+from sahara.topology import topology_helper as t_helper
 from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils import poll_utils
 
@@ -366,6 +367,20 @@ class ClouderaUtils(object):
         self.import_admin_credentials(cm, username, password)
         self.configure_for_kerberos(cluster)
         self.deploy_configs(cluster)
+
+    def configure_rack_awareness(self, cluster):
+        if t_helper.is_data_locality_enabled():
+            self._configure_rack_awareness(cluster)
+
+    @cpo.event_wrapper(
+        True, step=_("Configure rack awareness"), param=('cluster', 1))
+    def _configure_rack_awareness(self, cluster):
+        api = self.get_api_client(cluster)
+        topology = t_helper.generate_topology_map(
+            cluster, is_node_awareness=False)
+        for host in api.get_all_hosts():
+            host.rackId = topology[host.ipAddress]
+            host.put_host()
 
     def full_cluster_stop(self, cluster):
         self.stop_cloudera_cluster(cluster)

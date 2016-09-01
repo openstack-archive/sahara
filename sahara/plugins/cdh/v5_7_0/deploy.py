@@ -75,6 +75,7 @@ def configure_cluster(cluster):
     CU.pu.start_cloudera_agents(instances)
     CU.pu.start_cloudera_manager(cluster)
     CU.update_cloudera_password(cluster)
+    CU.configure_rack_awareness(cluster)
     CU.await_agents(cluster, instances)
     CU.create_mgmt_service(cluster)
     CU.create_services(cluster)
@@ -106,6 +107,7 @@ def scale_cluster(cluster, instances):
 
     CU.pu.start_cloudera_agents(instances)
     CU.await_agents(cluster, instances)
+    CU.configure_rack_awareness(cluster)
     CU.configure_instances(instances, cluster)
     CU.update_configs(instances)
     common_deploy.prepare_scaling_kerberized_cluster(cluster, CU)

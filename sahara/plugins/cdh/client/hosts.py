@@ -79,9 +79,12 @@ class ApiHost(types.BaseApiResource):
     def _path(self):
         return HOSTS_PATH + '/' + self.hostId
 
-    def _put_host(self):
+    def put_host(self):
         """Update this resource
 
+        note (mionkin):Currently, according to Cloudera docs,
+                       only updating the rackId is supported.
+                       All other fields of the host will be ignored.
         :return: The updated object.
         """
         return self._put('', ApiHost, data=self)
