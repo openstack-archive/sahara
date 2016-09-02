@@ -135,3 +135,53 @@ Response Example
 
 
 
+
+Update plugin details
+=====================
+
+.. rest_method::  PATCH /v1.1/{tenant_id}/plugins/{plugin_name}
+
+Updates details for a plugin.
+
+
+Normal response codes:202
+Error response codes:
+
+
+Request
+-------
+
+.. rest_parameters:: parameters.yaml
+
+   - tenant_id: url_tenant_id
+   - plugin_name: plugin_name
+
+
+Request Example
+---------------
+
+.. literalinclude:: samples/plugins/plugin-update-request.json
+   :language: javascript
+
+
+
+Response Parameters
+-------------------
+
+.. rest_parameters:: parameters.yaml
+
+   - title: title
+   - versions: versions
+   - description: description
+   - name: name
+
+
+Response Example
+----------------
+
+.. literalinclude:: samples/plugins/plugin-update-response.json
+   :language: javascript
+
+
+
+

@@ -1,0 +1,32 @@
+{
+  "plugin": {
+    "plugin_labels": {
+      "hidden": {
+        "status": true,
+        "mutable": true,
+        "description": "Existence of plugin or its version is hidden, but still can be used for cluster creation by CLI and directly by client."
+      },
+      "enabled": {
+        "status": false,
+        "mutable": true,
+        "description": "Plugin or its version is enabled and can be used by user."
+      }
+    },
+    "description": "It's a fake plugin that aimed to work on the CirrOS images. It doesn't install Hadoop. It's needed to be able to test provisioning part of Sahara codebase itself.",
+    "versions": [
+      "0.1"
+    ],
+    "tenant_id": "993f53c1f51845e48e013aeb632358d8",
+    "title": "Fake Plugin",
+    "version_labels": {
+      "0.1": {
+        "enabled": {
+          "status": true,
+          "mutable": true,
+          "description": "Plugin or its version is enabled and can be used by user."
+        }
+      }
+    },
+    "name": "fake"
+  }
+}
