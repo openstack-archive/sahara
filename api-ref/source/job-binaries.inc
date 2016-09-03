@@ -105,7 +105,7 @@ Response Parameters
 Show job binary details
 =======================
 
-.. rest_method::  GET /v1.1/{tenant_id}/job-binaries
+.. rest_method::  GET /v1.1/{tenant_id}/job-binaries/{job_binary_id}
 
 Shows details for a job binary.
 
@@ -152,7 +152,7 @@ Response Example
 Delete job binary
 =================
 
-.. rest_method::  DELETE /v1.1/{tenant_id}/job-binaries
+.. rest_method::  DELETE /v1.1/{tenant_id}/job-binaries/{job_binary_id}
 
 Deletes a job binary.
 
@@ -175,7 +175,7 @@ Request
 Update job binary
 =================
 
-.. rest_method::  PUT /v1.1/{tenant_id}/job-binaries
+.. rest_method::  PUT /v1.1/{tenant_id}/job-binaries/{job_binary_id}
 
 Updates a job binary.
 
