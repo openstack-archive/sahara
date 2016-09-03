@@ -23,6 +23,7 @@ import yaml
 
 from sahara.plugins import provisioning as plugin_provisioning
 from sahara.service.heat import commons as heat_common
+from sahara.utils import cluster as cl
 from sahara.utils import general as g
 from sahara.utils.openstack import base as b
 from sahara.utils.openstack import heat as h
@@ -451,10 +452,15 @@ class ClusterStack(object):
         gen_userdata_func = self.node_groups_extra[ng.id]['gen_userdata_func']
         key_script = gen_userdata_func(ng, inst_name)
         if CONF.heat_enable_wait_condition:
+            etc_hosts = cl.etc_hosts_entry_for_service('orchestration')
+            if etc_hosts:
+                etc_hosts = "echo '%s' | sudo tee -a /etc/hosts" % etc_hosts
+            tml = [key_script, WAIT_CONDITION_SCRIPT_TEMPLATE]
+            if etc_hosts:
+                tml = [key_script, etc_hosts, WAIT_CONDITION_SCRIPT_TEMPLATE]
             userdata = {
                 "str_replace": {
-                    "template": "\n".join([
-                        key_script, WAIT_CONDITION_SCRIPT_TEMPLATE]),
+                    "template": "\n".join(tml),
                     "params": {
                         "wc_notify": {
                             "get_attr": [

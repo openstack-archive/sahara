@@ -136,22 +136,29 @@ def clean_cluster_from_empty_ng(cluster):
             conductor.node_group_remove(ctx, ng)
 
 
+def etc_hosts_entry_for_service(service):
+    result = ""
+    try:
+        hostname = parse.urlparse(
+            auth_base.url_for(service_type=service,
+                              endpoint_type="publicURL")).hostname
+    except keystone_ex.EndpointNotFound:
+        LOG.debug("Endpoint not found for service: '{}'".format(service))
+        return result
+    try:
+        result = "%s %s\n" % (socket.gethostbyname(hostname), hostname)
+    except socket.gaierror:
+        LOG.warning(
+            _LW("Failed to resolve hostname of service: '{}'").format(service)
+        )
+        result = "# Failed to resolve {} during deployment\n".format(hostname)
+    return result
+
+
 def _etc_hosts_for_services(hosts):
     # add alias for keystone and swift
     for service in ["identity", "object-store"]:
-        try:
-            hostname = parse.urlparse(
-                auth_base.url_for(service_type=service,
-                                  endpoint_type="publicURL")).hostname
-        except keystone_ex.EndpointNotFound:
-            LOG.debug("Endpoint not found for service: \"%s\"", service)
-            continue
-        try:
-            hosts += "%s %s\n" % (socket.gethostbyname(hostname), hostname)
-        except socket.gaierror:
-            LOG.warning(_LW("Failed to resolve hostname of service: \"%s\""),
-                        service)
-            hosts += "#Failed to resolve %s during deployment\n" % hostname
+        hosts += etc_hosts_entry_for_service(service)
     return hosts
 
 

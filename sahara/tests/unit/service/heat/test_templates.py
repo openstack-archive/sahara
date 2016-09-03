@@ -309,7 +309,9 @@ class TestClusterTemplateWaitCondition(BaseTestClusterTemplate):
         self.template = self._make_heat_template(self.cluster,
                                                  self.ng1, self.ng2)
 
-    def test_use_wait_condition(self):
+    @mock.patch('sahara.utils.cluster.etc_hosts_entry_for_service')
+    def test_use_wait_condition(self, etc_hosts):
+        etc_hosts.return_value = "data"
         self.override_config('heat_enable_wait_condition', True)
         instance = self.template._serialize_instance(self.ng1)
         expected_wc_handle = {
