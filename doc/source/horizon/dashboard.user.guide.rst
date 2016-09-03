@@ -79,7 +79,10 @@ Create a Cluster Template
 6) Optionally, you can adjust your configuration further by using the "General
    Parameters", "HDFS Parameters" and "MapReduce Parameters" tabs
 
-7) Click on the "Create" button to finish creating your Cluster Template
+7) If you have Designate DNS service you can choose the domain name in "DNS"
+   tab for internal and external hostname resolution
+
+8) Click on the "Create" button to finish creating your Cluster Template
 
 Launching a Cluster
 -------------------
