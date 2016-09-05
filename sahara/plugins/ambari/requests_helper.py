@@ -55,6 +55,17 @@ _COMMON_RESTART_TEMPLATE = {
     ]
 }
 
+_COMMON_RESTART_SERVICE_TEMPLATE = {
+    "RequestInfo": {
+        "context": "",
+    },
+    "Body": {
+        "ServiceInfo": {
+            "state": ""
+        }
+    }
+}
+
 
 def build_datanode_decommission_request(cluster_name, instances):
     tmpl = copy.deepcopy(_COMMON_DECOMMISSION_TEMPLATE)
@@ -115,4 +126,20 @@ def build_resourcemanager_restart_request(cluster_name, rm_instance):
     tmpl["Requests/resource_filters"][0]["component_name"] = "RESOURCEMANAGER"
     tmpl["Requests/resource_filters"][0]["hosts"] = rm_instance.fqdn()
 
+    return tmpl
+
+
+def build_stop_service_request(service_name):
+    tmpl = copy.deepcopy(_COMMON_RESTART_SERVICE_TEMPLATE)
+    tmpl["RequestInfo"]["context"] = (
+        "Restart %s service (stopping)" % service_name)
+    tmpl["Body"]["ServiceInfo"]["state"] = "INSTALLED"
+    return tmpl
+
+
+def build_start_service_request(service_name):
+    tmpl = copy.deepcopy(_COMMON_RESTART_SERVICE_TEMPLATE)
+    tmpl["RequestInfo"]["context"] = (
+        "Restart %s service (starting)" % service_name)
+    tmpl["Body"]["ServiceInfo"]["state"] = "STARTED"
     return tmpl
