@@ -46,6 +46,7 @@ Response Parameters
    - is_default: is_default
    - is_protected: is_protected
    - shares: shares
+   - domain_name: domain_name
    - tenant_id: tenant_id
    - node_groups: node_groups
    - is_public: is_public
@@ -105,6 +106,7 @@ Response Parameters
    - is_default: is_default
    - is_protected: is_protected
    - shares: shares
+   - domain_name: domain_name
    - tenant_id: tenant_id
    - node_groups: node_groups
    - is_public: is_public
@@ -174,6 +176,7 @@ Response Parameters
    - is_default: is_default
    - is_protected: is_protected
    - shares: shares
+   - domain_name: domain_name
    - tenant_id: tenant_id
    - node_groups: node_groups
    - is_public: is_public
@@ -233,6 +236,7 @@ Response Parameters
    - is_default: is_default
    - is_protected: is_protected
    - shares: shares
+   - domain_name: domain_name
    - tenant_id: tenant_id
    - node_groups: node_groups
    - is_public: is_public

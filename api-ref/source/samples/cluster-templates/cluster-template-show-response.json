@@ -73,6 +73,7 @@
             }
         ],
         "neutron_management_network": "b1610452-2933-46b0-bf31-660cfa5621bd",
+        "domain_name": null,
         "hadoop_version": "2.7.1",
         "use_autoconfig": true,
         "description": null,

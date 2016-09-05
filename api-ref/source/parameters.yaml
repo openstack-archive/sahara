@@ -332,6 +332,13 @@ description_7:
   in: body
   required: false
   type: string
+domain_name:
+  description: |
+    Domain name for internal and external hostname resolution.
+    Required if DNS service is enabled.
+  in: body
+  required: false
+  type: string
 end_time:
   description: |
     The end date and time of the job execution.

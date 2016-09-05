@@ -3,6 +3,7 @@
         "is_public": false,
         "tenant_id": "808d5032ea0446889097723bfc8e919d",
         "shares": null,
+        "domain_name": null,
         "status_description": "",
         "plugin_name": "vanilla",
         "neutron_management_network": "b1610452-2933-46b0-bf31-660cfa5621bd",

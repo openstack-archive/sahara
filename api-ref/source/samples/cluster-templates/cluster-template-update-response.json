@@ -58,6 +58,7 @@
             }
         ],
         "neutron_management_network": null,
+        "domain_name": null,
         "hadoop_version": "2.7.1",
         "use_autoconfig": true,
         "description": "Updated template",

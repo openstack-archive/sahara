@@ -44,6 +44,7 @@ Response Parameters
    - management_public_key: management_public_key
    - status_description: status_description
    - trust_id: trust_id
+   - domain_name: domain_name
 
 
 
@@ -97,6 +98,7 @@ Response Parameters
    - management_public_key: management_public_key
    - status_description: status_description
    - trust_id: trust_id
+   - domain_name: domain_name
 
 
 
@@ -168,6 +170,7 @@ Response Parameters
    - management_public_key: management_public_key
    - status_description: status_description
    - trust_id: trust_id
+   - domain_name: domain_name
 
 
 
@@ -244,7 +247,7 @@ Response Parameters
    - management_public_key: management_public_key
    - status_description: status_description
    - trust_id: trust_id
-
+   - domain_name: domain_name
 
 
 
@@ -290,7 +293,7 @@ Response Parameters
    - management_public_key: management_public_key
    - status_description: status_description
    - trust_id: trust_id
-
+   - domain_name: domain_name
 
 
 
