@@ -22,7 +22,7 @@ DRILL = np.NodeProcess(
     name='drill-bits',
     ui_name='Drill',
     package='mapr-drill',
-    open_ports=[]
+    open_ports=[8047]
 )
 
 
@@ -81,3 +81,9 @@ class DrillV14(Drill):
     def __init__(self):
         super(DrillV14, self).__init__()
         self._version = "1.4"
+
+
+class DrillV16(Drill):
+    def __init__(self):
+        super(DrillV16, self).__init__()
+        self._version = "1.6"

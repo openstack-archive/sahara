@@ -265,3 +265,10 @@ class SparkOnYarn(s.Service):
             for instance in cluster_context.get_instances(SPARK_SLAVE):
                 with instance.remote() as r2:
                     mfs.exchange(r1, r2, jar_path, path, 'mapr')
+
+
+class SparkOnYarnV161(SparkOnYarn):
+    def __init__(self):
+        super(SparkOnYarnV161, self).__init__()
+        self._version = '1.6.1'
+        self._dependencies = [('mapr-spark', self.version)]

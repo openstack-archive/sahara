@@ -107,3 +107,14 @@ class HBaseV09812(HBase):
         self._ui_info.append(
             ("HBase REST", HBASE_REST, {s.SERVICE_UI: "http://%s:8085"}),
         )
+
+
+class HBaseV111(HBase):
+    def __init__(self):
+        super(HBaseV111, self).__init__()
+        self._version = "1.1.1"
+        self._dependencies = [("mapr-hbase", self.version)]
+        self._node_processes.append(HBASE_REST)
+        self._ui_info.append(
+            ("HBase REST", HBASE_REST, {s.SERVICE_UI: "http://%s:8085"}),
+        )

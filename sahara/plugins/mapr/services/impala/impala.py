@@ -16,6 +16,7 @@
 import sahara.plugins.mapr.domain.configuration_file as bcf
 import sahara.plugins.mapr.domain.node_process as np
 import sahara.plugins.mapr.domain.service as s
+import sahara.plugins.mapr.services.hbase.hbase as hbase
 import sahara.plugins.mapr.services.hive.hive as hive
 import sahara.plugins.mapr.services.sentry.sentry as sentry
 import sahara.plugins.mapr.util.general as g
@@ -163,3 +164,29 @@ class ImpalaV220(Impala):
         result += [('mapr-hbase', hbase_version)]
 
         return result
+
+
+class ImpalaV250(Impala):
+    def __init__(self):
+        super(ImpalaV250, self).__init__()
+        self._version = '2.5.0'
+        self._dependencies = [
+            ('mapr-hive', hive.HiveV12().version),
+            ('mapr-impala', self.version),
+            ('mapr-hbase', hbase.HBaseV111().version)
+        ]
+        self._validation_rules = [
+            vu.depends_on(hive.HiveV12(), self),
+            vu.exactly(1, IMPALA_STATE_STORE),
+            vu.exactly(1, IMPALA_CATALOG),
+            vu.at_least(1, IMPALA_SERVER),
+            vu.required_os('centos', self)
+        ]
+
+    def _get_impala_env_props(self, cluster_context):
+        return {
+            'impala_version': self.version,
+            'statestore_host': cluster_context.get_instance_ip(
+                IMPALA_STATE_STORE),
+            'catalog_host': cluster_context.get_instance_ip(IMPALA_CATALOG),
+        }
