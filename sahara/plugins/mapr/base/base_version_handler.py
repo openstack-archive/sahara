@@ -15,6 +15,7 @@
 
 import collections as c
 
+from sahara.i18n import _
 import sahara.plugins.mapr.abstract.version_handler as vh
 import sahara.plugins.mapr.base.base_cluster_configurer as base_conf
 import sahara.plugins.mapr.base.base_cluster_validator as bv
@@ -22,6 +23,7 @@ import sahara.plugins.mapr.base.base_edp_engine as edp
 import sahara.plugins.mapr.base.base_health_checker as health
 import sahara.plugins.mapr.base.base_node_manager as bs
 import sahara.plugins.mapr.util.general as util
+import sahara.plugins.provisioning as p
 import sahara.plugins.utils as u
 
 
@@ -58,16 +60,55 @@ class BaseVersionHandler(vh.AbstractVersionHandler):
         if not self._node_processes:
             self._node_processes = {
                 s.ui_name: [np.ui_name for np in s.node_processes]
-                for s in self.get_services() if s.node_processes
-            }
+                for s in self.get_services() if s.node_processes}
         return self._node_processes
 
     def get_configs(self):
         if not self._configs:
             configs = [c for s in self.get_services() for c in s.get_configs()]
             configs += self._get_version_configs()
+            configs += self._get_repo_configs()
             self._configs = util.unique_list(configs)
         return self._configs
+
+    def _get_repo_configs(self):
+        ubuntu_base = p.Config(
+            name="Ubuntu base repo",
+            applicable_target="general",
+            scope='cluster',
+            priority=1,
+            default_value="",
+            description=_(
+                'Specifies Ubuntu MapR core repository.')
+        )
+        centos_base = p.Config(
+            name="CentOS base repo",
+            applicable_target="general",
+            scope='cluster',
+            priority=1,
+            default_value="",
+            description=_(
+                'Specifies CentOS MapR core repository.')
+        )
+        ubuntu_eco = p.Config(
+            name="Ubuntu ecosystem repo",
+            applicable_target="general",
+            scope='cluster',
+            priority=1,
+            default_value="",
+            description=_(
+                'Specifies Ubuntu MapR ecosystem repository.')
+        )
+        centos_eco = p.Config(
+            name="CentOS ecosystem repo",
+            applicable_target="general",
+            scope='cluster',
+            priority=1,
+            default_value="",
+            description=_(
+                'Specifies CentOS MapR ecosystem repository.')
+        )
+        return [ubuntu_base, centos_base, ubuntu_eco, centos_eco]
 
     def _get_version_configs(self):
         services = self.get_services()

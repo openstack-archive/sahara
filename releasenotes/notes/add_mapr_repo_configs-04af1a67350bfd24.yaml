@@ -1,0 +1,4 @@
+---
+features:
+  - MapR repositories now can be configured in general section of cluster
+   template configs
