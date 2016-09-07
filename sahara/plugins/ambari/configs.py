@@ -126,7 +126,7 @@ autoconfigs_strategy = provisioning.Config(
     config_type='dropdown',
     default_value='NEVER_APPLY',
     config_values=[(v, v) for v in [
-        'ALWAYS_APPLY', 'NEVER_APPLY', 'ONLY_STACK_DEFAULTS_APPLY',
+        'NEVER_APPLY', 'ALWAYS_APPLY', 'ONLY_STACK_DEFAULTS_APPLY',
     ]],
 )
 
@@ -192,7 +192,8 @@ def load_configs(version):
     cfg_path = "plugins/ambari/resources/configs-%s.json" % version
     vanilla_cfg = jsonutils.loads(files.get_file_text(cfg_path))
     CONFIGS[version] = vanilla_cfg
-    sahara_cfg = [hdp_repo_cfg, hdp_utils_repo_cfg, use_base_repos_cfg]
+    sahara_cfg = [hdp_repo_cfg, hdp_utils_repo_cfg, use_base_repos_cfg,
+                  autoconfigs_strategy]
     for service, confs in vanilla_cfg.items():
         for k, v in confs.items():
             sahara_cfg.append(provisioning.Config(
