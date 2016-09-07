@@ -21,11 +21,14 @@ from sahara.tests.unit import base
 
 
 class TestDeploy(base.SaharaTestCase):
+    @mock.patch('sahara.utils.cluster_progress_ops.add_provisioning_step')
+    @mock.patch('sahara.utils.cluster.check_cluster_exists')
     @mock.patch('sahara.plugins.utils.get_instance')
     @mock.patch('sahara.plugins.ambari.client.AmbariClient.get')
     @mock.patch('sahara.plugins.ambari.client.AmbariClient.delete')
     def test_cleanup_config_groups(self, client_delete, client_get,
-                                   get_instance):
+                                   get_instance, check_cluster_exists,
+                                   add_provisioning_step):
         def response(data):
             fake = mock.Mock()
             fake.text = jsonutils.dumps(data)
@@ -59,6 +62,8 @@ class TestDeploy(base.SaharaTestCase):
             response(config_group2)
         ]
         client_delete.side_effect = [response({})]
+
+        check_cluster_exists.return_value = True
 
         deploy.cleanup_config_groups(cl, [inst1])
         get_calls = [
