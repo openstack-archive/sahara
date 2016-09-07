@@ -44,3 +44,15 @@ class MahoutV010(Mahout):
     def __init__(self):
         super(MahoutV010, self).__init__()
         self._version = '0.10.0'
+
+
+class MahoutV011(Mahout):
+    def __init__(self):
+        super(MahoutV011, self).__init__()
+        self._version = '0.11.0'
+
+
+class MahoutV012(Mahout):
+    def __init__(self):
+        super(MahoutV012, self).__init__()
+        self._version = '0.12.0'

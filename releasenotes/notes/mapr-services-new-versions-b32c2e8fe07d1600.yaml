@@ -1,0 +1,8 @@
+---
+features:
+  - The following service versions were added to MapR 5.2.0 plugin
+    - HBase 1.1
+    - Drill 1.6
+    - Mahout 0.11 0.12
+    - Spark 1.6.1
+    - Impala 2.5
