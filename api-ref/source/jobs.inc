@@ -58,6 +58,9 @@ Request
 .. rest_parameters:: parameters.yaml
 
    - tenant_id: url_tenant_id
+   - limit: limit
+   - marker: marker
+   - sort_by: sort_by_jobs
 
 
 
@@ -79,11 +82,14 @@ Response Parameters
    - type: type
    - id: id
    - name: name
-
+   - markers: markers
+   - prev: prev
+   - next: next
 
 
 Response Example
 ----------------
+..rest_method:: GET /v1.1/{tenant_id}/jobs?limit=2
 
 .. literalinclude:: samples/jobs/jobs-list-response.json
    :language: javascript

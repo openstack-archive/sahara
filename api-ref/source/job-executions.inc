@@ -85,6 +85,9 @@ Request
 .. rest_parameters:: parameters.yaml
 
    - tenant_id: url_tenant_id
+   - limit: limit
+   - marker: marker
+   - sort_by: sort_by_job_execution
 
 
 
@@ -93,6 +96,9 @@ Response Parameters
 
 .. rest_parameters:: parameters.yaml
 
+   - markers: markers
+   - prev: prev
+   - next: next
    - info: info
    - output_id: output_id
    - start_time: start_time
@@ -119,6 +125,7 @@ Response Parameters
 
 Response Example
 ----------------
+.. rest_method:: /v1.1/{tenant_id}/job-executions
 
 .. literalinclude:: samples/job-executions/list-response.json
    :language: javascript

@@ -104,13 +104,124 @@ version_1:
   required: false
   type: string
 
+
 # variables in query
+limit:
+  description: |
+    Maximum number of objects in response data.
+  in: path
+  requred: false
+  type: integer
+
+marker:
+  description: |
+    ID of the last element on the list which
+    won't be in response.
+  in: path
+  required: false
+  type: string
+
+sort_by_cluster_templates:
+  description: |
+    The field for sorting cluster templates.
+    this parameter accepts the following values:
+    ``name``, ``plugin_name``, ``hadoop_version``,
+    ``created_at``, ``updated_at``, ``id``. Also
+    this values can started with ``-`` prefix for
+    descending sort. For example: ``-name``.
+  in: path
+  requred: false
+  type: string
+
+sort_by_clusters:
+  description: |
+    The field for sorting clusters.
+    this parameter accepts the following values:
+    ``name``, ``plugin_name``, ``hadoop_version``,
+    ``status``, ``id``. Also this values can
+    started with ``-`` prefix for descending sort.
+    For example: ``-name``.
+  in: path
+  required: false
+  type: string
+
+sort_by_data_sources:
+    description: |
+      The field for sorting data sources.
+      this parameter accepts the following values:
+      ``id``, ``name``, ``type``, ``created_at``,
+      ``updated_at``. Also this values can started
+      with ``-`` prefix for descending sort.
+      For example: ``-name``.
+    in: path
+    requred: false
+    type: string
+
+sort_by_job_binaries:
+  description: |
+    The field for sorting job binaries.
+    this parameter accepts the following values:
+    ``id``, ``name``, ``created_at``, ``updated_at``.
+    Also this values can started with ``-`` prefix
+    for descending sort. For example: ``-name``.
+  in: path
+  requred: false
+  type: string
+
+sort_by_job_binary_internals:
+    description: |
+      The field for sorting job binary internals.
+      this parameter accepts the following values:
+      ``id``, ``name``, ``created_at``, ``updated_at``.
+      Also this values can started with ``-`` prefix
+      for descending sort. For example: ``-name``.
+    in: path
+    requred: false
+    type: string
+
+sort_by_job_executions:
+    description: |
+      The field for sorting job executions.
+      this parameter accepts the following values:
+      ``id``, ``job_template``, ``cluster``,
+      ``status``. Also this values can started
+      with ``-`` prefix for descending sort.
+      For example: ``-cluster``.
+    in: path
+    required: false
+    type: string
+
+sort_by_jobs:
+    description: |
+      The field for sorting jobs.
+      this parameter accepts the following values:
+      ``id``, ``name``, ``type``, ``created_at``,
+      ``updated_at``. Also this values can started
+      with ``-`` prefix for descending sort.
+      For example: ``-name``.
+    in: path
+    required: false
+    type: string
+
+sort_by_node_group_templates:
+  description: |
+    The field for sorting node group templates.
+    this parameter accepts the following values:
+    ``name``, ``plugin_name``, ``hadoop_version``,
+    ``created_at``, ``updated_at``, ``id``. Also
+    this values can started with ``-`` prefix for
+    descending sort. For example: ``-name``.
+  in: path
+  requred: false
+  type: string
+
 url_tenant_id:
   description: |
     UUID of the tenant.
   in: path
   required: true
   type: string
+
 
 # variables in body
 args:
@@ -578,6 +689,14 @@ mains:
   in: body
   required: true
   type: array
+markers:
+  description: |
+    The markers of previous and following pages of data.
+    This field exists only if ``limit`` is passed to
+    request.
+  in: body
+  required: false
+  type: object
 management_public_key:
   description: |
     The SSH key for the management network.
@@ -640,6 +759,12 @@ neutron_management_network:
   in: body
   required: true
   type: string
+next:
+  description: |
+    The marker of next page of list data.
+  in: body
+  required: false
+  type: string
 node_configs:
   description: |
     A set of key and value pairs that contain the
@@ -690,6 +815,13 @@ plugins:
   in: body
   required: true
   type: array
+prev:
+  description: |
+    The marker of previous page. May be ``null`` if
+    previous page is first or if current page is first.
+  in: body
+  required: false
+  type: string
 progress:
   description: |
     A progress indicator, as a percentage value, for

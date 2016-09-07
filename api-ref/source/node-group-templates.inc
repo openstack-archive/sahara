@@ -31,6 +31,9 @@ Request
 .. rest_parameters:: parameters.yaml
 
    - tenant_id: url_tenant_id
+   - limit: limit
+   - marker: marker
+   - sort_by: sort_by_node_groups
 
 
 
@@ -39,6 +42,9 @@ Response Parameters
 
 .. rest_parameters:: parameters.yaml
 
+   - markers: markers
+   - prev: prev
+   - next: next
    - volume_local_to_instance: volume_local_to_instance
    - availability_zone: availability_zone
    - updated_at: updated_at
@@ -72,6 +78,7 @@ Response Parameters
 
 Response Example
 ----------------
+.. rest_method:: GET /v1.1/{tenant_id}/node-group-templates?limit=2&marker=38b4e146-1d39-4822-bad2-fef1bf304a52&sort_by=name
 
 .. literalinclude:: samples/node-group-templates/node-group-templates-list-response.json
    :language: javascript

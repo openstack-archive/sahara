@@ -130,6 +130,9 @@ Request
 .. rest_parameters:: parameters.yaml
 
    - tenant_id: url_tenant_id
+   - limit: limit
+   - marker: marker
+   - sort_by: sort_by_data_sources
 
 
 Response Parameters
@@ -137,6 +140,9 @@ Response Parameters
 
 .. rest_parameters:: parameters.yaml
 
+   - markers: markers
+   - prev: prev
+   - next: next
    - description: description
    - url: url
    - tenant_id: tenant_id
@@ -152,6 +158,8 @@ Response Parameters
 
 Response Example
 ----------------
+
+.. rest_method:: GET /v1.1/{tenant-id}/data-sourses?sort_by=-name
 
 .. literalinclude:: samples/data-sources/data-sources-list-response.json
    :language: javascript
