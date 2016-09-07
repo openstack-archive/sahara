@@ -12,6 +12,7 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import os
 
 from oslo_config import cfg
 from oslo_log import log as logging
@@ -52,7 +53,7 @@ PORTS_MAP = {
     "nodemanager": [8042],
     "oozie": [11000],
     "hiveserver": [9999, 10000]
-    }
+}
 
 
 def configure_cluster(pctx, cluster):
@@ -65,6 +66,70 @@ def configure_cluster(pctx, cluster):
     instances = utils.get_instances(cluster)
     configure_instances(pctx, instances)
     configure_topology_data(pctx, cluster)
+    configure_spark(cluster)
+
+
+def configure_spark(cluster):
+    extra = _extract_spark_configs_to_extra(cluster)
+    _push_spark_configs_to_node(cluster, extra)
+
+
+def _push_spark_configs_to_node(cluster, extra):
+    spark_master = vu.get_spark_history_server(cluster)
+    if spark_master:
+        _push_spark_configs_to_existing_node(spark_master, cluster, extra)
+        _push_cleanup_job(spark_master, extra)
+        with spark_master.remote() as r:
+            r.execute_command('sudo su - -c "mkdir /tmp/spark-events" hadoop')
+
+
+def _push_spark_configs_to_existing_node(spark_master, cluster, extra):
+
+    sp_home = c_helper.get_spark_home(cluster)
+    files = {
+        os.path.join(sp_home,
+                     'conf/spark-env.sh'): extra['sp_master'],
+        os.path.join(
+            sp_home,
+            'conf/spark-defaults.conf'): extra['sp_defaults']
+        }
+
+    with spark_master.remote() as r:
+        r.write_files_to(files, run_as_root=True)
+
+
+def _push_cleanup_job(sp_master, extra):
+    with sp_master.remote() as r:
+        if extra['job_cleanup']['valid']:
+            r.write_file_to('/opt/hadoop/tmp-cleanup.sh',
+                            extra['job_cleanup']['script'],
+                            run_as_root=True)
+            r.execute_command("sudo chmod 755 /opt/hadoop/tmp-cleanup.sh")
+            cmd = 'sudo sh -c \'echo "%s" > /etc/cron.d/spark-cleanup\''
+            r.execute_command(cmd % extra['job_cleanup']['cron'])
+        else:
+            r.execute_command("sudo rm -f /opt/hadoop/tmp-cleanup.sh")
+            r.execute_command("sudo rm -f /etc/cron.d/spark-cleanup")
+
+
+def _extract_spark_configs_to_extra(cluster):
+    sp_master = utils.get_instance(cluster, "spark history server")
+
+    extra = dict()
+
+    config_master = ''
+    if sp_master is not None:
+        config_master = c_helper.generate_spark_env_configs(cluster)
+
+    # Any node that might be used to run spark-submit will need
+    # these libs for swift integration
+    config_defaults = c_helper.generate_spark_executor_classpath(cluster)
+
+    extra['job_cleanup'] = c_helper.generate_job_cleanup_config(cluster)
+    extra['sp_master'] = config_master
+    extra['sp_defaults'] = config_defaults
+
+    return extra
 
 
 def configure_instances(pctx, instances):

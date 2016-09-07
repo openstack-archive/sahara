@@ -71,3 +71,9 @@ def start_hiveserver(pctx, cluster):
     hiveserver = vu.get_hiveserver(cluster)
     if hiveserver:
         run.start_hiveserver_process(pctx, hiveserver)
+
+
+def start_spark(cluster):
+    spark = vu.get_spark_history_server(cluster)
+    if spark:
+        run.start_spark_history_server(spark)

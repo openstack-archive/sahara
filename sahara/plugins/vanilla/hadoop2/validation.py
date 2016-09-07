@@ -65,6 +65,12 @@ def validate_cluster_creating(pctx, cluster):
             raise ex.RequiredServiceMissingException('historyserver',
                                                      required_by='oozie')
 
+    spark_hist_count = _get_inst_count(cluster, 'spark history server')
+    if spark_hist_count > 1:
+        raise ex.InvalidComponentCountException('spark history server',
+                                                _('0 or 1'),
+                                                spark_hist_count)
+
     rep_factor = cu.get_config_value(pctx, 'HDFS', 'dfs.replication', cluster)
     if dn_count < rep_factor:
         raise ex.InvalidComponentCountException(

@@ -19,6 +19,8 @@ import six
 from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.plugins import provisioning as p
+from sahara.plugins import utils
+from sahara.utils import files as f
 from sahara.utils import types
 
 CONF = cfg.CONF
@@ -83,6 +85,52 @@ PRIORITY_1_CONFS = [
     'yarn.scheduler.minimum-allocation-mb',
     'yarn.scheduler.minimum-allocation-vcores'
 ]
+
+_default_executor_classpath = ":".join(
+    ['/opt/hadoop/share/hadoop/tools/lib/hadoop-openstack-2.7.1.jar'])
+
+SPARK_CONFS = {
+    'Spark': {
+        "OPTIONS": [
+            {
+                'name': 'Executor extra classpath',
+                'description': 'Value for spark.executor.extraClassPath'
+                ' in spark-defaults.conf'
+                ' (default: %s)' % _default_executor_classpath,
+                'default': '%s' % _default_executor_classpath,
+                'priority': 2,
+            },
+            {
+                'name': 'Spark home',
+                'description': 'The location of the spark installation'
+                ' (default: /opt/spark)',
+                'default': '/opt/spark',
+                'priority': 2,
+            },
+            {
+                'name': 'Minimum cleanup seconds',
+                'description': 'Job data will never be purged before this'
+                ' amount of time elapses (default: 86400 = 1 day)',
+                'default': '86400',
+                'priority': 2,
+            },
+            {
+                'name': 'Maximum cleanup seconds',
+                'description': 'Job data will always be purged after this'
+                ' amount of time elapses (default: 1209600 = 14 days)',
+                'default': '1209600',
+                'priority': 2,
+            },
+            {
+                'name': 'Minimum cleanup megabytes',
+                'description': 'No job data will be purged unless the total'
+                ' job data exceeds this size (default: 4096 = 4GB)',
+                'default': '4096',
+                'priority': 2,
+            },
+        ]
+    }
+}
 
 # for now we have not so many cluster-wide configs
 # lets consider all of them having high priority
@@ -202,3 +250,58 @@ def is_data_locality_enabled(pctx, cluster):
         return False
     return get_config_value(pctx, ENABLE_DATA_LOCALITY.applicable_target,
                             ENABLE_DATA_LOCALITY.name, cluster)
+
+
+def _get_spark_opt_default(opt_name):
+    for opt in SPARK_CONFS["Spark"]["OPTIONS"]:
+        if opt_name == opt["name"]:
+            return opt["default"]
+    return None
+
+
+def generate_spark_env_configs(cluster):
+    configs = []
+
+    # point to the hadoop conf dir so that Spark can read things
+    # like the swift configuration without having to copy core-site
+    # to /opt/spark/conf
+    HADOOP_CONF_DIR = '/opt/hadoop/etc/hadoop'
+    configs.append('HADOOP_CONF_DIR=' + HADOOP_CONF_DIR)
+
+    # Hadoop and YARN configs there are in one folder
+    configs.append('YARN_CONF_DIR=' + HADOOP_CONF_DIR)
+
+    return '\n'.join(configs)
+
+
+def generate_spark_executor_classpath(cluster):
+    cp = utils.get_config_value_or_default(
+        "Spark", "Executor extra classpath", cluster)
+    if cp:
+        return "spark.executor.extraClassPath " + cp
+    return "\n"
+
+
+def generate_job_cleanup_config(cluster):
+    args = {
+        'minimum_cleanup_megabytes': utils.get_config_value_or_default(
+            "Spark", "Minimum cleanup megabytes", cluster),
+        'minimum_cleanup_seconds': utils.get_config_value_or_default(
+            "Spark", "Minimum cleanup seconds", cluster),
+        'maximum_cleanup_seconds': utils.get_config_value_or_default(
+            "Spark", "Maximum cleanup seconds", cluster)
+    }
+    job_conf = {'valid': (args['maximum_cleanup_seconds'] > 0 and
+                          (args['minimum_cleanup_megabytes'] > 0
+                           and args['minimum_cleanup_seconds'] > 0))}
+    if job_conf['valid']:
+        job_conf['cron'] = f.get_file_text(
+            'plugins/vanilla/hadoop2/resources/spark-cleanup.cron'),
+        job_cleanup_script = f.get_file_text(
+            'plugins/vanilla/hadoop2/resources/tmp-cleanup.sh.template')
+        job_conf['script'] = job_cleanup_script.format(**args)
+    return job_conf
+
+
+def get_spark_home(cluster):
+    return utils.get_config_value_or_default("Spark", "Spark home", cluster)

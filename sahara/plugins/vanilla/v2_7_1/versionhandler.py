@@ -57,7 +57,8 @@ class VersionHandler(avm.AbstractVersionHandler):
             "HDFS": ["namenode", "datanode", "secondarynamenode"],
             "YARN": ["resourcemanager", "nodemanager"],
             "JobFlow": ["oozie"],
-            "Hive": ["hiveserver"]
+            "Hive": ["hiveserver"],
+            "Spark": ["spark history server"]
         }
 
     def validate(self, cluster):
@@ -86,6 +87,7 @@ class VersionHandler(avm.AbstractVersionHandler):
         swift_helper.install_ssl_certs(cluster_utils.get_instances(cluster))
 
         self._set_cluster_info(cluster)
+        s_scripts.start_spark(cluster)
 
     def decommission_nodes(self, cluster, instances):
         sc.decommission_nodes(self.pctx, cluster, instances)
@@ -103,7 +105,7 @@ class VersionHandler(avm.AbstractVersionHandler):
         rm = vu.get_resourcemanager(cluster)
         hs = vu.get_historyserver(cluster)
         oo = vu.get_oozie(cluster)
-
+        sp = vu.get_spark_history_server(cluster)
         info = {}
 
         if rm:
@@ -129,16 +131,27 @@ class VersionHandler(avm.AbstractVersionHandler):
                 'Web UI': 'http://%s:%s' % (hs.get_ip_or_dns_name(), '19888')
             }
 
+        if sp:
+            info['Apache Spark'] = {
+                'Spark UI': 'http://%s:%s' % (sp.management_ip, '4040'),
+                'Spark History Server UI':
+                    'http://%s:%s' % (sp.management_ip, '18080')
+            }
+
         ctx = context.ctx()
         conductor.cluster_update(ctx, cluster, {'info': info})
 
     def get_edp_engine(self, cluster, job_type):
         if job_type in edp_engine.EdpOozieEngine.get_supported_job_types():
             return edp_engine.EdpOozieEngine(cluster)
+        if job_type in edp_engine.EdpSparkEngine.get_supported_job_types():
+            return edp_engine.EdpSparkEngine(cluster)
+
         return None
 
     def get_edp_job_types(self):
-        return edp_engine.EdpOozieEngine.get_supported_job_types()
+        return (edp_engine.EdpOozieEngine.get_supported_job_types() +
+                edp_engine.EdpSparkEngine.get_supported_job_types())
 
     def get_edp_config_hints(self, job_type):
         return edp_engine.EdpOozieEngine.get_possible_job_config(job_type)

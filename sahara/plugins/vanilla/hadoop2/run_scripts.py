@@ -106,6 +106,16 @@ def start_oozie_process(pctx, instance):
             _start_oozie(r)
 
 
+@cpo.event_wrapper(
+    True, step=pu.start_process_event_message("Spark History Server"))
+def start_spark_history_server(master):
+    sp_home = c_helper.get_spark_home(master.cluster)
+    with context.set_current_instance_id(master.instance_id):
+        with master.remote() as r:
+            r.execute_command('sudo su - -c "bash %s" hadoop' % os.path.join(
+                sp_home, 'sbin/start-history-server.sh'))
+
+
 def format_namenode(instance):
     instance.remote().execute_command(
         'sudo su - -c "hdfs namenode -format" hadoop')

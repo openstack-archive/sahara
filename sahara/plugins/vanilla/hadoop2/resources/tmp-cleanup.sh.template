@@ -1,0 +1,48 @@
+#!/bin/sh
+
+MINIMUM_CLEANUP_MEGABYTES={minimum_cleanup_megabytes}
+MINIMUM_CLEANUP_SECONDS={minimum_cleanup_seconds}
+MAXIMUM_CLEANUP_SECONDS={maximum_cleanup_seconds}
+
+CURRENT_TIMESTAMP=`date +%s`
+POSSIBLE_CLEANUP_THRESHOLD=$(($CURRENT_TIMESTAMP - $MINIMUM_CLEANUP_SECONDS))
+DEFINITE_CLEANUP_THRESHOLD=$(($CURRENT_TIMESTAMP - $MAXIMUM_CLEANUP_SECONDS))
+
+unset MAY_DELETE
+unset WILL_DELETE
+
+if [ ! -d /tmp/spark-edp ]
+then
+    exit 0
+fi
+
+cd /tmp/spark-edp
+for JOB in $(find . -maxdepth 1 -mindepth 1 -type d -printf '%f\n')
+do
+    for EXECUTION in $(find $JOB -maxdepth 1 -mindepth 1 -type d -printf '%f\n')
+    do
+        TIMESTAMP=`stat $JOB/$EXECUTION --printf '%Y'`
+        if [[ $TIMESTAMP -lt $DEFINITE_CLEANUP_THRESHOLD ]]
+        then
+            WILL_DELETE="$WILL_DELETE $JOB/$EXECUTION"
+        else
+            if [[ $TIMESTAMP -lt $POSSIBLE_CLEANUP_THRESHOLD ]]
+            then
+                MAY_DELETE="$MAY_DELETE $JOB/$EXECUTION"
+            fi
+        fi
+    done
+done
+
+for EXECUTION in $WILL_DELETE
+do
+    rm -Rf $EXECUTION
+done
+
+for EXECUTION in $(ls $MAY_DELETE -trd)
+do
+    if [[ `du -s -BM | grep -o '[0-9]\+'` -le $MINIMUM_CLEANUP_MEGABYTES ]]; then
+        break
+    fi
+    rm -Rf $EXECUTION
+done
