@@ -116,6 +116,12 @@ class AbstractPluginUtils(object):
     def get_datanodes(self, cluster):
         return u.get_instances(cluster, 'HDFS_DATANODE')
 
+    def get_hdfs_nodes(self, cluster, instances=None):
+        instances = instances if instances else u.get_instances(cluster)
+        return u.instances_with_services(
+            instances, ["HDFS_DATANODE", "HDFS_NAMENODE",
+                        "HDFS_SECONDARYNAMENODE"])
+
     def get_secondarynamenode(self, cluster):
         return u.get_instance(cluster, 'HDFS_SECONDARYNAMENODE')
 

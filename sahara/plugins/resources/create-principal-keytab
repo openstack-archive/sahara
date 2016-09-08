@@ -1,0 +1,12 @@
+#!/bin/bash
+
+mkdir -p /tmp/sahara-kerberos/
+
+kadmin -p %(admin_principal)s <<EOF
+%(admin_password)s
+addprinc -randkey %(principal)s
+xst -k /tmp/sahara-kerberos/%(keytab)s %(principal)s
+exit
+EOF
+
+sudo chown %(user)s:%(user)s /tmp/sahara-kerberos/%(keytab)s

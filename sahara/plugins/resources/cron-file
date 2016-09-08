@@ -1,0 +1,2 @@
+# Once per hour refreshes tickets for user %(user)s
+0 * * * * root %(refresher)s

@@ -100,6 +100,7 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
         swift_helper.install_ssl_certs(cluster_instances)
         deploy.add_hadoop_swift_jar(cluster_instances)
         deploy.prepare_hive(cluster)
+        deploy.deploy_kerberos_principals(cluster)
 
     def _set_cluster_info(self, cluster):
         ambari_ip = plugin_utils.get_instance(
@@ -194,6 +195,7 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
         deploy.configure_rack_awareness(cluster, instances)
         swift_helper.install_ssl_certs(instances)
         deploy.add_hadoop_swift_jar(instances)
+        deploy.deploy_kerberos_principals(cluster, instances)
 
     def decommission_nodes(self, cluster, instances):
         deploy.decommission_hosts(cluster, instances)

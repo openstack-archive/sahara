@@ -16,6 +16,7 @@
 from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.plugins import exceptions as pl_ex
+from sahara.plugins import kerberos
 from sahara.plugins import utils as u
 from sahara.service.edp import hdfs_helper
 from sahara.service.edp.oozie import engine as edp_engine
@@ -28,6 +29,11 @@ class EdpOozieEngine(edp_engine.OozieJobEngine):
         super(EdpOozieEngine, self).__init__(cluster)
         # will be defined in derived classes
         self.cloudera_utils = None
+
+    def get_client(self):
+        if kerberos.is_kerberos_security_enabled(self.cluster):
+            return super(EdpOozieEngine, self).get_remote_client()
+        return super(EdpOozieEngine, self).get_client()
 
     def get_hdfs_user(self):
         return 'hdfs'

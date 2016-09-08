@@ -1,0 +1,5 @@
+---
+features:
+  - Kerberos support implemented for Cloudera and Ambari
+    plugins. New oozie client implemented to support authentication
+    for oozie in kerberized cluster.
