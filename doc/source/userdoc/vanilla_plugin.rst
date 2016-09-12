@@ -49,3 +49,5 @@ For Vanilla Hadoop version 2.X.X:
     historyserver
   + Cluster can't have nodemanager nodes if it doesn't have resourcemanager
   + Cluster can have at most one hiveserver node.
+  + Cluster can have at most one spark history server and this process is also
+    required for Spark EDP

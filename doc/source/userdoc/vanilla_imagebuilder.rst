@@ -49,6 +49,7 @@ To create vanilla images follow these steps:
         * ``JAVA_DOWNLOAD_URL`` - download link for JDK (tarball or bin)
         * ``OOZIE_DOWNLOAD_URL`` - download link for OOZIE (we have built
           Oozie libs here: ``http://sahara-files.mirantis.com/oozie-4.2.0-hadoop-2.7.1.tar.gz``)
+        * ``SPARK_DOWNLOAD_URL`` - download link for Spark
         * ``HIVE_VERSION`` - version of Hive to install (currently supports only 0.11.0)
         * ``ubuntu_image_name``
         * ``fedora_image_name``

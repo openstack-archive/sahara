@@ -638,6 +638,7 @@ instance of these processes to support EDP:
   + nodemanager
   + historyserver
   + oozie
+  + spark history server
 
 
 EDP Technical Considerations
