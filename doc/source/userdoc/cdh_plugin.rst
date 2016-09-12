@@ -11,8 +11,8 @@ explicitly enable or disable it in "plugins" line.
 You need to build images using :doc:`cdh_imagebuilder` to produce images used
 to provision cluster or you could download prepared images from
 http://sahara-files.mirantis.com/images/upstream/
-They already have Cloudera Express installed (5.0.0, 5.3.0, 5.4.0 or 5.5.0
-version).
+They already have Cloudera Express installed (version 5.0.0, 5.3.0, 5.4.0,
+5.5.0 or 5.7.x).
 
 The cloudera plugin requires an image to be tagged in Sahara Image Registry
 with two tags: 'cdh' and '<cloudera version>' (e.g. '5', '5.3.0', '5.4.0',
@@ -49,15 +49,16 @@ Services Supported
 Currently below services are supported in both versions of Cloudera plugin:
 HDFS, Oozie, YARN, Spark, Zookeeper, Hive, Hue, HBase. 5.3.0 version of
 Cloudera Plugin also supported following services: Impala, Flume, Solr, Sqoop,
-and Key-value Store Indexer. 5.4.0 version added KMS service support based on
-5.3.0 version.
+and Key-value Store Indexer. In version 5.4.0 KMS service support was added
+based on version 5.3.0. Kafka 2.0.2 was added for CDH 5.5 and 5.7.
 
 .. note::
 
-    Sentry service is enabled in Cloudera plugin. However, for we do not enable
-    Kerberos authentication in the cluster, which is required for Sentry
-    functionality, using Sentry service will not really take any effect, and
-    other services depending on Sentry will not do any authentication too.
+    Sentry service is enabled in Cloudera plugin. However, as we do not enable
+    Kerberos authentication in the cluster for CDH version < 5.5 (which is
+    required for Sentry functionality) then using Sentry service will not
+    really take any effect, and other services depending on Sentry will not do
+    any authentication too.
 
 High Availability Support
 -------------------------
@@ -78,7 +79,7 @@ Cluster Validation
 When the user performs an operation on the cluster using a Cloudera plugin, the
 cluster topology requested by the user is verified for consistency.
 
-The following limitations are required in the cluster topology for the both
+The following limitations are required in the cluster topology for all
 cloudera plugin versions:
 
   + Cluster must contain exactly one manager.
@@ -123,3 +124,8 @@ few extra limitations in the cluster topology:
   + Cluster can't contain impala catalogserver without impala statestore,
     at least one impalad service, at least one datanode, and metastore.
   + If using Impala, the daemons must be installed on every datanode.
+
+In case of version 5.5.0 or 5.7.x of Cloudera Plugin additional services in
+the cluster topology are available:
+
+  + Cluster can have the kafka service and several kafka brokers.
