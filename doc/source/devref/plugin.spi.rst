@@ -7,28 +7,29 @@ Plugin interface
 get_versions()
 ~~~~~~~~~~~~~~
 
-Returns all versions of Hadoop that could be used with the plugin.  It is
-responsibility of the plugin to make sure that all required images for each
-hadoop version are available, as well as configs and whatever else that plugin
-needs to create the Hadoop cluster.
+Returns all available versions of the plugin. Depending on the plugin, this
+version may map directly to the HDFS version, or it may not; check your
+plugin's documentation. It is responsibility of the plugin to make sure that
+all required images for each hadoop version are available, as well as configs
+and whatever else that plugin needs to create the Hadoop cluster.
 
-*Returns*: list of strings - Hadoop versions
+*Returns*: list of strings representing plugin versions
 
 *Example return value*: [“1.2.1”, “2.3.0”, “2.4.1”]
 
-get_configs( hadoop_version)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+get_configs( hadoop_version )
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Lists all configs supported by plugin with descriptions, defaults and targets
-for which this config is applicable.
+Lists all configs supported by the plugin with descriptions, defaults, and
+targets for which this config is applicable.
 
 *Returns*: list of configs
 
 *Example return value*: ((“JobTracker heap size”, "JobTracker heap size, in
 MB", "int", “512”, `“mapreduce”`, "node", True, 1))
 
-get_node_processes( hadoop_version)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+get_node_processes( hadoop_version )
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Returns all supported services and node processes for a given Hadoop version.
 Each node process belongs to a single service and that relationship is
@@ -39,21 +40,21 @@ reflected in the returned dict object.  See example for details.
 *Example return value*: {"mapreduce": ["tasktracker", "jobtracker"], "hdfs":
 ["datanode", "namenode"]}
 
-get_required_image_tags( hadoop_version)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+get_required_image_tags( hadoop_version )
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Lists tags, that should be added to OpenStack Image via Image Registry. Tags
+Lists tags that should be added to OpenStack Image via Image Registry. Tags
 are used to filter Images by plugin and hadoop version.
 
 *Returns*: list of tags
 
 *Example return value*: ["tag1", "some_other_tag", ...]
 
-validate(cluster)
-~~~~~~~~~~~~~~~~~
+validate( cluster )
+~~~~~~~~~~~~~~~~~~~
 
-Validates a given cluster object. Raises *SaharaException* with meaningful
-message.
+Validates a given cluster object. Raises a *SaharaException* with a meaningful
+message in the case of validation failure.
 
 *Returns*: None
 
@@ -61,8 +62,8 @@ message.
 message='Hadoop cluster should contain only 1 NameNode instance. Actual NN
 count is 2' }>
 
-validate_scaling(cluster, existing, additional)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+validate_scaling( cluster, existing, additional )
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To be improved.
 
@@ -70,46 +71,44 @@ Validates a given cluster before scaling operation.
 
 *Returns*: list of validation_errors
 
-update_infra(cluster)
-~~~~~~~~~~~~~~~~~~~~~
+update_infra( cluster )
+~~~~~~~~~~~~~~~~~~~~~~~
 
-Plugin has a chance to change cluster description here. Specifically, plugin
-must specify image for VMs
-could change VMs specs in any way it needs.
-For instance, plugin can ask for additional VMs for the management tool.
+This method is no longer used now that Sahara utilizes Heat for OpenStack
+resource provisioning, and is not currently utilized by any plugin.
 
 *Returns*: None
 
-configure_cluster(cluster)
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+configure_cluster( cluster )
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Configures cluster on provisioned by sahara VMs.  In this function plugin
-should perform all actions like adjusting OS, installing required packages
-(including Hadoop, if needed), configuring Hadoop, etc.
+Configures cluster on the VMs provisioned by sahara. In this function the
+plugin should perform all actions like adjusting OS, installing required
+packages (including Hadoop, if needed), configuring Hadoop, etc.
 
 *Returns*: None
 
-start_cluster(cluster)
-~~~~~~~~~~~~~~~~~~~~~~
+start_cluster( cluster )
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 Start already configured cluster. This method is guaranteed to be called only
-on cluster which was already prepared with configure_cluster(...) call.
+on a cluster which was already prepared with configure_cluster(...) call.
 
 *Returns*: None
 
-scale_cluster(cluster, instances)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+scale_cluster( cluster, instances )
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Scale an existing cluster with additional instances. Instances argument is a
-list of ready-to-configure instances. Plugin should do all configuration
+Scale an existing cluster with additional instances. The instances argument is
+a list of ready-to-configure instances. Plugin should do all configuration
 operations in this method and start all services on those instances.
 
 *Returns*: None
 
 .. _get_edp_engine:
 
-get_edp_engine(cluster, job_type)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+get_edp_engine( cluster, job_type )
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Returns an EDP job engine object that supports the specified job_type on the
 given cluster, or None if there is no support. The EDP job engine object
@@ -119,50 +118,75 @@ job_type is a String matching one of the job types listed in
 
 *Returns*: an EDP job engine object or None
 
-decommission_nodes(cluster, instances)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+decommission_nodes( cluster, instances )
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Scale cluster down by removing a list of instances. Plugin should stop services
-on a provided list of instances. Plugin also may want to update some
-configurations on other instances, so this method is the right place to do
-that.
+Scale cluster down by removing a list of instances. The plugin should stop
+services on the provided list of instances. The plugin also may need to update
+some configurations on other instances when nodes are removed; if so, this
+method must perform that reconfiguration.
 
 *Returns*: None
 
-on_terminate_cluster(cluster)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+on_terminate_cluster( cluster )
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 When user terminates cluster, sahara simply shuts down all the cluster VMs.
-This method is guaranteed to be invoked before that, allowing plugin to do some
-clean-up.
+This method is guaranteed to be invoked before that, allowing the plugin to do
+some clean-up.
 
 *Returns*: None
 
-get_open_ports(node_group)
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+get_open_ports( node_group )
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-When user requests sahara to automatically create security group for the node
-group (``auto_security_group`` property set to True), sahara will call this
-plugin method to get list of ports that need to be opened.
+When user requests sahara to automatically create a security group for the
+node group (``auto_security_group`` property set to True), sahara will call
+this plugin method to get a list of ports that need to be opened.
 
 *Returns*: list of ports to be open in auto security group for the given node
 group
 
-def get_edp_job_types(versions)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def get_edp_job_types( versions )
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Optional method, which provides ability to see all supported job types for
-specified plugin versions
+Optional method, which provides the ability to see all supported job types for
+specified plugin versions.
 
 *Returns*: dict with supported job types for specified versions of plugin
 
-def recommend_configs(self, cluster, scaling=False)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def recommend_configs( self, cluster, scaling=False )
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Optional method, which provides recommendations for cluster configuration
 before creating/scaling operation.
 
-*Returns*: None
+def get_image_arguments( self, hadoop_version ):
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Optional method, which gets the argument set taken by the plugin's image
+generator, or NotImplemented if the plugin does not provide image generation
+support. See :doc:`image-gen`.
+
+*Returns*: A sequence with items of type sahara.plugins.images.ImageArgument.
+
+def pack_image( self, hadoop_version, remote, reconcile=True, ... ):
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Optional method which packs an image for registration in Glance and use by
+Sahara. This method is called from the image generation CLI rather than from
+the Sahara api or engine service. See :doc:`image-gen`.
+
+*Returns*: None (modifies the image pointed to by the remote in-place.)
+
+def validate_images( self, cluster, reconcile=True, image_arguments=None ):
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Validates the image to be used to create a cluster, to ensure that it meets
+the specifications of the plugin. See :doc:`image-gen`.
+
+*Returns*: None; may raise a sahara.plugins.exceptions.ImageValidationError
+
 
 Object Model
 ============
@@ -171,9 +195,9 @@ Here is a description of all the objects involved in the API.
 
 Notes:
 
-  - cluster and node_group have ‘extra’ field allowing plugin to persist any
-    complementary info about the cluster.
-  - node_process is just a process that runs at some node in cluster.
+  - clusters and node_groups have ‘extra’ fields allowing the plugin to
+    persist any supplementary info about the cluster.
+  - node_process is just a process that runs on some node in cluster.
 
 Example list of node processes:
 
@@ -212,7 +236,7 @@ An object, describing one configuration entry
 | scope             | enum   | Could be either 'node' or 'cluster'.           |
 +-------------------+--------+------------------------------------------------+
 | is_optional       | bool   | If is_optional is False and no default_value   |
-|                   |        | is specified, user should provide a value      |
+|                   |        | is specified, user must provide a value.       |
 +-------------------+--------+------------------------------------------------+
 | priority          | int    | 1 or 2. A Hint for UI. Configs with priority   |
 |                   |        | *1* are always displayed.                      |
@@ -245,7 +269,7 @@ An instance created for cluster.
 +===============+=========+===================================================+
 | instance_id   | string  | Unique instance identifier.                       |
 +---------------+---------+---------------------------------------------------+
-| instance_name | string  | OpenStack Instance name.                          |
+| instance_name | string  | OpenStack instance name.                          |
 +---------------+---------+---------------------------------------------------+
 | internal_ip   | string  | IP to communicate with other instances.           |
 +---------------+---------+---------------------------------------------------+
@@ -255,7 +279,7 @@ An instance created for cluster.
 | volumes       | list    | List of volumes attached to instance. Empty if    |
 |               |         | ephemeral drive is used.                          |
 +---------------+---------+---------------------------------------------------+
-| nova_info     | object  | Nova Instance object.                             |
+| nova_info     | object  | Nova instance object.                             |
 +---------------+---------+---------------------------------------------------+
 | username      | string  | Username, that sahara uses for establishing       |
 |               |         | remote connections to instance.                   |
@@ -265,7 +289,7 @@ An instance created for cluster.
 | fqdn          | string  | Fully qualified domain name for this instance.    |
 +---------------+---------+---------------------------------------------------+
 | remote        | helpers | Object with helpers for performing remote         |
-|               |         | operations                                        |
+|               |         | operations.                                       |
 +---------------+---------+---------------------------------------------------+
 
 

@@ -104,12 +104,12 @@ or virtual machine. Sahara exposes this functionality to the user
 through a few configuration parameters and user defined topology files.
 
 To enable data-locality, set the ``enable_data_locality`` parameter to
-``True`` in the sahara configuration file
+``true`` in the sahara configuration file
 
 .. sourcecode:: cfg
 
     [DEFAULT]
-    enable_data_locality=True
+    enable_data_locality=true
 
 With data locality enabled, you must now specify the topology files
 for the Compute and Object Storage services. These files are
@@ -149,7 +149,7 @@ nodes.
 
 Hadoop versions after 1.2.0 support four-layer topology (for more detail
 please see `HADOOP-8468 JIRA issue`_). To enable this feature set the
-``enable_hypervisor_awareness`` parameter to ``True`` in the configuration
+``enable_hypervisor_awareness`` parameter to ``true`` in the configuration
 file. In this case sahara will add the Compute node ID as a second level of
 topology for virtual machines.
 
@@ -278,8 +278,6 @@ to use periodic tasks distribution, the following steps are required:
 
       pip install tooz[zookeeper]
 
-   ..
-
  * Periodic tasks can be performed in parallel. Number of threads to run
    periodic tasks on a single engine can be set with
    ``periodic_workers_number`` parameter (only 1 thread will be launched by
@@ -330,7 +328,7 @@ the key manager, edit the sahara configuration file as follows:
 .. sourcecode:: cfg
 
     [DEFAULT]
-    use_barbican_key_manager=True
+    use_barbican_key_manager=true
 
 Enabling the ``use_barbican_key_manager`` option will configure castellan
 to use barbican as its key management implementation. By default it will
@@ -364,12 +362,12 @@ access can be obtained a number of different ways (see
 :ref:`custom_network_topologies`). Sometimes it is impossible to provide
 access to all nodes (because of limited numbers of floating IPs or security
 policies). In these cases access can be gained using other nodes of the
-cluster as proxy gateways. To enable this set ``is_proxy_gateway=True``
+cluster as proxy gateways. To enable this set ``is_proxy_gateway=true``
 for the node group you want to use as proxy. Sahara will communicate with
 all other cluster instances through the instances of this node group.
 
 Note, if ``use_floating_ips=true`` and the cluster contains a node group with
-``is_proxy_gateway=True``, the requirement to have ``floating_ip_pool``
+``is_proxy_gateway=true``, the requirement to have ``floating_ip_pool``
 specified is applied only to the proxy node group. Other instances will be
 accessed through proxy instances using the standard private network.
 
@@ -404,8 +402,7 @@ the following configuration parameter is required to be set:
 .. sourcecode:: cfg
 
     [DEFAULT]
-    use_rootwrap=True
-
+    use_rootwrap=true
 
 Assuming you elect to leverage the default rootwrap command
 (``sahara-rootwrap``), you will need to perform the following additional setup
@@ -497,11 +494,9 @@ this example let's assume that the name of the proxy domain is
 .. sourcecode:: cfg
 
     [DEFAULT]
-    use_domain_for_proxy_users=True
+    use_domain_for_proxy_users=true
     proxy_user_domain_name=sahara_proxy
     proxy_user_role_names=Member,SwiftUser
-
-..
 
 A note on the use of roles. In the context of the proxy user, any roles
 specified here are roles intended to be delegated to the proxy user from the
@@ -532,7 +527,7 @@ host as an instance.
 
 To enable this functionality for instances of a specific node group, the
 ``volume_local_to_instance`` field in the node group template should be
-set to ``True`` and some extra configurations are needed:
+set to ``true`` and some extra configurations are needed:
 
 * The cinder-volume service should be launched on every physical host and at
   least one physical host should run both cinder-scheduler and
@@ -587,7 +582,7 @@ Parameters`` section when you create the template.
 If you are creating clusters using the sahara CLI, you can specify another NTP
 server or disable NTP service using the examples below.
 
-If you want to disable configuring the NTP service, you should specify the
+If you want to enable configuring the NTP service, you should specify the
 following configs for the cluster:
 
 .. sourcecode:: json
@@ -633,13 +628,11 @@ access.
     [cors.additional_domain_2]
     allowed_origin=https://additional_domain_2.example.com:443
 
-..
-
 For more information on Cross Origin Resource Sharing, please review the `W3C
 CORS specification`_.
 
 .. _Administrator Guide: http://docs.openstack.org/admin-guide/cross_project_cors.html
-.. _W3C CORS specification: www.w3.org/TR/cors/
+.. _W3C CORS specification: http://www.w3.org/TR/cors/
 
 Cleanup time for incomplete clusters
 ------------------------------------
@@ -647,9 +640,9 @@ Cleanup time for incomplete clusters
 Sahara provides maximal time (in hours) for clusters allowed to be in states
 other than "Active", "Deleting" or "Error". If a cluster is not in "Active",
 "Deleting" or "Error" state and last update of it was longer than
-"cleanup_time_for_incomplete_clusters" hours ago then it will be deleted
+``cleanup_time_for_incomplete_clusters`` hours ago then it will be deleted
 automatically. You can enable this feature by adding appropriate config
-property in the ``default`` section (by default it set up to ``0`` value which
+property in the ``DEFAULT`` section (by default it set up to ``0`` value which
 means that automatic clean up is disabled). For example, if you want cluster to
 be deleted after 3 hours if it didn't leave "Starting" state then you should
 specify:

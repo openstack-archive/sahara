@@ -1,6 +1,9 @@
+================
 Quickstart guide
 ================
 
+Launching a cluster via Sahara CLI commands
+===========================================
 This guide will help you setup a vanilla Hadoop cluster using a combination
 of OpenStack command line tools and the sahara :doc:`REST API <../restapi>`.
 
@@ -54,7 +57,7 @@ choice.
     $ ssh user@hostname
     $ wget http://sahara-files.mirantis.com/images/upstream/<openstack_release>/<sahara_image>.qcow2
 
-Upload the above downloaded image into the OpenStack Image service:
+Upload the image downloaded above into the OpenStack Image service:
 
 .. sourcecode:: console
 
@@ -87,7 +90,7 @@ OR
 
 * Build the image using: `diskimage-builder script <https://github.com/openstack/sahara-image-elements/blob/master/diskimage-create/README.rst>`_
 
-Remember the image name or save the image ID, this will be used during the
+Remember the image name or save the image ID. This will be used during the
 image registration with sahara. You can get the image ID using the
 ``openstack`` command line tool as follows:
 
@@ -106,9 +109,19 @@ image registration with sahara. You can get the image ID using the
 Now you will begin to interact with sahara by registering the virtual
 machine image in the sahara image registry.
 
-Register the image with the username ``ubuntu``. *Note, the username
-will vary depending on the source image used, for more please see*
-:doc:`../userdoc/vanilla_plugin`
+Register the image with the username ``ubuntu``.
+
+.. note::
+    The username will vary depending on the source image used, as follows:
+    Ubuntu: ``ubuntu``
+    CentOS 7: ``centos``
+    CentOS 6: ``cloud-user``
+    Fedora: ``fedora``
+    Note that the Sahara team recommends using CentOS 7 instead of CentOS 6 as
+    a base OS wherever possible; it is better supported throughout OpenStack
+    image maintenance infrastructure and its more modern filesystem is much
+    more appropriate for large-scale data processing. For more please see
+    :doc:`../userdoc/vanilla_plugin`
 
 .. sourcecode:: console
 
@@ -118,8 +131,9 @@ will vary depending on the source image used, for more please see*
 Tag the image to inform sahara about the plugin and the version with which
 it shall be used.
 
-**Note:** For the steps below and the rest of this guide, substitute
-``<plugin_version>`` with the appropriate version of your plugin.
+.. note::
+    For the steps below and the rest of this guide, substitute
+    ``<plugin_version>`` with the appropriate version of your plugin.
 
 .. sourcecode:: console
 
@@ -161,7 +175,7 @@ with the ``plugin show`` command. For example:
     | Description         | The Apache Vanilla plugin provides the ability to launch upstream Vanilla Apache Hadoop cluster without any           |
     |                     | management consoles. It can also deploy the Oozie component.                                                          |
     | Name                | vanilla                                                                                                               |
-    | Required image tags | <plugin_version>, vanilla                                                                                                        |
+    | Required image tags | <plugin_version>, vanilla                                                                                             |
     | Title               | Vanilla Apache Hadoop                                                                                                 |
     |                     |                                                                                                                       |
     | Service:            | Available processes:                                                                                                  |
@@ -170,12 +184,14 @@ with the ``plugin show`` command. For example:
     | Hadoop              |                                                                                                                       |
     | Hive                | hiveserver                                                                                                            |
     | JobFlow             | oozie                                                                                                                 |
+    | Spark               | spark history server                                                                                                  |
     | MapReduce           | historyserver                                                                                                         |
     | YARN                | nodemanager, resourcemanager                                                                                          |
     +---------------------+-----------------------------------------------------------------------------------------------------------------------+
 
-*Note, these commands assume that floating IP addresses are being used. For
-more details on floating IP please see* :ref:`floating_ip_management`
+.. note::
+    These commands assume that floating IP addresses are being used. For more
+    details on floating IP please see :ref:`floating_ip_management`.
 
 Create a master node group template with the command:
 
@@ -237,7 +253,7 @@ Create a worker node group template with the command:
 
 Alternatively you can create node group templates from JSON files:
 
-If your environment does not use floating IP, omit defining floating IP in
+If your environment does not use floating IPs, omit defining floating IP in
 the template below.
 
 Sample templates can be found here:
@@ -302,8 +318,8 @@ added properly:
     | vanilla-default-worker | 6546bf44-0590-4539-bfcb-99f8e2c11efc | vanilla     | <plugin_version>   |
     +------------------------+--------------------------------------+-------------+--------------------+
 
-Remember the name or save the ID for the master and worker node group templates
-as they will be used during cluster template creation.
+Remember the name or save the ID for the master and worker node group
+templates, as they will be used during cluster template creation.
 
 For example:
 
@@ -420,7 +436,7 @@ Create a cluster with the command:
     | Version                    | <plugin_version>                                   |
     +----------------------------+----------------------------------------------------+
 
-Alternatively you can create cluster template from JSON file:
+Alternatively you can create a cluster template from a JSON file:
 
 Create a file named ``my_cluster_create.json`` with the following content:
 
@@ -445,11 +461,10 @@ Dashboard, or through the ``openstack`` command line client as follows:
     $ openstack keypair create my_stack --public-key $PATH_TO_PUBLIC_KEY
 
 If sahara is configured to use neutron for networking, you will also need to
-include the ``--neutron-network`` argument in the ``cluster create`` command or
-``neutron_management_network`` parameter in ``my_cluster_create.json``. If
-your environment does not use neutron, you can omit ``--neutron-network`` or
-the ``neutron_management_network`` above. You can determine the neutron network
-id with the following command:
+include the ``--neutron-network`` argument in the ``cluster create`` command
+or the ``neutron_management_network`` parameter in ``my_cluster_create.json``.
+If your environment does not use neutron, you should omit these arguments. You
+can determine the neutron network id with the following command:
 
 .. sourcecode:: console
 
@@ -475,9 +490,9 @@ line tool as follows:
 
 The cluster creation operation may take several minutes to complete. During
 this time the "status" returned from the previous command may show states
-other than ``Active``. A cluster also can be created with the ``wait`` flag. In
-that case the cluster creation command will not be finished until the cluster
-will be moved to the ``Active`` state.
+other than ``Active``. A cluster also can be created with the ``wait`` flag.
+In that case the cluster creation command will not be finished until the
+cluster is moved to the ``Active`` state.
 
 8. Run a MapReduce job to check Hadoop installation
 ---------------------------------------------------
@@ -485,7 +500,8 @@ will be moved to the ``Active`` state.
 Check that your Hadoop installation is working properly by running an
 example job on the cluster manually.
 
-* Login to NameNode (usually master node) via ssh with ssh-key used above:
+* Login to the NameNode (usually the master node) via ssh with the ssh-key
+  used above:
 
 .. sourcecode:: console
 
@@ -506,3 +522,80 @@ example job on the cluster manually.
 
 Congratulations! Your Hadoop cluster is ready to use, running on your
 OpenStack cloud.
+
+Elastic Data Processing (EDP)
+=============================
+Job Binaries are the entities you define/upload the source code
+(mains and libraries) for your job.
+First you need to download your binary file or script to swift container
+and register your file in Sahara with the command:
+
+.. code:: bash
+
+    (openstack) dataprocessing job binary create --url "swift://integration.sahara/hive.sql" \
+      --username username --password password --description "My first job binary" hive-binary
+
+
+Data Sources
+------------
+Data Sources are entities where the input and output from your jobs are housed.
+You can create data sources which are related to Swift, Manila or HDFS.
+You need to set the type of data source (swift, hdfs, manila, maprfs),
+name and url.
+The next two commands will create input and output data sources in swift.
+
+.. code:: bash
+
+   $ openstack dataprocessing data source create --type swift --username admin --password admin \
+      --url "swift://integration.sahara/input.txt" input
+
+   $ openstack dataprocessing data source create --type swift --username admin --password admin \
+      --url "swift://integration.sahara/output.txt" input
+
+If you want to create data sources in hdfs, use valid hdfs urls:
+
+.. code:: bash
+
+   $ openstack dataprocessing data source create --type hdfs --url "hdfs://tmp/input.txt" input
+
+   $ openstack dataprocessing data source create --type hdfs --url "hdfs://tmp/output.txt" output
+
+
+Job Templates (Jobs in API)
+---------------------------
+In this step you need to create a job template. You have to set
+the type of the job template using the `type` parameter. Choose
+the main library using the job binary which was created
+in the previous step and set a name for the job template.
+
+Example of the command:
+
+.. code:: bash
+
+    $ openstack dataprocessing job template create --type Hive \
+       --name hive-job-template --main hive-binary
+
+Jobs (Job Executions in API)
+----------------------------
+This is the last step in our guide. In this step you need to launch your job.
+You need to pass the following arguments:
+
+ * The name or ID of input/output data sources for the job
+ * The name or ID of the job template
+ * The name or ID of the cluster on which to run the job
+
+For instance:
+
+.. code:: bash
+
+    $ openstack dataprocessing job execute --input input --output output \
+      --job-template hive-job-template --cluster my-first-cluster
+
+You can check status of your job with the command:
+
+.. code:: bash
+
+   $ openstack dataprocessing job show <id_of_your_job>
+
+Once the job is marked as successful you can check the output data source.
+It will contain the output data of this job. Congratulations!

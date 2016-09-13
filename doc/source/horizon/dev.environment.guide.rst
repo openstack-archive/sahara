@@ -66,7 +66,7 @@ Sahara service should be present in keystone service list with service type
 
   .. sourcecode:: console
 
-      $ git clone https://github.com/openstack/horizon {HORIZON_DIR}
+      $ git clone https://git.openstack.org/cgit/openstack/horizon/ {HORIZON_DIR}
   ..
 
   Then install the virtual environment:
@@ -105,7 +105,8 @@ Sahara service should be present in keystone service list with service type
 
    .. sourcecode:: console
 
-      $ git clone https://github.com/openstack/sahara-dashboard {SAHARA_DASHBOARD_DIR}
+      $ git clone https://git.openstack.org/cgit/openstack/sahara-dashboard/ \
+          {SAHARA_DASHBOARD_DIR}
    ..
 
 6. Copy plugin-enabling files from sahara-dashboard repository to horizon
@@ -115,12 +116,13 @@ Sahara service should be present in keystone service list with service type
       $ cp -a {SAHARA_DASHBOARD_DIR}/sahara_dashboard/enabled/* {HORIZON_DIR}/openstack_dashboard/local/enabled/
    ..
 
-7. Install sahara-dashboard project into horizon virtualenv.
+7. Install sahara-dashboard project into your horizon virtualenv
+   in editable mode
 
    .. sourcecode:: console
 
       $ source {HORIZON_DIR}/.venv/bin/activate
-      $ pip install {SAHARA_DASHBOARD_DIR}
+      $ pip install -e {SAHARA_DASHBOARD_DIR}
    ..
 
 8. Start Horizon
@@ -145,11 +147,7 @@ Sahara service should be present in keystone service list with service type
       $ python {HORIZON_DIR}/manage.py runserver --insecure 0.0.0.0:8080
   ..
 
-  **Note** It is not recommended to use Horizon in this mode for production.
+  .. note::
 
-9. Applying changes
+    It is not recommended to use Horizon in this mode for production.
 
-  If you have changed any files in
-  ``{SAHARA_DASHBOARD_DIR}/sahara_dashboard/content/data_processing``
-  directory, You will need to update horizon virtualenv by installing
-  sahara-dashboard again as on step 7.

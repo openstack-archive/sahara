@@ -32,7 +32,7 @@ On Ubuntu:
     $ sudo apt-get install git-core python-dev python-virtualenv gcc libpq-dev libmysqlclient-dev python-pip rabbitmq-server
     $ sudo pip install tox
 
-On Fedora-based distributions (e.g., Fedora/RHEL/CentOS/Scientific Linux):
+On Red Hat and related distributions (CentOS/Fedora/RHEL/Scientific Linux):
 
 .. sourcecode:: console
 

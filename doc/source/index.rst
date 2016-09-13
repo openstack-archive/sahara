@@ -1,5 +1,5 @@
 Welcome to Sahara!
-===================
+==================
 
 The sahara project aims to provide users with a simple means to provision data
 processing frameworks (such as Hadoop, Spark and Storm) on OpenStack. This is

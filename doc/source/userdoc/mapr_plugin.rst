@@ -22,7 +22,7 @@ Images
 The Sahara MapR plugin can make use of either minimal (operating system only)
 images or pre-populated MapR images. The base requirement for both is that the
 image is cloud-init enabled and contains a supported operating system (see
-http://doc.mapr.com/display/MapR/OS+Support+Matrix).
+http://maprdocs.mapr.com/home/InteropMatrix/r_os_matrix.html).
 
 The advantage of a pre-populated image is that provisioning time is reduced, as
 packages do not need to be downloaded which make up the majority of the time
@@ -33,17 +33,12 @@ from the package repository.
 For more information about MapR images, refer to
 https://github.com/openstack/sahara-image-elements.
 
-There are eight VM images provided for use with the MapR Plugin, that can also
-be built using the tools available in sahara-image-elements:
-
-* https://s3-us-west-2.amazonaws.com/sahara-images/ubuntu_trusty_mapr_plain_latest.qcow2
-* https://s3-us-west-2.amazonaws.com/sahara-images/centos_6.5_mapr_plain_latest.qcow2
-* https://s3-us-west-2.amazonaws.com/sahara-images/ubuntu_trusty_mapr_5.0.0_latest.qcow2
-* https://s3-us-west-2.amazonaws.com/sahara-images/centos_6.5_mapr_5.0.0_latest.qcow2
+There are VM images provided for use with the MapR Plugin, that can also be
+built using the tools available in sahara-image-elements:
+https://s3-us-west-2.amazonaws.com/sahara-images/index.html
 
 MapR plugin needs an image to be tagged in Sahara Image Registry with
-two tags: 'mapr' and '<MapR version>' (e.g. '5.0.0.mrv2').
-
+two tags: 'mapr' and '<MapR version>' (e.g. '5.2.0.mrv2').
 
 The default username specified for these images is different for each
 distribution:
@@ -51,15 +46,16 @@ distribution:
 +--------------+------------+
 | OS           | username   |
 +==============+============+
-| Ubuntu 14.04 | ubuntu     |
+| Ubuntu 14    | ubuntu     |
 +--------------+------------+
-| CentOS 6.5   | cloud-user |
+| CentOS 6     | cloud-user |
 +--------------+------------+
-
+| CentOS 7     | centos     |
++--------------+------------+
 
 Hadoop Version Support
 ----------------------
-The MapR plugin currently supports Hadoop 2.7.0 (5.0.0.mrv2).
+The MapR plugin currently supports Hadoop 2.7.0 (5.2.0.mrv2).
 
 Cluster Validation
 ------------------
@@ -72,7 +68,9 @@ Every MapR cluster must contain:
 * exactly 1 *Webserver* process
 * odd number of *ZooKeeper* processes but not less than 1
 * *FileServer* process on every node
-* at least 1 Cinder volume or ephemeral drive per instance
+* at least 1 ephemeral drive (then you need to specify the ephemeral drive in
+  the flavor not on the node group template creation) or 1 Cinder volume
+  per instance
 
 Every Hadoop cluster must contain exactly 1 *Oozie* process
 
