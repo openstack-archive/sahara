@@ -54,7 +54,7 @@ choice.
     $ ssh user@hostname
     $ wget http://sahara-files.mirantis.com/images/upstream/<openstack_release>/<sahara_image>.qcow2
 
-Upload the above downloaded image into the OpenStack Image service:
+Upload the image downloaded above into the OpenStack Image service:
 
 .. sourcecode:: console
 
@@ -87,7 +87,7 @@ OR
 
 * Build the image using: `diskimage-builder script <https://github.com/openstack/sahara-image-elements/blob/master/diskimage-create/README.rst>`_
 
-Remember the image name or save the image ID, this will be used during the
+Remember the image name or save the image ID. This will be used during the
 image registration with sahara. You can get the image ID using the
 ``openstack`` command line tool as follows:
 
@@ -106,9 +106,19 @@ image registration with sahara. You can get the image ID using the
 Now you will begin to interact with sahara by registering the virtual
 machine image in the sahara image registry.
 
-Register the image with the username ``ubuntu``. *Note, the username
-will vary depending on the source image used, for more please see*
-:doc:`../userdoc/vanilla_plugin`
+Register the image with the username ``ubuntu``.
+
+.. note::
+    The username will vary depending on the source image used, as follows:
+    Ubuntu: ``ubuntu``
+    CentOS 7: ``centos``
+    CentOS 6: ``cloud-user``
+    Fedora: ``fedora``
+    Note that the Sahara team recommends using CentOS 7 instead of CentOS 6 as
+    a base OS wherever possible; it is better supported throughout OpenStack
+    image maintenance infrastructure and its more modern filesystem is much
+    more appropriate for large-scale data processing. For more please see
+    :doc:`../userdoc/vanilla_plugin`
 
 .. sourcecode:: console
 
@@ -118,8 +128,9 @@ will vary depending on the source image used, for more please see*
 Tag the image to inform sahara about the plugin and the version with which
 it shall be used.
 
-**Note:** For the steps below and the rest of this guide, substitute
-``<plugin_version>`` with the appropriate version of your plugin.
+.. note::
+    For the steps below and the rest of this guide, substitute
+    ``<plugin_version>`` with the appropriate version of your plugin.
 
 .. sourcecode:: console
 
@@ -174,8 +185,9 @@ with the ``plugin show`` command. For example:
     | YARN                | nodemanager, resourcemanager                                                                                          |
     +---------------------+-----------------------------------------------------------------------------------------------------------------------+
 
-*Note, these commands assume that floating IP addresses are being used. For
-more details on floating IP please see* :ref:`floating_ip_management`
+.. note::
+    These commands assume that floating IP addresses are being used. For more
+    details on floating IP please see :ref:`floating_ip_management`.
 
 Create a master node group template with the command:
 
@@ -237,7 +249,7 @@ Create a worker node group template with the command:
 
 Alternatively you can create node group templates from JSON files:
 
-If your environment does not use floating IP, omit defining floating IP in
+If your environment does not use floating IPs, omit defining floating IP in
 the template below.
 
 Sample templates can be found here:
@@ -302,8 +314,8 @@ added properly:
     | vanilla-default-worker | 6546bf44-0590-4539-bfcb-99f8e2c11efc | vanilla     | <plugin_version>   |
     +------------------------+--------------------------------------+-------------+--------------------+
 
-Remember the name or save the ID for the master and worker node group templates
-as they will be used during cluster template creation.
+Remember the name or save the ID for the master and worker node group
+templates, as they will be used during cluster template creation.
 
 For example:
 
@@ -420,7 +432,7 @@ Create a cluster with the command:
     | Version                    | <plugin_version>                                   |
     +----------------------------+----------------------------------------------------+
 
-Alternatively you can create cluster template from JSON file:
+Alternatively you can create a cluster template from a JSON file:
 
 Create a file named ``my_cluster_create.json`` with the following content:
 
@@ -445,11 +457,10 @@ Dashboard, or through the ``openstack`` command line client as follows:
     $ openstack keypair create my_stack --public-key $PATH_TO_PUBLIC_KEY
 
 If sahara is configured to use neutron for networking, you will also need to
-include the ``--neutron-network`` argument in the ``cluster create`` command or
-``neutron_management_network`` parameter in ``my_cluster_create.json``. If
-your environment does not use neutron, you can omit ``--neutron-network`` or
-the ``neutron_management_network`` above. You can determine the neutron network
-id with the following command:
+include the ``--neutron-network`` argument in the ``cluster create`` command
+or the ``neutron_management_network`` parameter in ``my_cluster_create.json``.
+If your environment does not use neutron, you should omit these arguments. You
+can determine the neutron network id with the following command:
 
 .. sourcecode:: console
 
@@ -475,9 +486,9 @@ line tool as follows:
 
 The cluster creation operation may take several minutes to complete. During
 this time the "status" returned from the previous command may show states
-other than ``Active``. A cluster also can be created with the ``wait`` flag. In
-that case the cluster creation command will not be finished until the cluster
-will be moved to the ``Active`` state.
+other than ``Active``. A cluster also can be created with the ``wait`` flag.
+In that case the cluster creation command will not be finished until the
+cluster is moved to the ``Active`` state.
 
 8. Run a MapReduce job to check Hadoop installation
 ---------------------------------------------------
@@ -485,7 +496,8 @@ will be moved to the ``Active`` state.
 Check that your Hadoop installation is working properly by running an
 example job on the cluster manually.
 
-* Login to NameNode (usually master node) via ssh with ssh-key used above:
+* Login to the NameNode (usually the master node) via ssh with the ssh-key
+  used above:
 
 .. sourcecode:: console
 

@@ -78,7 +78,7 @@ Documentation Guidelines
 ------------------------
 
 All Sahara docs are written using Sphinx / RST and located in the main repo
-in ``doc`` directory. You can add/edit pages here to update
+in the ``doc`` directory. You can add or edit pages here to update the
 http://docs.openstack.org/developer/sahara site.
 
 The documentation in docstrings should follow the `PEP 257`_ conventions
@@ -92,10 +92,7 @@ More specifically:
 3. For docstrings that take multiple lines, there should be a newline
    after the opening quotes, and before the closing quotes.
 4. `Sphinx`_ is used to build documentation, so use the restructured text
-   markup to designate parameters, return values, etc.  Documentation on
-   the sphinx specific markup can be found here:
-
-
+   markup to designate parameters, return values, etc.
 
 Run the following command to build docs locally.
 
@@ -106,14 +103,14 @@ Run the following command to build docs locally.
 After it you can access generated docs in ``doc/build/`` directory, for
 example, main page - ``doc/build/html/index.html``.
 
-To make docs generation process faster you can use:
+To make the doc generation process faster you can use:
 
 .. sourcecode:: console
 
     $ SPHINX_DEBUG=1 tox -e docs
 
-or to avoid sahara reinstallation to virtual env each time you want to rebuild
-docs you can use the following command (it could be executed only after
+To avoid sahara reinstallation to virtual env each time you want to rebuild
+docs you can use the following command (it can be executed only after
 running ``tox -e docs`` first time):
 
 .. sourcecode:: console
@@ -123,8 +120,8 @@ running ``tox -e docs`` first time):
 
 
 .. note::
-  For more details on documentation guidelines see file HACKING.rst in the root
-  of Sahara repo.
+  For more details on documentation guidelines see HACKING.rst in the root of
+  the Sahara repo.
 
 
 .. _PEP 8: http://www.python.org/dev/peps/pep-0008/
@@ -136,47 +133,48 @@ running ``tox -e docs`` first time):
 Event log Guidelines
 --------------------
 
-Currently Sahara keep with cluster useful information about provisioning.
+Currently Sahara keeps useful information about provisioning for each cluster.
 Cluster provisioning can be represented as a linear series of provisioning
-steps, which are executed one after another. Also each step would consist of
-several events. The amount of events depends on the step and the amount of
-instances in the cluster. Also each event can contain information about
-cluster, instance, and node group. In case of errors, this event would contain
-information about reasons of errors. Each exception in sahara contains a
-unique identifier that will allow the user to find extra information about
-the reasons for errors in the sahara logs. Here
-http://developer.openstack.org/api-ref-data-processing-v1.1.html#v1.1eventlog
-you can see an example of provisioning progress information.
+steps, which are executed one after another. Each step may consist of several
+events. The number of events depends on the step and the number of instances
+in the cluster. Also each event can contain information about its cluster,
+instance, and node group. In case of errors, events contain useful information
+for identifying the error. Additionally, each exception in sahara contains a
+unique identifier that allows the user to find extra information about that
+error in the sahara logs. You can see an example of provisioning progress
+information here:
+http://developer.openstack.org/api-ref/data-processing/#event-log
 
 This means that if you add some important phase for cluster provisioning to
-sahara code, it's recommended to add new provisioning step for this phase.
-It would allow users to use event log for handling errors during this phase.
+the sahara code, it's recommended to add a new provisioning step for this
+phase. This will allow users to use event log for handling errors during this
+phase.
 
-Sahara already have special utils for operating provisioning steps and events
-in module ``sahara/utils/cluster_progress_ops.py``.
+Sahara already has special utils for operating provisioning steps and events
+in the module ``sahara/utils/cluster_progress_ops.py``.
 
 .. note::
-    It's strictly recommended not use ``conductor`` event log ops directly
+    It's strictly recommended not to use ``conductor`` event log ops directly
     to assign events and operate provisioning steps.
 
 .. note::
-    You should not add a new provisioning step until the previous step
+    You should not start a new provisioning step until the previous step has
     successfully completed.
 
 .. note::
-    It's strictly recommended to use ``event_wrapper`` for events handling
+    It's strictly recommended to use ``event_wrapper`` for event handling.
 
 OpenStack client usage guidelines
 ---------------------------------
 
 The sahara project uses several OpenStack clients internally. These clients
 are all wrapped by utility functions which make using them more convenient.
-When developing sahara, if you need to use a OpenStack client you should
+When developing sahara, if you need to use an OpenStack client you should
 check the ``sahara.utils.openstack`` package for the appropriate one.
 
 When developing new OpenStack client interactions in sahara, it is important
-to understand the ``sahara.service.sessions`` package and the usage of
-keystone ``Session`` and auth plugin objects(for example, ``Token`` or
+to understand the ``sahara.service.sessions`` package and the usage of the
+keystone ``Session`` and auth plugin objects (for example, ``Token`` and
 ``Password``). Sahara is migrating all clients to use this authentication
 methodology, where available. For more information on using sessions with
 keystone, please see

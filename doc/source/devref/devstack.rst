@@ -1,14 +1,14 @@
 Setup DevStack
 ==============
 
-The DevStack could be installed on Fedora, Ubuntu and CentOS. For supported
+DevStack can be installed on Fedora, Ubuntu, and CentOS. For supported
 versions see `DevStack documentation <http://devstack.org>`_
 
-We recommend to install DevStack not into your main system, but run it in
-a VM instead. That way you may avoid contamination of your system
-with various stuff. You may find hypervisor and VM requirements in the
-the next section. If you still want to install DevStack on top of your
-main system, just skip the next section and read further.
+We recommend that you install DevStack in a VM, rather than on your main
+system. That way you may avoid contamination of your system. You may find
+hypervisor and VM requirements in the the next section. If you still want to
+install DevStack on your baremetal system, just skip the next section and read
+further.
 
 
 Start VM and set up OS
@@ -54,7 +54,7 @@ Ubuntu 14.04 system.
     $ sudo apt-get install git-core
     $ git clone https://git.openstack.org/openstack-dev/devstack.git
 
-2. Create file ``local.conf`` in devstack directory with the following
+2. Create the file ``local.conf`` in devstack directory with the following
    content:
 
 .. sourcecode:: bash
@@ -101,14 +101,15 @@ Ubuntu 14.04 system.
 
 In cases where you need to specify a git refspec (branch, tag, or commit hash)
 for the sahara in-tree devstack plugin (or sahara repo), it should be
-appended after the git repo URL as follows:
+appended to the git repo URL as follows:
 
 .. sourcecode:: bash
 
     enable_plugin sahara git://git.openstack.org/openstack/sahara <some_git_refspec>
 
 3. Sahara can send notifications to Ceilometer, if Ceilometer is enabled.
-   If you want to enable Ceilometer add the following lines to ``local.conf`` file:
+   If you want to enable Ceilometer add the following lines to the
+   ``local.conf`` file:
 
 .. sourcecode:: bash
 
@@ -120,20 +121,21 @@ appended after the git repo URL as follows:
 
     $ ./stack.sh
 
-5. Once previous step is finished Devstack will print Horizon URL. Navigate to
-   this URL and login with login "admin" and password from ``local.conf``.
+5. Once the previous step is finished Devstack will print a Horizon URL.
+   Navigate to this URL and login with login "admin" and password from
+   ``local.conf``.
 
-6. Congratulations! You have OpenStack running in your VM and ready to launch
-   VMs inside that VM :)
+6. Congratulations! You have OpenStack running in your VM and you're ready to
+   launch VMs inside that VM. :)
 
 
 Managing sahara in DevStack
 ---------------------------
 
-If you install DevStack with sahara included you can rejoin screen with
-``rejoin-stack.sh`` command and switch to ``sahara`` tab. Here you can manage
-the sahara service as other OpenStack services. Sahara source code is located
-at ``$DEST/sahara`` which is usually ``/opt/stack/sahara``.
+If you install DevStack with sahara included you can rejoin screen with the
+``rejoin-stack.sh`` command and switch to the ``sahara`` tab. Here you can
+manage the sahara service as other OpenStack services. Sahara source code is
+located at ``$DEST/sahara`` which is usually ``/opt/stack/sahara``.
 
 
 .. _fusion-fixed-ip:
@@ -172,4 +174,4 @@ Setting fixed IP address for VMware Fusion VM
     $ sudo /Applications/VMware\ Fusion.app/Contents/Library/vmnet-cli --stop
     $ sudo /Applications/VMware\ Fusion.app/Contents/Library/vmnet-cli --start
 
-7. Now start your VM, it should have new fixed IP address
+7. Now start your VM; it should have new fixed IP address.

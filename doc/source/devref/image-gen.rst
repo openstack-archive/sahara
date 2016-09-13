@@ -7,7 +7,7 @@ feature will enable your plugin to:
 
 * Validate that images passed to it for use in cluster provisioning meet its
   specifications.
-* Enable your plugin to provision images from "clean" (OS-only) images.
+* Provision images from "clean" (OS-only) images.
 * Pack pre-populated images for registration in Glance and use by Sahara.
 
 All of these features can use the same image declaration, meaning that logic
@@ -66,7 +66,7 @@ base image.
 This CLI will automatically populate the set of available plugins and
 versions from the plugin set loaded in Sahara, and will show any plugin for
 which the image packing feature is available. The next sections of this guide
-will describe, first, how to modify an image packing specification for one
+will first describe how to modify an image packing specification for one
 of the plugins, and second, how to enable the image packing feature for new
 or existing plugins.
 
@@ -340,7 +340,8 @@ The Argument Set Validator
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You may find that you wish to store state in one place in the specification
-for use in another. In this case, you can use this validator to
+for use in another. In this case, you can use this validator to set an
+argument for future use.
 
 ::
 
