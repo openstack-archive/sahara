@@ -922,6 +922,13 @@
         "oozie.service.URIHandlerService.uri.handlers": "org.apache.oozie.dependency.FSURIHandler,org.apache.oozie.dependency.HCatURIHandler",
         "oozie.services.ext": "org.apache.oozie.service.JMSAccessorService,org.apache.oozie.service.PartitionDependencyManagerService,org.apache.oozie.service.HCatAccessorService"
     },
+     "ranger-hdfs-plugin-properties": {
+        "REPOSITORY_CONFIG_USERNAME": "hadoop",
+        "common.name.for.certificate": "",
+        "hadoop.rpc.protection": "",
+        "policy_user": "ambari-qa",
+        "ranger-hdfs-plugin-enabled": "No"
+    },
     "spark-defaults": {
         "spark.eventLog.dir": "hdfs:///spark-history",
         "spark.eventLog.enabled": "true",
