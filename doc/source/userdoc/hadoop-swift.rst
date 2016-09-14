@@ -14,9 +14,8 @@ the most current features enabled.
 * The most current Sahara maintained version of this patch can be found in the
   Sahara Extra repository https://github.com/openstack/sahara-extra
 
-* The latest compiled version (with Hadoop 2.7.1) of the jar for this component
-  can be downloaded from
-  http://sahara-files.mirantis.com/hadoop-swift/hadoop-openstack-latest.jar
+* The latest compiled version of the jar for this component can be downloaded
+  from http://tarballs.openstack.org/sahara/dist/hadoop-openstack/master/
 
 Now the latest version of this jar (which uses Keystone API v3) is used in
 the plugins' images automatically during build of these images. But for
@@ -27,9 +26,8 @@ Hadoop patching
 ---------------
 You may build the jar file yourself by choosing the latest patch from the
 Sahara Extra repository and using Maven to build with the pom.xml file
-provided. Or you may get the latest jar pre-built (with Hadoop 2.7.1) from
-the CDN at
-http://sahara-files.mirantis.com/hadoop-swift/hadoop-openstack-latest.jar
+provided. Or you may get the latest jar pre-built at
+http://tarballs.openstack.org/sahara/dist/hadoop-openstack/master/
 
 You will need to put this file into the hadoop libraries
 (e.g. /usr/lib/share/hadoop/lib, it depends on the plugin which you use) on
@@ -68,7 +66,6 @@ There are two types of configs here:
    * ``.blocksize`` - blocksize for filesystem. By default: 32Mb
    * ``.partsize`` - the partition size for uploads. By default: 4608*1024Kb
    * ``.requestsize`` - request size for reads in KB. By default: 64Kb
-
 
 
 2. Provider-specific. The patch for Hadoop supports different cloud providers.
