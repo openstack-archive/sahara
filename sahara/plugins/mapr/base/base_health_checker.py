@@ -56,7 +56,8 @@ class ZookeeperCheck(health_check_base.BasicHealthCheck):
         cmd = 'service mapr-zookeeper status'
         with instance.remote() as r:
             __, out = r.execute_command(cmd, run_as_root=True)
-            return 'zookeeper running as process' in out
+            return 'zookeeper running as process' in out \
+                   or 'active (running)' in out
 
     def check_health(self):
         instances = self.cluster_context.get_instances(
