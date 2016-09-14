@@ -60,7 +60,8 @@ use.
 ~~~~~~~~~~~~
 
 Sahara prepares a Cluster for starting. This step includes generating the
-``/etc/hosts`` file, so that all instances can access each other by a hostname.
+``/etc/hosts`` file or changing ``/etc/resolv.conf`` file (if you use Designate
+service), so that all instances can access each other by a hostname.
 Also Sahara updates the ``authorized_keys`` file on each VM, so that VMs can
 communicate without passwords.
 
@@ -109,7 +110,8 @@ amount of VMs to the existing Node Groups and creates new Node Groups.
 
 Status is similar to ``Configuring`` in Cluster creation. New instances are
 being configured in the same manner as already existing ones. The VMs in the
-existing Cluster are also updated with a new ``/etc/hosts`` file.
+existing Cluster are also updated with a new ``/etc/hosts`` file or
+``/etc/resolv.conf`` file.
 
 5. Decommissioning
 ~~~~~~~~~~~~~~~~~~
@@ -147,7 +149,7 @@ Error State
 
 If the Cluster creation fails, the Cluster will enter the ``Error`` state.
 This status means the Cluster may not be able to perform any operations
-normally.  This cluster will stay in the database until it is manually deleted.
+normally. This cluster will stay in the database until it is manually deleted.
 The reason for failure may be found in the sahara logs. Also, the status
 description will contain information about the error.
 
