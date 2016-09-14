@@ -62,7 +62,7 @@ This parameter must be a positive integer number.
 Example:
 Get 15 clusters after cluster with id=d62ad147-5c10-418c-a21a-3a6597044f29:
 
-.. soursecode:: http
+.. sourcecode:: http
 
     GET /v1.1/{tenant_id}/clusters?limit=15&marker=d62ad147-5c10-418c-a21a-3a6597044f29
 
@@ -73,13 +73,13 @@ for sorting objects. Sahara API supports ascending and descending sorting.
 Examples:
 Sort clusters by name:
 
-.. soursecode:: http
+.. sourcecode:: http
 
     GET /v1.1/{tenant_id}/clusters?sort_by=name
 
 Sort clusters by date of creation in descending order:
 
-.. soursecode:: http
+.. sourcecode:: http
 
     GET /v1.1/{tenant_id}/clusters?sort_by=-created_at
 
