@@ -65,3 +65,33 @@ validation checks to ensure a successful Hadoop deployment:
 * Ensure the existence of Ambari Server process in the cluster;
 * Ensure the existence of a NameNode, Zookeeper, ResourceManagers processes
   HistoryServer and App TimeLine Server in the cluster
+
+Enabling Kerberos security for cluster
+--------------------------------------
+
+If you want to protect your clusters using MIT Kerberos security you have to
+complete a few steps below.
+
+* If you would like to create a cluster protected by Kerberos security you
+  just need to enable Kerberos by checkbox in the ``General Parameters``
+  section of the cluster configuration. If you prefer to use the OpenStack CLI
+  for cluster creation, you have to put the data below in the
+  ``cluster_configs`` section:
+
+  .. sourcecode:: console
+
+     "cluster_configs": {
+       "Enable Kerberos Security": true,
+     }
+
+  Sahara in this case will correctly prepare KDC server and will create
+  principals along with keytabs to enable authentication for Hadoop services.
+
+* Ensure that you have the latest hadoop-openstack jar file distributed
+  on your cluster nodes. You can download one at
+  ``http://tarballs.openstack.org/sahara/dist/``
+
+* Sahara will create principals along with keytabs for system users
+  like ``oozie``, ``hdfs`` and ``spark`` so that you will not have to
+  perform additional auth operations to execute your jobs on top of the
+  cluster.
