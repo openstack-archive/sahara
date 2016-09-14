@@ -4,8 +4,8 @@ Building Images for Cloudera Plugin
 ===================================
 
 In this document you will find instructions on how to build Ubuntu and CentOS
-images with Cloudera Express (now only 5.0.0, 5.3.0 5.4.0 and 5.5.0 versions
-are supported).
+images with Cloudera Express (now only versions {5.0.0, 5.3.0 5.4.0, 5.5.0,
+5.7.x} are supported).
 
 To simplify the task of building such images we use
 `Disk Image Builder <https://github.com/openstack/diskimage-builder>`_.
@@ -21,8 +21,9 @@ Elements for building Cloudera images are stored in
 
    Sahara requires images with cloud-init package installed:
 
-   * `For CentOS <http://mirror.centos.org/centos/6/extras/x86_64/Packages/cloud-init-0.7.5-10.el6.centos.2.x86_64.rpm>`_
-   * `For Ubuntu <http://packages.ubuntu.com/precise/cloud-init>`_
+   * `For CentOS 6 <http://mirror.centos.org/centos/6/extras/x86_64/Packages/cloud-init-0.7.5-10.el6.centos.2.x86_64.rpm>`_
+   * `For CentOS 7 <http://mirror.centos.org/centos/7/extras/x86_64/Packages/cloud-init-0.7.5-10.el7.centos.1.x86_64.rpm>`_
+   * `For Ubuntu 14 <http://packages.ubuntu.com/trusty/cloud-init>`_
 
 To create cloudera images follow these steps:
 
@@ -36,11 +37,12 @@ To create cloudera images follow these steps:
    operating systems (subset of Ubuntu, Fedora, and CentOS depending on
    plugin). To only create Cloudera images, you should use the "-p cloudera"
    parameter in the command line. If you want to create the image only for a
-   specific operating system, you should use the "-i ubuntu|centos" parameter
-   to assign the operating system (the cloudera plugin only supports Ubuntu and
-   Centos). If you want to create the image only for a specific Cloudera
-   version, you should use the "-v 5.0|5.3|5.4|5.5" parameter to assign the
-   version. Below is an example to create Cloudera images for both Ubuntu and
+   specific operating system, you should use the "-i ubuntu|centos|centos7"
+   parameter to assign the operating system (the cloudera plugin only supports
+   Ubuntu and Centos). If you want to create the image only for a specific
+   Cloudera version, you should use the "-v 5.0|5.3|5.4|5.5|5.7" parameter to
+   assign the version. Note that Centos 7 can only be used with CDH 5.5 and
+   CDH 5.7. Below is an example to create Cloudera images for both Ubuntu and
    CentOS with Cloudera Express 5.5.0 version.
 
    .. sourcecode:: console
@@ -48,11 +50,18 @@ To create cloudera images follow these steps:
       tox -e venv -- sahara-image-create -p cloudera -v 5.5
 
    If you want to create only an Ubuntu image, you may use following example
-   for that.
+   for that:
 
    .. sourcecode:: console
 
       tox -e venv -- sahara-image-create -p cloudera -i ubuntu -v 5.5
+
+   For CDH 5.7 we support minor versions. If you want to build a minor version
+   just export DIB_CDH_MINOR_VERSION before sahara-image-create launch, e.g.:
+
+   .. sourcecode:: console
+
+      export DIB_CDH_MINOR_VERSION=5.7.1
 
    NOTE: If you don't want to use default values, you should explicitly set the
    values of your required parameters.
@@ -68,8 +77,8 @@ To create cloudera images follow these steps:
     hypervisor, the generated image should be converted to an appropriate
     format.
 
-    The VMware Nova backend requires the VMDK image format. You may use qemu-img
-    utility to convert a QCOW2 image to VMDK.
+    The VMware Nova backend requires the VMDK image format. You may use
+    qemu-img utility to convert a QCOW2 image to VMDK.
 
     .. sourcecode:: console
 
