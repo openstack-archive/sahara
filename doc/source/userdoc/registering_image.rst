@@ -11,7 +11,21 @@ Sahara requires the images to be registered in the Sahara Image Registry.
 A registered image must have two properties set:
 
 * username - a name of the default cloud-init user.
-* tags - certain tags mark image to be suitable for certain plugins.
+* tags - certain tags mark image to be suitable for certain plugins. The tags
+  depend on the plugin used, you can find required tags in the plugin's
+  documentations.
 
-The username depends on the image that is used and the tags depend on the
-plugin used.  You can find both in the respective plugin's documentation.
+The default username specified for these images is different
+for each distribution:
+
++--------------+------------+
+| OS           | username   |
++==============+============+
+| Ubuntu 12,14 | ubuntu     |
++--------------+------------+
+| Fedora       | fedora     |
++--------------+------------+
+| CentOS 6.x   | cloud-user |
++--------------+------------+
+| CentOS 7.x   | centos     |
++--------------+------------+
