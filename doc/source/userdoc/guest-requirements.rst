@@ -42,8 +42,8 @@ Hortonworks Plugin Requirements
 -------------------------------
 
 This plugin does not have any additional requirements. Currently, only the
-CentOS Linux distribution is supported but other distributions will be
-supported in the future.
+CentOS Linux and Ubuntu distributions are supported but other distributions
+will be supported in the future.
 To speed up provisioning, the HDP packages can be pre-installed on the image
 used. The packages' versions depend on the HDP version being used.
 
