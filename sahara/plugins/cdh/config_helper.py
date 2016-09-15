@@ -51,7 +51,9 @@ class ConfigHelper(object):
         '/apache/hadoop/hadoop-openstack/2.3.0-cdh5.0.0'
         '/hadoop-openstack-2.3.0-cdh5.0.0.jar')
 
-    DEFAULT_EXTJS_LIB_URL = 'http://sahara-files.mirantis.com/ext-2.2.zip'
+    DEFAULT_EXTJS_LIB_URL = (
+        'http://tarballs.openstack.org/sahara/dist/common-artifacts/'
+        'ext-2.2.zip')
 
     SWIFT_LIB_URL = p.Config(
         'Hadoop OpenStack library URL', 'general', 'cluster', priority=1,

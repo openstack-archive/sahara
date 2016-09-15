@@ -250,7 +250,8 @@ class TestPluginUtils(b.SaharaTestCase):
             calls = [mock.call('ls /var/lib/oozie/ext-2.2',
                                raise_when_error=False),
                      mock.call("curl -L -o '/var/lib/oozie/extjs.zip'"
-                               " http://sahara-files.mirantis.com/ext-2.2.zip",
+                               " http://tarballs.openstack.org/sahara/dist/"
+                               "common-artifacts/ext-2.2.zip",
                                run_as_root=True),
                      mock.call('unzip /var/lib/oozie/extjs.zip'
                                ' -d /var/lib/oozie',

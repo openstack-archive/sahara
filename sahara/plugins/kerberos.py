@@ -70,7 +70,8 @@ admin_password = _config(
     name='Admin password', config_type='string', default_value='')
 policy_url = _config(
     name="JCE libraries", config_type='string',
-    default_value='http://sahara-files.mirantis.com/kerberos-artifacts',
+    default_value=('http://tarballs.openstack.org/sahara/dist/'
+                   'common-artifacts/'),
     description=_('Java Cryptography Extension (JCE) '
                   'Unlimited Strength Jurisdiction Policy Files location')
 )
