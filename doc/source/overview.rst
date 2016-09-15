@@ -63,6 +63,8 @@ The sahara product communicates with the following OpenStack services:
   instances.
 * Networking (neutron) - provides networking services to data processing
   clusters.
+* DNS service (designate) - provides ability to communicate with cluster
+  instances and Hadoop services by their hostnames.
 * Telemetry (ceilometer) - used to collect measures of cluster usage for
   metering and monitoring purposes.
 * Shared file systems (manila) - can be used for storage of framework job
@@ -87,7 +89,7 @@ For fast cluster provisioning a generic workflow will be as following:
     * for base images without a pre-installed framework, sahara will support
       pluggable deployment engines that integrate with vendor tooling.
     * you can download prepared up-to-date images from
-      http://sahara-files.mirantis.com/images/upstream/liberty/
+      http://sahara-files.mirantis.com/images/upstream/
 
 * define cluster configuration, including cluster size, topology, and
   framework parameters (for example, heap size):
@@ -148,13 +150,8 @@ deployment. Users may choose one of the pre-configured Cluster Templates to
 start a Cluster. To get access to VMs after a Cluster has started, the user
 should specify a keypair.
 
-Sahara provides several constraints on cluster framework topology. JobTracker
-and NameNode processes could be run either on a single VM or two separate
-VMs. Also a cluster could contain worker nodes of different types. Worker
-nodes could run both TaskTracker and DataNode, or either of these processes
-alone. Sahara allows a user to create a cluster with any combination of these
-options, but it will not allow the creation of a non-working topology (for
-example: a set of workers with DataNodes, but without a NameNode).
+Sahara provides several constraints on cluster framework topology. You can see
+all constraints in the documentation for the appropriate plugin.
 
 Each Cluster belongs to an Identity service project determined by the user.
 Users have access only to objects located in projects they have access to.
