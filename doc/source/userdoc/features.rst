@@ -101,39 +101,33 @@ process free to handle requests.
 For an expanded discussion of configuring sahara to run in distributed
 mode please see the :ref:`distributed-mode-configuration` documentation.
 
-Hadoop HDFS High Availability
------------------------------
+Hadoop HDFS and YARN High Availability
+--------------------------------------
 
-Hadoop HDFS High Availability (HDFS HA) provides an architecture to ensure
-that HDFS will continue to work in the result of an active namenode failure.
-It uses 2 namenodes in an active/passive configuration to provide this
-availability.
+Currently HDFS and YARN HA are supported with the HDP 2.4 plugin and CDH 5.7
+plugins.
 
-High availability is achieved by using a set of journalnodes. Zookeeper
-servers, and ZooKeeper Failover Controllers (ZKFC), as well as additional
-configuration changes to HDFS and other services that use HDFS.
+Hadoop HDFS and YARN High Availability provide an architecture to ensure
+that HDFS or YARN will continue to work in the result of an active namenode or
+resourcemanager failure. They use 2 namenodes and 2 resourcemanagers in an
+active/passive state to provide this availability.
 
-Currently HDFS HA is supported with the HDP 2.0.6 plugin and CDH 5.4.0 plugin.
-In HDP 2.0.6 plugin, the feature is enabled through a ``cluster_configs``
-parameter in the cluster's JSON:
+In the HDP 2.4 plugin, the feature can be enabled through dashboard in the
+Cluster Template creation form. High availability is achieved by using a set
+of journalnodes, Zookeeper servers, and ZooKeeper Failover Controllers (ZKFC),
+as well as additional configuration changes to HDFS and other services that
+use HDFS.
 
-.. sourcecode:: cfg
-
-        "cluster_configs": {
-                "HDFSHA": {
-                        "hdfs.nnha": true
-                }
-        }
-
-In CDH 5.4.0 plugin, the HDFS HA is enabled through adding several
+In the CDH 5.7 plugin, HA for HDFS and YARN is enabled through adding several
 HDFS_JOURNALNODE roles in the node group templates of cluster template.
-When HDFS_JOURNALNODE roles are added and the roles setup meets below
-requirements, the HDFS HA is enabled.
+The HDFS HA is enabled when HDFS_JOURNALNODE roles are added and the roles
+setup meets below requirements:
 
 * HDFS_JOURNALNODE number is odd, and at least 3.
 * Zookeeper is enabled.
 * NameNode and SecondaryNameNode are on different physical hosts by setting
   anti-affinity.
+* Cluster has both ResourceManager and StandByResourceManager.
 
 In this case, the original SecondrayNameNode node will be used as the
 Standby NameNode.
@@ -174,6 +168,18 @@ Sahara may use the
 enabling Orchestration usage in sahara please see
 :ref:`orchestration-configuration`.
 
+DNS support
+-----------
+
+Sahara can resolve hostnames of cluster instances by using DNS. For this Sahara
+uses designate. For additional details see :doc:`advanced.configuration.guide`.
+
+Kerberos support
+----------------
+
+You can protect your HDP or CDH cluster using MIT Kerberos security. To get
+more details about this, please, see documentation for the appropriate plugin.
+
 Plugin Capabilities
 -------------------
 
@@ -182,17 +188,23 @@ The following table provides a plugin capability matrix:
 +--------------------------+---------+----------+----------+-------+
 |                          | Plugin                                |
 |                          +---------+----------+----------+-------+
-| Feature                  | Vanilla | HDP      | Cloudera | Spark |
+| Feature                  | Vanilla |   HDP    | Cloudera | Spark |
 +==========================+=========+==========+==========+=======+
 | Nova and Neutron network | x       | x        | x        | x     |
 +--------------------------+---------+----------+----------+-------+
-| Cluster Scaling          | x       | Scale Up | x        | x     |
+| Cluster Scaling          | x       | x        | x        | x     |
 +--------------------------+---------+----------+----------+-------+
 | Swift Integration        | x       | x        | x        | x     |
 +--------------------------+---------+----------+----------+-------+
 | Cinder Support           | x       | x        | x        | x     |
 +--------------------------+---------+----------+----------+-------+
-| Data Locality            | x       | x        | N/A      | x     |
+| Data Locality            | x       | x        | x        | x     |
++--------------------------+---------+----------+----------+-------+
+| DNS                      | x       | x        | x        | x     |
++--------------------------+---------+----------+----------+-------+
+| Kerberos                 | -       | x        | x        | -     |
++--------------------------+---------+----------+----------+-------+
+| HDFS HA                  | -       | x        | x        | -     |
 +--------------------------+---------+----------+----------+-------+
 | EDP                      | x       | x        | x        | x     |
 +--------------------------+---------+----------+----------+-------+
