@@ -118,6 +118,6 @@ error description.
 
 - `Sahara REST API Reference (OpenStack API Complete Reference -
   DataProcessing)`_
-  .. _`Sahara REST API Reference (OpenStack API Complete Reference - DataProcessing)`: http://api.openstack.org/api-ref-data-processing-v1.1.html
+  .. _`Sahara REST API Reference (OpenStack API Complete Reference - DataProcessing)`: http://developer.openstack.org/api-ref/data-processing/
 
 
