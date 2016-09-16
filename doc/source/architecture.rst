@@ -18,8 +18,8 @@ The Sahara architecture consists of several components:
   and private keys in a secure storage.
 
 * Provisioning Engine - component responsible for communication with
-  the OpenStack Compute (nova), Orchestration (heat), Block Storage (cinder)
-  and Image (glance) services.
+  the OpenStack Compute (nova), Orchestration (heat), Block Storage (cinder),
+  Image (glance), and DNS (designate) services.
 
 * Vendor Plugins - pluggable mechanism responsible for configuring and
   launching data processing frameworks on provisioned VMs. Existing
