@@ -1,5 +1,5 @@
 Sahara REST API v1.1
-*********************
+********************
 
 1 General API information
 =========================
@@ -17,11 +17,11 @@ authenticating to the Identity service endpoint. For more information about
 the Identity service, please see the `keystone project developer documentation
 <http://docs.openstack.org/developer/keystone/>`_
 
-With each request, a user must specify the OpenStack tenant(now known as
-project) in the url path, for example: '/v1.1/{tenant_id}/clusters'. Sahara
-will perform the requested operation in the specified tenant using the
+With each request, a user must specify the keystone project (previously tenant)
+in the url path, for example: '/v1.1/{tenant_id}/clusters'. Sahara
+will perform the requested operation in the specified project using the
 provided credentials. Therefore, clusters may be created and managed only
-within tenants to which the user has access.
+within projects to which the user has access.
 
 1.2 Request / Response Types
 ----------------------------
@@ -116,8 +116,4 @@ error description.
 2 API
 =====
 
-- `Sahara REST API Reference (OpenStack API Complete Reference -
-  DataProcessing)`_
-  .. _`Sahara REST API Reference (OpenStack API Complete Reference - DataProcessing)`: http://developer.openstack.org/api-ref/data-processing/
-
-
+- `Sahara REST API Reference (OpenStack API Complete Reference - DataProcessing) <http://developer.openstack.org/api-ref/data-processing/>`_
