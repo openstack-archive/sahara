@@ -32,7 +32,7 @@ You could download well tested and up-to-date prepared images from
 http://sahara-files.mirantis.com/images/upstream/
 
 HDP plugin requires an image to be tagged in sahara Image Registry with two
-tags: 'ambari' and '<plugin version>' (e.g. '2.3').
+tags: 'ambari' and '<plugin version>' (e.g. '2.4').
 
 Also in the Image Registry you will need to specify username for an image.
 The username specified should be 'cloud-user' in case of CentOS 6.x image,
@@ -55,7 +55,7 @@ ResourceManagers and at least 3 JournalNodes and at least 3 Zookeeper Servers.
 
 HDP Version Support
 -------------------
-The HDP plugin currently supports deployment of HDP 2.3.
+The HDP plugin currently supports deployment of HDP 2.3 and 2.4.
 
 Cluster Validation
 ------------------
