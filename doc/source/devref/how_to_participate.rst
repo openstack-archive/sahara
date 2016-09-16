@@ -4,7 +4,7 @@ How to Participate
 Getting started
 ---------------
 
-* Create account on `Github <https://github.com/openstack/sahara>`_
+* Create an account on `Github <https://github.com/openstack/sahara>`_
   (if you don't have one)
 
   * Make sure that your local git is properly configured by executing
@@ -29,25 +29,29 @@ Getting started
 
   * Go to ``watched projects``
   * Add ``openstack/sahara``, ``openstack/sahara-extra``,
-    ``openstack/python-saharaclient``, ``openstack/sahara-image-elements``
+    ``openstack/python-saharaclient``, and ``openstack/sahara-image-elements``
 
 
-How to stay in touch with the community?
-----------------------------------------
+How to stay in touch with the community
+---------------------------------------
 
 * If you have something to discuss use
   `OpenStack development mail-list <http://lists.openstack.org/cgi-bin/mailman/listinfo/openstack-dev>`_.
-  Prefix mail subject with ``[Sahara]``
+  Prefix the mail subject with ``[Sahara]``
 
 * Join ``#openstack-sahara`` IRC channel on `freenode <http://freenode.net/>`_
 
-* Weekly on Thursdays at 1400 UTC and 1800 UTC (on alternate weeks)
+* Attend Sahara team meetings
 
-* IRC channel: ``#openstack-meeting-alt`` (1800UTC) and
-  ``#openstack-meeting-3`` (1400UTC)
+  * Weekly on Thursdays at 1400 UTC and 1800 UTC (on alternate weeks)
+
+  * IRC channel: ``#openstack-meeting-alt`` (1800UTC) or
+    ``#openstack-meeting-3`` (1400UTC)
+
+  * See agenda at https://wiki.openstack.org/wiki/Meetings/SaharaAgenda
 
 
-How to send your first patch on review?
+How to post your first patch for review
 ---------------------------------------
 
 * Checkout Sahara code from `Github <https://github.com/openstack/sahara>`_
@@ -61,9 +65,9 @@ How to send your first patch on review?
 * Make sure that your code passes ``PEP8`` checks and unit-tests.
   See :doc:`development.guidelines`
 
-* Send your patch on review
+* Post your patch for review
 
-* Monitor status of your patch review on https://review.openstack.org/#/
+* Monitor the status of your patch review on https://review.openstack.org/#/
 
 
 

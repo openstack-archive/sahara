@@ -1,14 +1,13 @@
 Elastic Data Processing (EDP) SPI
 =================================
 
-EDP job engine objects provide methods for creating, monitoring, and
-terminating jobs on Sahara clusters. Provisioning plugins that support EDP must
-return an EDP job engine object from the :ref:`get_edp_engine` method described
-in :doc:`plugin.spi`.
+The EDP job engine objects provide methods for creating, monitoring, and
+terminating jobs on Sahara clusters. Provisioning plugins that support EDP
+must return an EDP job engine object from the :ref:`get_edp_engine` method
+described in :doc:`plugin.spi`.
 
 Sahara provides subclasses of the base job engine interface that support EDP
-on clusters running Oozie or on Spark standalone clusters. These are described
-below.
+on clusters running Oozie, Spark, and/or Storm. These are described below.
 
 .. _edp_spi_job_types:
 
@@ -25,8 +24,10 @@ values for job types:
 * MapReduce.Streaming
 * Spark
 * Shell
+* Storm
 
-Note, constants for job types are defined in *sahara.utils.edp*
+.. note::
+    Constants for job types are defined in *sahara.utils.edp*.
 
 Job Status Values
 ------------------------
@@ -61,7 +62,7 @@ cancel_job(job_execution)
 Stops the running job whose id is stored in the job_execution object.
 
 *Returns*: None if the operation was unsuccessful or an updated job status
-value
+value.
 
 get_job_status(job_execution)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -69,7 +70,7 @@ get_job_status(job_execution)
 Returns the current status of the job whose id is stored in the job_execution
 object.
 
-*Returns*: a job status value
+*Returns*: a job status value.
 
 
 run_job(job_execution)
@@ -77,7 +78,7 @@ run_job(job_execution)
 
 Starts the job described by the job_execution object
 
-*Returns*: a tuple of the form (job_id, job_status_value, job_extra_info)
+*Returns*: a tuple of the form (job_id, job_status_value, job_extra_info).
 
 * *job_id* is required and must be a string that allows the EDP engine to
   uniquely identify the job.
@@ -100,8 +101,8 @@ raise an exception.
 get_possible_job_config(job_type)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Returns hints used by the Sahara UI to prompt users for values when configuring
-and launching a job. Note that no hints are required.
+Returns hints used by the Sahara UI to prompt users for values when
+configuring and launching a job. Note that no hints are required.
 
 See :doc:`/userdoc/edp` for more information on how configuration values,
 parameters, and arguments are used by different job types.
@@ -123,7 +124,7 @@ get_supported_job_types()
 This method returns the job types that the engine supports. Not all engines
 will support all job types.
 
-*Returns*: a list of job types supported by the engine
+*Returns*: a list of job types supported by the engine.
 
 Oozie Job Engine Interface
 --------------------------
@@ -132,8 +133,8 @@ The sahara.service.edp.oozie.engine.OozieJobEngine class is derived from
 JobEngine. It provides implementations for all of the methods in the base
 interface but adds a few more abstract methods.
 
-Note, the *validate_job_execution(cluster, job, data)* method does basic checks
-on the job configuration but probably should be overloaded to include
+Note that the *validate_job_execution(cluster, job, data)* method does basic
+checks on the job configuration but probably should be overloaded to include
 additional checks on the cluster configuration. For example, the job engines
 for plugins that support Oozie add checks to make sure that the Oozie service
 is up and running.
@@ -145,7 +146,7 @@ get_hdfs_user()
 Oozie uses HDFS to distribute job files. This method gives the name of the
 account that is used on the data nodes to access HDFS (such as 'hadoop' or
 'hdfs'). The Oozie job engine expects that HDFS contains a directory for this
-user under */user/*
+user under */user/*.
 
 *Returns*: a string giving the username for the account used to access HDFS on
 the cluster.
@@ -170,8 +171,8 @@ get_oozie_server_uri(cluster)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Returns the full URI for the Oozie server, for example
-*http://my_oozie_host:11000/oozie*.  This URI is used by an Oozie client to send
-commands and queries to the Oozie server.
+*http://my_oozie_host:11000/oozie*.  This URI is used by an Oozie client to
+send commands and queries to the Oozie server.
 
 *Returns*: a string giving the Oozie server URI.
 
@@ -179,9 +180,10 @@ commands and queries to the Oozie server.
 get_oozie_server(self, cluster)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Returns the node instance for the host in the cluster running the Oozie server
+Returns the node instance for the host in the cluster running the Oozie
+server.
 
-*Returns*: a node instance
+*Returns*: a node instance.
 
 
 get_name_node_uri(self, cluster)
@@ -198,7 +200,7 @@ get_resource_manager_uri(self, cluster)
 Returns the full URI for the Hadoop JobTracker for Hadoop version 1 or the
 Hadoop ResourceManager for Hadoop version 2.
 
-*Returns*: a string giving the JobTracker or ResourceManager URI
+*Returns*: a string giving the JobTracker or ResourceManager URI.
 
 Spark Job Engine
 ----------------
@@ -206,11 +208,12 @@ Spark Job Engine
 The sahara.service.edp.spark.engine.SparkJobEngine class provides a full EDP
 implementation for Spark standalone clusters.
 
-Note, the *validate_job_execution(cluster, job, data)* method does basic checks
-on the job configuration but probably should be overloaded to include
-additional checks on the cluster configuration. For example, the job engine
-returned by the Spark plugin checks that the Spark version is >= 1.0.0 to
-ensure that *spark-submit* is available.
+.. note::
+    The *validate_job_execution(cluster, job, data)* method does basic
+    checks on the job configuration but probably should be overloaded to
+    include additional checks on the cluster configuration. For example, the
+    job engine returned by the Spark plugin checks that the Spark version is
+    >= 1.0.0 to ensure that *spark-submit* is available.
 
 get_driver_classpath(self)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -218,4 +221,4 @@ get_driver_classpath(self)
 Returns driver class path.
 
 *Returns*: a string of the following format ' --driver-class-path
-*class_path_value*'
+*class_path_value*'.

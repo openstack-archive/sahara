@@ -28,7 +28,7 @@ log levels:
 Formatting Guidelines
 ---------------------
 
-Now sahara uses string formatting defined in `PEP 3101`_ for logs.
+Sahara uses string formatting defined in `PEP 3101`_ for logs.
 
 .. code:: python
 
@@ -41,8 +41,8 @@ Now sahara uses string formatting defined in `PEP 3101`_ for logs.
 Translation Guidelines
 ----------------------
 
-All log levels except Debug requires translation. None of the separate
-cli tools packaged with sahara contain log translations.
+All log levels except Debug require translation. None of the separate
+CLI tools packaged with sahara contain log translations.
 
 * Debug: no translation
 * Info: _LI
