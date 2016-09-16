@@ -163,7 +163,7 @@ installations of sahara.
    ...
    [mysqld]
    ...
-   max_allowed_packet          = 256M
+   max_allowed_packet = 256M
 ..
 
     Then restart the mysql server to ensure these changes are active.
@@ -202,8 +202,10 @@ installations of sahara.
     --adminurl http://10.0.0.2:8386/v1.1/%\(tenant_id\)s \
     --internalurl http://10.0.0.2:8386/v1.1/%\(tenant_id\)s \
     data-processing
+
 .. note::
-   You must have installed the openstack-client package.
+   You have to install the openstack-client package in order to execute
+   ``openstack`` command.
 ..
 
 5. For more information on configuring sahara with the OpenStack Dashboard
@@ -266,7 +268,6 @@ Ensure that your operating system is not blocking the sahara port
 (default: 8386). You may need to configure iptables in CentOS and
 other Linux distributions to allow this access.
 
-
 To get the list of all possible options run:
 
 .. sourcecode:: console
@@ -274,7 +275,6 @@ To get the list of all possible options run:
     $ sahara-venv/bin/python sahara-venv/bin/sahara-api --help
     $ sahara-venv/bin/python sahara-venv/bin/sahara-engine --help
 ..
-
 
 Further, consider reading :doc:`overview` for general sahara concepts and
 :doc:`plugins` for specific plugin features/requirements.
