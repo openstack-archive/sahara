@@ -248,14 +248,14 @@ Example Jobs
 There are sample jobs located in the sahara repository. In this section, we
 will give a walkthrough on how to run those jobs via the Horizon UI. These
 steps assume that you already have a cluster up and running (in the "Active"
-state).  You may want to clone into https://github.com/openstack/sahara-tests
+state).  You may want to clone into https://git.openstack.org/cgit/openstack/sahara-tests/
 so that you will have all of the source code and inputs stored locally.
 
 1) Sample Pig job -
-   https://github.com/openstack/sahara-tests/tree/master/etc/edp-examples/edp-pig/trim-spaces
+   https://git.openstack.org/cgit/openstack/sahara-tests/tree/sahara_tests/scenario/defaults/edp-examples/edp-pig/cleanup-string/example.pig
 
   - Load the input data file from
-    https://github.com/openstack/sahara-tests/blob/master/etc/edp-examples/edp-pig/trim-spaces/data/input
+    https://git.openstack.org/cgit/openstack/sahara-tests/tree/sahara_tests/scenario/defaults/edp-examples/edp-pig/cleanup-string/data/input
     into swift
 
     - Click on Project/Object Store/Containers and create a container with any
@@ -284,9 +284,11 @@ so that you will have all of the source code and inputs stored locally.
       find example.pig wherever you checked out the sahara project
       <sahara-tests root>/etc/edp-examples/edp-pig/trim-spaces
 
-    - Create another Job Binary:  Name = udf.jar, Storage type = Internal
-      database, click Browse and find udf.jar wherever you checked out the
-      sahara project <sahara-tests root>/etc/edp-examples/edp-pig/trim-spaces
+    - Create another Job Binary:  Name = edp-pig-udf-stringcleaner.jar,
+      Storage type = Internal database, click Browse and find
+      edp-pig-udf-stringcleaner.jar wherever you checked out the sahara project
+      <sahara-tests root>/sahara_tests/scenario/defaults/edp-examples/
+      edp-pig/cleanup-string/
 
   - Create a Job Template
 
@@ -295,8 +297,9 @@ so that you will have all of the source code and inputs stored locally.
 
     - Name = pigsample, Job Type = Pig, Choose "example.pig" as the main binary
 
-    - Click on the "Libs" tab and choose "udf.jar", then hit the "Choose"
-      button beneath the dropdown, then click on "Create"
+    - Click on the "Libs" tab and choose "edp-pig-udf-stringcleaner.jar",
+      then hit the "Choose" button beneath the dropdown, then click
+      on "Create"
 
   - Launch your job
 
@@ -318,8 +321,8 @@ so that you will have all of the source code and inputs stored locally.
       It should be in the "pigoutput" folder
 
 2) Sample Spark job -
-   https://github.com/openstack/sahara-tests/tree/master/etc/edp-examples/edp-spark
-   You can clone into https://github.com/openstack/sahara-tests for quicker
+   https://git.openstack.org/cgit/openstack/sahara-tests/tree/sahara_tests/scenario/defaults/edp-examples/edp-spark
+   You can clone into https://git.openstack.org/cgit/openstack/sahara-tests/ for quicker
    access to the files for this sample job.
 
   - Store the Job Binary in the sahara database
@@ -327,8 +330,8 @@ so that you will have all of the source code and inputs stored locally.
     - Navigate to Data Processing/Jobs/Job Binaries, Click on Create Job Binary
 
     - Name = sparkexample.jar, Storage type = Internal database, Browse to the
-      location <sahara-tests root>/etc/edp-examples/edp-spark and choose
-      spark-example.jar, Click "Create"
+      location <sahara-tests root>/sahara_tests/scenario/defaults/
+      edp-examples/edp-spark/ and choose spark-wordcount.jar, Click "Create"
 
   - Create a Job Template
 
@@ -345,26 +348,24 @@ so that you will have all of the source code and inputs stored locally.
 
     - Click on the "Configure" tab
 
-    - Set the main class to be:  org.apache.spark.examples.SparkPi
+    - Set the main class to be:  sahara.edp.spark.SparkWordCount
 
-    - Under Arguments, click Add and fill in the number of "Slices" you want to
-      use for the job.  For this example, let's use 100 as the value
+    - Under Arguments, click Add and fill url for the input file,
+      once more click Add and fill url for the output file.
 
     - Click on Launch
 
     - You will be taken to the "Jobs" page where you can see your job
       progress through "PENDING, RUNNING, SUCCEEDED" phases
 
-    - When your job finishes with "SUCCEEDED", you can see your results by
-      sshing to the Spark "master" node
+    - When your job finishes with "SUCCEEDED", you can see your results in
+      your output file.
 
-    - The output is located at /tmp/spark-edp/<name of job template>/<job id>.
-      You can do ``cat stdout`` which should display something like
-      "Pi is roughly 3.14156132"
+    - The stdout and stderr files of the command used for executing your job
+      are located at  /tmp/spark-edp/<name of job template>/<job id>
+      on Spark master node in case of Spark clusters, or on Spark JobHistory
+      node in other cases like Vanilla, CDH and so on.
 
-    - It should be noted that for more complex jobs, the input/output may be
-      elsewhere. This particular job just writes to stdout, which is logged in
-      the folder under /tmp
 
 Additional Notes
 ----------------
