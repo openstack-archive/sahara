@@ -102,7 +102,7 @@ and creating new ones to join the existing Node Groups.
 3. Adding Instances
 ~~~~~~~~~~~~~~~~~~~
 
-Status is similar to ``Spawning`` in Custer creation. Sahara adds required
+Status is similar to ``Spawning`` in Cluster creation. Sahara adds required
 amount of VMs to the existing Node Groups and creates new Node Groups.
 
 4. Configuring
