@@ -138,3 +138,18 @@ Policy namespace changed (policy.json)
 The "data-processing:" namespace has been added to the beginning of the all
 Sahara's policy based actions, so, you need to update the policy.json file by
 prepending all actions with "data-processing:".
+
+Liberty -> Mitaka
+-----------------
+
+Direct engine is removed.
+
+Mitaka -> Newton
+----------------
+
+Sahara CLI command is deprecated, please use Openstack Client.
+
+.. note::
+
+    Since Mitaka release sahara actively uses release notes so you can see all
+    required upgrade actions here: http://docs.openstack.org/releasenotes/sahara/
