@@ -208,6 +208,14 @@ function start_sahara {
     fi
 }
 
+# configure_tempest_for_sahara() - Tune Tempest configuration for Sahara
+function configure_tempest_for_sahara {
+    if is_service_enabled tempest; then
+        iniset $TEMPEST_CONFIG service_available sahara True
+        iniset $TEMPEST_CONFIG data-processing-feature-enabled plugins $SAHARA_ENABLED_PLUGINS
+    fi
+}
+
 # stop_sahara() - Stop running processes
 function stop_sahara {
     # Kill the Sahara screen windows
@@ -242,6 +250,9 @@ if is_service_enabled sahara; then
     elif [[ "$1" == "stack" && "$2" == "extra" ]]; then
         echo_summary "Initializing sahara"
         start_sahara
+    elif [[ "$1" == "stack" && "$2" == "test-config" ]]; then
+        echo_summary "Configuring tempest"
+        configure_tempest_for_sahara
     fi
 
     if [[ "$1" == "unstack" ]]; then
