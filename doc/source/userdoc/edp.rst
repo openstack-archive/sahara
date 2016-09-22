@@ -9,8 +9,8 @@ of jobs on clusters created from sahara. EDP supports:
 
 * Hive, Pig, MapReduce, MapReduce.Streaming, Java, and Shell job types on
   Hadoop clusters
-* Spark jobs on Spark standalone clusters, MapR spark clusters, and CDH
-  clusters (v5.3.0 or higher)
+* Spark jobs on Spark standalone clusters, MapR (v5.0.0 - v5.2.0) clusters,
+  Vanilla clusters (v2.7.1) and CDH clusters (v5.3.0 or higher).
 * storage of job binaries in the OpenStack Object Storage service (swift),
   the OpenStack Shared file systems service (manila), or sahara's own
   database
@@ -53,11 +53,12 @@ Job Binaries
 
 A :dfn:`Job Binary` object stores a URL to a single script or Jar file and
 any credentials needed to retrieve the file.  The file itself may be stored
-in the sahara internal database, in swift, or in manila.
+in the sahara internal database (but it is deprecated now), in swift,
+or in manila.
 
-Files in the sahara database are stored as raw bytes in a
-:dfn:`Job Binary Internal` object.  This object's sole purpose is to store a
-file for later retrieval.  No extra credentials need to be supplied for files
+**deprecated:** Files in the sahara database are stored as raw bytes in a
+:dfn:`Job Binary Internal` object. This object's sole purpose is to store a
+file for later retrieval. No extra credentials need to be supplied for files
 stored internally.
 
 Sahara requires credentials (username and password) to access files stored in
@@ -72,7 +73,7 @@ automatically mounted to any cluster nodes which require access to the file,
 if it is not mounted already.
 
 There is a configurable limit on the size of a single job binary that may be
-retrieved by sahara.  This limit is 5MB and may be set with the
+retrieved by sahara. This limit is 5MB and may be set with the
 *job_binary_max_KB* setting in the :file:`sahara.conf` configuration file.
 
 Jobs
@@ -99,6 +100,10 @@ binary and/or supporting libraries depending on its type:
       | ``Shell``               | required    | optional  |
       +-------------------------+-------------+-----------+
       | ``Spark``               | required    | optional  |
+      +-------------------------+-------------+-----------+
+      | ``Storm``               | required    | not used  |
+      +-------------------------+-------------+-----------+
+      | ``Storm Pyelus``        | required    | not used  |
       +-------------------------+-------------+-----------+
 
 
@@ -144,13 +149,14 @@ sahara which is used to monitor and manage the job.
 
 To execute Hadoop jobs, sahara generates an Oozie workflow and submits it to
 the Oozie server running on the cluster. Familiarity with Oozie is not
-necessary for using sahara but it may be beneficial to the user.  A link to
+necessary for using sahara but it may be beneficial to the user. A link to
 the Oozie web console can be found in the sahara web UI in the cluster
 details.
 
 For Spark jobs, sahara uses the *spark-submit* shell script and executes the
-Spark job from the master node. Logs of spark jobs run by sahara can be found
-on the master node under the */tmp/spark-edp* directory.
+Spark job from the master node in case of Spark cluster and from the Spark
+Job History server in other cases. Logs of spark jobs run by sahara can be
+found on this node under the */tmp/spark-edp* directory.
 
 .. _edp_workflow:
 
@@ -181,13 +187,13 @@ the same whether using the web UI or the REST API.
    + When using the REST API this is done via the */jobs/<job_id>/execute*
      method
 
-The workflow is simpler when using existing objects.  For example, to
+The workflow is simpler when using existing objects. For example, to
 construct a new job which uses existing binaries and input data a user may
 only need to perform steps 3, 5, and 6 above. Of course, to repeat the same
 job multiple times a user would need only step 6.
 
 Specifying Configuration Values, Parameters, and Arguments
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Jobs can be configured at launch. The job type determines the kinds of values
 that may be set:
@@ -209,6 +215,10 @@ that may be set:
       | ``Shell``                | Yes           | Yes        | Yes       |
       +--------------------------+---------------+------------+-----------+
       | ``Spark``                | Yes           | No         | Yes       |
+      +--------------------------+---------------+------------+-----------+
+      | ``Storm``                | Yes           | No         | Yes       |
+      +--------------------------+---------------+------------+-----------+
+      | ``Storm Pyelus``         | Yes           | No         | Yes       |
       +--------------------------+---------------+------------+-----------+
 
 * :dfn:`Configuration values` are key/value pairs.
@@ -281,21 +291,21 @@ in the future), sahara allows the addition of an interface (or method
 signature) to your job template. A sample interface for the Teragen Hadoop
 example might be:
 
-+---------+---------+------------+-------------+----------+-------------------+
-| Name    | Mapping | Location   | Value       | Required | Default           |
-|         | Type    |            | Type        |          |                   |
-+=========+=========+============+=============+=======+======================+
-| Example | args    | 0          | string      | false | teragen              |
-| Class   |         |            |             |       |                      |
-+---------+---------+------------+-------------+-------+----------------------+
-| Rows    | args    | 1          | number      | true  | ``unset``            |
-+---------+---------+------------+-------------+-------+----------------------+
-| Output  | args    | 2          | data_source | false | hdfs://ip:port/path  |
-| Path    |         |            |             |       |                      |
-+---------+---------+------------+-------------+-------+----------------------+
-| Mapper  | configs | mapred.    | number      | false | ``unset``            |
-| Count   |         |  map.tasks |             |       |                      |
-+---------+---------+------------+-------------+-------+----------------------+
++---------+---------+-----------+-------------+----------+--------------------+
+| Name    | Mapping | Location  | Value       | Required | Default            |
+|         | Type    |           | Type        |          |                    |
++=========+=========+===========+=============+==========+====================+
+| Example | args    |     0     | string      | false    | teragen            |
+| Class   |         |           |             |          |                    |
++---------+---------+-----------+-------------+----------+--------------------+
+| Rows    | args    |     1     | number      | true     | unset              |
++---------+---------+-----------+-------------+----------+--------------------+
+| Output  | args    |     2     | data_source | false    | hdfs://ip:port/path|
+| Path    |         |           |             |          |                    |
++---------+---------+-----------+-------------+----------+--------------------+
+| Mapper  | configs | mapred.   | number      | false    | unset              |
+| Count   |         | map.tasks |             |          |                    |
++---------+---------+-----------+-------------+----------+--------------------+
 
 A "Description" field may also be added to each interface argument.
 
@@ -307,14 +317,13 @@ the value of which consists of a list of JSON objects, as below:
     [
         {
             "name": "Example Class",
-            "description": "Indicates which example job class should be used."
+            "description": "Indicates which example job class should be used.",
             "mapping_type": "args",
             "location": "0",
             "value_type": "string",
             "required": false,
             "default": "teragen"
         },
-        # Other arguments above here, as JSON objects
     ]
 
 Creating this interface would allow you to specify a configuration for any
@@ -336,8 +345,16 @@ each interface argument. The final ``job_configs`` map would be:
 
     {
         "job_configs": {
-            "configs": {"mapred.map.tasks": "3"},
-            "args" ["teragen", "1000000", "hdfs://mycluster:8020/user/myuser/teragen-output"]
+            "configs":
+                {
+                    "mapred.map.tasks": "3"
+                },
+            "args":
+                [
+                    "teragen",
+                    "1000000",
+                    "hdfs://mycluster:8020/user/myuser/teragen-output"
+                ]
         }
     }
 
@@ -369,7 +386,7 @@ If swift proxy users are not configured (see
 :doc:`../userdoc/advanced.configuration.guide`) and a job is run with data
 source objects containing swift paths, sahara will automatically generate
 swift username and password configuration values based on the credentials
-in the data sources.  If the input and output data sources are both in swift,
+in the data sources. If the input and output data sources are both in swift,
 it is expected that they specify the same credentials.
 
 The swift credentials may be set explicitly with the following configuration
@@ -558,7 +575,7 @@ estimating Pi.
 
 
 Special Sahara URLs
---------------------
+-------------------
 
 Sahara uses custom URLs to refer to objects stored in swift, in manila, or in
 the sahara internal database. These URLs are not meant to be used outside of
@@ -656,17 +673,17 @@ is finished.
 
 Two config parameters control the behaviour of periodic clusters:
 
- * periodic_enable - if set to 'False', sahara will do nothing to a transient
+ * periodic_enable - if set to 'false', sahara will do nothing to a transient
    cluster once the job it was created for is completed. If it is set to
-   'True', then the behaviour depends on the value of the next parameter.
- * use_identity_api_v3 - set it to 'False' if your OpenStack installation
+   'true', then the behaviour depends on the value of the next parameter.
+ * use_identity_api_v3 - set it to 'false' if your OpenStack installation
    does not provide keystone API v3. In that case sahara will not terminate
    unneeded clusters. Instead it will set their state to 'AwaitingTermination'
    meaning that they could be manually deleted by a user. If the parameter is
-   set to 'True', sahara will itself terminate the cluster. The limitation is
+   set to 'true', sahara will itself terminate the cluster. The limitation is
    caused by lack of 'trusts' feature in Keystone API older than v3.
 
-If both parameters are set to 'True', sahara works with transient clusters in
+If both parameters are set to 'true', sahara works with transient clusters in
 the following manner:
 
  1. When a user requests for a job to be executed on a transient cluster,
