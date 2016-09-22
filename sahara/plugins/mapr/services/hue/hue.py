@@ -207,8 +207,18 @@ class Hue(s.Service):
                   ' | tee /etc/ld.so.conf.d/mapr-hue.conf && ldconfig'
             remote.execute_command(cmd, run_as_root=True)
 
+        def centos7_workaround(remote):
+            cmd = 'ln -s /lib64/libsasl2.so.3.0.0 /lib64/libsasl2.so.2' \
+                  ' && rpm -ivh --nodeps http://yum.mariadb.org/5.5.49/' \
+                  'rhel7-amd64/rpms/MariaDB-5.5.49-centos7-x86_64-compat.rpm'
+            remote.execute_command(cmd, run_as_root=True,
+                                   raise_when_error=False)
+
         with hue_instance.remote() as r:
             LOG.debug("Executing Hue database migration")
+            # workaround for centos7
+            if cluster_context.distro_version.split('.')[0] == '7':
+                centos7_workaround(r)
             # temporary workaround to prevent failure of db migrate on mapr 5.2
             hue_syncdb_workround(r)
             migrate_database(r, cluster_context)
