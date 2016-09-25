@@ -33,13 +33,7 @@ notifier_opts = [
                help='Notification level for outgoing notifications'),
     cfg.StrOpt('publisher_id',
                deprecated_name='notification_publisher_id',
-               deprecated_group='DEFAULT',
-               help='Notification publisher_id for outgoing notifications'),
-    cfg.BoolOpt('enable',
-                deprecated_name='enable_notifications',
-                deprecated_group='DEFAULT',
-                default=False,
-                help='Enables sending notifications to Ceilometer')
+               deprecated_group='DEFAULT')
 ]
 
 notifier_opts_group = 'oslo_messaging_notifications'
@@ -56,9 +50,6 @@ def _get_publisher():
 
 
 def _notify(event_type, body):
-    if not cfg.CONF.oslo_messaging_notifications.enable:
-        return
-
     LOG.debug("Notification about cluster is going to be sent. Notification "
               "type={type}".format(type=event_type))
     ctx = context.ctx()
