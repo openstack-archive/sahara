@@ -39,11 +39,11 @@ def wrap_entity(func):
         if isinstance(res, list):
             images = []
             for image in res:
-                _transform_image_props(image)
+                image = _transform_image_props(image)
                 images.append(resource.ImageResource(image))
             return images
         else:
-            _transform_image_props(res)
+            res = _transform_image_props(res)
             return resource.ImageResource(res)
     return handle
 
@@ -67,11 +67,36 @@ def _parse_tags(image_props):
     return [t.replace(PROP_TAG, "") for t in tags]
 
 
+def _serialize_metadata(image):
+    data = {}
+    for key, value in image.iteritems():
+        if key.startswith('_sahara') and value:
+            data[key] = value
+    return data
+
+
+def _get_compat_values(image):
+    data = {}
+    # TODO(vgridnev): Drop these values from APIv2
+    data["OS-EXT-IMG-SIZE:size"] = image.size
+    data['metadata'] = _serialize_metadata(image)
+    data["minDisk"] = getattr(image, 'min_disk', 0)
+    data["minRam"] = getattr(image, 'min_ram', 0)
+    data["progress"] = getattr(image, 'progress', 100)
+    data["status"] = image.status.upper()
+    data['created'] = image.created_at
+    data['updated'] = image.updated_at
+    return data
+
+
 def _transform_image_props(image):
-    image['username'] = _get_meta_prop(image, PROP_USERNAME, "")
-    image['description'] = _get_meta_prop(image, PROP_DESCR, "")
-    image['tags'] = _parse_tags(image)
-    return image
+    data = _get_compat_values(image)
+    data['username'] = _get_meta_prop(image, PROP_USERNAME, "")
+    data['description'] = _get_meta_prop(image, PROP_DESCR, "")
+    data['tags'] = _parse_tags(image)
+    data['id'] = image.id
+    data["name"] = image.name
+    return data
 
 
 def _ensure_tags(tags):
