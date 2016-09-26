@@ -269,7 +269,6 @@ def get_kdc_server(cluster):
         cluster, p_common.AMBARI_SERVER)
 
 
-@cpo.event_wrapper(True, step=_("Prepare Kerberos"), param=('cluster', 0))
 def _prepare_kerberos(cluster, instances=None):
     if instances is None:
         kerberos.deploy_infrastructure(cluster, get_kdc_server(cluster))
