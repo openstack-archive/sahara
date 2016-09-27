@@ -235,7 +235,7 @@ security group policy manually.
 Shared and protected resources support
 --------------------------------------
 
-Sahara allows you to create resources that can be shared across tenants and
+Sahara allows you to create resources that can be shared across projects and
 protected from modifications.
 
 To provide this feature all sahara objects that can be accessed through
@@ -245,17 +245,17 @@ parameters or these parameters can be updated after creation. Both fields are
 set to ``False`` by default.
 
 If some object has its ``is_public`` field set to ``True``, it means that it's
-visible not only from the tenant in which it was created, but from any other
-tenants too.
+visible not only from the project in which it was created, but from any other
+projects too.
 
 If some object has its ``is_protected`` field set to ``True``, it means that it
 can not be modified (updated, scaled, canceled or deleted) unless this field
 is set to ``False``.
 
-Public objects created in one tenant can be used from other tenants (for
+Public objects created in one project can be used from other projects (for
 example, a cluster can be created from a public cluster template which is
-created in another tenant), but modification operations are possible only from
-the tenant in which object was created.
+created in another project), but modification operations are possible only from
+the project in which object was created.
 
 Data source placeholders support
 --------------------------------

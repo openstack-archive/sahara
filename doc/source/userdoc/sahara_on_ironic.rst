@@ -114,7 +114,7 @@ Known limitations:
 * When booting a nova instance with a bare metal flavor, the user can not
   provide a pre-created neutron port to ``nova boot`` command. `LP1544195
   <https://bugs.launchpad.net/nova/+bug/1544195>`_
-* Nodes are not isolated by tenants.
+* Nodes are not isolated by projects.
 * VM to Bare Metal network routing is not allowed.
 * The user has to specify the count of ironic nodes before Devstack deploys
   an Openstack.
