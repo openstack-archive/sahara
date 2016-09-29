@@ -20,14 +20,11 @@
 
 import datetime
 
-from oslo_config import cfg
 from oslo_serialization import jsonutils
 import six
 
 from sahara import exceptions
 from sahara.i18n import _
-
-CONF = cfg.CONF
 
 
 class ActionDispatcher(object):
