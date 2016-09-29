@@ -362,9 +362,9 @@ Rules for specifying an interface are as follows:
 
 - Mapping Type must be one of ``configs``, ``params``, or ``args``. Only types
   supported for your job type are allowed (see above.)
-- Location must be a string for configs and params, and an integer for args.
-  The set of ``args`` locations must be an unbroken series of integers
-  starting from 0.
+- Location must be a string for ``configs`` and ``params``, and an integer for
+  ``args``. The set of ``args`` locations must be an unbroken series of
+  integers starting from 0.
 - Value Type must be one of ``string``, ``number``, or ``data_source``. Data
   sources may be passed as UUIDs or as valid paths (see above.) All values
   should be sent as JSON strings. (Note that booleans and null values are
