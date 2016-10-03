@@ -492,7 +492,7 @@ def add_node_group_templates(ctx, node_groups):
                          "from {path}").format(info=u.name_and_id(template),
                                                path=ng["path"]))
 
-            # For the purposes of substituion we need a dict of id by name
+            # For the purposes of substitution we need a dict of id by name
             ng_info["ids"][template['name']] = template['id']
 
     except Handled:
