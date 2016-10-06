@@ -320,7 +320,7 @@ within the stack.
 
 With a Key Manager service deployed on the stack, sahara must be configured
 to enable the external storage of secrets. Sahara uses the
-`castellan <https://docs.openstack.org/developer/castellan/>`_ library
+`castellan <http://docs.openstack.org/developer/castellan/>`_ library
 to interface with the OpenStack Key Manager service. This library provides
 configurable access to a key manager. To configure sahara to use barbican as
 the key manager, edit the sahara configuration file as follows:
