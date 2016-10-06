@@ -22,7 +22,7 @@ database.
 Specify the file contents (raw data or script text) in the request
 body. Specify the file name in the URI.
 
-Error response codes:202,
+Normal response codes:202
 
 
 Request
@@ -77,7 +77,6 @@ Example response:
 
 
 Normal response codes: 200
-Error response codes:
 
 
 Request
@@ -116,7 +115,6 @@ Shows details for a job binary internal.
 
 
 Normal response codes: 200
-Error response codes:
 
 
 Request
@@ -160,7 +158,7 @@ Delete job binary internal
 
 Deletes a job binary internal.
 
-Error response codes:204,
+Normal response codes:204
 
 
 Request
@@ -183,7 +181,7 @@ Update job binary internal
 
 Updates a job binary internal.
 
-Error response codes:202,
+Normal respose codes:202
 
 
 Request
@@ -215,7 +213,6 @@ Lists the available job binary internals.
 
 
 Normal response codes: 200
-Error response codes:
 
 
 Request

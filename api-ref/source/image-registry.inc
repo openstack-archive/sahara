@@ -18,7 +18,7 @@ Add tags to image
 
 Adds tags to an image.
 
-Error response codes:202,
+Normal response codes:202
 
 
 Request
@@ -51,7 +51,6 @@ Shows details for an image.
 
 
 Normal response codes: 200
-Error response codes:
 
 
 Request
@@ -100,7 +99,7 @@ Register image
 
 Registers an image in the registry.
 
-Error response codes:202,
+Normal response codes:202
 
 
 Request
@@ -151,7 +150,7 @@ Unregister image
 
 Removes an image from the registry.
 
-Error response codes:204,
+Normal response codes:204
 
 
 Request
@@ -174,7 +173,7 @@ Remove tags from image
 
 Removes tags from an image.
 
-Error response codes:202,
+Normal response codes:202
 
 
 Request
@@ -207,7 +206,6 @@ Lists all images registered in the registry.
 
 
 Normal response codes: 200
-Error response codes:
 
 
 Request

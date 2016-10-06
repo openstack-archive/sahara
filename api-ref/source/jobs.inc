@@ -17,7 +17,7 @@ Run job
 
 Runs a job.
 
-Error response codes:202,
+Normal response codes:202
 
 
 Request
@@ -49,7 +49,6 @@ Lists all jobs.
 
 
 Normal response codes: 200
-Error response codes:
 
 
 Request
@@ -104,7 +103,7 @@ Create job
 
 Creates a job object.
 
-Error response codes:202,
+Normal response codes:202
 
 
 Request
@@ -154,7 +153,6 @@ Shows details for a job.
 
 
 Normal response codes: 200
-Error response codes:
 
 
 Request
@@ -202,7 +200,7 @@ Remove job
 
 Removes a job.
 
-Error response codes:204,
+Normal response codes:204
 
 
 Request
@@ -225,7 +223,7 @@ Update job object
 
 Updates a job object.
 
-Error response codes:202,
+Normal response codes:202
 
 
 Request
