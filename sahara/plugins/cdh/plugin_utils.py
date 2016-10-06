@@ -375,8 +375,8 @@ class AbstractPluginUtils(object):
             if config.applicable_target == service and config.name == name:
                 return types.transform_to_num(config.default_value)
         raise exc.InvalidDataException(
-            _("Unable to find config: {applicable_target: %(target)s, name: "
-              "%(name)s").format(target=service, name=name))
+            _("Unable to find config: applicable_target: {target}, name: "
+              "{name}").format(target=service, name=name))
 
     def recommend_configs(self, cluster, plugin_configs, scaling):
         provider = CDHPluginAutoConfigsProvider(
