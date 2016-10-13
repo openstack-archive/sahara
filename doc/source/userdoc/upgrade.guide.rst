@@ -23,15 +23,15 @@ update your configuration file you should replace the following parameters from
 the ``[DEFAULT]`` section with the new parameters in the
 ``[keystone_authtoken]`` section:
 
-+----------------------+--------------------+
-| Old parameter name   | New parameter name |
-+======================+====================+
-| os_admin_username    | admin_user         |
-+----------------------+--------------------+
-| os_admin_password    | admin_password     |
-+----------------------+--------------------+
-| os_admin_tenant_name | admin_tenant_name  |
-+----------------------+--------------------+
++-----------------------+--------------------+
+| Old parameter name    | New parameter name |
++=======================+====================+
+| os_admin_username     | admin_user         |
++-----------------------+--------------------+
+| os_admin_password     | admin_password     |
++-----------------------+--------------------+
+| os_admin_tenant_name  | admin_tenant_name  |
++-----------------------+--------------------+
 
 Additionally, the parameters ``os_auth_protocol``, ``os_auth_host``,
 and ``os_auth_port`` have been combined to create the ``auth_uri``

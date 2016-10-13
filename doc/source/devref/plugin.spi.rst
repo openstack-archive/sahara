@@ -346,7 +346,7 @@ below further specifies which fields are filled at which moment.
 +============================+========+=======================================+
 | name                       | string | Cluster name.                         |
 +----------------------------+--------+---------------------------------------+
-| tenant_id                  | string | OpenStack Tenant id where this        |
+| project_id                 | string | OpenStack Project id where this       |
 |                            |        | Cluster is available.                 |
 +----------------------------+--------+---------------------------------------+
 | plugin_name                | string | Plugin name.                          |

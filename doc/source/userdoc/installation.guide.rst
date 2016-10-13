@@ -198,9 +198,9 @@ installations of sahara.
         "Sahara Data Processing" data-processing
 
     openstack endpoint create --region RegionOne \
-    --publicurl http://10.0.0.2:8386/v1.1/%\(tenant_id\)s \
-    --adminurl http://10.0.0.2:8386/v1.1/%\(tenant_id\)s \
-    --internalurl http://10.0.0.2:8386/v1.1/%\(tenant_id\)s \
+    --publicurl http://10.0.0.2:8386/v1.1/%\(project_id\)s \
+    --adminurl http://10.0.0.2:8386/v1.1/%\(project_id\)s \
+    --internalurl http://10.0.0.2:8386/v1.1/%\(project_id\)s \
     data-processing
 
 .. note::
@@ -247,12 +247,12 @@ The above configuration values are included in a sample configuration
 file at ``<sahara_home>/plugins/default_templates/template.conf``
 
 The command to install all of the default templates is as follows, where
-``$TENANT_ID`` should be a valid tenant id and the above configuration values
+``$PROJECT_ID`` should be a valid project id and the above configuration values
 have been set in ``myconfig``:
 
 .. sourcecode:: console
 
-    $ sahara-templates --config-file /etc/sahara/sahara.conf --config-file myconfig update -t $TENANT_ID
+    $ sahara-templates --config-file /etc/sahara/sahara.conf --config-file myconfig update -t $PROJECT_ID
 
 Help is available from the ``sahara-templates`` command:
 

@@ -17,8 +17,8 @@ authenticating to the Identity service endpoint. For more information about
 the Identity service, please see the `keystone project developer documentation
 <http://docs.openstack.org/developer/keystone/>`_
 
-With each request, a user must specify the keystone project (previously tenant)
-in the url path, for example: '/v1.1/{tenant_id}/clusters'. Sahara
+With each request, a user must specify the keystone project
+in the url path, for example: '/v1.1/{project_id}/clusters'. Sahara
 will perform the requested operation in the specified project using the
 provided credentials. Therefore, clusters may be created and managed only
 within projects to which the user has access.
@@ -39,13 +39,13 @@ Example:
 
 .. sourcecode:: http
 
-    GET /v1.1/{tenant_id}/clusters.json
+    GET /v1.1/{project_id}/clusters.json
 
 or
 
 .. sourcecode:: http
 
-    GET /v1.1/{tenant_id}/clusters
+    GET /v1.1/{project_id}/clusters
     Accept: application/json
 
 1.3 Navigation by response
@@ -64,7 +64,7 @@ Get 15 clusters after cluster with id=d62ad147-5c10-418c-a21a-3a6597044f29:
 
 .. sourcecode:: http
 
-    GET /v1.1/{tenant_id}/clusters?limit=15&marker=d62ad147-5c10-418c-a21a-3a6597044f29
+    GET /v1.1/{project_id}/clusters?limit=15&marker=d62ad147-5c10-418c-a21a-3a6597044f29
 
 For convenience, response contains markers of previous and following pages
 which are named 'prev' and 'next' fields. Also there is ``sort_by`` parameter
@@ -75,13 +75,13 @@ Sort clusters by name:
 
 .. sourcecode:: http
 
-    GET /v1.1/{tenant_id}/clusters?sort_by=name
+    GET /v1.1/{project_id}/clusters?sort_by=name
 
 Sort clusters by date of creation in descending order:
 
 .. sourcecode:: http
 
-    GET /v1.1/{tenant_id}/clusters?sort_by=-created_at
+    GET /v1.1/{project_id}/clusters?sort_by=-created_at
 
 
 1.4 Faults

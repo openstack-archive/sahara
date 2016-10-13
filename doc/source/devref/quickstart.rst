@@ -24,7 +24,7 @@ OR
 To use the OpenStack command line tools you should specify
 environment variables with the configuration details for your OpenStack
 installation. The following example assumes that the Identity service is
-at ``127.0.0.1:5000``, with a user ``admin`` in the ``admin`` tenant
+at ``127.0.0.1:5000``, with a user ``admin`` in the ``admin`` project
 whose password is ``nova``:
 
 .. sourcecode:: console

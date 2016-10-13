@@ -49,9 +49,9 @@ Local endpoint example:
         data_processing_local
 
     openstack endpoint create --region RegionOne \
-    --publicurl http://127.0.0.1:8386/v1.1/%\(tenant_id\)s \
-    --adminurl http://127.0.0.1:8386/v1.1/%\(tenant_id\)s \
-    --internalurl http://127.0.0.1:8386/v1.1/%\(tenant_id\)s \
+    --publicurl http://127.0.0.1:8386/v1.1/%\(project_id\)s \
+    --adminurl http://127.0.0.1:8386/v1.1/%\(project_id\)s \
+    --internalurl http://127.0.0.1:8386/v1.1/%\(project_id\)s \
     data_processing_local
 ..
 

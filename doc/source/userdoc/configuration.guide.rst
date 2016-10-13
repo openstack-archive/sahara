@@ -45,7 +45,7 @@ should point to the admin Identity API endpoint. For example:
 
 Specify the ``admin_user``, ``admin_password`` and ``admin_tenant_name``.
 These parameters must specify an Identity user who has the ``admin`` role
-in the given tenant. These credentials allow sahara to authenticate and
+in the given project. These credentials allow sahara to authenticate and
 authorize its users.
 
 Next you will configure the default Networking service. If using
