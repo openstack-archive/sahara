@@ -6,7 +6,7 @@ versions see `DevStack documentation <http://devstack.org>`_
 
 We recommend that you install DevStack in a VM, rather than on your main
 system. That way you may avoid contamination of your system. You may find
-hypervisor and VM requirements in the the next section. If you still want to
+hypervisor and VM requirements in the next section. If you still want to
 install DevStack on your baremetal system, just skip the next section and read
 further.
 
