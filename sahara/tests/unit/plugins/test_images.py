@@ -390,7 +390,7 @@ class TestImages(b.SaharaTestCase):
         centos.validator.validate.assert_called_with(
             None, reconcile=True, image_arguments=image_arguments)
 
-        # Familes match
+        # Families match
         centos = Distro("centos", mock.Mock())
         redhat = Distro("redhat", mock.Mock())
         distros = [centos, redhat]
