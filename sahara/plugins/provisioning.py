@@ -24,10 +24,22 @@ from sahara.utils import resources
 class ProvisioningPluginBase(plugins_base.PluginInterface):
     @plugins_base.required
     def get_versions(self):
+        """Get available plugin versions
+
+        :returns: A sequence of strings representing the versions
+
+        For example:
+            ["1.0.0", "1.0.1"]
+        """
         pass
 
     @plugins_base.required
     def get_configs(self, hadoop_version):
+        """Get default configuration for a given plugin version
+
+        :param hadoop_version: String representing a plugin version
+        :returns: A dict containing the configuration
+        """
         pass
 
     @plugins_base.required_with_default
@@ -43,6 +55,19 @@ class ProvisioningPluginBase(plugins_base.PluginInterface):
 
     @plugins_base.required
     def get_node_processes(self, hadoop_version):
+        """Get node processes of a given plugin version
+
+        :param hadoop_version: String containing a plugin version
+        :returns: A dict where the keys are the core components of the plugin
+        and the value is a sequence of node processes for that component
+
+        For example:
+        {
+            "HDFS": ["namenode", "datanode"],
+            "Spark": ["master", "slave"]
+        }
+
+        """
         pass
 
     @plugins_base.required_with_default
