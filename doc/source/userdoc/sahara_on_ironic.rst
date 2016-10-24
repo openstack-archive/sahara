@@ -117,7 +117,7 @@ Known limitations:
 * Nodes are not isolated by projects.
 * VM to Bare Metal network routing is not allowed.
 * The user has to specify the count of ironic nodes before Devstack deploys
-  an Openstack.
+  an OpenStack.
 * The user cannot use the same image for several ironic node types.
   For example, if there are 3 ironic node types, the user has to create
   3 images and 3 flavors.

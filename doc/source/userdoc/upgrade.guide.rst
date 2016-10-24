@@ -147,7 +147,7 @@ Direct engine is removed.
 Mitaka -> Newton
 ----------------
 
-Sahara CLI command is deprecated, please use Openstack Client.
+Sahara CLI command is deprecated, please use OpenStack Client.
 
 .. note::
 
