@@ -256,13 +256,15 @@ class TestQuotas(base.SaharaTestCase):
                           'security_groups': 1516},
                          quotas._get_neutron_limits())
 
+    @mock.patch("sahara.utils.openstack.cinder.check_cinder_exists",
+                return_value=True)
     @mock.patch('sahara.utils.openstack.nova.client',
                 return_value=FakeNovaClient(nova_limits))
     @mock.patch('sahara.utils.openstack.cinder.client',
                 return_value=FakeCinderClient(cinder_limits))
     @mock.patch('sahara.utils.openstack.neutron.client',
                 return_value=FakeNeutronClient(neutron_limits))
-    def test_limits_for_cluster(self, p1, p2, p3):
+    def test_limits_for_cluster(self, p1, p2, p3, p4):
         ng = [FakeNodeGroup(1, False, 0, 0, None, 'id1', [1, 2, 3])]
         quotas.check_cluster(FakeCluster(ng))
 
