@@ -126,7 +126,8 @@ def _get_avail_limits():
     limits = _get_zero_limits()
     limits.update(_get_nova_limits())
     limits.update(_get_neutron_limits())
-    limits.update(_get_cinder_limits())
+    if cinder_client.check_cinder_exists():
+        limits.update(_get_cinder_limits())
     return limits
 
 
