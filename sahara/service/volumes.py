@@ -160,7 +160,8 @@ def _find_instance_devices(instance):
         idx = re.sub("\D", "", dev)
         if idx:
             if dev in mounted_dev:
-                attached_dev.remove(re.sub("\d", "", dev))
+                if re.sub("\d", "", dev) in attached_dev:
+                    attached_dev.remove(re.sub("\d", "", dev))
                 attached_dev.remove(dev)
 
     for dev in attached_dev[:]:
