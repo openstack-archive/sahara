@@ -19,7 +19,6 @@ Shows details for a cluster template.
 
 
 Normal response codes: 200
-Error response codes:
 
 
 Request
@@ -72,7 +71,7 @@ Update cluster templates
 
 Updates a cluster template.
 
-Error response codes:202,
+Normal response codes:202
 
 
 Request
@@ -125,7 +124,7 @@ Delete cluster template
 
 Deletes a cluster template.
 
-Error response codes:204,
+Normal response codes:204
 
 
 Request
@@ -150,7 +149,6 @@ Lists available cluster templates.
 
 
 Normal response codes: 200
-Error response codes:
 
 
 Request
@@ -208,7 +206,7 @@ Create cluster templates
 
 Creates a cluster template.
 
-Error response codes:202,
+Normal response codes:202
 
 
 Request

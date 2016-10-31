@@ -18,7 +18,6 @@ Refreshes the status of and shows information for a job execution.
 
 
 Normal response codes: 200
-Error response codes:
 
 
 Request
@@ -76,7 +75,6 @@ Lists available job executions.
 
 
 Normal response codes: 200
-Error response codes:
 
 
 Request
@@ -142,7 +140,6 @@ Shows details for a job execution, by ID.
 
 
 Normal response codes: 200
-Error response codes:
 
 
 Request
@@ -198,7 +195,7 @@ Delete job execution
 
 Deletes a job execution.
 
-Error response codes:204,
+Normal response codes:204
 
 
 Request
@@ -221,7 +218,7 @@ Update job execution
 
 Updates a job execution.
 
-Error response codes:202,
+Normal response codes:202
 
 
 Request
@@ -279,7 +276,6 @@ Cancels a job execution.
 
 
 Normal response codes: 200
-Error response codes:
 
 
 Request

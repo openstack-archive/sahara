@@ -22,7 +22,6 @@ Lists available node group templates.
 
 
 Normal response codes: 200
-Error response codes:
 
 
 Request
@@ -93,7 +92,7 @@ Create node group template
 
 Creates a node group template.
 
-Error response codes:202,
+Normal response codes: 202
 
 
 Request
@@ -159,7 +158,6 @@ Shows a node group template, by ID.
 
 
 Normal response codes: 200
-Error response codes:
 
 
 Request
@@ -224,7 +222,7 @@ Delete node group template
 
 Deletes a node group template.
 
-Error response codes:204,
+Normal response codes:204
 
 
 Request
@@ -247,7 +245,7 @@ Update node group template
 
 Updates a node group template.
 
-Error response codes:202,
+Normal respose codes:202
 
 
 Request

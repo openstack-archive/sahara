@@ -18,7 +18,6 @@ Lists the available job binaries.
 
 
 Normal response codes: 200
-Error response codes:
 
 
 Request
@@ -71,7 +70,7 @@ Create job binary
 
 Creates a job binary.
 
-Error response codes:202,
+Normal response codes:202
 
 
 Request
@@ -118,7 +117,6 @@ Shows details for a job binary.
 
 
 Normal response codes: 200
-Error response codes:
 
 
 Request
@@ -163,7 +161,7 @@ Delete job binary
 
 Deletes a job binary.
 
-Error response codes:204,
+Normal response codes:204
 
 
 Request
@@ -186,7 +184,7 @@ Update job binary
 
 Updates a job binary.
 
-Error response codes:202,
+Normal response codes:202
 
 
 Request
@@ -235,7 +233,6 @@ Example response:
 
 
 Normal response codes: 200
-Error response codes:
 
 
 Request

@@ -20,7 +20,6 @@ Shows details for a data source.
 
 
 Normal response codes: 200
-Error response codes:
 
 
 Request
@@ -66,7 +65,7 @@ Delete data source
 
 Deletes a data source.
 
-Error response codes:204,
+Normal response codes:204
 
 
 Request
@@ -89,7 +88,7 @@ Update data source
 
 Updates a data source.
 
-Error response codes:202,
+Normal response codes:202
 
 
 Request
@@ -121,7 +120,6 @@ Lists all data sources.
 
 
 Normal response codes: 200
-Error response codes:
 
 
 Request
@@ -174,7 +172,7 @@ Create data source
 
 Creates a data source.
 
-Error response codes:202,
+Normal response codes:202
 
 
 Request

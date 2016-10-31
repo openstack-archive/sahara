@@ -16,7 +16,6 @@ Lists available clusters.
 
 
 Normal response codes: 200
-Error response codes:
 
 
 Request
@@ -71,7 +70,7 @@ Create cluster
 
 Creates a cluster.
 
-Error response codes:202,
+Normal response codes:202
 
 
 Request
@@ -118,7 +117,7 @@ Create multiple clusters
 
 Creates multiple clusters.
 
-Error response codes:202,
+Normal response codes:202
 
 
 Request
@@ -150,7 +149,6 @@ Shows details for a cluster, by ID.
 
 
 Normal response codes: 200
-Error response codes:
 
 
 Request
@@ -197,7 +195,7 @@ Delete a cluster
 
 Deletes a cluster.
 
-Error response codes:204,
+Normal response codes:204
 
 
 Request
@@ -220,7 +218,7 @@ Scale cluster
 
 Scales a cluster.
 
-Error response codes:202,
+Normal response codes:202
 
 
 Request
@@ -266,7 +264,7 @@ Update cluster
 
 Updates a cluster.
 
-Error response codes:202,
+Normal response codes:202
 
 
 Request
@@ -314,7 +312,6 @@ Shows provisioning progress for a cluster.
 
 
 Normal response codes: 200
-Error response codes:
 
 
 Request
