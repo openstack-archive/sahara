@@ -91,10 +91,10 @@ class Rest(flask.Blueprint):
                     auth_plugin=auth_plugin,
                     request_id=req_id)
                 context.set_ctx(ctx)
-                if flask.request.method in ['POST', 'PUT', 'PATCH']:
-                    kwargs['data'] = request_data()
 
                 try:
+                    if flask.request.method in ['POST', 'PUT', 'PATCH']:
+                        kwargs['data'] = request_data()
                     return func(**kwargs)
                 except ex.Forbidden as e:
                     return access_denied(e)
@@ -145,10 +145,10 @@ class RestV2(Rest):
                     auth_plugin=auth_plugin,
                     request_id=req_id)
                 context.set_ctx(ctx)
-                if flask.request.method in ['POST', 'PUT', 'PATCH']:
-                    kwargs['data'] = request_data()
 
                 try:
+                    if flask.request.method in ['POST', 'PUT', 'PATCH']:
+                        kwargs['data'] = request_data()
                     return func(**kwargs)
                 except ex.Forbidden as e:
                     return access_denied(e)
