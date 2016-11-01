@@ -389,23 +389,29 @@ class BaseClusterContext(cc.AbstractClusterContext):
 
     @property
     def ubuntu_base_repo(self):
-        if not self._ubuntu_base_repo:
-            self._ubuntu_base_repo = self.ubuntu_base % self.mapr_version
-        return self._ubuntu_base_repo
+        default_value = self._ubuntu_base_repo or self.ubuntu_base % self\
+            .mapr_version
+        return self.cluster.cluster_configs.get(
+            'general', {}).get('Ubuntu base repo', default_value)
 
     @property
     def ubuntu_ecosystem_repo(self):
-        return self._ubuntu_ecosystem_repo
+        default_value = self._ubuntu_ecosystem_repo
+        return self.cluster.cluster_configs.get(
+            'general', {}).get('Ubuntu ecosystem repo', default_value)
 
     @property
     def centos_base_repo(self):
-        if not self._centos_base_repo:
-            self._centos_base_repo = self.centos_base % self.mapr_version
-        return self._centos_base_repo
+        default_value = self._centos_base_repo or self.centos_base % self\
+            .mapr_version
+        return self.cluster.cluster_configs.get(
+            'general', {}).get('CentOS base repo', default_value)
 
     @property
     def centos_ecosystem_repo(self):
-        return self._centos_ecosystem_repo
+        default_value = self._centos_ecosystem_repo
+        return self.cluster.cluster_configs.get(
+            'general', {}).get('CentOS ecosystem repo', default_value)
 
     def get_configuration(self, node_group):
         services = self.get_cluster_services(node_group)
