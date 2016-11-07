@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import uuid
 
 import mock
+from oslo_utils import uuidutils
 
 from sahara import conductor
 from sahara import context
@@ -26,12 +26,12 @@ from sahara.utils import cluster_progress_ops as cpo
 
 class FakeInstance(object):
     def __init__(self):
-        self.id = uuid.uuid4()
-        self.name = uuid.uuid4()
-        self.cluster_id = uuid.uuid4()
-        self.node_group_id = uuid.uuid4()
-        self.instance_id = uuid.uuid4()
-        self.instance_name = uuid.uuid4()
+        self.id = uuidutils.generate_uuid()
+        self.name = uuidutils.generate_uuid()
+        self.cluster_id = uuidutils.generate_uuid()
+        self.node_group_id = uuidutils.generate_uuid()
+        self.instance_id = uuidutils.generate_uuid()
+        self.instance_name = uuidutils.generate_uuid()
 
 
 class ClusterProgressOpsTest(base.SaharaWithDbTestCase):

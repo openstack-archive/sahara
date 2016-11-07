@@ -14,11 +14,11 @@
 
 import copy
 import os
-import uuid
 
 import jsonschema
 from oslo_config import cfg
 from oslo_serialization import jsonutils as json
+from oslo_utils import uuidutils
 import six
 
 from sahara import conductor
@@ -169,7 +169,7 @@ def check_cluster_templates_valid(ng_templates, cl_templates):
     # passes JSON validation. We don't have the real uuid yet,
     # but this will allow the validation test.
     if ng_templates:
-        dummy_uuid = uuid.uuid4()
+        dummy_uuid = uuidutils.generate_uuid()
         ng_ids = {ng["template"]["name"]: dummy_uuid for ng in ng_templates}
     else:
         ng_ids = {}

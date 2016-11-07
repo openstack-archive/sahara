@@ -15,10 +15,10 @@
 
 import abc
 import os
-import uuid
 import xml.dom.minidom as xml
 
 from oslo_config import cfg
+from oslo_utils import uuidutils
 import six
 
 from sahara import conductor as c
@@ -377,7 +377,7 @@ class OozieJobEngine(base_engine.JobEngine):
     def _create_hdfs_workflow_dir(self, where, job):
         constructed_dir = '/user/%s/' % self.get_hdfs_user()
         constructed_dir = self._add_postfix(constructed_dir)
-        constructed_dir += '%s/%s' % (job.name, six.text_type(uuid.uuid4()))
+        constructed_dir += '%s/%s' % (job.name, uuidutils.generate_uuid())
         with remote.get_remote(where) as r:
             self.create_hdfs_dir(r, constructed_dir)
 

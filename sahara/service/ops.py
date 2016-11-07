@@ -14,11 +14,11 @@
 # limitations under the License.
 
 import functools
-import uuid
 
 from oslo_config import cfg
 from oslo_log import log as logging
 import oslo_messaging as messaging
+from oslo_utils import uuidutils
 import six
 
 from sahara import conductor as c
@@ -134,7 +134,8 @@ def request_context(func):
 
 class OpsServer(rpc_utils.RPCServer):
     def __init__(self):
-        target = messaging.Target(topic='sahara-ops', server=uuid.uuid4(),
+        target = messaging.Target(topic='sahara-ops',
+                                  server=uuidutils.generate_uuid(),
                                   version='1.0')
         super(OpsServer, self).__init__(target)
 

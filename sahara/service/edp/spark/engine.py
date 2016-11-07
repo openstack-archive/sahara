@@ -15,10 +15,9 @@
 # limitations under the License.
 
 import os
-import uuid
 
 from oslo_config import cfg
-import six
+from oslo_utils import uuidutils
 
 from sahara import conductor as c
 from sahara import context
@@ -156,7 +155,7 @@ class SparkJobEngine(base_engine.JobEngine):
         if edp.is_adapt_spark_for_swift_enabled(
                 job_configs.get('configs', {})):
             path = 'service/edp/resources/edp-spark-wrapper.jar'
-            name = 'builtin-%s.jar' % six.text_type(uuid.uuid4())
+            name = 'builtin-%s.jar' % uuidutils.generate_uuid()
             builtin_libs = [{'raw': files.get_file_text(path),
                              'name': name}]
 

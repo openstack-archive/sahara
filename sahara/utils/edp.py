@@ -13,9 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import uuid
 
-import six
+from oslo_utils import uuidutils
 
 from sahara.utils import files
 
@@ -152,7 +151,7 @@ def get_builtin_binaries(job, configs):
     if job.type == JOB_TYPE_JAVA:
         if is_adapt_for_oozie_enabled(configs):
             path = 'service/edp/resources/edp-main-wrapper.jar'
-            name = 'builtin-%s.jar' % six.text_type(uuid.uuid4())
+            name = 'builtin-%s.jar' % uuidutils.generate_uuid()
             return [{'raw': files.get_file_binary(path),
                      'name': name}]
     return []

@@ -13,9 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import uuid
 
-import six
+from oslo_utils import uuidutils
 
 from sahara import conductor
 from sahara import context
@@ -74,7 +73,7 @@ def get_password_from_db(cluster, pwname):
     if passwd:
         return key_manager.get_secret(passwd, ctx)
 
-    passwd = six.text_type(uuid.uuid4())
+    passwd = uuidutils.generate_uuid()
     extra = cluster.extra.to_dict() if cluster.extra else {}
     extra[pwname] = key_manager.store_secret(passwd, ctx)
     cluster = conductor.cluster_update(ctx, cluster, {'extra': extra})

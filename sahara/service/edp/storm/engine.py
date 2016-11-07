@@ -16,9 +16,7 @@
 import os
 
 from oslo_config import cfg
-import six
-
-import uuid
+from oslo_utils import uuidutils
 
 from sahara import conductor as c
 from sahara import context
@@ -78,7 +76,7 @@ class StormJobEngine(base_engine.JobEngine):
         return self._generate_topology_name(name)
 
     def _generate_topology_name(self, name):
-        return name + "_" + six.text_type(uuid.uuid4())
+        return name + "_" + uuidutils.generate_uuid()
 
     def _get_job_status_from_remote(self, job_execution, retries=3):
 

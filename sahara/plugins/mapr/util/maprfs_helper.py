@@ -14,10 +14,8 @@
 
 
 import os
-import uuid
 
 from oslo_utils import uuidutils
-import six
 
 import sahara.plugins.mapr.util.general as g
 
@@ -35,7 +33,7 @@ MKDIR_CMD_MAPR3 = 'sudo -u %(user)s hadoop fs -mkdir %(path)s'
 
 
 def put_file_to_maprfs(r, content, file_name, path, hdfs_user):
-    tmp_file_name = '/tmp/%s.%s' % (file_name, six.text_type(uuid.uuid4()))
+    tmp_file_name = '/tmp/%s.%s' % (file_name, uuidutils.generate_uuid())
     r.write_file_to(tmp_file_name, content)
     target = os.path.join(path, file_name)
     move_from_local(r, tmp_file_name, target, hdfs_user)

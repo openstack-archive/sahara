@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import uuid
 
 import mock
+from oslo_utils import uuidutils
 import testtools
 
 import sahara.exceptions as ex
@@ -283,7 +283,7 @@ class TestDataSourceCreateValidation(u.ValidationTestCase):
         check_ds_unique_name.return_value = True
         data = {
             "name": "test_data_data_source",
-            "url": "man://%s" % uuid.uuid4(),
+            "url": "man://%s" % uuidutils.generate_uuid(),
             "type": "manila",
             "description": ("incorrect url schema for")
         }
@@ -322,7 +322,7 @@ class TestDataSourceCreateValidation(u.ValidationTestCase):
         check_ds_unique_name.return_value = True
         data = {
             "name": "test_data_data_source",
-            "url": "manila://%s" % uuid.uuid4(),
+            "url": "manila://%s" % uuidutils.generate_uuid(),
             "type": "manila",
             "description": ("netloc is not a uuid")
         }
@@ -335,7 +335,7 @@ class TestDataSourceCreateValidation(u.ValidationTestCase):
         check_ds_unique_name.return_value = True
         data = {
             "name": "test_data_data_source",
-            "url": "manila://%s/foo" % uuid.uuid4(),
+            "url": "manila://%s/foo" % uuidutils.generate_uuid(),
             "type": "manila",
             "description": ("correct url")
         }
@@ -384,11 +384,12 @@ class TestDataSourceUpdateValidation(u.ValidationTestCase):
 
         with testtools.ExpectedException(ex.InvalidDataException):
             ds.check_data_source_update(
-                {"url": "manila://%s/foo" % uuid.uuid4()}, 'ds_id')
+                {"url": "manila://%s/foo" % uuidutils.generate_uuid()},
+                'ds_id')
 
         ds.check_data_source_update(
             {'type': 'manila',
-             'url': 'manila://%s/foo' % uuid.uuid4()}, 'ds_id')
+             'url': 'manila://%s/foo' % uuidutils.generate_uuid()}, 'ds_id')
 
     @mock.patch('sahara.conductor.API.job_execution_get_all')
     def test_update_referenced_data_source(self, je_all):
@@ -464,12 +465,12 @@ class TestDataSourceUpdateValidation(u.ValidationTestCase):
     @mock.patch('sahara.conductor.API.data_source_get')
     def test_update_data_source_manila(self, ds_get, je_all):
         old_ds = mock.Mock(id='ds_id', type='manila',
-                           url='manila://%s/foo' % uuid.uuid4(),
+                           url='manila://%s/foo' % uuidutils.generate_uuid(),
                            credentials={})
         ds_get.return_value = old_ds
 
         ds.check_data_source_update(
-            {'url': 'manila://%s/foo' % uuid.uuid4()}, 'ds_id')
+            {'url': 'manila://%s/foo' % uuidutils.generate_uuid()}, 'ds_id')
 
         self._update_swift()
         self._update_hdfs()

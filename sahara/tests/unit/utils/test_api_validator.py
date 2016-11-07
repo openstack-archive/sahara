@@ -13,10 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import uuid
 
 import jsonschema
-import six
+from oslo_utils import uuidutils
 import testtools
 
 from sahara.utils import api_validator
@@ -151,7 +150,7 @@ class ApiValidatorTest(testtools.TestCase):
             "format": "uuid",
         }
 
-        id = six.text_type(uuid.uuid4())
+        id = uuidutils.generate_uuid()
 
         self._validate_success(schema, id)
         self._validate_success(schema, id.replace("-", ""))
@@ -338,7 +337,7 @@ class ApiValidatorTest(testtools.TestCase):
         self._validate_success(schema, 1)
         self._validate_success(schema, "0")
         self._validate_success(schema, "1")
-        self._validate_success(schema, six.text_type(uuid.uuid4()))
+        self._validate_success(schema, uuidutils.generate_uuid())
         self._validate_failure(schema, True)
         self._validate_failure(schema, 0.1)
         self._validate_failure(schema, "0.1")

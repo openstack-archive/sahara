@@ -13,10 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import uuid
 
 from oslo_config import cfg
 from oslo_log import log as logging
+from oslo_utils import uuidutils
 import six
 
 from sahara import conductor as c
@@ -267,7 +267,7 @@ def proxy_user_create(username):
     '''
     admin = k.client_for_admin()
     domain = domain_for_proxy()
-    password = six.text_type(uuid.uuid4())
+    password = uuidutils.generate_uuid()
     b.execute_with_retries(
         admin.users.create, name=username, password=password, domain=domain.id)
     LOG.debug('Created proxy user {username}'.format(username=username))

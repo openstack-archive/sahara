@@ -16,7 +16,6 @@
 import random
 import re
 import string
-import uuid
 
 from oslo_config import cfg
 from oslo_utils import uuidutils
@@ -57,7 +56,7 @@ def get_plugin(cluster):
 def create_workflow_dir(where, path, job, use_uuid=None, chmod=""):
 
     if use_uuid is None:
-        use_uuid = six.text_type(uuid.uuid4())
+        use_uuid = uuidutils.generate_uuid()
 
     constructed_dir = _append_slash_if_needed(path)
     constructed_dir += '%s/%s' % (job.name, use_uuid)

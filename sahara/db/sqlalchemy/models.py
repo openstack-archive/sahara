@@ -13,9 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import uuid
 
-import six
+from oslo_utils import uuidutils
 import sqlalchemy as sa
 from sqlalchemy.orm import relationship
 
@@ -26,7 +25,7 @@ from sahara.db.sqlalchemy import types as st
 # Helpers
 
 def _generate_unicode_uuid():
-    return six.text_type(uuid.uuid4())
+    return uuidutils.generate_uuid()
 
 
 def _id_column():

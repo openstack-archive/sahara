@@ -13,10 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import uuid
 
 import mock
-import six
+from oslo_utils import uuidutils
 
 from sahara.service.edp import job_utils
 from sahara.tests.unit import base
@@ -88,7 +87,7 @@ class TestProxyUtils(base.SaharaWithDbTestCase):
                                              url='swift://%')
         data_source_count.reset_mock()
         data_source_count.return_value = 1
-        myid = six.text_type(uuid.uuid4())
+        myid = uuidutils.generate_uuid()
         job_execution.job_configs = {
             'configs': {job_utils.DATA_SOURCE_SUBST_UUID: True},
             'args': [myid]}

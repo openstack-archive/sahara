@@ -15,9 +15,9 @@
 
 import itertools
 import os
-import uuid
 
 from oslo_serialization import jsonutils as json
+from oslo_utils import uuidutils
 import testtools
 
 from sahara.service.validations.edp import data_source_schema
@@ -76,4 +76,4 @@ class TestJSONApiExamplesV11(testtools.TestCase):
         return itertools.chain(*all_files)
 
     def _formatter(self, *variables):
-        return {variable: str(uuid.uuid4()) for variable in variables}
+        return {variable: uuidutils.generate_uuid() for variable in variables}

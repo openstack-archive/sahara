@@ -13,10 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import uuid
 
 from manilaclient.openstack.common.apiclient import exceptions as manila_ex
 import mock
+from oslo_utils import uuidutils
 import testtools
 
 from sahara import exceptions
@@ -46,7 +46,7 @@ def _mock_node_group(ips, share_list):
     # execute_command functions for its instances.
 
     execute_mocks = [mock.Mock(return_value="centos") for ip in ips]
-    get_id = mock.Mock(return_value=uuid.uuid4())
+    get_id = mock.Mock(return_value=uuidutils.generate_uuid())
     instances = [
         mock.Mock(
             internal_ip=ip,

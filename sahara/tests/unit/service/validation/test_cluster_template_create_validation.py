@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import uuid
 
 import mock
+from oslo_utils import uuidutils
 
 from sahara.service.api import v10 as api
 from sahara.service.validations import cluster_template_schema as ct_schema
@@ -211,7 +211,7 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
                 'name': 'testname',
                 'plugin_name': 'fake',
                 'hadoop_version': '0.1',
-                'default_image_id': str(uuid.uuid4()),
+                'default_image_id': uuidutils.generate_uuid(),
                 'cluster_configs': {
                     "service_1": {
                         "config_1": "value_1"
@@ -227,7 +227,7 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
                 ],
                 'anti_affinity': ['datanode'],
                 'description': 'my template',
-                'neutron_management_network': str(uuid.uuid4()),
+                'neutron_management_network': uuidutils.generate_uuid(),
                 'domain_name': 'domain.org.'
             })
 

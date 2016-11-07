@@ -14,7 +14,6 @@
 
 import copy
 import tempfile
-import uuid
 
 import jsonschema
 import mock
@@ -217,7 +216,7 @@ class TemplateUpdateTestCase(base.ConductorManagerTestCase):
         clt["neutron_management_network"] = "{neutron_management_network}"
         clt["default_image_id"] = "{default_image_id}"
 
-        netid = str(uuid.uuid4())
+        netid = uuidutils.generate_uuid()
         configs = {"neutron_management_network": netid,
                    "default_image_id": None}
         template_api.substitute_config_values(configs, clt, "/path")
@@ -619,7 +618,7 @@ class TemplateUpdateTestCase(base.ConductorManagerTestCase):
 
         get_configs.return_value = {
             "flavor_id": '2',
-            "neutron_management_network": str(uuid.uuid4()),
+            "neutron_management_network": uuidutils.generate_uuid(),
             'auto_security_group': True,
             'security_groups': [],
         }
@@ -656,7 +655,7 @@ class TemplateUpdateTestCase(base.ConductorManagerTestCase):
 
         get_configs.return_value = {
             "flavor_id": '2',
-            "neutron_management_network": str(uuid.uuid4())
+            "neutron_management_network": uuidutils.generate_uuid()
         }
 
         option_values = {"tenant_id": ctx.tenant_id,
@@ -694,7 +693,7 @@ class TemplateUpdateTestCase(base.ConductorManagerTestCase):
 
         get_configs.return_value = {
             "flavor_id": '2',
-            "neutron_management_network": str(uuid.uuid4())
+            "neutron_management_network": uuidutils.generate_uuid()
         }
         option_values = {"tenant_id": ctx.tenant_id,
                          "directory": tempdir,
@@ -731,7 +730,7 @@ class TemplateUpdateTestCase(base.ConductorManagerTestCase):
 
         get_configs.return_value = {
             "flavor_id": '2',
-            "neutron_management_network": str(uuid.uuid4())
+            "neutron_management_network": uuidutils.generate_uuid()
         }
 
         option_values = {"tenant_id": ctx.tenant_id,
@@ -775,7 +774,7 @@ class TemplateUpdateTestCase(base.ConductorManagerTestCase):
 
         get_configs.return_value = {
             "flavor_id": '2',
-            "neutron_management_network": str(uuid.uuid4())
+            "neutron_management_network": uuidutils.generate_uuid()
         }
 
         option_values = {"tenant_id": ctx.tenant_id,

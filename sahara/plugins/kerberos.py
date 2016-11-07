@@ -13,7 +13,7 @@
 
 from oslo_config import cfg
 from oslo_log import log as logging
-from oslo_utils import uuidutils as uuid
+from oslo_utils import uuidutils
 
 from sahara import conductor as cond
 from sahara import context
@@ -174,7 +174,7 @@ def deploy_infrastructure(cluster, server=None):
 
 def _execute_script(client, script):
     with client.remote() as remote:
-        script_path = '/tmp/%s' % uuid.generate_uuid()[:8]
+        script_path = '/tmp/%s' % uuidutils.generate_uuid()[:8]
         remote.write_file_to(script_path, script)
         remote.execute_command('chmod +x %s' % script_path)
         remote.execute_command('bash %s' % script_path)
@@ -201,7 +201,8 @@ def _get_krb5_config(cluster, server_fqdn):
 
 
 def _get_short_uuid():
-    return "%s%s" % (uuid.generate_uuid()[:8], uuid.generate_uuid()[:8])
+    return "%s%s" % (uuidutils.generate_uuid()[:8],
+                     uuidutils.generate_uuid()[:8])
 
 
 def get_server_password(cluster):

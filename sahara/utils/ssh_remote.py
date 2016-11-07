@@ -37,7 +37,6 @@ import shlex
 import sys
 import threading
 import time
-import uuid
 
 from eventlet.green import subprocess as e_subprocess
 from eventlet import semaphore
@@ -45,6 +44,7 @@ from eventlet import timeout as e_timeout
 from oslo_config import cfg
 from oslo_log import log as logging
 from oslo_utils import excutils
+from oslo_utils import uuidutils
 import paramiko
 import requests
 from requests import adapters
@@ -278,7 +278,7 @@ def _append_fl(sftp, remote_file, data):
 
 def _write_file(sftp, remote_file, data, run_as_root):
     if run_as_root:
-        temp_file = 'temp-file-%s' % six.text_type(uuid.uuid4())
+        temp_file = 'temp-file-%s' % uuidutils.generate_uuid()
         _write_fl(sftp, temp_file, data)
         _execute_command(
             'mv %s %s' % (temp_file, remote_file), run_as_root=True)
@@ -288,7 +288,7 @@ def _write_file(sftp, remote_file, data, run_as_root):
 
 def _append_file(sftp, remote_file, data, run_as_root):
     if run_as_root:
-        temp_file = 'temp-file-%s' % six.text_type(uuid.uuid4())
+        temp_file = 'temp-file-%s' % uuidutils.generate_uuid()
         _write_fl(sftp, temp_file, data)
         _execute_command(
             'cat %s >> %s' % (temp_file, remote_file), run_as_root=True)
@@ -339,7 +339,7 @@ def _read_file_from(remote_file, run_as_root=False):
 
     fl = remote_file
     if run_as_root:
-        fl = 'temp-file-%s' % (six.text_type(uuid.uuid4()))
+        fl = 'temp-file-%s' % (uuidutils.generate_uuid())
         _execute_command('cp %s %s' % (remote_file, fl), run_as_root=True)
 
     try:

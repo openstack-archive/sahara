@@ -14,9 +14,9 @@
 # limitations under the License.
 
 import copy
-import uuid
 
 import mock
+from oslo_utils import uuidutils
 import six
 from sqlalchemy import exc as sa_ex
 import testtools
@@ -37,7 +37,7 @@ SAMPLE_NGT = {
     "plugin_name": "test_plugin",
     "hadoop_version": "test_version",
     "node_processes": ["p1", "p2"],
-    "image_id": str(uuid.uuid4()),
+    "image_id": uuidutils.generate_uuid(),
     "node_configs": {
         "service_1": {
             "config_1": "value_1"
@@ -67,7 +67,7 @@ SAMPLE_CLT = {
     "name": "clt_test",
     "plugin_name": "test_plugin",
     "hadoop_version": "test_version",
-    "default_image_id": str(uuid.uuid4()),
+    "default_image_id": uuidutils.generate_uuid(),
     "cluster_configs": {
         "service_1": {
             "config_1": "value_1"
@@ -103,7 +103,7 @@ SAMPLE_CLT = {
     ],
     "anti_affinity": ["datanode"],
     "description": "my template",
-    "neutron_management_network": str(uuid.uuid4()),
+    "neutron_management_network": uuidutils.generate_uuid(),
     "shares": None,
     "is_public": False,
     "is_protected": False

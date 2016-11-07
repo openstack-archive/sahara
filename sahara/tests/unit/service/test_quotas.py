@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import uuid
 
 import mock
+from oslo_utils import uuidutils
 import testtools
 
 from sahara import exceptions as exc
@@ -108,7 +108,7 @@ class FakeNodeGroup(object):
         self.floating_ip_pool = pool
         self.flavor_id = flavor_id
         self.open_ports = ports
-        self.id = uuid.uuid4()
+        self.id = uuidutils.generate_uuid()
 
 nova_limits = {
     'absolute': {

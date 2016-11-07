@@ -13,10 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import uuid
 
 import mock
-import six
+from oslo_utils import uuidutils
 import testtools
 
 from sahara import conductor as cond
@@ -64,7 +63,7 @@ class JobUtilsTestCase(testtools.TestCase):
         self.assertFalse(by_uuid)
 
     def test_find_possible_data_source_refs_by_name(self):
-        id = six.text_type(uuid.uuid4())
+        id = uuidutils.generate_uuid()
         job_configs = {}
         self.assertEqual([],
                          job_utils.find_possible_data_source_refs_by_name(
@@ -117,7 +116,7 @@ class JobUtilsTestCase(testtools.TestCase):
                          job_utils.find_possible_data_source_refs_by_uuid(
                              job_configs))
 
-        id = six.text_type(uuid.uuid4())
+        id = uuidutils.generate_uuid()
         job_configs = {'args': ['first', name_ref],
                        'configs': {'config': 'value'},
                        'params': {'param': 'value'}}
@@ -146,7 +145,7 @@ class JobUtilsTestCase(testtools.TestCase):
             [id],
             job_utils.find_possible_data_source_refs_by_uuid(job_configs))
 
-        id2 = six.text_type(uuid.uuid4())
+        id2 = uuidutils.generate_uuid()
         job_configs = {'args': [id, id2, name_ref],
                        'configs': {'config': id},
                        'params': {'param': id}}
@@ -161,16 +160,16 @@ class JobUtilsTestCase(testtools.TestCase):
         ctx.return_value = 'dummy'
 
         name_ref = job_utils.DATA_SOURCE_PREFIX+'input'
-        job_exec_id = six.text_type(uuid.uuid4())
+        job_exec_id = uuidutils.generate_uuid()
 
         input_url = "swift://container/input"
         input = u.create_data_source(input_url,
                                      name="input",
-                                     id=six.text_type(uuid.uuid4()))
+                                     id=uuidutils.generate_uuid())
 
         output = u.create_data_source("swift://container/output.%JOB_EXEC_ID%",
                                       name="output",
-                                      id=six.text_type(uuid.uuid4()))
+                                      id=uuidutils.generate_uuid())
         output_url = "swift://container/output." + job_exec_id
 
         by_name = {'input': input,
@@ -273,7 +272,7 @@ class JobUtilsTestCase(testtools.TestCase):
 
     def test_construct_data_source_url_no_placeholders(self):
         base_url = "swift://container/input"
-        job_exec_id = six.text_type(uuid.uuid4())
+        job_exec_id = uuidutils.generate_uuid()
 
         url = job_utils._construct_data_source_url(base_url, job_exec_id)
 
@@ -281,7 +280,7 @@ class JobUtilsTestCase(testtools.TestCase):
 
     def test_construct_data_source_url_job_exec_id_placeholder(self):
         base_url = "swift://container/input.%JOB_EXEC_ID%.out"
-        job_exec_id = six.text_type(uuid.uuid4())
+        job_exec_id = uuidutils.generate_uuid()
 
         url = job_utils._construct_data_source_url(base_url, job_exec_id)
 
@@ -290,7 +289,7 @@ class JobUtilsTestCase(testtools.TestCase):
 
     def test_construct_data_source_url_randstr_placeholder(self):
         base_url = "swift://container/input.%RANDSTR(4)%.%RANDSTR(7)%.out"
-        job_exec_id = six.text_type(uuid.uuid4())
+        job_exec_id = uuidutils.generate_uuid()
 
         url = job_utils._construct_data_source_url(base_url, job_exec_id)
 

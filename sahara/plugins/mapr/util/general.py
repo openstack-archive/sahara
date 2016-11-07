@@ -13,7 +13,7 @@
 # under the License.
 
 
-import uuid
+from oslo_utils import uuidutils
 
 from sahara.conductor import objects
 from sahara import context
@@ -38,7 +38,8 @@ def _run_as(user, command):
 
 
 def unique_file_name(base='/tmp'):
-    return '%(base)s/%(uuid)s' % {'base': base, 'uuid': uuid.uuid4()}
+    return '%(base)s/%(uuid)s' % {'base': base,
+                                  'uuid': uuidutils.generate_uuid()}
 
 
 def remove(instance, path, recursive=True, run_as=None):
@@ -90,7 +91,7 @@ def copy(s_path, s_instance, d_path, d_instance, run_as=None):
 
 def run_script(instance, script, run_as=None, *args, **kwargs):
     with instance.remote() as r:
-        path = '/tmp/%s.sh' % uuid.uuid4()
+        path = '/tmp/%s.sh' % uuidutils.generate_uuid()
         script = files.get_file_text(script) % kwargs
         r.write_file_to(path, script, run_as_root=(run_as == 'root'))
         r.execute_command(_run_as(run_as, 'chmod +x %s' % path))

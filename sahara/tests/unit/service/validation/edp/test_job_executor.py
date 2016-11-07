@@ -14,11 +14,10 @@
 # limitations under the License.
 
 import time
-import uuid
 
 import mock
 from oslo_utils import timeutils
-import six
+from oslo_utils import uuidutils
 import testtools
 
 from sahara import exceptions as ex
@@ -54,8 +53,8 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
         get_job.return_value = mock.Mock(
             type=edp.JOB_TYPE_MAPREDUCE_STREAMING, libs=[], interface=[])
 
-        ds1_id = six.text_type(uuid.uuid4())
-        ds2_id = six.text_type(uuid.uuid4())
+        ds1_id = uuidutils.generate_uuid()
+        ds2_id = uuidutils.generate_uuid()
 
         data_sources = {
             ds1_id: mock.Mock(type="swift", url="http://swift/test"),
@@ -71,7 +70,7 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
 
         self._assert_create_object_validation(
             data={
-                "cluster_id": six.text_type(uuid.uuid4()),
+                "cluster_id": uuidutils.generate_uuid(),
                 "input_id": ds1_id,
                 "output_id": ds2_id,
                 "job_configs": {"configs": {},
@@ -86,7 +85,7 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
 
         self._assert_create_object_validation(
             data={
-                "cluster_id": six.text_type(uuid.uuid4()),
+                "cluster_id": uuidutils.generate_uuid(),
                 "input_id": ds1_id,
                 "output_id": ds2_id,
                 "job_configs": {
@@ -105,8 +104,8 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
         get_job.return_value = mock.Mock(
             type=edp.JOB_TYPE_MAPREDUCE_STREAMING, libs=[], interface=[])
 
-        ds1_id = six.text_type(uuid.uuid4())
-        ds2_id = six.text_type(uuid.uuid4())
+        ds1_id = uuidutils.generate_uuid()
+        ds2_id = uuidutils.generate_uuid()
 
         data_sources = {
             ds1_id: mock.Mock(type="swift", url="http://swift/test"),
@@ -122,7 +121,7 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
 
         self._assert_create_object_validation(
             data={
-                "cluster_id": six.text_type(uuid.uuid4()),
+                "cluster_id": uuidutils.generate_uuid(),
                 "input_id": ds1_id,
                 "output_id": ds2_id,
                 "job_configs": {
@@ -141,7 +140,7 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
 
         self._assert_create_object_validation(
             data={
-                "cluster_id": six.text_type(uuid.uuid4()),
+                "cluster_id": uuidutils.generate_uuid(),
                 "input_id": ds1_id,
                 "output_id": ds2_id,
                 "job_configs": {
@@ -167,9 +166,9 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
 
         self._assert_create_object_validation(
             data={
-                "cluster_id": six.text_type(uuid.uuid4()),
-                "input_id": six.text_type(uuid.uuid4()),
-                "output_id": six.text_type(uuid.uuid4())
+                "cluster_id": uuidutils.generate_uuid(),
+                "input_id": uuidutils.generate_uuid(),
+                "output_id": uuidutils.generate_uuid()
             },
             bad_req_i=(1, "INVALID_COMPONENT_COUNT",
                        "Hadoop cluster should contain 1 oozie component(s). "
@@ -193,7 +192,7 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
 
         # Everything is okay, spark cluster supports EDP by default
         # because cluster requires a master and slaves >= 1
-        wrap_it(data={"cluster_id": six.text_type(uuid.uuid4()),
+        wrap_it(data={"cluster_id": uuidutils.generate_uuid(),
                       "job_configs": {
                           "configs": {
                               "edp.java.main_class": "org.me.class"}}})
@@ -210,7 +209,7 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
 
         self._assert_create_object_validation(
             data={
-                "cluster_id": six.text_type(uuid.uuid4()),
+                "cluster_id": uuidutils.generate_uuid(),
                 "job_configs": {"configs": {},
                                 "params": {},
                                 "args": [],
@@ -222,7 +221,7 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
 
         self._assert_create_object_validation(
             data={
-                "cluster_id": six.text_type(uuid.uuid4()),
+                "cluster_id": uuidutils.generate_uuid(),
                 "job_configs": {
                     "configs": {
                         "edp.java.main_class": ""},
@@ -236,7 +235,7 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
 
         self._assert_create_object_validation(
             data={
-                "cluster_id": six.text_type(uuid.uuid4()),
+                "cluster_id": uuidutils.generate_uuid(),
                 "job_configs": {
                     "configs": {
                         "edp.java.main_class": "org.me.myclass"},
@@ -257,7 +256,7 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
 
         self._assert_create_object_validation(
             data={
-                "cluster_id": six.text_type(uuid.uuid4()),
+                "cluster_id": uuidutils.generate_uuid(),
                 "job_configs": {"configs": {},
                                 "params": {},
                                 "args": [],
@@ -269,7 +268,7 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
 
         self._assert_create_object_validation(
             data={
-                "cluster_id": six.text_type(uuid.uuid4()),
+                "cluster_id": uuidutils.generate_uuid(),
                 "job_configs": {
                     "configs": {
                         "edp.java.main_class": ""},
@@ -283,7 +282,7 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
 
         self._assert_create_object_validation(
             data={
-                "cluster_id": six.text_type(uuid.uuid4()),
+                "cluster_id": uuidutils.generate_uuid(),
                 "job_configs": {
                     "configs": {
                         "edp.java.main_class": "org.me.myclass"},
