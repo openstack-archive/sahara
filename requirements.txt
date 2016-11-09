@@ -2,7 +2,7 @@
 # of appearance. Changing the order has an impact on the overall integration
 # process, which may cause wedges in the gate later.
 
-pbr>=1.6 # Apache-2.0
+pbr>=1.8 # Apache-2.0
 
 alembic>=0.8.4 # MIT
 Babel>=2.3.4 # BSD
