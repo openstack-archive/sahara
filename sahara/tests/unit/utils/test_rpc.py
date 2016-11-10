@@ -56,10 +56,8 @@ class TestMessagingSetup(base.SaharaTestCase):
         super(TestMessagingSetup, self).tearDown()
 
     def test_set_defaults(self):
-        self.override_config('enable', True,
-                             group='oslo_messaging_notifications')
-
         messaging.setup('distributed')
+
         self.assertIsNotNone(messaging.MESSAGING_TRANSPORT)
         self.assertIsNotNone(messaging.NOTIFICATION_TRANSPORT)
         self.assertIsNotNone(messaging.NOTIFIER)
@@ -77,8 +75,6 @@ class TestMessagingSetup(base.SaharaTestCase):
         self.assertEqual(1, self.notifier_init.call_count)
 
     def test_fallback(self):
-        self.override_config('enable', True,
-                             group='oslo_messaging_notifications')
         self.get_notify_transport.side_effect = ValueError()
         messaging.setup('distributed')
 
@@ -100,22 +96,7 @@ class TestMessagingSetup(base.SaharaTestCase):
             self.get_notify_transport.call_args_list)
         self.assertEqual(1, self.notifier_init.call_count)
 
-    def test_no_messaging(self):
-        messaging.setup('all-in-one')
-
-        self.assertEqual(0, self.get_notify_transport.call_count)
-        self.assertEqual(0, self.get_transport.call_count)
-
     def test_only_notifications(self):
-        self.override_config('enable', True,
-                             group='oslo_messaging_notifications')
-
         messaging.setup('all-in-one')
         self.assertEqual(0, self.get_transport.call_count)
         self.assertEqual(1, self.get_notify_transport.call_count)
-
-    def test_only_service_messaging(self):
-        messaging.setup('distributed')
-
-        self.assertEqual(1, self.get_transport.call_count)
-        self.assertEqual(0, self.get_notify_transport.call_count)

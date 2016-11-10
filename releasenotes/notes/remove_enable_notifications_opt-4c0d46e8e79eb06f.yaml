@@ -1,0 +1,6 @@
+---
+deprecations:
+  - The 'enable' option of the 'oslo_messaging_notifications' section
+    has been removed. To enable notifications now please specify the
+    'driver' option in the same section.
+

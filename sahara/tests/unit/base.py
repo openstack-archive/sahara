@@ -19,14 +19,15 @@ from oslotest import base
 from sahara import context
 from sahara.db import api as db_api
 from sahara import main
+from sahara.utils import rpc
 
 
 class SaharaTestCase(base.BaseTestCase):
 
     def setUp(self):
         super(SaharaTestCase, self).setUp()
-
         self.setup_context()
+        rpc.setup('all-in-one')
 
     def setup_context(self, username="test_user", tenant_id="tenant_1",
                       auth_token="test_auth_token", tenant_name='test_tenant',

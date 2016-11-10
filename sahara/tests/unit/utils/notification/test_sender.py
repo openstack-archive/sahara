@@ -27,8 +27,6 @@ class NotificationTest(base.SaharaTestCase):
             def info(self, *args):
                 self.call = args
 
-        self.override_config("enable", True,
-                             group='oslo_messaging_notifications')
         notifier = FakeNotifier()
         mock_notify.return_value = notifier
         ctx = context.ctx()

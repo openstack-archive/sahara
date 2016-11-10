@@ -21,7 +21,6 @@ from oslo_serialization import jsonutils
 
 from sahara import context
 from sahara.i18n import _LE
-from sahara.i18n import _LI
 
 
 MESSAGING_TRANSPORT = None
@@ -105,37 +104,24 @@ def setup_service_messaging():
 
 def setup_notifications():
     global NOTIFICATION_TRANSPORT, NOTIFIER, MESSAGING_TRANSPORT
-    if not cfg.CONF.oslo_messaging_notifications.enable:
-        LOG.info(_LI("Notifications disabled"))
-        return
-
     try:
-        NOTIFICATION_TRANSPORT = messaging.get_notification_transport(
-            cfg.CONF, aliases=_ALIASES)
+        NOTIFICATION_TRANSPORT = \
+            messaging.get_notification_transport(cfg.CONF, aliases=_ALIASES)
     except Exception:
         LOG.error(_LE("Unable to setup notification transport. Reusing "
                       "service transport for that."))
-
         setup_service_messaging()
-
         NOTIFICATION_TRANSPORT = MESSAGING_TRANSPORT
 
     serializer = ContextSerializer(JsonPayloadSerializer())
-    NOTIFIER = messaging.Notifier(
-        NOTIFICATION_TRANSPORT, serializer=serializer)
-    LOG.info(_LI("Notifications enabled"))
+    NOTIFIER = messaging.Notifier(NOTIFICATION_TRANSPORT,
+                                  serializer=serializer)
 
 
 def setup(service_name):
     """Initialise the oslo_messaging layer."""
-    global MESSAGING_TRANSPORT, NOTIFICATION_TRANSPORT, NOTIFIER
-    if (service_name == 'all-in-one' and
-            not cfg.CONF.oslo_messaging_notifications.enable):
-        LOG.info(_LI("Notifications disabled"))
-        return
 
     messaging.set_transport_defaults('sahara')
-
     setup_notifications()
     if service_name != 'all-in-one':
         setup_service_messaging()
