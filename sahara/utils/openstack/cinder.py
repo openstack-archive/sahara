@@ -16,11 +16,11 @@
 # limitations under the License.
 
 from cinderclient.v2 import client as cinder_client_v2
+from keystoneauth1 import exceptions as keystone_exceptions
 from oslo_config import cfg
 from oslo_log import log as logging
 
 from sahara import context
-from sahara import exceptions as ex
 from sahara.i18n import _LW
 from sahara.service import sessions
 from sahara.utils.openstack import base
@@ -79,7 +79,7 @@ def check_cinder_exists():
         base.url_for(context.current().service_catalog, service_type,
                      endpoint_type=CONF.cinder.endpoint_type)
         return True
-    except ex.SystemError:
+    except keystone_exceptions.EndpointNotFound:
         return False
 
 
