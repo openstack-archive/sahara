@@ -14,7 +14,10 @@
 # limitations under the License.
 
 import manilaclient.client as manila_client
-from manilaclient.openstack.common.apiclient import exceptions as manila_ex
+try:
+    from manilaclient.common.apiclient import exceptions as manila_ex
+except ImportError:
+    from manilaclient.openstack.common.apiclient import exceptions as manila_ex
 from oslo_config import cfg
 
 from sahara import context

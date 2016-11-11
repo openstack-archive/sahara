@@ -14,7 +14,10 @@
 # limitations under the License.
 
 
-from manilaclient.openstack.common.apiclient import exceptions as manila_ex
+try:
+    from manilaclient.common.apiclient import exceptions as manila_ex
+except ImportError:
+    from manilaclient.openstack.common.apiclient import exceptions as manila_ex
 import mock
 from oslo_utils import uuidutils
 import testtools

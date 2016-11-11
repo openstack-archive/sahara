@@ -13,7 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from manilaclient.openstack.common.apiclient import exceptions as manila_ex
+try:
+    from manilaclient.common.apiclient import exceptions as manila_ex
+except ImportError:
+    from manilaclient.openstack.common.apiclient import exceptions as manila_ex
 import mock
 
 from sahara.service.validations import shares
