@@ -14,10 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from keystoneauth1 import exceptions as keystone_exceptions
 import mock
 from oslo_config import cfg
 
-from sahara import exceptions as ex
 from sahara import main
 from sahara.tests.unit import base as test_base
 from sahara.utils.openstack import cinder
@@ -65,7 +65,7 @@ class TestCinder(test_base.SaharaTestCase):
 
         mock_url_for.reset_mock()
 
-        mock_url_for.side_effect = ex.SystemError("BANANA")
+        mock_url_for.side_effect = keystone_exceptions.EndpointNotFound()
         self.assertFalse(cinder.check_cinder_exists())
 
 
