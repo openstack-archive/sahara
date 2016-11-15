@@ -110,7 +110,7 @@ limit:
   description: |
     Maximum number of objects in response data.
   in: path
-  requred: false
+  required: false
   type: integer
 
 marker:
@@ -130,7 +130,7 @@ sort_by_cluster_templates:
     this values can started with ``-`` prefix for
     descending sort. For example: ``-name``.
   in: path
-  requred: false
+  required: false
   type: string
 
 sort_by_clusters:
@@ -154,7 +154,7 @@ sort_by_data_sources:
       with ``-`` prefix for descending sort.
       For example: ``-name``.
     in: path
-    requred: false
+    required: false
     type: string
 
 sort_by_job_binaries:
@@ -165,7 +165,7 @@ sort_by_job_binaries:
     Also this values can started with ``-`` prefix
     for descending sort. For example: ``-name``.
   in: path
-  requred: false
+  required: false
   type: string
 
 sort_by_job_binary_internals:
@@ -176,7 +176,7 @@ sort_by_job_binary_internals:
       Also this values can started with ``-`` prefix
       for descending sort. For example: ``-name``.
     in: path
-    requred: false
+    required: false
     type: string
 
 sort_by_job_executions:
@@ -212,7 +212,7 @@ sort_by_node_group_templates:
     this values can started with ``-`` prefix for
     descending sort. For example: ``-name``.
   in: path
-  requred: false
+  required: false
   type: string
 
 url_tenant_id:
