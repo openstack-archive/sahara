@@ -101,7 +101,7 @@
 
 # List of plugins to be loaded. Sahara preserves the order of
 # the list when returning it. (list value)
-#plugins=vanilla,hdp,spark,cdh
+#plugins=vanilla,spark,cdh,ambari,storm,mapr
 
 [database]
 
