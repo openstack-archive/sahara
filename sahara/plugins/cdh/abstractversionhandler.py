@@ -81,9 +81,9 @@ class AbstractVersionHandler(object):
 class BaseVersionHandler(AbstractVersionHandler):
 
     def __init__(self):
-        # Need to be specitied in subclass
+        # Need to be specified in subclass
         self.config_helper = None  # config helper
-        self.cloudera_utils = None  # CoulderaUtils
+        self.cloudera_utils = None  # ClouderaUtils
         self.deploy = None  # to deploy
         self.edp_engine = None
         self.plugin_utils = None  # PluginUtils
