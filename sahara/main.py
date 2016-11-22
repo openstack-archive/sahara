@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import contextlib
 import os
 
 from oslo_config import cfg
@@ -25,6 +26,7 @@ import stevedore
 from sahara.api import acl
 from sahara.common import config as common_config
 from sahara import config
+from sahara import context
 from sahara.i18n import _LI
 from sahara.plugins import base as plugins_base
 from sahara.service import api
@@ -77,13 +79,18 @@ def setup_common(possible_topdir, service_name):
 
     # Validate other configurations (that may produce logs) here
     cinder.validate_config()
-    castellan.validate_config()
+    validate_castellan_config()
 
     messaging.setup(service_name)
 
     plugins_base.setup_plugins()
 
     LOG.info(_LI('Sahara {service} started').format(service=service_name))
+
+
+def validate_castellan_config():
+    with admin_context():
+        castellan.validate_config()
 
 
 def setup_sahara_api(mode):
@@ -149,3 +156,13 @@ def launch_api_service(launcher, service):
     launcher.launch_service(service, workers=CONF.api_workers)
     service.start()
     launcher.wait()
+
+
+@contextlib.contextmanager
+def admin_context():
+    ctx = context.get_admin_context()
+    context.set_ctx(ctx)
+    try:
+        yield
+    finally:
+        context.set_ctx(None)
