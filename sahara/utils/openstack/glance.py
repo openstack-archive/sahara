@@ -43,5 +43,6 @@ CONF.register_opts(opts, group=glance_group)
 
 def client():
     session = sessions.cache().get_session(sessions.SESSION_TYPE_GLANCE)
-    glance = glance_client.Client('2', session=session, auth=keystone.auth())
+    glance = glance_client.Client('2', session=session, auth=keystone.auth(),
+                                  interface=CONF.glance.endpoint_type)
     return glance
