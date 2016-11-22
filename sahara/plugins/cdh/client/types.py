@@ -337,7 +337,7 @@ class BaseApiResource(BaseApiObject):
         raise NotImplementedError
 
     def _require_min_api_version(self, version):
-        """Check mininum verson requirement
+        """Check minimum version requirement
 
         Raise an exception if the version of the api is less than the given
         version.

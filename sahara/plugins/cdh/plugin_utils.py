@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # This file only contains utils not related to cm_api, while in
-# cloudera_utils the functios are cm_api involved.
+# cloudera_utils the functions are cm_api involved.
 
 import os
 import telnetlib  # nosec

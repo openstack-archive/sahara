@@ -71,7 +71,7 @@ class ConfigHelper(object):
         'Await Cloudera agents timeout', 'general', 'cluster',
         config_type='int', priority=1, default_value=300, is_optional=True,
         description="Timeout for Cloudera agents connecting to"
-                    " Coudera Manager, in seconds")
+                    " Cloudera Manager, in seconds")
 
     AWAIT_MANAGER_STARTING_TIMEOUT = p.Config(
         'Timeout for Cloudera Manager starting', 'general', 'cluster',
