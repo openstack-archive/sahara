@@ -255,7 +255,7 @@ class _NFSMounter(_ShareHandler):
         remote.execute_command(mount_command, run_as_root=True)
 
     def unmount_from_instance(self, remote, share_info):
-        """Unounts the share from the instance."""
+        """Unmounts the share from the instance."""
         local_path = self._get_path(share_info)
 
         unmount_command = self._UNMOUNT_COMMAND % local_path

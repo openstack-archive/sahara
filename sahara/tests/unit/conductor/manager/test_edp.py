@@ -543,7 +543,7 @@ class JobExecutionTest(test_base.ConductorManagerTestCase):
         my_sample_job_exec['info'] = {'status': 'KiLLeD'}
         self.api.job_execution_create(ctx, my_sample_job_exec)
 
-        # Search only with job exeuction fields (finds both)
+        # Search only with job execution fields (finds both)
         lst = self.api.job_execution_get_all(ctx, **{'return_code': 1})
         self.assertEqual(2, len(lst))
 

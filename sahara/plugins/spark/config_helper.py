@@ -371,7 +371,7 @@ def generate_spark_env_configs(cluster):
     return '\n'.join(configs)
 
 
-# workernames need to be a list of woker names
+# workernames need to be a list of worker names
 def generate_spark_slaves_configs(workernames):
     return '\n'.join(workernames)
 
