@@ -87,7 +87,7 @@ class ConfigHelperUtilsTest(test_base.SaharaTestCase):
         mod_swift_vals['fs.swift.service.sahara.tenant'] = 'fred'
         self.assertDictContainsSubset(mod_swift_vals, properties)
 
-        # Make sure that swift confgs are left out if not enabled
+        # Make sure that swift configs are left out if not enabled
         c = c_helper.generate_xml_configs(
             {'HDFS': {'fs.swift.service.sahara.tenant': 'fred'},
              'general': {'Enable Swift': False}},
