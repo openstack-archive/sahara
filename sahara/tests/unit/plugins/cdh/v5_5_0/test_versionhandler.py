@@ -60,7 +60,7 @@ class VersionHandlerTestCase(base.SaharaTestCase):
         self.vh._set_cluster_info.assert_called_once_with(cluster)
 
     @mock.patch(plugin_path + "deploy.decommission_cluster")
-    def test_decommmission_nodes(self, decommission_cluster):
+    def test_decommission_nodes(self, decommission_cluster):
         cluster = mock.Mock()
         instances = mock.Mock()
         self.vh.decommission_nodes(cluster, instances)
