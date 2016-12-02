@@ -79,8 +79,17 @@ class Service(object):
         return self._validation_rules
 
     def install(self, cluster_context, instances):
-        g.execute_on_instances(instances, self._install_packages_on_instance,
-                               cluster_context)
+        service_instances = cluster_context.filter_instances(instances,
+                                                             service=self)
+
+        @el.provision_step(_("Install %s service") % self.ui_name,
+                           cluster_context_reference=0, instances_reference=1)
+        def _install(_context, _instances):
+            g.execute_on_instances(_instances,
+                                   self._install_packages_on_instance,
+                                   _context)
+
+        _install(cluster_context, service_instances)
 
     @el.provision_event(instance_reference=1)
     def _install_packages_on_instance(self, instance, cluster_context):
@@ -219,4 +228,7 @@ class Service(object):
         return '%s/conf' % self.home_dir(cluster_context)
 
     def post_configure_sh(self, cluster_context, instances):
+        pass
+
+    def post_configure(self, cluster_context, instances):
         pass
