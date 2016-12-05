@@ -259,7 +259,8 @@ def check_volume_type_exists(volume_type):
 # Cluster creation related checks
 
 def check_cluster_unique_name(name):
-    if name in [cluster.name for cluster in api.get_clusters()]:
+    if name in [cluster.name for cluster in api.get_clusters(
+            tenant_id=context.ctx().tenant_id)]:
         raise ex.NameAlreadyExistsException(
             _("Cluster with name '%s' already exists") % name)
 

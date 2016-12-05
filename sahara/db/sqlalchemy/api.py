@@ -294,7 +294,7 @@ def cluster_get_all(context, regex_search=False,
                     limit=None, marker=None, sort_by=None, **kwargs):
 
     sort_by, order = _parse_sorting_args(sort_by)
-    regex_cols = ['name', 'description', 'plugin_name']
+    regex_cols = ['name', 'description', 'plugin_name', 'tenant_id']
 
     query = model_query(m.Cluster, context)
     if regex_search:

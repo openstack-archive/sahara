@@ -399,7 +399,8 @@ class ClusterTest(test_base.ConductorManagerTestCase):
         self.assertEqual(1, regex_filter.call_count)
         args, kwargs = regex_filter.call_args
         self.assertIs(args[1], m.Cluster)
-        self.assertEqual(args[2], ["name", "description", "plugin_name"])
+        self.assertEqual(args[2], ["name", "description", "plugin_name",
+                                   "tenant_id"])
         self.assertEqual(args[3], {"name": "fox"})
 
     @mock.patch("sahara.service.shares.mount_shares")
