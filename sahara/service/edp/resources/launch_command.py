@@ -15,6 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Script will be executed on cluster nodes, so oslo_log as requirement
+# Should be avoided.
 import logging
 import signal
 import subprocess  # nosec
