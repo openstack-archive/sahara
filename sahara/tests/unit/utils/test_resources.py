@@ -47,7 +47,7 @@ class SimpleResourceTestCase(base.SaharaTestCase):
         r0 = resources.Resource(_name=self.test_name, _info=self.test_info_0)
         r1 = resources.Resource(_name=self.test_name, _info=self.test_info_1)
 
-        self.assertFalse(r0 == r1)
+        self.assertNotEqual(r0, r1)
 
     def test_as_resource(self):
         r = resources.Resource(_name=self.test_name, _info=self.test_info_0)
