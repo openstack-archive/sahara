@@ -1,4 +1,4 @@
-How do run a Sahara cluster on bare metal servers
+How to run a Sahara cluster on bare metal servers
 =================================================
 
 Hadoop clusters are designed to store and analyze extremely large amounts
@@ -108,7 +108,7 @@ is time consuming, and the whole root disk is filled from ``/dev/zero`` for
 security reasons.
 
 Known limitations:
-==================
+------------------
 
 * Security groups are not applied.
 * When booting a nova instance with a bare metal flavor, the user can not
