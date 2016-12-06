@@ -202,6 +202,8 @@ function start_sahara {
 function configure_tempest_for_sahara {
     if is_service_enabled tempest; then
         iniset $TEMPEST_CONFIG service_available sahara True
+        # TODO(shuyingya): Delete this configuration once the Mitaka release is EOL.
+        iniset $TEMPEST_CONFIG data-processing plugin_update_support False
         iniset $TEMPEST_CONFIG data-processing-feature-enabled plugins $SAHARA_ENABLED_PLUGINS
     fi
 }
