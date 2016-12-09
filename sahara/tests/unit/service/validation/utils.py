@@ -422,7 +422,9 @@ class ValidationTestCase(base.SaharaTestCase):
             'plugin_name': 'fake',
             'hadoop_version': '0.1',
             'default_image_id': '550e8400-e29b-41d4-a716-446655440000',
-            'domain_name': 'domain.org.'
+            'domain_name': 'domain.org.',
+            'neutron_management_network': 'd9a3bebc-f788-4b81-'
+                                          '9a93-aa048022c1ca'
         }
         self._assert_create_object_validation(data=data)
         data = {

@@ -159,6 +159,7 @@ class FakeNodeGroup(object):
     def __init__(self, user, priv_key):
         self.image_username = user
         self.cluster = FakeCluster(priv_key)
+        self.floating_ip_pool = 'public'
 
 
 class FakeInstance(object):

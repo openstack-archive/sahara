@@ -1,0 +1,5 @@
+---
+upgrade:
+  - Neutron is used by default now (use_neutron=True).
+    Nova-network is not functionaly for most use cases
+    starting from Ocata.

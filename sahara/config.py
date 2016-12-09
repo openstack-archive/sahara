@@ -78,7 +78,7 @@ networking_opts = [
                help="The suffix of the node's FQDN. In nova-network that is "
                     "the dhcp_domain config parameter."),
     cfg.BoolOpt('use_neutron',
-                default=False,
+                default=True,
                 help="Use Neutron Networking (False indicates the use of Nova "
                      "networking)."),
     cfg.BoolOpt('use_namespaces',

@@ -158,6 +158,7 @@ class TestClusterCreateValidation(u.ValidationTestCase):
         )
 
     def test_cluster_create_mixed_nova_neutron(self):
+        self.override_config("use_neutron", False)
         self._assert_create_object_validation(
             data={
                 'name': "test-name",
@@ -378,7 +379,6 @@ class TestClusterCreateValidation(u.ValidationTestCase):
         )
 
     def test_cluster_create_availability_zone(self):
-        self.override_config('use_neutron', True)
         self._assert_create_object_validation(
             data={
                 'name': 'testname',
@@ -407,7 +407,6 @@ class TestClusterCreateValidation(u.ValidationTestCase):
         )
 
     def test_cluster_create_wrong_availability_zone(self):
-        self.override_config('use_neutron', True)
         self._assert_create_object_validation(
             data={
                 'name': 'testname',
@@ -435,7 +434,6 @@ class TestClusterCreateValidation(u.ValidationTestCase):
         )
 
     def test_cluster_create_wrong_volumes_availability_zone(self):
-        self.override_config('use_neutron', True)
         self._assert_create_object_validation(
             data={
                 'name': 'testname',
@@ -532,6 +530,8 @@ class TestClusterCreateFlavorValidation(base.SaharaWithDbTestCase):
             "plugin_name": "fake",
             "hadoop_version": "0.1",
             "cluster_template_id": '%s' % ctmpl_id,
+            "neutron_management_network": "d9a3bebc-f788-4b81-"
+                                          "9a93-aa048022c1ca",
             'default_image_id': '550e8400-e29b-41d4-a716-446655440000'
         }
         patchers = u.start_patch(False)
@@ -542,6 +542,8 @@ class TestClusterCreateFlavorValidation(base.SaharaWithDbTestCase):
             "name": "testwithnodegroups",
             "plugin_name": "fake",
             "hadoop_version": "0.1",
+            "neutron_management_network": "d9a3bebc-f788-4b81-"
+                                          "9a93-aa048022c1ca",
             "node_groups": [
                 {
                     "name": "allinone",
@@ -576,6 +578,8 @@ class TestClusterCreateFlavorValidation(base.SaharaWithDbTestCase):
             "name": "testwithnodegroups",
             "plugin_name": "fake",
             "hadoop_version": "0.1",
+            "neutron_management_network": "d9a3bebc-f788-4b81-"
+                                          "9a93-aa048022c1ca",
             "node_groups": [
                 {
                     "name": "allinone",
@@ -614,6 +618,8 @@ class TestClusterCreateFlavorValidation(base.SaharaWithDbTestCase):
             "plugin_name": "fake",
             "hadoop_version": "0.1",
             "cluster_template_id": '%s' % ctmpl_id,
+            "neutron_management_network": "d9a3bebc-f788-4b81-"
+                                          "9a93-aa048022c1ca",
             'default_image_id': '550e8400-e29b-41d4-a716-446655440000',
             "node_groups": [
                 {
@@ -639,6 +645,8 @@ class TestClusterCreateFlavorValidation(base.SaharaWithDbTestCase):
             "name": "testtmplnodegroups",
             "plugin_name": "fake",
             "hadoop_version": "0.1",
+            "neutron_management_network": "d9a3bebc-f788-4b81-"
+                                          "9a93-aa048022c1ca",
             "node_groups": [
                 {
                     "node_group_template_id": '%s' % ng_id,
