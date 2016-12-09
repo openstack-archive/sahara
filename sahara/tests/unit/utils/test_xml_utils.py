@@ -196,7 +196,7 @@ class XMLUtilsTestCase(testtools.TestCase):
 
         # Prove they're different
         diff = stripped.symmetric_difference(unstripped)
-        self.assertTrue(len(diff) > 0)
+        self.assertGreater(len(diff), 0)
 
         # Prove the differences are only blank lines
         non_blank_diffs = [l for l in diff if not l.isspace()]
