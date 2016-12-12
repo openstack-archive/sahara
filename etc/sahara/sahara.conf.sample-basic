@@ -16,7 +16,7 @@
 #use_floating_ips=true
 
 # Use Neutron or Nova Network (boolean value)
-#use_neutron=false
+#use_neutron=true
 
 # Use network namespaces for communication (only valid to use in conjunction
 # with use_neutron=True)

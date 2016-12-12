@@ -221,6 +221,7 @@ class TestQuotas(base.SaharaTestCase):
     @mock.patch('sahara.utils.openstack.nova.client',
                 return_value=FakeNovaClient(nova_limits))
     def test_get_nova_limits(self, nova):
+        self.override_config('use_neutron', False)
         self.assertEqual(
             {'cpu': 10, 'floatingips': 200,
              'instances': 3, 'ram': 9, 'security_group_rules': 'unlimited',
@@ -238,6 +239,7 @@ class TestQuotas(base.SaharaTestCase):
     @mock.patch('sahara.utils.openstack.neutron.client',
                 return_value=FakeNeutronClient(neutron_limits))
     def test_neutron_limits(self, neutron):
+        self.override_config('use_neutron', False)
         self.assertEqual({}, quotas._get_neutron_limits())
         self.override_config('use_neutron', True)
         self.assertEqual({'floatingips': 2340,

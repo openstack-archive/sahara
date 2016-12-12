@@ -73,11 +73,9 @@ be set to DEBUG. By default the sahara's log level is set to WARNING.
 Networking configuration
 ------------------------
 
-By default sahara is configured to use the nova-network implementation
-of OpenStack Networking. If an OpenStack cluster uses neutron,
-then the ``use_neutron`` parameter should be set to ``True`` in the
-sahara configuration file. Additionally, if the cluster supports network
-namespaces the ``use_namespaces`` property can be used to enable their usage.
+By default sahara is configured to use the neutron. Additionally, if the
+cluster supports network namespaces the ``use_namespaces`` property can
+be used to enable their usage.
 
 .. sourcecode:: cfg
 
@@ -89,6 +87,10 @@ namespaces the ``use_namespaces`` property can be used to enable their usage.
     If a user other than ``root`` will be running the Sahara server
     instance and namespaces are used, some additional configuration is
     required, please see :ref:`non-root-users` for more information.
+
+If an OpenStack cluster uses the deprecated nova-network,
+then the ``use_neutron`` parameter should be set to ``False`` in the
+sahara configuration file.
 
 .. _floating_ip_management:
 
