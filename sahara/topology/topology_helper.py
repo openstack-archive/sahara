@@ -97,7 +97,7 @@ def _read_compute_topology():
                 if not line:
                     continue
                 (host, path) = line.split()
-                # Calulating host id based on tenant id and host
+                # Calculating host id based on tenant id and host
                 # using the same algorithm as in nova
                 # see nova/api/openstack/compute/views/servers.py
                 # def _get_host_id(instance):
