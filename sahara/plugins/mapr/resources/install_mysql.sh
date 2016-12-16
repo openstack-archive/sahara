@@ -14,7 +14,7 @@ if [ ! -f /etc/init.d/mysql* ]; then
                                                         /etc/mysql/my.cnf
         sudo service mysql restart
     elif [[ $1 == *"CentOS"* ]] || \
-        [[ $1 == *"Red Hat Enterprise Linux"* ]]; then
+        [[ $1 == "RedHatEnterpriseServer" ]]; then
         sudo yum install -y mysql-server
         sudo yum install -y mysql-connector-java
     elif [[ $1 == *"SUSE"* ]]; then
