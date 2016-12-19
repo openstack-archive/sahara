@@ -398,7 +398,7 @@ class ClusterTest(test_base.ConductorManagerTestCase):
         self.api.cluster_get_all(ctx, regex_search=True, name="fox")
         self.assertEqual(1, regex_filter.call_count)
         args, kwargs = regex_filter.call_args
-        self.assertTrue(type(args[1] is m.Cluster))
+        self.assertIs(args[1], m.Cluster)
         self.assertEqual(args[2], ["name", "description", "plugin_name"])
         self.assertEqual(args[3], {"name": "fox"})
 
