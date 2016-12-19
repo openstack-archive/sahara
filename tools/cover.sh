@@ -23,8 +23,8 @@ show_diff () {
 }
 
 # Stash uncommitted changes, checkout master and save coverage report
-uncommited=$(git status --porcelain | grep -v "^??")
-[[ -n $uncommited ]] && git stash > /dev/null
+uncommitted=$(git status --porcelain | grep -v "^??")
+[[ -n $uncommitted ]] && git stash > /dev/null
 git checkout HEAD^
 
 baseline_report=$(mktemp -t sahara_coverageXXXXXXX)
@@ -34,7 +34,7 @@ baseline_missing=$(awk 'END { print $3 }' $baseline_report)
 
 # Checkout back and unstash uncommitted changes (if any)
 git checkout -
-[[ -n $uncommited ]] && git stash pop > /dev/null
+[[ -n $uncommitted ]] && git stash pop > /dev/null
 
 # Generate and save coverage report
 current_report=$(mktemp -t sahara_coverageXXXXXXX)
