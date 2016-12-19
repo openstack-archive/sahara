@@ -215,7 +215,7 @@ class DataSourceTest(test_base.ConductorManagerTestCase):
         self.api.data_source_get_all(ctx, regex_search=True, name="fox")
         self.assertEqual(1, regex_filter.call_count)
         args, kwargs = regex_filter.call_args
-        self.assertTrue(type(args[1] is m.DataSource))
+        self.assertIs(args[1], m.DataSource)
         self.assertEqual(args[2], ["name", "description", "url"])
         self.assertEqual(args[3], {"name": "fox"})
 
@@ -496,19 +496,19 @@ class JobExecutionTest(test_base.ConductorManagerTestCase):
 
         # First call, after externals were removed
         args, kwargs = regex_filter.call_args_list[0]
-        self.assertTrue(type(args[1] is m.JobExecution))
+        self.assertIs(args[1], m.JobExecution)
         self.assertEqual(args[2], ["job.name", "cluster.name"])
         self.assertEqual(args[3], {"id": "124"})
 
         # Second call, looking for cluster.name
         args, kwargs = regex_filter.call_args_list[1]
-        self.assertTrue(type(args[1] is m.Cluster))
+        self.assertIs(args[1], m.Cluster)
         self.assertEqual(args[2], ["name"])
         self.assertEqual(args[3], {"name": "jack"})
 
         # Third call, looking for job.name
         args, kwargs = regex_filter.call_args_list[2]
-        self.assertTrue(type(args[1] is m.Job))
+        self.assertIs(args[1], m.Job)
         self.assertEqual(args[2], ["name"])
         self.assertEqual(args[3], {"name": "fox"})
 
@@ -681,7 +681,7 @@ class JobTest(test_base.ConductorManagerTestCase):
         self.api.job_get_all(ctx, regex_search=True, name="fox")
         self.assertEqual(1, regex_filter.call_count)
         args, kwargs = regex_filter.call_args
-        self.assertTrue(type(args[1] is m.Job))
+        self.assertIs(args[1], m.Job)
         self.assertEqual(args[2], ["name", "description"])
         self.assertEqual(args[3], {"name": "fox"})
 
@@ -849,7 +849,7 @@ class JobBinaryInternalTest(test_base.ConductorManagerTestCase):
                                              regex_search=True, name="fox")
         self.assertEqual(1, regex_filter.call_count)
         args, kwargs = regex_filter.call_args
-        self.assertTrue(type(args[1] is m.JobBinaryInternal))
+        self.assertIs(args[1], m.JobBinaryInternal)
         self.assertEqual(args[2], ["name"])
         self.assertEqual(args[3], {"name": "fox"})
 
@@ -1024,7 +1024,7 @@ class JobBinaryTest(test_base.ConductorManagerTestCase):
         self.api.job_binary_get_all(ctx, regex_search=True, name="fox")
         self.assertEqual(1, regex_filter.call_count)
         args, kwargs = regex_filter.call_args
-        self.assertTrue(type(args[1] is m.JobBinary))
+        self.assertIs(args[1], m.JobBinary)
         self.assertEqual(args[2], ["name", "description", "url"])
         self.assertEqual(args[3], {"name": "fox"})
 
