@@ -255,7 +255,8 @@ class NodeGroupTemplates(test_base.ConductorManagerTestCase):
         self.assertEqual(1, regex_filter.call_count)
         args, kwargs = regex_filter.call_args
         self.assertIs(args[1], m.NodeGroupTemplate)
-        self.assertEqual(args[2], ["name", "description", "plugin_name"])
+        self.assertEqual(args[2], ["name", "description", "plugin_name",
+                                   "tenant_id"])
         self.assertEqual(args[3], {"name": "fox"})
 
     def test_ngt_update(self):
@@ -564,7 +565,8 @@ class ClusterTemplates(test_base.ConductorManagerTestCase):
         self.assertEqual(1, regex_filter.call_count)
         args, kwargs = regex_filter.call_args
         self.assertIs(args[1], m.ClusterTemplate)
-        self.assertEqual(args[2], ["name", "description", "plugin_name"])
+        self.assertEqual(args[2], ["name", "description", "plugin_name",
+                                   "tenant_id"])
         self.assertEqual(args[3], {"name": "fox"})
 
     def test_clt_update(self):
