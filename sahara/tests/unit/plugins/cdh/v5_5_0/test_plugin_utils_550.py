@@ -13,13 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from sahara.plugins.cdh.v5_4_0 import plugin_utils as pu
+from sahara.plugins.cdh.v5_5_0 import plugin_utils as pu
 from sahara.tests.unit.plugins.cdh import base_plugin_utils_test
 
 
-class TestPluginUtilsV540(base_plugin_utils_test.TestPluginUtilsHigherThanV5):
+class TestPluginUtilsV550(base_plugin_utils_test.TestPluginUtilsHigherThanV5):
 
     def setUp(self):
-        super(TestPluginUtilsV540, self).setUp()
-        self.plug_utils = pu.PluginUtilsV540()
-        self.version = "v5_4_0"
+        super(TestPluginUtilsV550, self).setUp()
+        self.plug_utils = pu.PluginUtilsV550()
+        self.version = "v5_5_0"
