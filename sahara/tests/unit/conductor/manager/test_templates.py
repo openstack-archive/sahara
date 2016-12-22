@@ -594,7 +594,7 @@ class ClusterTemplates(test_base.ConductorManagerTestCase):
 
         # create a cluster and try updating the referenced cluster template
         cluster_val = copy.deepcopy(cluster_tests.SAMPLE_CLUSTER)
-        cluster_val['name'] = "ClusterTempalteUpdateTestCluster"
+        cluster_val['name'] = "ClusterTemplateUpdateTestCluster"
         cluster_val['cluster_template_id'] = clt['id']
         self.api.cluster_create(ctx, cluster_val)
         update_values = {"name": "noUpdateInUseName"}
