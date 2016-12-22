@@ -1,0 +1,530 @@
+[
+    {
+        "desc": "Whether or not periodic stacks collection is enabled.",
+        "display_name": "Stacks Collection Enabled",
+        "name": "stacks_collection_enabled",
+        "value": "false"
+    },
+    {
+        "desc": "The method used to collect stacks. The jstack option involves periodically running the jstack command against the role's daemon process. The servlet method is available for those roles that have an HTTP server endpoint exposing the current stacks traces of all threads. When the servlet method is selected, that HTTP endpoint is periodically scraped.",
+        "display_name": "Stacks Collection Method",
+        "name": "stacks_collection_method",
+        "value": "jstack"
+    },
+    {
+        "desc": "Maximum size in bytes for the Java Process heap memory.  Passed to Java -Xmx.",
+        "display_name": "Java Heap Size of Catalog Server in Bytes",
+        "name": "catalogd_embedded_jvm_heapsize",
+        "value": "4294967296"
+    },
+    {
+        "desc": "Directory where the Catalog Server core dump is placed.",
+        "display_name": "Catalog Server Core Dump Directory",
+        "name": "core_dump_dir",
+        "value": "/var/log/catalogd"
+    },
+    {
+        "desc": "The period to review when computing unexpected exits.",
+        "display_name": "Unexpected Exits Monitoring Period",
+        "name": "unexpected_exits_window",
+        "value": "5"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Catalog Server Web Server User Password parameter.",
+        "display_name": "Suppress Parameter Validation: Catalog Server Web Server User Password",
+        "name": "role_config_suppression_webserver_htpassword_password",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Heap Dump Directory parameter.",
+        "display_name": "Suppress Parameter Validation: Heap Dump Directory",
+        "name": "role_config_suppression_oom_heap_dump_dir",
+        "value": "false"
+    },
+    {
+        "desc": "The path to the TLS/SSL file containing the private key used for TLS/SSL. Used when Catalog Server Webserver is acting as a TLS/SSL server. The certificate file must be in PEM format.",
+        "display_name": "Catalog Server Webserver TLS/SSL Server Private Key File (PEM Format)",
+        "name": "webserver_private_key_file",
+        "value": null
+    },
+    {
+        "desc": "When set, Cloudera Manager will send alerts when the health of this role reaches the threshold specified by the EventServer setting eventserver_health_events_alert_threshold",
+        "display_name": "Enable Health Alerts for this Role",
+        "name": "enable_alerts",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Catalog Server Log Directory parameter.",
+        "display_name": "Suppress Parameter Validation: Catalog Server Log Directory",
+        "name": "role_config_suppression_log_dir",
+        "value": "false"
+    },
+    {
+        "desc": "When set, generates heap dump file when java.lang.OutOfMemoryError is thrown.",
+        "display_name": "Dump Heap When Out of Memory",
+        "name": "oom_heap_dump_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Catalog Server Web Server Username parameter.",
+        "display_name": "Suppress Parameter Validation: Catalog Server Web Server Username",
+        "name": "role_config_suppression_webserver_htpassword_user",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Java Configuration Options for Catalog Server parameter.",
+        "display_name": "Suppress Parameter Validation: Java Configuration Options for Catalog Server",
+        "name": "role_config_suppression_catalogd_java_opts",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Stacks Collection Directory parameter.",
+        "display_name": "Suppress Parameter Validation: Stacks Collection Directory",
+        "name": "role_config_suppression_stacks_collection_directory",
+        "value": "false"
+    },
+    {
+        "desc": "The password for the private key in the Catalog Server Webserver TLS/SSL Server Certificate and Private Key file.  If left blank, the private key is not protected by a password.",
+        "display_name": "Catalog Server Webserver TLS/SSL Private Key Password",
+        "name": "webserver_private_key_password_cmd",
+        "value": null
+    },
+    {
+        "desc": "Number of retry attempts the Catalog Server will make when connecting to the Hive Metastore Server. By default, the Catalog Server waits one second between retries.",
+        "display_name": "Catalog Server Hive Metastore Connection Retries",
+        "name": "hive_metastore_connect_retries",
+        "value": "5"
+    },
+    {
+        "desc": "The health test thresholds for monitoring of free space on the filesystem that contains this role's log directory. Specified as a percentage of the capacity on that filesystem. This setting is not used if a Log Directory Free Space Monitoring Absolute Thresholds setting is configured.",
+        "display_name": "Log Directory Free Space Monitoring Percentage Thresholds",
+        "name": "log_directory_free_space_percentage_thresholds",
+        "value": "{\"critical\":\"never\",\"warning\":\"never\"}"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Catalog Server Webserver TLS/SSL Server Certificate File (PEM Format) parameter.",
+        "display_name": "Suppress Parameter Validation: Catalog Server Webserver TLS/SSL Server Certificate File (PEM Format)",
+        "name": "role_config_suppression_webserver_certificate_file",
+        "value": "false"
+    },
+    {
+        "desc": "Port where Catalog Server debug web server runs.",
+        "display_name": "Catalog Server HTTP Server Port",
+        "name": "catalogserver_webserver_port",
+        "value": "25020"
+    },
+    {
+        "desc": "The health test thresholds of the number of file descriptors used. Specified as a percentage of file descriptor limit.",
+        "display_name": "File Descriptor Monitoring Thresholds",
+        "name": "catalogserver_fd_thresholds",
+        "value": "{\"critical\":\"70.0\",\"warning\":\"50.0\"}"
+    },
+    {
+        "desc": "Port where Catalog Server is exported.",
+        "display_name": "Catalog Server Service Port",
+        "name": "catalog_service_port",
+        "value": "26000"
+    },
+    {
+        "desc": "The health test thresholds for monitoring of free space on the filesystem that contains this role's heap dump directory.",
+        "display_name": "Heap Dump Directory Free Space Monitoring Absolute Thresholds",
+        "name": "heap_dump_directory_free_space_absolute_thresholds",
+        "value": "{\"critical\":\"5.36870912E9\",\"warning\":\"1.073741824E10\"}"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Catalog Server HBase Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: Catalog Server HBase Advanced Configuration Snippet (Safety Valve)",
+        "name": "role_config_suppression_catalogd_hbase_conf_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Catalog Server Hive Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: Catalog Server Hive Advanced Configuration Snippet (Safety Valve)",
+        "name": "role_config_suppression_catalogd_hive_conf_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "The maximum size, in megabytes, per log file for Impala Catalog Server logs.  Typically used by log4j or logback.",
+        "display_name": "Impala Catalog Server Max Log Size",
+        "name": "max_log_size",
+        "value": "200"
+    },
+    {
+        "desc": "<p>The configured triggers for this role. This is a JSON formatted list of triggers. These triggers are evaluated as part as the health system. Every trigger expression is parsed, and if the trigger condition is met, the list of actions provided in the trigger expression is executed.</p><p>Each trigger has the following fields:</p><ul><li><code>triggerName</code> <b>(mandatory)</b> - The name of the trigger. This value must be unique for the specific role. </li><li><code>triggerExpression</code> <b>(mandatory)</b> - A tsquery expression representing the trigger. </li><li><code>streamThreshold</code> <b>(optional)</b> - The maximum number of streams that can satisfy a condition of a trigger before the condition fires. By default set to 0, and any stream returned causes the condition to fire. </li><li><code>enabled</code> <b> (optional)</b> - By default set to 'true'. If set to 'false', the trigger is not evaluated.</li><li><code>expressionEditorConfig</code> <b> (optional)</b> - Metadata for the trigger editor. If present, the trigger should only be edited from the Edit Trigger page; editing the trigger here can lead to inconsistencies.</li></ul><p>For example, the following JSON formatted trigger configured for a DataNode fires if the DataNode has more than 1500 file descriptors opened:</p><p><pre>[{\"triggerName\": \"sample-trigger\",\n  \"triggerExpression\": \"IF (SELECT fd_open WHERE roleName=$ROLENAME and last(fd_open) > 1500) DO health:bad\",\n  \"streamThreshold\": 0, \"enabled\": \"true\"}]</pre></p><p>See the trigger rules documentation for more details on how to write triggers using tsquery.</p><p>The JSON format is evolving and may change and, as a result, backward compatibility is not guaranteed between releases.</p>",
+        "display_name": "Role Triggers",
+        "name": "role_triggers",
+        "value": "[]"
+    },
+    {
+        "desc": "Username for Catalog Server web server authentication.",
+        "display_name": "Catalog Server Web Server Username",
+        "name": "webserver_htpassword_user",
+        "value": null
+    },
+    {
+        "desc": "Password for Catalog Server web server authentication.",
+        "display_name": "Catalog Server Web Server User Password",
+        "name": "webserver_htpassword_password",
+        "value": null
+    },
+    {
+        "desc": "Directory where Catalog Server will place its log files.",
+        "display_name": "Catalog Server Log Directory",
+        "name": "log_dir",
+        "value": "/var/log/catalogd"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>hdfs-site.xml</strong> for this role only.",
+        "display_name": "Catalog Server HDFS Advanced Configuration Snippet (Safety Valve)",
+        "name": "catalogd_hdfs_site_conf_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "The amount of stacks data that is retained. After the retention limit is reached, the oldest data is deleted.",
+        "display_name": "Stacks Collection Data Retention",
+        "name": "stacks_collection_data_retention",
+        "value": "104857600"
+    },
+    {
+        "desc": "Whether to suppress the results of the Unexpected Exits heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Unexpected Exits",
+        "name": "role_health_suppression_catalogserver_unexpected_exits",
+        "value": "false"
+    },
+    {
+        "desc": "Enable/Disable Catalog Server web server. This web server contains useful information about Catalog Server daemon.",
+        "display_name": "Enable Catalog Server Web Server",
+        "name": "catalogd_enable_webserver",
+        "value": "true"
+    },
+    {
+        "desc": "When computing the overall Impala Catalog Server health, consider the host's health.",
+        "display_name": "Impala Catalog Server Host Health Test",
+        "name": "catalogserver_host_health_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "The health test thresholds for unexpected exits encountered within a recent period specified by the unexpected_exits_window configuration for the role.",
+        "display_name": "Unexpected Exits Thresholds",
+        "name": "unexpected_exits_thresholds",
+        "value": "{\"critical\":\"any\",\"warning\":\"never\"}"
+    },
+    {
+        "desc": "The health test thresholds on the resident size of the process.",
+        "display_name": "Resident Set Size Thresholds",
+        "name": "process_resident_set_size_thresholds",
+        "value": "{\"critical\":\"never\",\"warning\":\"never\"}"
+    },
+    {
+        "desc": "The health test thresholds for monitoring of free space on the filesystem that contains this role's heap dump directory. Specified as a percentage of the capacity on that filesystem. This setting is not used if a Heap Dump Directory Free Space Monitoring Absolute Thresholds setting is configured.",
+        "display_name": "Heap Dump Directory Free Space Monitoring Percentage Thresholds",
+        "name": "heap_dump_directory_free_space_percentage_thresholds",
+        "value": "{\"critical\":\"never\",\"warning\":\"never\"}"
+    },
+    {
+        "desc": "Number of CPU shares to assign to this role. The greater the number of shares, the larger the share of the host's CPUs that will be given to this role when the host experiences CPU contention. Must be between 2 and 262144. Defaults to 1024 for processes not managed by Cloudera Manager.",
+        "display_name": "Cgroup CPU Shares",
+        "name": "rm_cpu_shares",
+        "value": "1024"
+    },
+    {
+        "desc": "Directory for storing Catalog Server Breakpad dumps.",
+        "display_name": "Catalog Server Breakpad Dump Directory",
+        "name": "minidump_path",
+        "value": "/var/log/impala-minidumps"
+    },
+    {
+        "desc": "The minimum log level for Impala Catalog Server logs",
+        "display_name": "Impala Catalog Server Logging Threshold",
+        "name": "log_threshold",
+        "value": "INFO"
+    },
+    {
+        "desc": "Whether to suppress the results of the Process Status heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Process Status",
+        "name": "role_health_suppression_catalogserver_scm_health",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the Swap Memory Usage heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Swap Memory Usage",
+        "name": "role_health_suppression_catalogserver_swap_memory_usage",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the Log Directory Free Space heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Log Directory Free Space",
+        "name": "role_health_suppression_catalogserver_log_directory_free_space",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the Host Health heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Host Health",
+        "name": "role_health_suppression_catalogserver_host_health",
+        "value": "false"
+    },
+    {
+        "desc": "Enables the health test that the Cloudera Manager Agent can successfully contact and gather metrics from the web server.",
+        "display_name": "Web Metric Collection",
+        "name": "catalogserver_web_metric_collection_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "The amount of time to wait for the Catalog Server to fully start up and connect to the StateStore before enforcing the connectivity check.",
+        "display_name": "Catalog Server Connectivity Tolerance at Startup",
+        "name": "catalogserver_connectivity_tolerance",
+        "value": "180"
+    },
+    {
+        "desc": "When set, this role's process is automatically (and transparently) restarted in the event of an unexpected failure.",
+        "display_name": "Automatically Restart Process",
+        "name": "process_auto_restart",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Catalog Server Webserver TLS/SSL Private Key Password parameter.",
+        "display_name": "Suppress Parameter Validation: Catalog Server Webserver TLS/SSL Private Key Password",
+        "name": "role_config_suppression_webserver_private_key_password_cmd",
+        "value": "false"
+    },
+    {
+        "desc": "Enables the health test that the Impala Catalog Server's process state is consistent with the role configuration",
+        "display_name": "Impala Catalog Server Process Health Test",
+        "name": "catalogserver_scm_health_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the CDH Version Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: CDH Version Validator",
+        "name": "role_config_suppression_cdh_version_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Hard memory limit to assign to this role, enforced by the Linux kernel. When the limit is reached, the kernel will reclaim pages charged to the process. If reclaiming fails, the kernel may kill the process. Both anonymous as well as page cache pages contribute to the limit. Use a value of -1 B to specify no limit. By default processes not managed by Cloudera Manager will have no limit.",
+        "display_name": "Cgroup Memory Hard Limit",
+        "name": "rm_memory_hard_limit",
+        "value": "-1"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Catalog Server Command Line Argument Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: Catalog Server Command Line Argument Advanced Configuration Snippet (Safety Valve)",
+        "name": "role_config_suppression_catalogd_cmd_args_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the Web Server Status heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Web Server Status",
+        "name": "role_health_suppression_catalogserver_web_metric_collection",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds on the swap memory usage of the process.",
+        "display_name": "Process Swap Memory Thresholds",
+        "name": "process_swap_memory_thresholds",
+        "value": "{\"critical\":\"never\",\"warning\":\"any\"}"
+    },
+    {
+        "desc": "Whether to suppress the results of the File Descriptors heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: File Descriptors",
+        "name": "role_health_suppression_catalogserver_file_descriptor",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds for monitoring of free space on the filesystem that contains this role's log directory.",
+        "display_name": "Log Directory Free Space Monitoring Absolute Thresholds",
+        "name": "log_directory_free_space_absolute_thresholds",
+        "value": "{\"critical\":\"5.36870912E9\",\"warning\":\"1.073741824E10\"}"
+    },
+    {
+        "desc": "Enables the health test that verifies the Catalog Server is connected to the StateStore",
+        "display_name": "Catalog Server Connectivity Health Test",
+        "name": "catalogserver_connectivity_health_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "If configured, overrides the process soft and hard rlimits (also called ulimits) for file descriptors to the configured value.",
+        "display_name": "Maximum Process File Descriptors",
+        "name": "rlimit_fds",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress the results of the Heap Dump Directory Free Space heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Heap Dump Directory Free Space",
+        "name": "role_health_suppression_catalogserver_heap_dump_directory_free_space",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Catalog Server Core Dump Directory parameter.",
+        "display_name": "Suppress Parameter Validation: Catalog Server Core Dump Directory",
+        "name": "role_config_suppression_core_dump_dir",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Catalog Server HDFS Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: Catalog Server HDFS Advanced Configuration Snippet (Safety Valve)",
+        "name": "role_config_suppression_catalogd_hdfs_site_conf_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the StateStore Connectivity heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: StateStore Connectivity",
+        "name": "role_health_suppression_catalogserver_connectivity",
+        "value": "false"
+    },
+    {
+        "desc": "The path to the TLS/SSL file containing the server certificate key used for TLS/SSL. Used when Catalog Server Webserver is acting as a TLS/SSL server. The certificate file must be in PEM format.",
+        "display_name": "Catalog Server Webserver TLS/SSL Server Certificate File (PEM Format)",
+        "name": "webserver_certificate_file",
+        "value": null
+    },
+    {
+        "desc": "Path to directory where heap dumps are generated when java.lang.OutOfMemoryError error is thrown. This directory is automatically created if it does not exist. If this directory already exists, role user must have write access to this directory. If this directory is shared among multiple roles, it should have 1777 permissions. The heap dump files are created with 600 permissions and are owned by the role user. The amount of free space in this directory should be greater than the maximum Java Process heap size configured for this role.",
+        "display_name": "Heap Dump Directory",
+        "name": "oom_heap_dump_dir",
+        "value": "/tmp"
+    },
+    {
+        "desc": "The frequency with which stacks are collected.",
+        "display_name": "Stacks Collection Frequency",
+        "name": "stacks_collection_frequency",
+        "value": "5.0"
+    },
+    {
+        "desc": "The amount of time allowed after this role is started that failures of health checks that rely on communication with this role will be tolerated.",
+        "display_name": "Health Check Startup Tolerance",
+        "name": "catalogserver_startup_tolerance",
+        "value": "5"
+    },
+    {
+        "desc": "The health test thresholds on the duration of the metrics request to the web server.",
+        "display_name": "Web Metric Collection Duration",
+        "name": "catalogserver_web_metric_collection_thresholds",
+        "value": "{\"critical\":\"never\",\"warning\":\"10000.0\"}"
+    },
+    {
+        "desc": "These arguments will be passed as part of the Java command line. Commonly, garbage collection flags, PermGen, or extra debugging flags would be passed here.",
+        "display_name": "Java Configuration Options for Catalog Server",
+        "name": "catalogd_java_opts",
+        "value": ""
+    },
+    {
+        "desc": "Buffer log messages logged at this level or lower (-1 means don't buffer; 0 means buffer INFO only; 1 means buffer WARNING only, ...)",
+        "display_name": "Catalog Server Log Buffer Level",
+        "name": "logbuflevel",
+        "value": "0"
+    },
+    {
+        "desc": "If true, loads catalog metadata in the background. If false, metadata is loaded lazily (on access).  Only effective in CDH 5 and Impala 1.2.4 and higher.",
+        "display_name": "Load Catalog in Background",
+        "name": "load_catalog_in_background",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>hbase-site.xml</strong> for this role only.",
+        "display_name": "Catalog Server HBase Advanced Configuration Snippet (Safety Valve)",
+        "name": "catalogd_hbase_conf_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Catalog Server Breakpad Dump Directory parameter.",
+        "display_name": "Suppress Parameter Validation: Catalog Server Breakpad Dump Directory",
+        "name": "role_config_suppression_minidump_path",
+        "value": "false"
+    },
+    {
+        "desc": "Timeout for requests to the Hive Metastore Server from Catalog Server. Consider increasing this if you have tables with a lot of metadata and see timeout errors.",
+        "display_name": "Catalog Server Hive Metastore Connection Timeout",
+        "name": "hive_metastore_timeout",
+        "value": "3600"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Impala Catalog Server Environment Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: Impala Catalog Server Environment Advanced Configuration Snippet (Safety Valve)",
+        "name": "role_config_suppression_catalogserver_role_env_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Soft memory limit to assign to this role, enforced by the Linux kernel. When the limit is reached, the kernel will reclaim pages charged to the process if and only if the host is facing memory pressure. If reclaiming fails, the kernel may kill the process. Both anonymous as well as page cache pages contribute to the limit. Use a value of -1 B to specify no limit. By default processes not managed by Cloudera Manager will have no limit.",
+        "display_name": "Cgroup Memory Soft Limit",
+        "name": "rm_memory_soft_limit",
+        "value": "-1"
+    },
+    {
+        "desc": "For advanced use only, key-value pairs (one on each line) to be added (verbatim) to Catalog Server command line flags. Key names should begin with a hyphen(-). <b>For example</b>: <code>-log_filename=foo.log</code>",
+        "display_name": "Catalog Server Command Line Argument Advanced Configuration Snippet (Safety Valve)",
+        "name": "catalogd_cmd_args_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Maximum number of Breakpad dump files stored by Catalog Server Role.",
+        "display_name": "Catalog Server Max Breakpad Dump Files",
+        "name": "max_minidumps",
+        "value": "9"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Catalog Server Webserver TLS/SSL Server Private Key File (PEM Format) parameter.",
+        "display_name": "Suppress Parameter Validation: Catalog Server Webserver TLS/SSL Server Private Key File (PEM Format)",
+        "name": "role_config_suppression_webserver_private_key_file",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Role Triggers parameter.",
+        "display_name": "Suppress Parameter Validation: Role Triggers",
+        "name": "role_config_suppression_role_triggers",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only, key-value pairs (one on each line) to be inserted into a role's environment. Applies to configurations of this role except client configuration.",
+        "display_name": "Impala Catalog Server Environment Advanced Configuration Snippet (Safety Valve)",
+        "name": "CATALOGSERVER_role_env_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress the results of the Resident Set Size heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Resident Set Size",
+        "name": "role_health_suppression_catalogserver_memory_rss_health",
+        "value": "false"
+    },
+    {
+        "desc": "When set, a SIGKILL signal is sent to the role process when java.lang.OutOfMemoryError is thrown.",
+        "display_name": "Kill When Out of Memory",
+        "name": "oom_sigkill_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "When set, Cloudera Manager will send alerts when this entity's configuration changes.",
+        "display_name": "Enable Configuration Change Alerts",
+        "name": "enable_config_alerts",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>hive-site.xml</strong> for this role only.",
+        "display_name": "Catalog Server Hive Advanced Configuration Snippet (Safety Valve)",
+        "name": "catalogd_hive_conf_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Verbose logging level for the GLog logger. These messages are always logged at 'INFO' log level, so this setting has no effect if Logging Threshold is set to 'WARN' or above.",
+        "display_name": "Catalog Server Verbose Log Level",
+        "name": "log_verbose_level",
+        "value": "1"
+    },
+    {
+        "desc": "The directory in which stacks logs are placed. If not set, stacks are logged into a <code>stacks</code> subdirectory of the role's log directory.",
+        "display_name": "Stacks Collection Directory",
+        "name": "stacks_collection_directory",
+        "value": null
+    },
+    {
+        "desc": "Weight for the read I/O requests issued by this role. The greater the weight, the higher the priority of the requests when the host experiences I/O contention. Must be between 100 and 1000. Defaults to 1000 for processes not managed by Cloudera Manager.",
+        "display_name": "Cgroup I/O Weight",
+        "name": "rm_io_weight",
+        "value": "500"
+    },
+    {
+        "desc": "The number of log files that are kept for each severity level before all older log files are removed. The number has to be greater than 1 to keep at least the current log file open. If set to 0, all log files are retained and log rotation is effectively disabled.",
+        "display_name": "Catalog Server Maximum Log Files",
+        "name": "max_log_files",
+        "value": "10"
+    }
+]

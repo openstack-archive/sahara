@@ -1,0 +1,1418 @@
+[
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Cluster-wide Advanced Configuration Snippet (Safety Valve) for core-site.xml parameter.",
+        "display_name": "Suppress Parameter Validation: Cluster-wide Advanced Configuration Snippet (Safety Valve) for core-site.xml",
+        "name": "service_config_suppression_core_site_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Timeout in milliseconds for the parallel RPCs made in DistributedFileSystem#getFileBlockStorageLocations(). This value is only emitted for Impala.",
+        "display_name": "HDFS File Block Storage Location Timeout",
+        "name": "dfs_client_file_block_storage_locations_timeout",
+        "value": "10000"
+    },
+    {
+        "desc": "Select an Object Store service to enable cloud storage support. Once enabled, HDFS will still act as the default FS; this additional storage will be available for use via direct references (fully-qualified URIs). Access to the object store is automatically extended to HDFS dependent services of type: Hive, Impala.",
+        "display_name": "Object Store Service",
+        "name": "object_store_service",
+        "value": null
+    },
+    {
+        "desc": "Maximum number of rolled-over audit logs to retain. The logs are not deleted if they contain audit events that have not yet been propagated to the Audit Server.",
+        "display_name": "Number of Audit Logs to Retain",
+        "name": "navigator_client_max_num_audit_log",
+        "value": "10"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Log and Query Redaction Policy parameter.",
+        "display_name": "Suppress Parameter Validation: Log and Query Redaction Policy",
+        "name": "service_config_suppression_redaction_policy",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Short-Circuit Read Enabled Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Short-Circuit Read Enabled Validator",
+        "name": "service_config_suppression_short_circuit_read_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HDFS Snapshot Shell Command Environment Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: HDFS Snapshot Shell Command Environment Advanced Configuration Snippet (Safety Valve)",
+        "name": "service_config_suppression_hdfs_shell_cmd_env_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the FailoverProxyProvider Class parameter.",
+        "display_name": "Suppress Parameter Validation: FailoverProxyProvider Class",
+        "name": "service_config_suppression_dfs_ha_proxy_provider",
+        "value": "false"
+    },
+    {
+        "desc": "The domain to use for the HTTP cookie that stores the authentication token. In order for authentiation to work correctly across all Hadoop nodes' web-consoles the domain must be correctly set. <b>Important:</b> when using IP addresses, browsers ignore cookies with domain settings. For this setting to work properly all nodes in the cluster must be configured to generate URLs with hostname.domain names on it.",
+        "display_name": "Hadoop HTTP Authentication Cookie Domain",
+        "name": "hadoop_http_auth_cookie_domain",
+        "value": ""
+    },
+    {
+        "desc": "The user that this service's processes should run as (except the HttpFS server, which has its own user)",
+        "display_name": "System User",
+        "name": "process_username",
+        "value": "hdfs"
+    },
+    {
+        "desc": "Comma-delimited list of groups that you want to allow the Hue user to impersonate. The default '*' allows all groups. To disable entirely, use a string that doesn't correspond to a group name, such as '_no_group_'.",
+        "display_name": "Hue Proxy User Groups",
+        "name": "hue_proxy_user_groups_list",
+        "value": "*"
+    },
+    {
+        "desc": "The password for the TLS/SSL truststore.",
+        "display_name": "Hadoop User Group Mapping LDAP TLS/SSL Truststore Password",
+        "name": "hadoop_group_mapping_ldap_keystore_passwd",
+        "value": ""
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Flume Proxy User Groups parameter.",
+        "display_name": "Suppress Parameter Validation: Flume Proxy User Groups",
+        "name": "service_config_suppression_flume_proxy_user_groups_list",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Failover Controller Count Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Failover Controller Count Validator",
+        "name": "service_config_suppression_failovercontroller_count_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hadoop TLS/SSL Server Keystore File Password parameter.",
+        "display_name": "Suppress Parameter Validation: Hadoop TLS/SSL Server Keystore File Password",
+        "name": "service_config_suppression_ssl_server_keystore_password",
+        "value": "false"
+    },
+    {
+        "desc": "Comma-delimited list of hosts where you want to allow the Hue user to impersonate other users. The default '*' allows all hosts. To disable entirely, use a string that doesn't correspond to a host name, such as '_no_host'.",
+        "display_name": "Hue Proxy User Hosts",
+        "name": "hue_proxy_user_hosts_list",
+        "value": "*"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Oozie Proxy User Groups parameter.",
+        "display_name": "Suppress Parameter Validation: Oozie Proxy User Groups",
+        "name": "service_config_suppression_oozie_proxy_user_groups_list",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Authorized Admin Users parameter.",
+        "display_name": "Suppress Parameter Validation: Authorized Admin Users",
+        "name": "service_config_suppression_hadoop_authorized_admin_users",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HDFS Replication Environment Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: HDFS Replication Environment Advanced Configuration Snippet (Safety Valve)",
+        "name": "service_config_suppression_hdfs_replication_env_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "The service monitor will use these permissions to create the directory and files to test if the hdfs service is healthy. Permissions are specified using the 10-character unix-symbolic format e.g. '-rwxr-xr-x'.",
+        "display_name": "HDFS Health Canary Directory Permissions",
+        "name": "firehose_hdfs_canary_directory_permissions",
+        "value": "-rwxrwxrwx"
+    },
+    {
+        "desc": "Path to the directory where audit logs will be written. The directory will be created if it doesn't exist.",
+        "display_name": "Audit Log Directory",
+        "name": "audit_event_log_dir",
+        "value": "/var/log/hadoop-hdfs/audit"
+    },
+    {
+        "desc": "Class for user to group mapping (get groups for a given user).",
+        "display_name": "Hadoop User Group Mapping Implementation",
+        "name": "hadoop_security_group_mapping",
+        "value": "org.apache.hadoop.security.ShellBasedUnixGroupsMapping"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hadoop HTTP Authentication Cookie Domain parameter.",
+        "display_name": "Suppress Parameter Validation: Hadoop HTTP Authentication Cookie Domain",
+        "name": "service_config_suppression_hadoop_http_auth_cookie_domain",
+        "value": "false"
+    },
+    {
+        "desc": "Comma-delimited list of groups that you want to allow the YARN user to impersonate. The default '*' allows all groups. To disable entirely, use a string that does not correspond to a group name, such as '_no_group_'.",
+        "display_name": "YARN Proxy User Groups",
+        "name": "yarn_proxy_user_groups_list",
+        "value": "*"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the NameNode Count Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: NameNode Count Validator",
+        "name": "service_config_suppression_namenode_count_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Allows the oozie superuser to impersonate any members of a comma-delimited list of groups. The default '*' allows all groups. To disable entirely, use a string that doesn't correspond to a group name, such as '_no_group_'.",
+        "display_name": "Oozie Proxy User Groups",
+        "name": "oozie_proxy_user_groups_list",
+        "value": "*"
+    },
+    {
+        "desc": "Comma-separated list of compression codecs that can be used in job or map compression.",
+        "display_name": "Compression Codecs",
+        "name": "io_compression_codecs",
+        "value": "org.apache.hadoop.io.compress.DefaultCodec,org.apache.hadoop.io.compress.GzipCodec,org.apache.hadoop.io.compress.BZip2Codec,org.apache.hadoop.io.compress.DeflateCodec,org.apache.hadoop.io.compress.SnappyCodec,org.apache.hadoop.io.compress.Lz4Codec"
+    },
+    {
+        "desc": "Comma-separated list of users authorized to used Hadoop. This is emitted only if authorization is enabled.",
+        "display_name": "Authorized Users",
+        "name": "hadoop_authorized_users",
+        "value": "*"
+    },
+    {
+        "desc": "Quality of protection for secured RPC connections between NameNode and HDFS clients. For effective RPC protection, enable Kerberos authentication.",
+        "display_name": "Hadoop RPC Protection",
+        "name": "hadoop_rpc_protection",
+        "value": "authentication"
+    },
+    {
+        "desc": "Enable HDFS short-circuit read. This allows a client colocated with the DataNode to read HDFS file blocks directly. This gives a performance boost to distributed clients that are aware of locality.",
+        "display_name": "Enable HDFS Short-Circuit Read",
+        "name": "dfs_datanode_read_shortcircuit",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Nameservice Checkpoint Configuration Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Nameservice Checkpoint Configuration Validator",
+        "name": "service_config_suppression_nameservice_checkpoint_configuration_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Distinguished name of the user to bind as. This is used to connect to LDAP/AD for searching user and group information. This may be left blank if the LDAP server supports anonymous binds.",
+        "display_name": "Hadoop User Group Mapping LDAP Bind User Distinguished Name",
+        "name": "hadoop_group_mapping_ldap_bind_user",
+        "value": ""
+    },
+    {
+        "desc": "When set, Cloudera Manager will send alerts when the health of this service reaches the threshold specified by the EventServer setting eventserver_health_events_alert_threshold",
+        "display_name": "Enable Service Level Health Alerts",
+        "name": "enable_alerts",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Balancer Count Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Balancer Count Validator",
+        "name": "service_config_suppression_balancer_count_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Password for the TLS/SSL client truststore. Defines a cluster-wide default that can be overridden by individual services.",
+        "display_name": "Cluster-Wide Default TLS/SSL Client Truststore Password",
+        "name": "ssl_client_truststore_password",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hadoop User Group Mapping LDAP Bind User Distinguished Name parameter.",
+        "display_name": "Suppress Parameter Validation: Hadoop User Group Mapping LDAP Bind User Distinguished Name",
+        "name": "service_config_suppression_hadoop_group_mapping_ldap_bind_user",
+        "value": "false"
+    },
+    {
+        "desc": "The password of the bind user.",
+        "display_name": "Hadoop User Group Mapping LDAP Bind User Password",
+        "name": "hadoop_group_mapping_ldap_bind_passwd",
+        "value": ""
+    },
+    {
+        "desc": "Action to take when the audit event queue is full. Drop the event or shutdown the affected process.",
+        "display_name": "Audit Queue Policy",
+        "name": "navigator_audit_queue_policy",
+        "value": "DROP"
+    },
+    {
+        "desc": "When set, each role identifies important log events and forwards them to Cloudera Manager.",
+        "display_name": "Enable Log Event Capture",
+        "name": "catch_events",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hadoop User Group Mapping Search Base parameter.",
+        "display_name": "Suppress Parameter Validation: Hadoop User Group Mapping Search Base",
+        "name": "service_config_suppression_hadoop_group_mapping_ldap_base",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the YARN Proxy User Groups parameter.",
+        "display_name": "Suppress Parameter Validation: YARN Proxy User Groups",
+        "name": "service_config_suppression_yarn_proxy_user_groups_list",
+        "value": "false"
+    },
+    {
+        "desc": "Enable/Disable the Log and Query Redaction Policy for this cluster.",
+        "display_name": "Enable Log and Query Redaction",
+        "name": "redaction_policy_enabled",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>core-site.xml</strong>. Applies to all roles and client configurations in this HDFS service as well as all its dependent services. Any configs added here will be overridden by their default values in HDFS (which can be found in hdfs-default.xml).",
+        "display_name": "Cluster-wide Advanced Configuration Snippet (Safety Valve) for core-site.xml",
+        "name": "core_site_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Gateway Count Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Gateway Count Validator",
+        "name": "service_config_suppression_gateway_count_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the HDFS Authentication And Authorization Validation configuration validator.",
+        "display_name": "Suppress Configuration Validator: HDFS Authentication And Authorization Validation",
+        "name": "service_config_suppression_hdfs_authentication_and_authorization_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Service Monitor Proxy User Groups parameter.",
+        "display_name": "Suppress Parameter Validation: Service Monitor Proxy User Groups",
+        "name": "service_config_suppression_smon_proxy_user_groups_list",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the DataNode Local Path Access Users parameter.",
+        "display_name": "Suppress Parameter Validation: DataNode Local Path Access Users",
+        "name": "service_config_suppression_dfs_block_local_path_access_user",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hue's Kerberos Principal Short Name parameter.",
+        "display_name": "Suppress Parameter Validation: Hue's Kerberos Principal Short Name",
+        "name": "service_config_suppression_hue_kerberos_principal_shortname",
+        "value": "false"
+    },
+    {
+        "desc": "The default block size in bytes for new HDFS files. Note that this value is also used as the HBase Region Server HLog block size.",
+        "display_name": "HDFS Block Size",
+        "name": "dfs_block_size",
+        "value": "134217728"
+    },
+    {
+        "desc": "The health test thresholds of the overall DataNode health. The check returns \"Concerning\" health if the percentage of \"Healthy\" DataNodes falls below the warning threshold. The check is unhealthy if the total percentage of \"Healthy\" and \"Concerning\" DataNodes falls below the critical threshold.",
+        "display_name": "Healthy DataNode Monitoring Thresholds",
+        "name": "hdfs_datanodes_healthy_thresholds",
+        "value": "{\"critical\":\"90.0\",\"warning\":\"95.0\"}"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Private Keys for SSH Fencing Strategy parameter.",
+        "display_name": "Suppress Parameter Validation: Private Keys for SSH Fencing Strategy",
+        "name": "service_config_suppression_dfs_ha_fencing_ssh_private_key_files",
+        "value": "false"
+    },
+    {
+        "desc": "Enable WebHDFS interface",
+        "display_name": "Enable WebHDFS",
+        "name": "dfs_webhdfs_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "The short name of the Hue Kerberos principal. Normally, you do not need to specify this configuration. Cloudera Manager auto-configures this property so that Hue and Cloudera Manamgent Service work properly.",
+        "display_name": "Hue's Kerberos Principal Short Name",
+        "name": "hue_kerberos_principal_shortname",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hadoop User Group Mapping LDAP Group Search Filter parameter.",
+        "display_name": "Suppress Parameter Validation: Hadoop User Group Mapping LDAP Group Search Filter",
+        "name": "service_config_suppression_hadoop_group_mapping_ldap_group_filter",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hue Proxy User Groups parameter.",
+        "display_name": "Suppress Parameter Validation: Hue Proxy User Groups",
+        "name": "service_config_suppression_hue_proxy_user_groups_list",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Service Monitor Derived Configs Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: Service Monitor Derived Configs Advanced Configuration Snippet (Safety Valve)",
+        "name": "service_config_suppression_smon_derived_configs_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the JournalNode Count Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: JournalNode Count Validator",
+        "name": "service_config_suppression_journalnode_count_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Typically, HDFS clients and servers communicate by opening sockets via an IP address. In certain networking configurations, it is preferable to open sockets after doing a DNS lookup on the hostname. Enable this property to open sockets after doing a DNS lookup on the hostname. This property is supported in CDH3u4 or later deployments.",
+        "display_name": "Use DataNode Hostname",
+        "name": "dfs_client_use_datanode_hostname",
+        "value": "false"
+    },
+    {
+        "desc": "Enter a FailoverProxyProvider implementation to configure two URIs to connect to during fail-over. The first configured address is tried first, and on a fail-over event the other address is tried.",
+        "display_name": "FailoverProxyProvider Class",
+        "name": "dfs_ha_proxy_provider",
+        "value": "org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hadoop TLS/SSL Server Keystore File Location parameter.",
+        "display_name": "Suppress Parameter Validation: Hadoop TLS/SSL Server Keystore File Location",
+        "name": "service_config_suppression_ssl_server_keystore_location",
+        "value": "false"
+    },
+    {
+        "desc": "The search base for the LDAP connection. This is a distinguished name, and will typically be the root of the LDAP directory.",
+        "display_name": "Hadoop User Group Mapping Search Base",
+        "name": "hadoop_group_mapping_ldap_base",
+        "value": ""
+    },
+    {
+        "desc": "If false, permission checking is turned off for files in HDFS.",
+        "display_name": "Check HDFS Permissions",
+        "name": "dfs_permissions",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the NFS Gateway Count Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: NFS Gateway Count Validator",
+        "name": "service_config_suppression_nfsgateway_count_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the Corrupt Blocks heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Corrupt Blocks",
+        "name": "service_health_suppression_hdfs_blocks_with_corrupt_replicas",
+        "value": "false"
+    },
+    {
+        "desc": "<p>\nEvent filters are defined in a JSON object like the following:\n</p>\n\n<pre>\n{\n  \"defaultAction\" : (\"accept\", \"discard\"),\n  \"rules\" : [\n    {\n      \"action\" : (\"accept\", \"discard\"),\n      \"fields\" : [\n        {\n          \"name\" : \"fieldName\",\n          \"match\" : \"regex\"\n        }\n      ]\n    }\n  ]\n}\n</pre>\n\n<p>\nA filter has a default action and a list of rules, in order of precedence.\nEach rule defines an action, and a list of fields to match against the\naudit event.\n</p>\n\n<p>\nA rule is \"accepted\" if all the listed field entries match the audit\nevent. At that point, the action declared by the rule is taken.\n</p>\n\n<p>\nIf no rules match the event, the default action is taken. Actions\ndefault to \"accept\" if not defined in the JSON object.\n</p>\n\n<p>\nThe following is the list of fields that can be filtered for HDFS events:\n</p>\n\n<ul>\n  <li>username: the user performing the action.</li>\n  <li>ipAddress: the IP from where the request originated.</li>\n  <li>command: the HDFS operation being performed.</li>\n  <li>src: the source path for the operation.</li>\n  <li>dest: the destination path for the operation.</li>\n  <li>permissions: the permissions associated with the operation.</li>\n</ul>\n\n<p>\nThe default HDFS audit event filter discards events generated by the internal\nCloudera and Hadoop users (cloudera-scm, dr.who, hbase, hive, impala, mapred,\nsolr, and spark), 'ls' actions performed by the hdfs user, operations in the\nCloudera Hive canary directory, and events that affect files in the /tmp\ndirectory.\"\n</p>\n",
+        "display_name": "Audit Event Filter",
+        "name": "navigator_audit_event_filter",
+        "value": "{\n  \"comment\" : [\n    \"The default HDFS audit event filter discards events generated by the internal \",\n    \"Cloudera and Hadoop users (cloudera-scm, dr.who, hbase, hive, impala, \",\n    \"mapred, solr, and spark), 'ls' actions performed by the hdfs user, \",\n    \"operations in the Cloudera Hive canary directory, and events that affect \",\n    \"files in the /tmp directory.\"\n  ],\n  \"defaultAction\" : \"accept\",\n  \"rules\" : [\n    {\n      \"action\" : \"discard\",\n      \"fields\" : [\n        {\n          \"name\" : \"username\",\n          \"match\" : \"(?:cloudera-scm|dr.who|hbase|hive|impala|mapred|solr|spark)(?:/.+)?\"\n        }\n      ]\n    },\n    {\n      \"action\" : \"discard\",\n      \"fields\" : [\n        {\n          \"name\" : \"username\",\n          \"match\" : \"(?:hdfs)(?:/.+)?\"\n        },\n        {\n          \"name\" : \"operation\",\n          \"match\" : \"(?:listStatus|listCachePools|listCacheDirectives|getfileinfo)\"\n        }\n      ]\n    },\n    {\n      \"action\" : \"discard\",\n      \"fields\" : [\n        { \"name\" : \"src\", \"match\" : \"/user/hue/\\\\.cloudera_manager_hive_metastore_canary(?:/.*)?\" }\n      ]\n    },\n    {\n      \"action\" : \"discard\",\n      \"fields\" : [\n        { \"name\" : \"src\", \"match\" : \"/user/hue/\\\\.Trash/Current/user/hue/\\\\.cloudera_manager_hive_metastore_canary(?:/.*)?\" }\n      ]\n    },\n    {\n      \"action\" : \"discard\",\n      \"fields\" : [\n        { \"name\" : \"src\", \"match\" : \"/tmp(?:/.*)?\" }\n      ]\n    }\n  ]\n}\n"
+    },
+    {
+        "desc": "Comma-separated list of groups authorized to used Hadoop. This is emitted only if authorization is enabled.",
+        "display_name": "Authorized Groups",
+        "name": "hadoop_authorized_groups",
+        "value": ""
+    },
+    {
+        "desc": "If AES/CTR/NoPadding is chosen for the Data Transfer Encryption Algorithm, this specifies the length (in bits) of the AES key. When this parameter is changed, a full, non-rolling restart of the cluster must be performed.",
+        "display_name": "Data Transfer Cipher Suite Key Strength",
+        "name": "dfs_encrypt_data_transfer_cipher_keybits",
+        "value": "256"
+    },
+    {
+        "desc": "Password that protects the private key contained in the server keystore used for encrypted shuffle and encrypted web UIs. Applies to all configurations of daemon roles of this service.",
+        "display_name": "Hadoop TLS/SSL Server Keystore Key Password",
+        "name": "ssl_server_keystore_keypassword",
+        "value": null
+    },
+    {
+        "desc": "Comma-delimited list of hosts where you want to allow the oozie user to impersonate other users. The default '*' allows all hosts. To disable entirely, use a string that doesn't correspond to a host name, such as '_no_host'.",
+        "display_name": "Oozie Proxy User Hosts",
+        "name": "oozie_proxy_user_hosts_list",
+        "value": "*"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Sentry Authorization Provider Group parameter.",
+        "display_name": "Suppress Parameter Validation: Sentry Authorization Provider Group",
+        "name": "service_config_suppression_sentry_authorization_provider_hdfs_group",
+        "value": "false"
+    },
+    {
+        "desc": "Comma-delimited list of hosts where you want to allow the Cloudera Service Monitor user to impersonate other users. The default '*' allows all hosts. This property is used only if Service Monitor is using a different Kerberos principal than the Hue service. To disable entirely, use a string that does not correspond to a host name, such as '_no_host'.",
+        "display_name": "Service Monitor Proxy User Hosts",
+        "name": "smon_proxy_user_hosts_list",
+        "value": "*"
+    },
+    {
+        "desc": "Comma-delimited list of groups that you want to allow the mapred user to impersonate. The default '*' allows all groups. To disable entirely, use a string that doesn't correspond to a group name, such as '_no_group_'.",
+        "display_name": "Mapred Proxy User Groups",
+        "name": "mapred_proxy_user_groups_list",
+        "value": "*"
+    },
+    {
+        "desc": "For advanced use only, key-value pairs (one on each line) to be inserted into a role's environment. Applies to configurations of all roles in this service except client configuration.",
+        "display_name": "HDFS Service Environment Advanced Configuration Snippet (Safety Valve)",
+        "name": "hdfs_service_env_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "For paths where authorization is enforced by Sentry Synchronization, file permissions will use this parameter as the group. This group should normally include the hive and impala users.",
+        "display_name": "Sentry Authorization Provider Group",
+        "name": "sentry_authorization_provider_hdfs_group",
+        "value": "hive"
+    },
+    {
+        "desc": "Additional mapping rules that will be inserted before rules generated from the list of trusted realms and before the default rule. After changing this value and restarting the service, any services depending on this one must be restarted as well. The hadoop.security.auth_to_local property is configured using this information.",
+        "display_name": "Additional Rules to Map Kerberos Principals to Short Names",
+        "name": "extra_auth_to_local_rules",
+        "value": null
+    },
+    {
+        "desc": "Password for the server keystore file used for encrypted shuffle and encrypted web UIs. Applies to configurations of all daemon roles of this service.",
+        "display_name": "Hadoop TLS/SSL Server Keystore File Password",
+        "name": "ssl_server_keystore_password",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HDFS Service Advanced Configuration Snippet (Safety Valve) for hadoop-policy.xml parameter.",
+        "display_name": "Suppress Parameter Validation: HDFS Service Advanced Configuration Snippet (Safety Valve) for hadoop-policy.xml",
+        "name": "service_config_suppression_hadoop_policy_config_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the SecondaryNameNode Count Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: SecondaryNameNode Count Validator",
+        "name": "service_config_suppression_secondarynamenode_count_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Maximum size of audit log file in MB before it is rolled over.",
+        "display_name": "Maximum Audit Log File Size",
+        "name": "navigator_audit_log_max_file_size",
+        "value": "100"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HDFS Service Advanced Configuration Snippet (Safety Valve) for hdfs-site.xml parameter.",
+        "display_name": "Suppress Parameter Validation: HDFS Service Advanced Configuration Snippet (Safety Valve) for hdfs-site.xml",
+        "name": "service_config_suppression_hdfs_service_config_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Enables Kerberos authentication for Hadoop HTTP web consoles for all roles of this service using the SPNEGO protocol. <b>Note:</b> This is effective only if Kerberos is enabled for the HDFS service.",
+        "display_name": "Enable Kerberos Authentication for HTTP Web-Consoles",
+        "name": "hadoop_secure_web_ui",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only. Key-value pairs (one on each line) to be inserted into the HDFS replication configuration for <strong>hadoop-env.sh</strong>.",
+        "display_name": "HDFS Replication Environment Advanced Configuration Snippet (Safety Valve) for hadoop-env.sh",
+        "name": "hdfs_replication_haoop_env_sh_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Secure Web UI Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Secure Web UI Validator",
+        "name": "service_config_suppression_hadoop_secure_web_ui",
+        "value": "false"
+    },
+    {
+        "desc": "Comma-delimited list of groups to allow the HDFS user to impersonate. The default '*' allows all groups. To disable entirely, use a string that does not correspond to a group name, such as '_no_group_'.",
+        "display_name": "HDFS Proxy User Groups",
+        "name": "hdfs_proxy_user_groups_list",
+        "value": "*"
+    },
+    {
+        "desc": "The service monitor will use this directory to create files to test if the hdfs service is healthy. The directory and files are created with permissions specified by 'HDFS Health Canary Directory Permissions'",
+        "display_name": "HDFS Health Canary Directory",
+        "name": "firehose_hdfs_canary_directory",
+        "value": "/tmp/.cloudera_health_monitoring_canary_files"
+    },
+    {
+        "desc": "Comma-delimited list of groups that you want to allow the Hive user to impersonate. The default '*' allows all groups. To disable entirely, use a string that doesn't correspond to a group name, such as '_no_group_'.",
+        "display_name": "Hive Proxy User Groups",
+        "name": "hive_proxy_user_groups_list",
+        "value": "*"
+    },
+    {
+        "desc": "Comma-separated list of users authorized to perform admin operations on Hadoop. This is emitted only if authorization is enabled.",
+        "display_name": "Authorized Admin Users",
+        "name": "hadoop_authorized_admin_users",
+        "value": "*"
+    },
+    {
+        "desc": "The health check thresholds of the number of missing blocks. Specified as a percentage of the total number of blocks.",
+        "display_name": "Missing Block Monitoring Thresholds",
+        "name": "hdfs_missing_blocks_thresholds",
+        "value": "{\"critical\":\"any\",\"warning\":\"never\"}"
+    },
+    {
+        "desc": "The amount of time after NameNode(s) start that the lack of an active NameNode will be tolerated. This is intended to allow either the auto-failover daemon to make a NameNode active, or a specifically issued failover command to take effect. This is an advanced option that does not often need to be changed.",
+        "display_name": "NameNode Activation Startup Tolerance",
+        "name": "hdfs_namenode_activation_startup_tolerance",
+        "value": "180"
+    },
+    {
+        "desc": "<p><b>Note:</b> Do not edit this property in the classic layout. Switch to the new layout to use preconfigured redaction rules and test your rules inline.</p><p>Use this property to define a list of rules to be followed for redacting sensitive information from log files and query strings. Click + to add a new redaction rule. You can choose one of the preconfigured rules or add a custom rule. When specifying a custom rule, the Search field should contain a regular expression that will be matched against the data. If a match is found, it is replaced by the contents of the Replace field.</p><p>Trigger is an optional field. It can be used to specify a simple string to be searched in the data. If the string is found, the redactor attempts to find a match for the Search regex. If no trigger is specified, redaction occurs by matching the Search regular expression. Use the Trigger field to enhance performance: simple string matching is faster than regular expression matching.</p><p>Test your rules by entering sample text into the Test Redaction Rules text box and clicking Test Redaction. If no rules match, the text you entered is returned unchanged.</p>",
+        "display_name": "Log and Query Redaction Policy",
+        "name": "redaction_policy",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hue Proxy User Hosts parameter.",
+        "display_name": "Suppress Parameter Validation: Hue Proxy User Hosts",
+        "name": "service_config_suppression_hue_proxy_user_hosts_list",
+        "value": "false"
+    },
+    {
+        "desc": "Comma-delimited list of groups to allow the HttpFS user to impersonate. The default '*' allows all groups. To disable entirely, use a string that does not correspond to a group name, such as '_no_group_'.",
+        "display_name": "HttpFS Proxy User Groups",
+        "name": "httpfs_proxy_user_groups_list",
+        "value": "*"
+    },
+    {
+        "desc": "Allows the flume user to impersonate any members of a comma-delimited list of groups. The default '*' allows all groups. To disable entirely, use a string that doesn't correspond to a group name, such as '_no_group_'.",
+        "display_name": "Flume Proxy User Groups",
+        "name": "flume_proxy_user_groups_list",
+        "value": "*"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Audit Event Tracker parameter.",
+        "display_name": "Suppress Parameter Validation: Audit Event Tracker",
+        "name": "service_config_suppression_navigator_event_tracker",
+        "value": "false"
+    },
+    {
+        "desc": "Comma-delimited list of hosts where you want to allow the mapred user to impersonate other users. The default '*' allows all hosts. To disable entirely, use a string that doesn't correspond to a host name, such as '_no_host'.",
+        "display_name": "Mapred Proxy User Hosts",
+        "name": "mapred_proxy_user_hosts_list",
+        "value": "*"
+    },
+    {
+        "desc": "For advanced use only, a list of configuration properties that will be used by the Service Monitor instead of the current client configuration for the service.",
+        "display_name": "Service Monitor Client Config Overrides",
+        "name": "smon_client_config_overrides",
+        "value": "<property><name>dfs.socket.timeout</name><value>3000</value></property><property><name>dfs.datanode.socket.write.timeout</name><value>3000</value></property><property><name>ipc.client.connect.max.retries</name><value>1</value></property><property><name>fs.permissions.umask-mode</name><value>000</value></property>"
+    },
+    {
+        "desc": "<p>The configured triggers for this service. This is a JSON formatted list of triggers. These triggers are evaluated as part as the health system. Every trigger expression is parsed, and if the trigger condition is met, the list of actions provided in the trigger expression is executed.</p><p>Each trigger has the following fields:</p><ul><li><code>triggerName</code> <b>(mandatory)</b> - The name of the trigger. This value must be unique for the specific service. </li><li><code>triggerExpression</code> <b>(mandatory)</b> - A tsquery expression representing the trigger. </li><li><code>streamThreshold</code> <b>(optional)</b> - The maximum number of streams that can satisfy a condition of a trigger before the condition fires. By default set to 0, and any stream returned causes the condition to fire. </li><li><code>enabled</code> <b> (optional)</b> - By default set to 'true'. If set to 'false', the trigger is not evaluated.</li><li><code>expressionEditorConfig</code> <b> (optional)</b> - Metadata for the trigger editor. If present, the trigger should only be edited from the Edit Trigger page; editing the trigger here can lead to inconsistencies.</li></ul><p>For example, the followig JSON formatted trigger fires if there are more than 10 DataNodes with more than 500 file descriptors opened:</p><p><pre>[{\"triggerName\": \"sample-trigger\",\n  \"triggerExpression\": \"IF (SELECT fd_open WHERE roleType = DataNode and last(fd_open) > 500) DO health:bad\",\n  \"streamThreshold\": 10, \"enabled\": \"true\"}]</pre></p><p>See the trigger rules documentation for more details on how to write triggers using tsquery.</p><p>The JSON format is evolving and may change and, as a result, backward compatibility is not guaranteed between releases.</p>",
+        "display_name": "Service Triggers",
+        "name": "service_triggers",
+        "value": "[]"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the DataNode Count Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: DataNode Count Validator",
+        "name": "service_config_suppression_datanode_count_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Path to the TLS/SSL client truststore file. Defines a cluster-wide default that can be overridden by individual services. This truststore must be in JKS format. The truststore contains certificates of trusted servers, or of Certificate Authorities trusted to identify servers. The contents of the truststore can be modified without restarting any roles. By default, changes to its contents are picked up within ten seconds. If not set, the default Java truststore is used to verify certificates.",
+        "display_name": "Cluster-Wide Default TLS/SSL Client Truststore Location",
+        "name": "ssl_client_truststore_location",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the System User parameter.",
+        "display_name": "Suppress Parameter Validation: System User",
+        "name": "service_config_suppression_process_username",
+        "value": "false"
+    },
+    {
+        "desc": "Enable TLS/SSL encryption for HDFS, MapReduce, and YARN web UIs, as well as encrypted shuffle for MapReduce and YARN.",
+        "display_name": "Hadoop TLS/SSL Enabled",
+        "name": "hdfs_hadoop_ssl_enabled",
+        "value": "false"
+    },
+    {
+        "desc": "List of Kerberos realms that Hadoop services should trust. If empty, defaults to the default_realm property configured in the krb5.conf file. After changing this value and restarting the service, all services depending on this service must also be restarted. Adds mapping rules for each domain to the hadoop.security.auth_to_local property in core-site.xml.",
+        "display_name": "Trusted Kerberos Realms",
+        "name": "trusted_realms",
+        "value": ""
+    },
+    {
+        "desc": "Whether to suppress the results of the Failover Controllers Health heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Failover Controllers Health",
+        "name": "service_health_suppression_hdfs_failover_controllers_healthy",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Service Monitor Proxy User Hosts parameter.",
+        "display_name": "Suppress Parameter Validation: Service Monitor Proxy User Hosts",
+        "name": "service_config_suppression_smon_proxy_user_hosts_list",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the DataNode Health heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: DataNode Health",
+        "name": "service_health_suppression_hdfs_data_nodes_healthy",
+        "value": "false"
+    },
+    {
+        "desc": "Enables the health check that verifies that the failover controllers associated with this service are healthy and running.",
+        "display_name": "Failover Controllers Healthy",
+        "name": "failover_controllers_healthy_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "The attribute of the group object that identifies the users that are members of the group. The default will usually be appropriate for any LDAP installation.",
+        "display_name": "Hadoop User Group Mapping LDAP Group Membership Attribute",
+        "name": "hadoop_group_mapping_ldap_member_attr",
+        "value": "member"
+    },
+    {
+        "desc": "Comma separated list of users allowed to do short circuit read. A short circuit read allows a client co-located with the data to read HDFS file blocks directly from HDFS. If empty, will default to the DataNode process' user.",
+        "display_name": "DataNode Local Path Access Users",
+        "name": "dfs_block_local_path_access_user",
+        "value": null
+    },
+    {
+        "desc": "The timeout, in milliseconds, to use with the Cloudera Manager agent-based fencer.",
+        "display_name": "Timeout for Cloudera Manager Fencing Strategy",
+        "name": "dfs_ha_fencing_cloudera_manager_timeout_millis",
+        "value": "10000"
+    },
+    {
+        "desc": "Enable collection of audit events from the service's roles.",
+        "display_name": "Enable Audit Collection",
+        "name": "navigator_audit_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Maximum bandwidth used for image transfer in bytes per second. This can help keep normal NameNode operations responsive during checkpointing. A default value of 0 indicates that throttling is disabled.",
+        "display_name": "FsImage Transfer Bandwidth",
+        "name": "dfs_image_transfer_bandwidthPerSec",
+        "value": "0"
+    },
+    {
+        "desc": "The health check thresholds of the number of blocks that have at least one corrupt replica. Specified as a percentage of the total number of blocks.",
+        "display_name": "Blocks With Corrupt Replicas Monitoring Thresholds",
+        "name": "hdfs_blocks_with_corrupt_replicas_thresholds",
+        "value": "{\"critical\":\"1.0\",\"warning\":\"0.5\"}"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Mapred Proxy User Groups parameter.",
+        "display_name": "Suppress Parameter Validation: Mapred Proxy User Groups",
+        "name": "service_config_suppression_mapred_proxy_user_groups_list",
+        "value": "false"
+    },
+    {
+        "desc": "The user the management services impersonates when connecting to HDFS. If no value is specified, the HDFS superuser is used.",
+        "display_name": "HDFS User to Impersonate",
+        "name": "hdfs_user_to_impersonate",
+        "value": null
+    },
+    {
+        "desc": "File path to a jks-format truststore containing the TLS/SSL certificate used sign the LDAP server's certificate. Note that in previous releases this was erroneously referred to as a \"keystore\".",
+        "display_name": "Hadoop User Group Mapping LDAP TLS/SSL Truststore",
+        "name": "hadoop_group_mapping_ldap_keystore",
+        "value": ""
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Sentry Synchronization Path Prefixes parameter.",
+        "display_name": "Suppress Parameter Validation: Sentry Synchronization Path Prefixes",
+        "name": "service_config_suppression_hdfs_sentry_sync_path_prefixes",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Audit Event Filter parameter.",
+        "display_name": "Suppress Parameter Validation: Audit Event Filter",
+        "name": "service_config_suppression_navigator_audit_event_filter",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Cluster-Wide Default TLS/SSL Client Truststore Password parameter.",
+        "display_name": "Suppress Parameter Validation: Cluster-Wide Default TLS/SSL Client Truststore Password",
+        "name": "service_config_suppression_ssl_client_truststore_password",
+        "value": "false"
+    },
+    {
+        "desc": "The name of the group of superusers.",
+        "display_name": "Superuser Group",
+        "name": "dfs_permissions_supergroup",
+        "value": "supergroup"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hadoop User Group Mapping LDAP URL parameter.",
+        "display_name": "Suppress Parameter Validation: Hadoop User Group Mapping LDAP URL",
+        "name": "service_config_suppression_hadoop_group_mapping_ldap_url",
+        "value": "false"
+    },
+    {
+        "desc": "Allows the Cloudera Service Monitor user to impersonate any members of a comma-delimited list of groups. The default '*' allows all groups. This property is used only if Service Monitor is using a different Kerberos principal than the Hue service. To disable entirely, use a string that does not correspond to a group name, such as '_no_group_'.",
+        "display_name": "Service Monitor Proxy User Groups",
+        "name": "smon_proxy_user_groups_list",
+        "value": "*"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Authorized Groups parameter.",
+        "display_name": "Suppress Parameter Validation: Authorized Groups",
+        "name": "service_config_suppression_hadoop_authorized_groups",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HttpFS Proxy User Groups parameter.",
+        "display_name": "Suppress Parameter Validation: HttpFS Proxy User Groups",
+        "name": "service_config_suppression_httpfs_proxy_user_groups_list",
+        "value": "false"
+    },
+    {
+        "desc": "The minimal block replication.",
+        "display_name": "Minimal Block Replication",
+        "name": "dfs_replication_min",
+        "value": "1"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the UNIX Domain Socket path parameter.",
+        "display_name": "Suppress Parameter Validation: UNIX Domain Socket path",
+        "name": "service_config_suppression_dfs_domain_socket_path",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Shared Hadoop Group Name parameter.",
+        "display_name": "Suppress Parameter Validation: Shared Hadoop Group Name",
+        "name": "service_config_suppression_hdfs_hadoop_group_name",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Single User Mode Overrides Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Single User Mode Overrides Validator",
+        "name": "service_config_suppression_single_user_mode_override_validator",
+        "value": "false"
+    },
+    {
+        "desc": "The maximal block replication.",
+        "display_name": "Maximal Block Replication",
+        "name": "dfs_replication_max",
+        "value": "512"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Service Monitor Client Config Overrides parameter.",
+        "display_name": "Suppress Parameter Validation: Service Monitor Client Config Overrides",
+        "name": "service_config_suppression_smon_client_config_overrides",
+        "value": "false"
+    },
+    {
+        "desc": "Enable authorization",
+        "display_name": "Hadoop Secure Authorization",
+        "name": "hadoop_security_authorization",
+        "value": "false"
+    },
+    {
+        "desc": "The Key Management Server used by HDFS. This must be set to use encryption for data at rest.",
+        "display_name": "KMS Service",
+        "name": "kms_service",
+        "value": null
+    },
+    {
+        "desc": "The attribute of the group object that identifies the group name. The default will usually be appropriate for all LDAP systems.",
+        "display_name": "Hadoop User Group Mapping LDAP Group Name Attribute",
+        "name": "hadoop_group_mapping_ldap_group_name_attr",
+        "value": "cn"
+    },
+    {
+        "desc": "Enables DataNode support for the experimental DistributedFileSystem.getFileVBlockStorageLocations API. Applicable to CDH 4.1 and onwards.",
+        "display_name": "Enable HDFS Block Metadata API",
+        "name": "dfs_datanode_hdfs_blocks_metadata_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HDFS Proxy User Groups parameter.",
+        "display_name": "Suppress Parameter Validation: HDFS Proxy User Groups",
+        "name": "service_config_suppression_hdfs_proxy_user_groups_list",
+        "value": "false"
+    },
+    {
+        "desc": "The tolerance window that will be used in HDFS service tests that depend on detection of the active NameNode.",
+        "display_name": "Active NameNode Detection Window",
+        "name": "hdfs_active_namenode_detecton_window",
+        "value": "3"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Flume Proxy User Hosts parameter.",
+        "display_name": "Suppress Parameter Validation: Flume Proxy User Hosts",
+        "name": "service_config_suppression_flume_proxy_user_hosts_list",
+        "value": "false"
+    },
+    {
+        "desc": "Default block replication. The number of replications to make when the file is created. The default value is used if a replication number is not specified.",
+        "display_name": "Replication Factor",
+        "name": "dfs_replication",
+        "value": "3"
+    },
+    {
+        "desc": "Comma-delimited list of groups that you want to allow the HTTP user to impersonate. The default '*' allows all groups. To disable entirely, use a string that doesn't correspond to a group name, such as '_no_group_'. This is used by WebHCat.",
+        "display_name": "HTTP Proxy User Groups",
+        "name": "HTTP_proxy_user_groups_list",
+        "value": "*"
+    },
+    {
+        "desc": "The name of the system group shared by all the core Hadoop services.",
+        "display_name": "Shared Hadoop Group Name",
+        "name": "hdfs_hadoop_group_name",
+        "value": "hadoop"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hadoop User Group Mapping LDAP User Search Filter parameter.",
+        "display_name": "Suppress Parameter Validation: Hadoop User Group Mapping LDAP User Search Filter",
+        "name": "service_config_suppression_hadoop_group_mapping_ldap_user_filter",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HDFS High Availability Fencing Methods parameter.",
+        "display_name": "Suppress Parameter Validation: HDFS High Availability Fencing Methods",
+        "name": "service_config_suppression_dfs_ha_fencing_methods",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hive Proxy User Hosts parameter.",
+        "display_name": "Suppress Parameter Validation: Hive Proxy User Hosts",
+        "name": "service_config_suppression_hive_proxy_user_hosts_list",
+        "value": "false"
+    },
+    {
+        "desc": "The amount of time to wait for HDFS filesystem image transfer from NameNode to complete.",
+        "display_name": "FsImage Transfer Timeout",
+        "name": "dfs_image_transfer_timeout",
+        "value": "60000"
+    },
+    {
+        "desc": "For advanced use only, key-value pairs (one on each line) to be inserted into the environment of HDFS snapshot shell command.",
+        "display_name": "HDFS Snapshot Shell Command Environment Advanced Configuration Snippet (Safety Valve)",
+        "name": "hdfs_shell_cmd_env_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Service Triggers parameter.",
+        "display_name": "Suppress Parameter Validation: Service Triggers",
+        "name": "service_config_suppression_service_triggers",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HDFS Service Environment Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: HDFS Service Environment Advanced Configuration Snippet (Safety Valve)",
+        "name": "service_config_suppression_hdfs_service_env_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Compression Codecs parameter.",
+        "display_name": "Suppress Parameter Validation: Compression Codecs",
+        "name": "service_config_suppression_io_compression_codecs",
+        "value": "false"
+    },
+    {
+        "desc": "An additional filter to use when searching for LDAP users. The default will usually be appropriate for Active Directory installations. If connecting to a generic LDAP server, ''sAMAccountName'' will likely be replaced with ''uid''. {0} is a special string used to denote where the username fits into the filter.",
+        "display_name": "Hadoop User Group Mapping LDAP User Search Filter",
+        "name": "hadoop_group_mapping_ldap_user_filter",
+        "value": "(&(objectClass=user)(sAMAccountName={0}))"
+    },
+    {
+        "desc": "Path to the keystore file containing the server certificate and private key used for encrypted shuffle and encrypted web UIs. Applies to configurations of all daemon roles of this service.",
+        "display_name": "Hadoop TLS/SSL Server Keystore File Location",
+        "name": "ssl_server_keystore_location",
+        "value": null
+    },
+    {
+        "desc": "List of fencing methods to use for service fencing. <code>shell(./cloudera_manager_agent_fencer.py)</code> is a fencing mechanism designed to use the Cloudera Manager agent.  The <code>sshfence</code> method uses SSH.  If using custom fencers (that may communicate with shared store, power units, or network switches), use the shell to invoke them.",
+        "display_name": "HDFS High Availability Fencing Methods",
+        "name": "dfs_ha_fencing_methods",
+        "value": "shell(./cloudera_manager_agent_fencer.py)"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HDFS Proxy User Hosts parameter.",
+        "display_name": "Suppress Parameter Validation: HDFS Proxy User Hosts",
+        "name": "service_config_suppression_hdfs_proxy_user_hosts_list",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HDFS Health Canary Directory Permissions parameter.",
+        "display_name": "Suppress Parameter Validation: HDFS Health Canary Directory Permissions",
+        "name": "service_config_suppression_firehose_hdfs_canary_directory_permissions",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Nameservice Heap Size Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Nameservice Heap Size Validator",
+        "name": "service_config_suppression_nameservice_namenodes_heap_size_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HDFS Health Canary Directory parameter.",
+        "display_name": "Suppress Parameter Validation: HDFS Health Canary Directory",
+        "name": "service_config_suppression_firehose_hdfs_canary_directory",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only, key-value pairs (one on each line) to be inserted into the environment of HDFS replication jobs.",
+        "display_name": "HDFS Replication Environment Advanced Configuration Snippet (Safety Valve)",
+        "name": "hdfs_replication_env_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Enables the health check that a client can create, read, write, and delete files",
+        "display_name": "HDFS Canary Health Check",
+        "name": "hdfs_canary_health_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to serve logs over HTTP from HDFS web servers. This includes listing the logs directory at the /logs endpoint, which may be a security concern.",
+        "display_name": "Serve logs over HTTP",
+        "name": "http_logs_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hadoop User Group Mapping LDAP TLS/SSL Truststore Password parameter.",
+        "display_name": "Suppress Parameter Validation: Hadoop User Group Mapping LDAP TLS/SSL Truststore Password",
+        "name": "service_config_suppression_hadoop_group_mapping_ldap_keystore_passwd",
+        "value": "false"
+    },
+    {
+        "desc": "Path on the DataNode's local file system to a UNIX domain socket used for communication between the DataNode and local HDFS clients. This socket is used for Short Circuit Reads. Only the HDFS System User and \"root\" should have write access to the parent directory and all of its ancestors. This property is supported in CDH 4.2 or later deployments.",
+        "display_name": "UNIX Domain Socket path",
+        "name": "dfs_domain_socket_path",
+        "value": "/var/run/hdfs-sockets/dn"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the System User's Home Directory parameter.",
+        "display_name": "Suppress Parameter Validation: System User's Home Directory",
+        "name": "service_config_suppression_hdfs_user_home_dir",
+        "value": "false"
+    },
+    {
+        "desc": "Algorithm to encrypt data transfer between DataNodes and clients, and among DataNodes. If 3des or rc4 are chosen, the entire communication is encrypted with that algorithm. In CDH 5.4 and higher, if AES/CTR/NoPadding is chosen, 3des is used for the initial key exchange, and then AES/CTR/NoPadding is used for the transfer of data. This is the most secure option, and is recommended for clusters running CDH 5.4 or higher. It also requires that the \"openssl-devel\" package be installed on all machines in the cluster. When this parameter is changed, a full, nonrolling restart of the cluster must be performed.",
+        "display_name": "Data Transfer Encryption Algorithm",
+        "name": "dfs_encrypt_data_transfer_algorithm",
+        "value": "rc4"
+    },
+    {
+        "desc": "The health check thresholds of the number of under-replicated blocks. Specified as a percentage of the total number of blocks.",
+        "display_name": "Under-replicated Block Monitoring Thresholds",
+        "name": "hdfs_under_replicated_blocks_thresholds",
+        "value": "{\"critical\":\"40.0\",\"warning\":\"10.0\"}"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the System Group parameter.",
+        "display_name": "Suppress Parameter Validation: System Group",
+        "name": "service_config_suppression_process_groupname",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>hdfs-site.xml</strong>. Applies to configurations of all roles in this service except client configuration.",
+        "display_name": "HDFS Service Advanced Configuration Snippet (Safety Valve) for hdfs-site.xml",
+        "name": "hdfs_service_config_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the YARN Proxy User Hosts parameter.",
+        "display_name": "Suppress Parameter Validation: YARN Proxy User Hosts",
+        "name": "service_config_suppression_yarn_proxy_user_hosts_list",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the HDFS Canary heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: HDFS Canary",
+        "name": "service_health_suppression_hdfs_canary_health",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HDFS Advanced Configuration Snippet (Safety Valve) for ssl-client.xml parameter.",
+        "display_name": "Suppress Parameter Validation: HDFS Advanced Configuration Snippet (Safety Valve) for ssl-client.xml",
+        "name": "service_config_suppression_hdfs_ssl_client_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the HttpFS Count Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: HttpFS Count Validator",
+        "name": "service_config_suppression_httpfs_count_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Kerberos Principal parameter.",
+        "display_name": "Suppress Parameter Validation: Kerberos Principal",
+        "name": "service_config_suppression_kerberos_princ_name",
+        "value": "false"
+    },
+    {
+        "desc": "Comma-delimited list of hosts where you want to allow the HTTP user to impersonate other users. The default '*' allows all hosts. To disable entirely, use a string that doesn't correspond to a host name, such as '_no_host'. This is used by WebHCat.",
+        "display_name": "HTTP Proxy User Hosts",
+        "name": "HTTP_proxy_user_hosts_list",
+        "value": "*"
+    },
+    {
+        "desc": "Whether to suppress the results of the Free Space heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Free Space",
+        "name": "service_health_suppression_hdfs_free_space_remaining",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HTTP Proxy User Groups parameter.",
+        "display_name": "Suppress Parameter Validation: HTTP Proxy User Groups",
+        "name": "service_config_suppression_http_proxy_user_groups_list",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hadoop User Group Mapping LDAP Group Membership Attribute parameter.",
+        "display_name": "Suppress Parameter Validation: Hadoop User Group Mapping LDAP Group Membership Attribute",
+        "name": "service_config_suppression_hadoop_group_mapping_ldap_member_attr",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the Under-Replicated Blocks heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Under-Replicated Blocks",
+        "name": "service_health_suppression_hdfs_under_replicated_blocks",
+        "value": "false"
+    },
+    {
+        "desc": "<p>\nConfigures the rules for event tracking and coalescing. This feature is\nused to define equivalency between different audit events. When\nevents match, according to a set of configurable parameters, only one\nentry in the audit list is generated for all the matching events.\n</p>\n\n<p>\nTracking works by keeping a reference to events when they first appear,\nand comparing other incoming events against the \"tracked\" events according\nto the rules defined here.\n</p>\n\n<p>Event trackers are defined in a JSON object like the following:</p>\n\n<pre>\n{\n  \"timeToLive\" : [integer],\n  \"fields\" : [\n    {\n      \"type\" : [string],\n      \"name\" : [string]\n    }\n  ]\n}\n</pre>\n\n<p>\nWhere:\n</p>\n\n<ul>\n  <li>timeToLive: maximum amount of time an event will be tracked, in\n  milliseconds. Must be provided. This defines how long, since it's\n  first seen, an event will be tracked. A value of 0 disables tracking.</li>\n\n  <li>fields: list of fields to compare when matching events against\n  tracked events.</li>\n</ul>\n\n<p>\nEach field has an evaluator type associated with it. The evaluator defines\nhow the field data is to be compared. The following evaluators are\navailable:\n</p>\n\n<ul>\n  <li>value: uses the field value for comparison.</li>\n\n  <li>username: treats the field value as a user name, and ignores any\n  host-specific data. This is useful for environment using Kerberos,\n  so that only the principal name and realm are compared.</li>\n</ul>\n\n<p>\nThe following is the list of fields that can be used to compare HDFS events:\n</p>\n\n<ul>\n  <li>operation: the HDFS operation being performed.</li>\n  <li>username: the user performing the action.</li>\n  <li>ipAddress: the IP from where the request originated.</li>\n  <li>allowed: whether the operation was allowed or denied.</li>\n  <li>src: the source path for the operation.</li>\n  <li>dest: the destination path for the operation.</li>\n  <li>permissions: the permissions associated with the operation.</li>\n</ul>\n\n<p>\nThe default event tracker for HDFS services defines equality by comparing the\nusername, operation, and source path of the events.\n</p>\n",
+        "display_name": "Audit Event Tracker",
+        "name": "navigator_event_tracker",
+        "value": "{\n  \"comment\" : [\n    \"The default event tracker for HDFS services defines equality by \",\n    \"comparing the username, operation, and source path of the events.\"\n  ],\n  \"timeToLive\" : 60000,\n  \"fields\" : [\n    { \"type\": \"value\", \"name\" : \"src\" },\n    { \"type\": \"value\", \"name\" : \"operation\" },\n    { \"type\": \"username\", \"name\" : \"username\" }\n  ]\n}\n"
+    },
+    {
+        "desc": "Choose the authentication mechanism used by Hadoop",
+        "display_name": "Hadoop Secure Authentication",
+        "name": "hadoop_security_authentication",
+        "value": "simple"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Replication Factor parameter.",
+        "display_name": "Suppress Parameter Validation: Replication Factor",
+        "name": "service_config_suppression_dfs_replication",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>hadoop-policy.xml</strong>. Applies to configurations of all roles in this service except client configuration.",
+        "display_name": "HDFS Service Advanced Configuration Snippet (Safety Valve) for hadoop-policy.xml",
+        "name": "hadoop_policy_config_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Enable encryption of data transfer between DataNodes and clients, and among DataNodes. For effective data transfer protection, enable Kerberos authentication and choose Privacy Quality of RPC Protection.",
+        "display_name": "Enable Data Transfer Encryption",
+        "name": "dfs_encrypt_data_transfer",
+        "value": "false"
+    },
+    {
+        "desc": "Comma-delimited list of hosts that you want to allow the YARN user to impersonate. The default '*' allows all hosts. To disable entirely, use a string that does not correspond to a host name, such as '_no_host'.",
+        "display_name": "YARN Proxy User Hosts",
+        "name": "yarn_proxy_user_hosts_list",
+        "value": "*"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hadoop User Group Mapping LDAP Bind User Password parameter.",
+        "display_name": "Suppress Parameter Validation: Hadoop User Group Mapping LDAP Bind User Password",
+        "name": "service_config_suppression_hadoop_group_mapping_ldap_bind_passwd",
+        "value": "false"
+    },
+    {
+        "desc": "When computing the overall HDFS cluster health, consider the active NameNode's health",
+        "display_name": "Active NameNode Role Health Check",
+        "name": "hdfs_namenode_health_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>ssl-server.xml</strong>. Applies to configurations of all roles in this service except client configuration.",
+        "display_name": "HDFS Service Advanced Configuration Snippet (Safety Valve) for ssl-server.xml",
+        "name": "hdfs_ssl_server_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "The home directory of the system user on the local filesystem. This setting must reflect the system's configured value - only changing it here will not change the actual home directory.",
+        "display_name": "System User's Home Directory",
+        "name": "hdfs_user_home_dir",
+        "value": "/var/lib/hadoop-hdfs"
+    },
+    {
+        "desc": "Whether to suppress the results of the Missing Blocks heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Missing Blocks",
+        "name": "service_health_suppression_hdfs_missing_blocks",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Hadoop TLS/SSL Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Hadoop TLS/SSL Validator",
+        "name": "service_config_suppression_hadoop_ssl_validator",
+        "value": "false"
+    },
+    {
+        "desc": "SASL protection mode for secured connections to the DataNodes when reading or writing data.",
+        "display_name": "DataNode Data Transfer Protection",
+        "name": "dfs_data_transfer_protection",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Authorized Users parameter.",
+        "display_name": "Suppress Parameter Validation: Authorized Users",
+        "name": "service_config_suppression_hadoop_authorized_users",
+        "value": "false"
+    },
+    {
+        "desc": "Comma-delimited list of hosts where you want to allow the flume user to impersonate other users. The default '*' allows all hosts. To disable entirely, use a string that doesn't correspond to a host name, such as '_no_host'.",
+        "display_name": "Flume Proxy User Hosts",
+        "name": "flume_proxy_user_hosts_list",
+        "value": "*"
+    },
+    {
+        "desc": "<p>The URL of the LDAP server. The URL must be prefixed with ldap:// or ldaps://. The URL can optionally specify a custom port, for example: ldaps://ldap_server.example.com:1636. Note that usernames and passwords will be transmitted in the clear unless either an ldaps:// URL is used, or \"Enable LDAP TLS\" is turned on (where available). Also note that encryption must be in use between the client and this service for the same reason.</p><p>For more detail on the LDAP URL format, see <a target=\"_blank\" href=\"http://www.ietf.org/rfc/rfc2255.txt\">RFC 2255 <i class=\"externalLink\"></i></a>. A space-separated list of URLs can be entered; in this case the URLs will each be tried in turn until one replies.</p>",
+        "display_name": "Hadoop User Group Mapping LDAP URL",
+        "name": "hadoop_group_mapping_ldap_url",
+        "value": null
+    },
+    {
+        "desc": "SSH connection timeout, in milliseconds, to use with the built-in sshfence fencer.",
+        "display_name": "Timeout for SSH Fencing Strategy",
+        "name": "dfs_ha_fencing_ssh_connect_timeout",
+        "value": "30000"
+    },
+    {
+        "desc": "Enable automatic synchronization of HDFS ACLs with Sentry privileges. HDFS Access Control Lists and Check HDFS Permissions must be enabled when this feature is enabled. Use Sentry Synchronization Path Prefixes to define the HDFS regions where authorization is enforced using Sentry information. For more information, see <a class=\"bold\" href=\"http://tiny.cloudera.com/sentry-sync-cm5\" target=\"_blank\">Synchronizing HDFS ACLs and Sentry Authorization<i class=\"externalLink\"></i></a>.",
+        "display_name": "Enable Sentry Synchronization",
+        "name": "hdfs_sentry_sync_enable",
+        "value": "false"
+    },
+    {
+        "desc": "Comma-delimited list of hosts where you allow the HttpFS user to impersonate other users. The default '*' allows all hosts. To disable entirely, use a string that doesn't correspond to a host name, such as '_no_host'.",
+        "display_name": "HttpFS Proxy User Hosts",
+        "name": "httpfs_proxy_user_hosts_list",
+        "value": "*"
+    },
+    {
+        "desc": "Name of the ZooKeeper service that this HDFS service instance depends on",
+        "display_name": "ZooKeeper Service",
+        "name": "zookeeper_service",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Nameservice Mountpoints Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Nameservice Mountpoints Validator",
+        "name": "service_config_suppression_nameservice_mountpoints_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Authorized Admin Groups parameter.",
+        "display_name": "Suppress Parameter Validation: Authorized Admin Groups",
+        "name": "service_config_suppression_hadoop_authorized_admin_groups",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Mapred Proxy User Hosts parameter.",
+        "display_name": "Suppress Parameter Validation: Mapred Proxy User Hosts",
+        "name": "service_config_suppression_mapred_proxy_user_hosts_list",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HDFS Client Advanced Configuration Snippet (Safety Valve) for navigator.client.properties parameter.",
+        "display_name": "Suppress Parameter Validation: HDFS Client Advanced Configuration Snippet (Safety Valve) for navigator.client.properties",
+        "name": "service_config_suppression_navigator_client_config_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Superuser Group parameter.",
+        "display_name": "Suppress Parameter Validation: Superuser Group",
+        "name": "service_config_suppression_dfs_permissions_supergroup",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Auto Failover Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Auto Failover Validator",
+        "name": "service_config_suppression_auto_failover_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Kerberos principal short name used by all roles of this service.",
+        "display_name": "Kerberos Principal",
+        "name": "kerberos_princ_name",
+        "value": "hdfs"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the HDFS Encryption Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: HDFS Encryption Validator",
+        "name": "service_config_suppression_hdfs_encryption_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Oozie Proxy User Hosts parameter.",
+        "display_name": "Suppress Parameter Validation: Oozie Proxy User Hosts",
+        "name": "service_config_suppression_oozie_proxy_user_hosts_list",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HTTP Proxy User Hosts parameter.",
+        "display_name": "Suppress Parameter Validation: HTTP Proxy User Hosts",
+        "name": "service_config_suppression_http_proxy_user_hosts_list",
+        "value": "false"
+    },
+    {
+        "desc": "The group that this service's processes should run as (except the HttpFS server, which has its own group)",
+        "display_name": "System Group",
+        "name": "process_groupname",
+        "value": "hdfs"
+    },
+    {
+        "desc": "ACLs (Access Control Lists) enhance the existing HDFS permission model to support controlling file access for arbitrary combinations of users and groups instead of a single owner, single group, and all other users. When ACLs are disabled, the NameNode rejects all attempts to set an ACL.",
+        "display_name": "Enable Access Control Lists",
+        "name": "dfs_namenode_acls_enabled",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Trusted Kerberos Realms parameter.",
+        "display_name": "Suppress Parameter Validation: Trusted Kerberos Realms",
+        "name": "service_config_suppression_trusted_realms",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only, a list of derived configuration properties that will be used by the Service Monitor instead of the default ones.",
+        "display_name": "Service Monitor Derived Configs Advanced Configuration Snippet (Safety Valve)",
+        "name": "smon_derived_configs_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the NFS High Availability Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: NFS High Availability Validator",
+        "name": "service_config_suppression_nfs_ha_validator",
+        "value": "false"
+    },
+    {
+        "desc": "The frequency in which the log4j event publication appender will retry sending undelivered log events to the Event server, in seconds",
+        "display_name": "Log Event Retry Frequency",
+        "name": "log_event_retry_frequency",
+        "value": "30"
+    },
+    {
+        "desc": "Whether to suppress the results of the NameNode Health heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: NameNode Health",
+        "name": "service_health_suppression_hdfs_ha_namenode_health",
+        "value": "false"
+    },
+    {
+        "desc": "Comma-delimited list of hosts where you want to allow the Hive user to impersonate other users. The default '*' allows all hosts. To disable entirely, use a string that doesn't correspond to a host name, such as '_no_host'.",
+        "display_name": "Hive Proxy User Hosts",
+        "name": "hive_proxy_user_hosts_list",
+        "value": "*"
+    },
+    {
+        "desc": "Default umask for file and directory creation, specified in an octal value (with a leading 0)",
+        "display_name": "Default Umask",
+        "name": "dfs_umaskmode",
+        "value": "022"
+    },
+    {
+        "desc": "The health check thresholds of free space in HDFS. Specified as a percentage of total HDFS capacity.",
+        "display_name": "HDFS Free Space Monitoring Thresholds",
+        "name": "hdfs_free_space_thresholds",
+        "value": "{\"critical\":\"10.0\",\"warning\":\"20.0\"}"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HDFS User to Impersonate parameter.",
+        "display_name": "Suppress Parameter Validation: HDFS User to Impersonate",
+        "name": "service_config_suppression_hdfs_user_to_impersonate",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hive Proxy User Groups parameter.",
+        "display_name": "Suppress Parameter Validation: Hive Proxy User Groups",
+        "name": "service_config_suppression_hive_proxy_user_groups_list",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Audit Log Directory parameter.",
+        "display_name": "Suppress Parameter Validation: Audit Log Directory",
+        "name": "service_config_suppression_audit_event_log_dir",
+        "value": "false"
+    },
+    {
+        "desc": "When set, Cloudera Manager will send alerts when this entity's configuration changes.",
+        "display_name": "Enable Configuration Change Alerts",
+        "name": "enable_config_alerts",
+        "value": "false"
+    },
+    {
+        "desc": "Comma-separated list of groups authorized to perform admin operations on Hadoop. This is emitted only if authorization is enabled.",
+        "display_name": "Authorized Admin Groups",
+        "name": "hadoop_authorized_admin_groups",
+        "value": ""
+    },
+    {
+        "desc": "An additional filter to use when searching for groups.",
+        "display_name": "Hadoop User Group Mapping LDAP Group Search Filter",
+        "name": "hadoop_group_mapping_ldap_group_filter",
+        "value": "(objectClass=group)"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Additional Rules to Map Kerberos Principals to Short Names parameter.",
+        "display_name": "Suppress Parameter Validation: Additional Rules to Map Kerberos Principals to Short Names",
+        "name": "service_config_suppression_extra_auth_to_local_rules",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Cluster-Wide Default TLS/SSL Client Truststore Location parameter.",
+        "display_name": "Suppress Parameter Validation: Cluster-Wide Default TLS/SSL Client Truststore Location",
+        "name": "service_config_suppression_ssl_client_truststore_location",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HttpFS Proxy User Hosts parameter.",
+        "display_name": "Suppress Parameter Validation: HttpFS Proxy User Hosts",
+        "name": "service_config_suppression_httpfs_proxy_user_hosts_list",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HDFS Service Advanced Configuration Snippet (Safety Valve) for ssl-server.xml parameter.",
+        "display_name": "Suppress Parameter Validation: HDFS Service Advanced Configuration Snippet (Safety Valve) for ssl-server.xml",
+        "name": "service_config_suppression_hdfs_ssl_server_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "A list of path prefixes that define the HDFS regions where authorization is enforced using Sentry information. Only relevant when Sentry Synchronization is enabled.",
+        "display_name": "Sentry Synchronization Path Prefixes",
+        "name": "hdfs_sentry_sync_path_prefixes",
+        "value": "/user/hive/warehouse"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into the client configuration for <strong>navigator.client.properties</strong>.",
+        "display_name": "HDFS Client Advanced Configuration Snippet (Safety Valve) for navigator.client.properties",
+        "name": "navigator_client_config_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hadoop User Group Mapping LDAP Group Name Attribute parameter.",
+        "display_name": "Suppress Parameter Validation: Hadoop User Group Mapping LDAP Group Name Attribute",
+        "name": "service_config_suppression_hadoop_group_mapping_ldap_group_name_attr",
+        "value": "false"
+    },
+    {
+        "desc": "When computing the overall HDFS cluster health, consider the health of the standby NameNode.",
+        "display_name": "Standby NameNode Health Check",
+        "name": "hdfs_standby_namenodes_health_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "The SSH private key files to use with the built-in sshfence fencer. These are to be accessible to the <code>hdfs</code> user on the machines running the NameNodes.",
+        "display_name": "Private Keys for SSH Fencing Strategy",
+        "name": "dfs_ha_fencing_ssh_private_key_files",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HDFS Replication Environment Advanced Configuration Snippet (Safety Valve) for hadoop-env.sh parameter.",
+        "display_name": "Suppress Parameter Validation: HDFS Replication Environment Advanced Configuration Snippet (Safety Valve) for hadoop-env.sh",
+        "name": "service_config_suppression_hdfs_replication_haoop_env_sh_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Comma-delimited list of hosts where you want to allow the HDFS user to impersonate other users. The default '*' allows all hosts. To disable entirely, use a string that doesn't correspond to a host name, such as '_no_host'.",
+        "display_name": "HDFS Proxy User Hosts",
+        "name": "hdfs_proxy_user_hosts_list",
+        "value": "*"
+    },
+    {
+        "desc": "Whether or not to use TLS/SSL when connecting to the LDAP server.",
+        "display_name": "Hadoop User Group Mapping LDAP TLS/SSL Enabled",
+        "name": "hadoop_group_mapping_ldap_use_ssl",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hadoop TLS/SSL Server Keystore Key Password parameter.",
+        "display_name": "Suppress Parameter Validation: Hadoop TLS/SSL Server Keystore Key Password",
+        "name": "service_config_suppression_ssl_server_keystore_keypassword",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Redaction Policy Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Redaction Policy Validator",
+        "name": "service_config_suppression_redaction_policy_validator",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>ssl-client.xml</strong>. Applies cluster-wide, but can be overridden by individual services.",
+        "display_name": "HDFS Advanced Configuration Snippet (Safety Valve) for ssl-client.xml",
+        "name": "hdfs_ssl_client_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hadoop User Group Mapping LDAP TLS/SSL Truststore parameter.",
+        "display_name": "Suppress Parameter Validation: Hadoop User Group Mapping LDAP TLS/SSL Truststore",
+        "name": "service_config_suppression_hadoop_group_mapping_ldap_keystore",
+        "value": "false"
+    }
+]

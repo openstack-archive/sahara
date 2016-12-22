@@ -1,0 +1,674 @@
+[
+    {
+        "desc": "Create users in Hue when they try to login with their LDAP credentials. For use when using LdapBackend for Hue authentication.",
+        "display_name": "Create LDAP users on login",
+        "name": "create_users_on_login",
+        "value": "true"
+    },
+    {
+        "desc": "Number of threads used by the Hue web server.",
+        "display_name": "Hue Web Server Threads",
+        "name": "cherrypy_server_threads",
+        "value": "50"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HUE Client Advanced Configuration Snippet (Safety Valve) for navigator.client.properties parameter.",
+        "display_name": "Suppress Parameter Validation: HUE Client Advanced Configuration Snippet (Safety Valve) for navigator.client.properties",
+        "name": "service_config_suppression_navigator_client_config_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Comma-separated list of regular expressions, which match 'host:port' of requested proxy target.",
+        "display_name": "Whitelist",
+        "name": "whitelist",
+        "value": "(localhost|127\\.0\\.0\\.1):(50030|50070|50060|50075)"
+    },
+    {
+        "desc": "The health test thresholds of the overall Load Balancer health. The check returns \"Concerning\" health if the percentage of \"Healthy\" Load Balancers falls below the warning threshold. The check is unhealthy if the total percentage of \"Healthy\" and \"Concerning\" Load Balancers falls below the critical threshold.",
+        "display_name": "Healthy Load Balancer Monitoring Thresholds",
+        "name": "hue_load_balancer_healthy_thresholds",
+        "value": "{\"critical\":\"51.0\",\"warning\":\"99.0\"}"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the HBase Thrift Usage Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: HBase Thrift Usage Validator",
+        "name": "service_config_suppression_hue_hbase_thrift_server_validator",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds of the overall Kerberos Ticket Renewer health. The check returns \"Concerning\" health if the percentage of \"Healthy\" Kerberos Ticket Renewers falls below the warning threshold. The check is unhealthy if the total percentage of \"Healthy\" and \"Concerning\" Kerberos Ticket Renewers falls below the critical threshold.",
+        "display_name": "Healthy Kerberos Ticket Renewer Monitoring Thresholds",
+        "name": "hue_kt_renewers_healthy_thresholds",
+        "value": "{\"critical\":\"51.0\",\"warning\":\"99.0\"}"
+    },
+    {
+        "desc": "The user that this service's processes should run as.",
+        "display_name": "System User",
+        "name": "process_username",
+        "value": "hue"
+    },
+    {
+        "desc": "The distinguished name to use as a search base for finding users and groups.  This should be similar to 'dc=hadoop,dc=mycompany,dc=com'.",
+        "display_name": "LDAP Search Base",
+        "name": "base_dn",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Database Dump File parameter.",
+        "display_name": "Suppress Parameter Validation: Database Dump File",
+        "name": "service_config_suppression_database_dump_file",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HDFS Temporary Directory parameter.",
+        "display_name": "Suppress Parameter Validation: HDFS Temporary Directory",
+        "name": "service_config_suppression_hdfs_tmp_dir",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hue Database Password parameter.",
+        "display_name": "Suppress Parameter Validation: Hue Database Password",
+        "name": "service_config_suppression_database_password",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the Hue Server Health heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Hue Server Health",
+        "name": "service_health_suppression_hue_hue_servers_healthy",
+        "value": "false"
+    },
+    {
+        "desc": "The name of a default group that users will be added to at creation time.",
+        "display_name": "Default User Group",
+        "name": "default_user_group",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Kerberos Ticket Renewer Count Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Kerberos Ticket Renewer Count Validator",
+        "name": "service_config_suppression_kt_renewer_count_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Distinguished name of the user to bind as. This is used to connect to LDAP/AD for searching user and group information. This may be left blank if the LDAP server supports anonymous binds.",
+        "display_name": "LDAP Bind User Distinguished Name",
+        "name": "bind_dn",
+        "value": null
+    },
+    {
+        "desc": "If true, attempts to establish a TLS (Transport Layer Security) connection with an LDAP server that was specified with ldap://. Not required when using an LDAP URL with prefix ldaps://, because that already specifies TLS.  This option is also known as \"Use StartTLS\".",
+        "display_name": "Enable LDAP TLS",
+        "name": "use_start_tls",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the LDAP Username Pattern parameter.",
+        "display_name": "Suppress Parameter Validation: LDAP Username Pattern",
+        "name": "service_config_suppression_ldap_username_pattern",
+        "value": "false"
+    },
+    {
+        "desc": "The password of the bind user.",
+        "display_name": "LDAP Bind Password",
+        "name": "bind_password",
+        "value": null
+    },
+    {
+        "desc": "Path to the directory where audit logs will be written. The directory will be created if it doesn't exist.",
+        "display_name": "Audit Log Directory",
+        "name": "audit_event_log_dir",
+        "value": "/var/log/hue/audit"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Default User Group parameter.",
+        "display_name": "Suppress Parameter Validation: Default User Group",
+        "name": "service_config_suppression_default_user_group",
+        "value": "false"
+    },
+    {
+        "desc": "Type of database used for Hue",
+        "display_name": "Hue Database Type",
+        "name": "database_type",
+        "value": "sqlite3"
+    },
+    {
+        "desc": "When set, Cloudera Manager will send alerts when the health of this service reaches the threshold specified by the EventServer setting eventserver_health_events_alert_threshold",
+        "display_name": "Enable Service Level Health Alerts",
+        "name": "enable_alerts",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the PAM Backend Service Name parameter.",
+        "display_name": "Suppress Parameter Validation: PAM Backend Service Name",
+        "name": "service_config_suppression_pam_auth_service",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Service Triggers parameter.",
+        "display_name": "Suppress Parameter Validation: Service Triggers",
+        "name": "service_config_suppression_service_triggers",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Audit Event Tracker parameter.",
+        "display_name": "Suppress Parameter Validation: Audit Event Tracker",
+        "name": "service_config_suppression_navigator_event_tracker",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Kerberos Principal parameter.",
+        "display_name": "Suppress Parameter Validation: Kerberos Principal",
+        "name": "service_config_suppression_kerberos_princ_name",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the System Group parameter.",
+        "display_name": "Suppress Parameter Validation: System Group",
+        "name": "service_config_suppression_process_groupname",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HDFS Web Interface Role parameter.",
+        "display_name": "Suppress Parameter Validation: HDFS Web Interface Role",
+        "name": "service_config_suppression_hue_webhdfs",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the LDAP Bind User Distinguished Name parameter.",
+        "display_name": "Suppress Parameter Validation: LDAP Bind User Distinguished Name",
+        "name": "service_config_suppression_bind_dn",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hue Database Username parameter.",
+        "display_name": "Suppress Parameter Validation: Hue Database Username",
+        "name": "service_config_suppression_database_user",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only, a list of derived configuration properties that will be used by the Service Monitor instead of the default ones.",
+        "display_name": "Service Monitor Derived Configs Advanced Configuration Snippet (Safety Valve)",
+        "name": "smon_derived_configs_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Name of host where the Hue database is running. Not necessary for SQLite3.",
+        "display_name": "Hue Database Hostname",
+        "name": "database_host",
+        "value": "localhost"
+    },
+    {
+        "desc": "Name of the Sentry service that this Hue service instance depends on",
+        "display_name": "Sentry Service",
+        "name": "sentry_service",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the LDAP URL parameter.",
+        "display_name": "Suppress Parameter Validation: LDAP URL",
+        "name": "service_config_suppression_ldap_url",
+        "value": "false"
+    },
+    {
+        "desc": "Maximum size of audit log file in MB before it is rolled over.",
+        "display_name": "Maximum Audit Log File Size",
+        "name": "navigator_audit_log_max_file_size",
+        "value": "100"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the LDAP Group Name Attribute parameter.",
+        "display_name": "Suppress Parameter Validation: LDAP Group Name Attribute",
+        "name": "service_config_suppression_group_name_attr",
+        "value": "false"
+    },
+    {
+        "desc": "The location on disk of the certificate, in .pem format, used to confirm the authenticity of the LDAP server certificate. This is the Certificate Authority (CA) certificate, and it was used to sign the LDAP server certificate. If not set, all certificates are trusted, which means that an attacker could potentially intercept otherwise encrypted usernames and passwords.",
+        "display_name": "LDAP Server CA Certificate",
+        "name": "ldap_cert",
+        "value": null
+    },
+    {
+        "desc": "HTTPFS role or Namenode (if webhdfs is enabled) that hue can use to communicate with HDFS.",
+        "display_name": "HDFS Web Interface Role",
+        "name": "hue_webhdfs",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress the results of the Load Balancer Health heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Load Balancer Health",
+        "name": "service_health_suppression_hue_load_balancer_healthy",
+        "value": "false"
+    },
+    {
+        "desc": "<p>The configured triggers for this service. This is a JSON formatted list of triggers. These triggers are evaluated as part as the health system. Every trigger expression is parsed, and if the trigger condition is met, the list of actions provided in the trigger expression is executed.</p><p>Each trigger has the following fields:</p><ul><li><code>triggerName</code> <b>(mandatory)</b> - The name of the trigger. This value must be unique for the specific service. </li><li><code>triggerExpression</code> <b>(mandatory)</b> - A tsquery expression representing the trigger. </li><li><code>streamThreshold</code> <b>(optional)</b> - The maximum number of streams that can satisfy a condition of a trigger before the condition fires. By default set to 0, and any stream returned causes the condition to fire. </li><li><code>enabled</code> <b> (optional)</b> - By default set to 'true'. If set to 'false', the trigger is not evaluated.</li><li><code>expressionEditorConfig</code> <b> (optional)</b> - Metadata for the trigger editor. If present, the trigger should only be edited from the Edit Trigger page; editing the trigger here can lead to inconsistencies.</li></ul><p>For example, the followig JSON formatted trigger fires if there are more than 10 DataNodes with more than 500 file descriptors opened:</p><p><pre>[{\"triggerName\": \"sample-trigger\",\n  \"triggerExpression\": \"IF (SELECT fd_open WHERE roleType = DataNode and last(fd_open) > 500) DO health:bad\",\n  \"streamThreshold\": 10, \"enabled\": \"true\"}]</pre></p><p>See the trigger rules documentation for more details on how to write triggers using tsquery.</p><p>The JSON format is evolving and may change and, as a result, backward compatibility is not guaranteed between releases.</p>",
+        "display_name": "Service Triggers",
+        "name": "service_triggers",
+        "value": "[]"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the System User parameter.",
+        "display_name": "Suppress Parameter Validation: System User",
+        "name": "service_config_suppression_process_username",
+        "value": "false"
+    },
+    {
+        "desc": "Name of Hue database.",
+        "display_name": "Hue Database Name",
+        "name": "database_name",
+        "value": "hue"
+    },
+    {
+        "desc": "The attribute of the group object that identifies the members of the group.  For Active Directory, this is typically 'member'.",
+        "display_name": "LDAP Group Membership Attribute",
+        "name": "group_member_attr",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Blacklist parameter.",
+        "display_name": "Suppress Parameter Validation: Blacklist",
+        "name": "service_config_suppression_blacklist",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Whitelist parameter.",
+        "display_name": "Suppress Parameter Validation: Whitelist",
+        "name": "service_config_suppression_whitelist",
+        "value": "false"
+    },
+    {
+        "desc": "Enable collection of audit events from the service's roles.",
+        "display_name": "Enable Audit Collection",
+        "name": "navigator_audit_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "The base filter for searching for users.  For Active Directory, this is typically '(objectClass=user)'.",
+        "display_name": "LDAP User Filter",
+        "name": "user_filter",
+        "value": null
+    },
+    {
+        "desc": "Name of the Impala service that this Hue service instance depends on",
+        "display_name": "Impala Service",
+        "name": "impala_service",
+        "value": null
+    },
+    {
+        "desc": "Name of the Oozie service that this Hue service instance depends on",
+        "display_name": "Oozie Service",
+        "name": "oozie_service",
+        "value": null
+    },
+    {
+        "desc": "Thrift server to use for HBase app.",
+        "display_name": "HBase Thrift Server",
+        "name": "hue_hbase_thrift",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the LDAP Group Membership Attribute parameter.",
+        "display_name": "Suppress Parameter Validation: LDAP Group Membership Attribute",
+        "name": "service_config_suppression_group_member_attr",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hue Database Hostname parameter.",
+        "display_name": "Suppress Parameter Validation: Hue Database Hostname",
+        "name": "service_config_suppression_database_host",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hue Service Advanced Configuration Snippet (Safety Valve) for hue_safety_valve.ini parameter.",
+        "display_name": "Suppress Parameter Validation: Hue Service Advanced Configuration Snippet (Safety Valve) for hue_safety_valve.ini",
+        "name": "service_config_suppression_hue_service_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Name of the Solr service that this Hue service instance depends on",
+        "display_name": "Solr Service",
+        "name": "solr_service",
+        "value": null
+    },
+    {
+        "desc": "Name of the Sqoop service that this Hue service instance depends on",
+        "display_name": "Sqoop Service",
+        "name": "sqoop_service",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the LDAP Server CA Certificate parameter.",
+        "display_name": "Suppress Parameter Validation: LDAP Server CA Certificate",
+        "name": "service_config_suppression_ldap_cert",
+        "value": "false"
+    },
+    {
+        "desc": "The username to use to log into the Hue database. Not necessary for SQLite3.",
+        "display_name": "Hue Database Username",
+        "name": "database_user",
+        "value": "hue"
+    },
+    {
+        "desc": "In debug mode, Django displays a detailed traceback when an exception occurs. Debugging information may contain sensitive data. Django remembers every SQL query it executes in debug mode, which will rapidly consume memory.",
+        "display_name": "Enable Django Debug Mode",
+        "name": "django_debug_enable",
+        "value": "false"
+    },
+    {
+        "desc": "Comma-separated list of regular expressions, which match any prefix of 'host:port/path' of requested proxy target. This does not support matching GET parameters.",
+        "display_name": "Blacklist",
+        "name": "blacklist",
+        "value": "()"
+    },
+    {
+        "desc": "Search Bind Authentication connects to the LDAP server using credentials provided in the 'bind_dn' and 'bind_password' configurations. If these configurations are not set, then an anonymous search is performed.",
+        "display_name": "Use Search Bind Authentication",
+        "name": "search_bind_authentication",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the LDAP Username Attribute parameter.",
+        "display_name": "Suppress Parameter Validation: LDAP Username Attribute",
+        "name": "service_config_suppression_user_name_attr",
+        "value": "false"
+    },
+    {
+        "desc": "Mode of authenticating login credentials. Select desktop.auth.backend.LdapBackend to use LDAP to authenticate login credentials. LDAP requires you to also set the LDAP URL, Active Directory Domain, and optionally LDAP certificate if you are using secure LDAP. Select desktop.auth.backend.PamBackend to use PAM to authenticate login credentials.",
+        "display_name": "Authentication Backend",
+        "name": "auth_backend",
+        "value": "desktop.auth.backend.AllowFirstUserDjangoBackend"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Load Balancer Count Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Load Balancer Count Validator",
+        "name": "service_config_suppression_hue_load_balancer_count_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the LDAP Group Filter parameter.",
+        "display_name": "Suppress Parameter Validation: LDAP Group Filter",
+        "name": "service_config_suppression_group_filter",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Active Directory Domain parameter.",
+        "display_name": "Suppress Parameter Validation: Active Directory Domain",
+        "name": "service_config_suppression_nt_domain",
+        "value": "false"
+    },
+    {
+        "desc": "Enable debug output in HTTP Internal Server Error (status 500) responses. Debugging information may contain sensitive data. If Enable Django Debug Mode is set, this is automatically enabled.",
+        "display_name": "Enable Debugging of Internal Server Error Responses",
+        "name": "http_500_debug_enable",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hue Database Directory parameter.",
+        "display_name": "Suppress Parameter Validation: Hue Database Directory",
+        "name": "service_config_suppression_database_dir",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>sentry-site.xml</strong>. Applies to configurations of all roles in this service except client configuration.",
+        "display_name": "Hue Service Advanced Configuration Snippet (Safety Valve) for sentry-site.xml",
+        "name": "hue_sentry_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "For advanced use only, key-value pairs (one on each line) to be inserted into a role's environment. Applies to configurations of all roles in this service except client configuration.",
+        "display_name": "Hue Service Environment Advanced Configuration Snippet (Safety Valve)",
+        "name": "hue_service_env_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the User Augmentor parameter.",
+        "display_name": "Suppress Parameter Validation: User Augmentor",
+        "name": "service_config_suppression_user_augmentor",
+        "value": "false"
+    },
+    {
+        "desc": "The username attribute in the LDAP schema.  For Active Directory, this is typically 'sAMAccountName'.",
+        "display_name": "LDAP Username Attribute",
+        "name": "user_name_attr",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the LDAP Search Base parameter.",
+        "display_name": "Suppress Parameter Validation: LDAP Search Base",
+        "name": "service_config_suppression_base_dn",
+        "value": "false"
+    },
+    {
+        "desc": "Password for Hue database. Not necessary for SQLite3.",
+        "display_name": "Hue Database Password",
+        "name": "database_password",
+        "value": ""
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the HDFS HTTPFS Usage Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: HDFS HTTPFS Usage Validator",
+        "name": "service_config_suppression_hdfs_httpfs_present_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hue Service Advanced Configuration Snippet (Safety Valve) for sentry-site.xml parameter.",
+        "display_name": "Suppress Parameter Validation: Hue Service Advanced Configuration Snippet (Safety Valve) for sentry-site.xml",
+        "name": "service_config_suppression_hue_sentry_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Name of the HBase service that this Hue service instance depends on",
+        "display_name": "HBase Service",
+        "name": "hbase_service",
+        "value": null
+    },
+    {
+        "desc": "Base filter for searching for groups.  For Active Directory, this is typically '(objectClass=group)'.",
+        "display_name": "LDAP Group Filter",
+        "name": "group_filter",
+        "value": null
+    },
+    {
+        "desc": "Time zone name.",
+        "display_name": "Time Zone",
+        "name": "time_zone",
+        "value": "America/Los_Angeles"
+    },
+    {
+        "desc": "<p>\nConfigures the rules for event tracking and coalescing. This feature is\nused to define equivalency between different audit events. When\nevents match, according to a set of configurable parameters, only one\nentry in the audit list is generated for all the matching events.\n</p>\n\n<p>\nTracking works by keeping a reference to events when they first appear,\nand comparing other incoming events against the \"tracked\" events according\nto the rules defined here.\n</p>\n\n<p>Event trackers are defined in a JSON object like the following:</p>\n\n<pre>\n{\n  \"timeToLive\" : [integer],\n  \"fields\" : [\n    {\n      \"type\" : [string],\n      \"name\" : [string]\n    }\n  ]\n}\n</pre>\n\n<p>\nWhere:\n</p>\n\n<ul>\n  <li>timeToLive: maximum amount of time an event will be tracked, in\n  milliseconds. Must be provided. This defines how long, since it's\n  first seen, an event will be tracked. A value of 0 disables tracking.</li>\n\n  <li>fields: list of fields to compare when matching events against\n  tracked events.</li>\n</ul>\n\n<p>\nEach field has an evaluator type associated with it. The evaluator defines\nhow the field data is to be compared. The following evaluators are\navailable:\n</p>\n\n<ul>\n  <li>value: uses the field value for comparison.</li>\n\n  <li>userName: treats the field value as a userName, and ignores any\n  host-specific data. This is useful for environment using Kerberos,\n  so that only the principal name and realm are compared.</li>\n</ul>\n\n<p>\nThe following is the list of fields that can be used to compare Hue events:\n</p>\n\n<ul>\n  <li>operation: the Hue operation being performed.</li>\n  <li>username: the user performing the action.</li>\n  <li>ipAddress: the IP from where the request originated.</li>\n  <li>allowed: whether the operation was allowed or denied.</li>\n</ul>\n",
+        "display_name": "Audit Event Tracker",
+        "name": "navigator_event_tracker",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress the results of the Kerberos Ticket Renewer Health heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Kerberos Ticket Renewer Health",
+        "name": "service_health_suppression_hue_kt_renewers_healthy",
+        "value": "false"
+    },
+    {
+        "desc": "Name of the Hive service that this Hue service instance depends on",
+        "display_name": "Hive Service",
+        "name": "hive_service",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress the results of the Beeswax Server Health heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Beeswax Server Health",
+        "name": "service_health_suppression_hue_beeswax_server_health",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds of the overall Hue Server health. The check returns \"Concerning\" health if the percentage of \"Healthy\" Hue Servers falls below the warning threshold. The check is unhealthy if the total percentage of \"Healthy\" and \"Concerning\" Hue Servers falls below the critical threshold.",
+        "display_name": "Healthy Hue Server Monitoring Thresholds",
+        "name": "hue_hue_servers_healthy_thresholds",
+        "value": "{\"critical\":\"51.0\",\"warning\":\"99.0\"}"
+    },
+    {
+        "desc": "The group name attribute in the LDAP schema.  For Active Directory, this is typically 'cn'.",
+        "display_name": "LDAP Group Name Attribute",
+        "name": "group_name_attr",
+        "value": null
+    },
+    {
+        "desc": "HDFS directory used for storing temporary files.",
+        "display_name": "HDFS Temporary Directory",
+        "name": "hdfs_tmp_dir",
+        "value": "/tmp"
+    },
+    {
+        "desc": "Default encoding for site data.",
+        "display_name": "Default Site Encoding",
+        "name": "default_site_encoding",
+        "value": "utf"
+    },
+    {
+        "desc": "If the database is SQLite3, this is the filename of the database to use, and the directory of this file must be writable by the 'hue' user.",
+        "display_name": "Hue Database Directory",
+        "name": "database_dir",
+        "value": "/var/lib/hue/desktop.db"
+    },
+    {
+        "desc": "When you enable anonymous usage data collection Hue tracks anonymised pages and application versions in order to gather information about each application's usage levels. The data collected does not include any hostnames or IDs. Data collection option is available on CDH 4.4 and later deployments.",
+        "display_name": "Enable Usage Data Collection",
+        "name": "usage_data_collection_enable",
+        "value": "true"
+    },
+    {
+        "desc": "Name of the ZooKeeper service that this Hue service instance depends on",
+        "display_name": "ZooKeeper Service",
+        "name": "zookeeper_service",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Service Monitor Derived Configs Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: Service Monitor Derived Configs Advanced Configuration Snippet (Safety Valve)",
+        "name": "service_config_suppression_smon_derived_configs_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "<p>The URL of the LDAP server. The URL must be prefixed with ldap:// or ldaps://. The URL can optionally specify a custom port, for example: ldaps://ldap_server.example.com:1636. Note that usernames and passwords will be transmitted in the clear unless either an ldaps:// URL is used, or \"Enable LDAP TLS\" is turned on (where available). Also note that encryption must be in use between the client and this service for the same reason.</p><p>For more detail on the LDAP URL format, see <a target=\"_blank\" href=\"http://www.ietf.org/rfc/rfc2255.txt\">RFC 2255 <i class=\"externalLink\"></i></a>. A space-separated list of URLs can be entered; in this case the URLs will each be tried in turn until one replies.</p>",
+        "display_name": "LDAP URL",
+        "name": "ldap_url",
+        "value": null
+    },
+    {
+        "desc": "The PAM service name to use when authenticating over desktop.auth.backend.PamBackend. This is typically the name of a file under /etc/pam.d/ on the Hue host.",
+        "display_name": "PAM Backend Service Name",
+        "name": "pam_auth_service",
+        "value": "login"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Hue Server Count Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Hue Server Count Validator",
+        "name": "service_config_suppression_hue_server_count_validator",
+        "value": "false"
+    },
+    {
+        "desc": "This parameter is useful when authenticating against an Active Directory server. This value is appended to all usernames before authenticating against AD. For example, if this parameter is set to \"my.domain.com\", and the user authenticating is \"mike\", then \"mike@my.domain.com\" is passed to AD. If this field is unset, the username remains unaltered before being passed to AD.",
+        "display_name": "Active Directory Domain",
+        "name": "nt_domain",
+        "value": null
+    },
+    {
+        "desc": "Kerberos principal short name used by all roles of this service.",
+        "display_name": "Kerberos Principal",
+        "name": "kerberos_princ_name",
+        "value": "hue"
+    },
+    {
+        "desc": "Class that defines extra accessor methods for user objects.",
+        "display_name": "User Augmentor",
+        "name": "user_augmentor",
+        "value": "desktop.auth.backend.DefaultUserAugmentor"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hue Service Environment Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: Hue Service Environment Advanced Configuration Snippet (Safety Valve)",
+        "name": "service_config_suppression_hue_service_env_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "File where the database gets dumped to or loaded from.",
+        "display_name": "Database Dump File",
+        "name": "database_dump_file",
+        "value": "/tmp/hue_database_dump.json"
+    },
+    {
+        "desc": "LDAP Username Pattern for use with non-Active Directory LDAP implementations. Must contain the special '&lt;username&gt;' string for replacement during authentication.",
+        "display_name": "LDAP Username Pattern",
+        "name": "ldap_username_pattern",
+        "value": null
+    },
+    {
+        "desc": "The group that this service's processes should run as.",
+        "display_name": "System Group",
+        "name": "process_groupname",
+        "value": "hue"
+    },
+    {
+        "desc": "When computing the overall HUE health, consider Beeswax Server's health",
+        "display_name": "Beeswax Server Role Health Test",
+        "name": "hue_beeswax_server_health_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the LDAP User Filter parameter.",
+        "display_name": "Suppress Parameter Validation: LDAP User Filter",
+        "name": "service_config_suppression_user_filter",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the LDAP Bind Password parameter.",
+        "display_name": "Suppress Parameter Validation: LDAP Bind Password",
+        "name": "service_config_suppression_bind_password",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Audit Log Directory parameter.",
+        "display_name": "Suppress Parameter Validation: Audit Log Directory",
+        "name": "service_config_suppression_audit_event_log_dir",
+        "value": "false"
+    },
+    {
+        "desc": "When set, Cloudera Manager will send alerts when this entity's configuration changes.",
+        "display_name": "Enable Configuration Change Alerts",
+        "name": "enable_config_alerts",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Time Zone parameter.",
+        "display_name": "Suppress Parameter Validation: Time Zone",
+        "name": "service_config_suppression_time_zone",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into the client configuration for <strong>navigator.client.properties</strong>.",
+        "display_name": "HUE Client Advanced Configuration Snippet (Safety Valve) for navigator.client.properties",
+        "name": "navigator_client_config_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hue Database Name parameter.",
+        "display_name": "Suppress Parameter Validation: Hue Database Name",
+        "name": "service_config_suppression_database_name",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Default Site Encoding parameter.",
+        "display_name": "Suppress Parameter Validation: Default Site Encoding",
+        "name": "service_config_suppression_default_site_encoding",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>hue_safety_valve.ini</strong>. Applies to configurations of all roles in this service except client configuration.",
+        "display_name": "Hue Service Advanced Configuration Snippet (Safety Valve) for hue_safety_valve.ini",
+        "name": "hue_service_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Port on host where the Hue database is running. Not necessary for SQLite3.",
+        "display_name": "Hue Database Port",
+        "name": "database_port",
+        "value": "3306"
+    }
+]

@@ -38,6 +38,7 @@ class CDHPluginProvider(p.ProvisioningPluginBase):
         deprecated = {'enabled': {'status': True},
                       'deprecated': {'status': True}}
         result['version_labels'] = {
+            '5.9.0': copy.deepcopy(default),
             '5.7.0': copy.deepcopy(default),
             '5.5.0': copy.deepcopy(default),
             '5.4.0': copy.deepcopy(deprecated),
