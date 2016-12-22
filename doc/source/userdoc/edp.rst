@@ -436,13 +436,17 @@ be added manually with the ``Configure`` tab.
 
 Make sure to add these values with the correct names:
 
-      +-------------------------+-----------------------------------------+
-      | Name                    | Example Value                           |
-      +=========================+=========================================+
-      | mapred.mapper.class     | org.apache.oozie.example.SampleMapper   |
-      +-------------------------+-----------------------------------------+
-      | mapred.reducer.class    | org.apache.oozie.example.SampleReducer  |
-      +-------------------------+-----------------------------------------+
+      +-----------------------------+----------------------------------------+
+      | Name                        | Example Value                          |
+      +=============================+========================================+
+      | mapred.mapper.new-api       | true                                   |
+      +-----------------------------+----------------------------------------+
+      | mapred.reducer.new-api      | true                                   |
+      +-----------------------------+----------------------------------------+
+      | mapreduce.job.map.class     | org.apache.oozie.example.SampleMapper  |
+      +-----------------------------+----------------------------------------+
+      | mapreduce.job.reduce.class  | org.apache.oozie.example.SampleReducer |
+      +-----------------------------+----------------------------------------+
 
 Additional Details for MapReduce.Streaming jobs
 +++++++++++++++++++++++++++++++++++++++++++++++
