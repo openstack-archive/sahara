@@ -295,7 +295,8 @@ def check_network_exists(net_id):
 # Cluster templates related checks
 
 def check_cluster_template_unique_name(name):
-    if name in [t.name for t in api.get_cluster_templates()]:
+    if name in [t.name for t in api.get_cluster_templates(
+            tenant_id=context.ctx().tenant_id)]:
         raise ex.NameAlreadyExistsException(
             _("Cluster template with name '%s' already exists") % name)
 
@@ -320,7 +321,8 @@ def check_node_groups_in_cluster_templates(cluster_name, plugin_name,
 
 
 def check_node_group_template_unique_name(name):
-    if name in [t.name for t in api.get_node_group_templates()]:
+    if name in [t.name for t in api.get_node_group_templates(
+            tenant_id=context.ctx().tenant_id)]:
         raise ex.NameAlreadyExistsException(
             _("NodeGroup template with name '%s' already exists") % name)
 

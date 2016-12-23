@@ -506,7 +506,7 @@ def cluster_template_get(context, cluster_template_id):
 def cluster_template_get_all(context, regex_search=False,
                              marker=None, limit=None, sort_by=None, **kwargs):
 
-    regex_cols = ['name', 'description', 'plugin_name']
+    regex_cols = ['name', 'description', 'plugin_name', 'tenant_id']
     sort_by, order = _parse_sorting_args(sort_by)
     query = model_query(m.ClusterTemplate, context)
     if regex_search:
@@ -642,7 +642,7 @@ def node_group_template_get(context, node_group_template_id):
 def node_group_template_get_all(context, regex_search=False, marker=None,
                                 limit=None, sort_by=None, **kwargs):
     sort_by, order = _parse_sorting_args(sort_by)
-    regex_cols = ['name', 'description', 'plugin_name']
+    regex_cols = ['name', 'description', 'plugin_name', 'tenant_id']
     limit = int(limit) if limit else None
     query = model_query(m.NodeGroupTemplate, context)
     if regex_search:
