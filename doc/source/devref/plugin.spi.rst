@@ -147,7 +147,7 @@ this plugin method to get a list of ports that need to be opened.
 *Returns*: list of ports to be open in auto security group for the given node
 group
 
-def get_edp_job_types( versions )
+get_edp_job_types( versions )
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Optional method, which provides the ability to see all supported job types for
@@ -155,13 +155,13 @@ specified plugin versions.
 
 *Returns*: dict with supported job types for specified versions of plugin
 
-def recommend_configs( self, cluster, scaling=False )
+recommend_configs( self, cluster, scaling=False )
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Optional method, which provides recommendations for cluster configuration
 before creating/scaling operation.
 
-def get_image_arguments( self, hadoop_version ):
+get_image_arguments( self, hadoop_version ):
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Optional method, which gets the argument set taken by the plugin's image
@@ -170,7 +170,7 @@ support. See :doc:`image-gen`.
 
 *Returns*: A sequence with items of type sahara.plugins.images.ImageArgument.
 
-def pack_image( self, hadoop_version, remote, reconcile=True, ... ):
+pack_image( self, hadoop_version, remote, reconcile=True, ... ):
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Optional method which packs an image for registration in Glance and use by
@@ -179,7 +179,7 @@ the Sahara api or engine service. See :doc:`image-gen`.
 
 *Returns*: None (modifies the image pointed to by the remote in-place.)
 
-def validate_images( self, cluster, reconcile=True, image_arguments=None ):
+validate_images( self, cluster, reconcile=True, image_arguments=None ):
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Validates the image to be used to create a cluster, to ensure that it meets
