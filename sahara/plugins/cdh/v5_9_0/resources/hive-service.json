@@ -1,0 +1,758 @@
+[
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hive Client Advanced Configuration Snippet (Safety Valve) for navigator.client.properties parameter.",
+        "display_name": "Suppress Parameter Validation: Hive Client Advanced Configuration Snippet (Safety Valve) for navigator.client.properties",
+        "name": "service_config_suppression_navigator_client_config_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Maximum number of rolled-over audit logs to retain. The logs are not deleted if they contain audit events that have not yet been propagated to the Audit Server.",
+        "display_name": "Number of Audit Logs to Retain",
+        "name": "navigator_client_max_num_audit_log",
+        "value": "10"
+    },
+    {
+        "desc": "The number of partitions per RPC retrieved during Hive Metastore Sentry HDFS Sync Cache Initialization.",
+        "display_name": "Number of Partitions per RPC on Initialization",
+        "name": "sentry_hdfs_sync_metastore_cache_partitions_per_rpc",
+        "value": "100"
+    },
+    {
+        "desc": "List of users that are allowed to bypass Sentry Authorization in the Hive metastore. These are usually service users that already ensure that all activity has been authorized, such as hive and impala. Only applies when Hive is using Sentry Service.",
+        "display_name": "Bypass Sentry Authorization Users",
+        "name": "sentry_metastore_service_users",
+        "value": "hive,impala,hue,hdfs"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Hive Sentry Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Hive Sentry Validator",
+        "name": "service_config_suppression_hive_sentry_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the HiveServer2 Count Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: HiveServer2 Count Validator",
+        "name": "service_config_suppression_hiveserver2_count_validator",
+        "value": "false"
+    },
+    {
+        "desc": "The user that this service's processes should run as.",
+        "display_name": "System User",
+        "name": "process_username",
+        "value": "hive"
+    },
+    {
+        "desc": "The location on disk of the trust store, in .jks format, used to confirm the authenticity of TLS/SSL servers that HiveServer2 might connect to. This is used when HiveServer2 is the client in a TLS/SSL connection. This trust store must contain the certificate(s) used to sign the service(s) connected to. If this parameter is not provided, the default list of well-known certificate authorities is used instead.",
+        "display_name": "HiveServer2 TLS/SSL Certificate Trust Store File",
+        "name": "hiveserver2_truststore_file",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hive Metastore Database Name parameter.",
+        "display_name": "Suppress Parameter Validation: Hive Metastore Database Name",
+        "name": "service_config_suppression_hive_metastore_database_name",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>hive-site.xml</strong>. Applies to configurations of all roles in this service except client configuration.",
+        "display_name": "Hive Service Advanced Configuration Snippet (Safety Valve) for hive-site.xml",
+        "name": "hive_service_config_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Port number of Hive Metastore database",
+        "display_name": "Hive Metastore Database Port",
+        "name": "hive_metastore_database_port",
+        "value": "3306"
+    },
+    {
+        "desc": "Smaller than this size, Hive uses a single-threaded copy; larger than this size, Hive uses DistCp.",
+        "display_name": "Hive Copy Large File Size",
+        "name": "hive_exec_copyfile_maxsize",
+        "value": "33554432"
+    },
+    {
+        "desc": "Path to the directory where audit logs will be written. The directory will be created if it doesn't exist.",
+        "display_name": "Audit Log Directory",
+        "name": "audit_event_log_dir",
+        "value": "/var/log/hive/audit"
+    },
+    {
+        "desc": "Name of Hive Metastore database",
+        "display_name": "Hive Metastore Database Name",
+        "name": "hive_metastore_database_name",
+        "value": "metastore"
+    },
+    {
+        "desc": "The class to use in Sentry authorization for user to group mapping. Sentry authorization may be configured to use either Hadoop user to group mapping or local groups defined in the policy file. Hadoop user to group mapping may be configured in the Cloudera Manager HDFS service configuration page under the Security section.",
+        "display_name": "Sentry User to Group Mapping Class",
+        "name": "hive_sentry_provider",
+        "value": "org.apache.sentry.provider.file.HadoopGroupResourceAuthorizationProvider"
+    },
+    {
+        "desc": "Use Sentry to enable role-based, fine-grained authorization. This configuration enables Sentry using policy files. To enable Sentry using the Sentry service instead, add the Sentry service as a dependency to the Hive service. <strong>The Sentry service provides concurrent and secure access to authorization policy metadata and is the recommended option for enabling Sentry. </strong> Sentry is supported only on CDH 4.4 or later deployments. Before enabling Sentry, read the requirements and configuration steps in <a class=\"bold\" href=\"http://tiny.cloudera.com/sentry-guide-cm5\" target=\"_blank\">Setting Up Hive Authorization with Sentry<i class=\"externalLink\"></i></a>.",
+        "display_name": "Enable Sentry Authorization using Policy Files",
+        "name": "sentry_enabled",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Hive Bypass Metastore Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Hive Bypass Metastore Validator",
+        "name": "service_config_suppression_hive_bypass_metastore_validator",
+        "value": "false"
+    },
+    {
+        "desc": "When set, Cloudera Manager will send alerts when this entity's configuration changes.",
+        "display_name": "Enable Configuration Change Alerts",
+        "name": "enable_config_alerts",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Service Triggers parameter.",
+        "display_name": "Suppress Parameter Validation: Service Triggers",
+        "name": "service_config_suppression_service_triggers",
+        "value": "false"
+    },
+    {
+        "desc": "Name of the Spark on YARN service that this Hive service instance depends on. If selected, Hive jobs can use the Spark execution engine instead of MapReduce2. Requires that Hive depends on YARN. See <a class=\"bold\" href=\"http://tiny.cloudera.com/cm-hive-on-spark-5\" target=\"_blank\">Configuring Hive on Spark<i class=\"externalLink\"></i></a> for more information about Hive on Spark. In CDH lower than 5.7, Hive on Spark also requires setting Enable Hive on Spark to true.",
+        "display_name": "Spark On YARN Service",
+        "name": "spark_on_yarn_service",
+        "value": null
+    },
+    {
+        "desc": "Action to take when the audit event queue is full. Drop the event or shutdown the affected process.",
+        "display_name": "Audit Queue Policy",
+        "name": "navigator_audit_queue_policy",
+        "value": "DROP"
+    },
+    {
+        "desc": "The password for the HiveServer2 JKS keystore file.",
+        "display_name": "HiveServer2 TLS/SSL Server JKS Keystore File Password",
+        "name": "hiveserver2_keystore_password",
+        "value": null
+    },
+    {
+        "desc": "Instead of talking to Hive Metastore Server for Metastore information, Hive clients will talk directly to the Metastore database.",
+        "display_name": "Bypass Hive Metastore Server",
+        "name": "hive_bypass_metastore_server",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hive Metastore Database Host parameter.",
+        "display_name": "Suppress Parameter Validation: Hive Metastore Database Host",
+        "name": "service_config_suppression_hive_metastore_database_host",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Audit Event Tracker parameter.",
+        "display_name": "Suppress Parameter Validation: Audit Event Tracker",
+        "name": "service_config_suppression_navigator_event_tracker",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Kerberos Principal parameter.",
+        "display_name": "Suppress Parameter Validation: Kerberos Principal",
+        "name": "service_config_suppression_kerberos_princ_name",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Gateway Count Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Gateway Count Validator",
+        "name": "service_config_suppression_gateway_count_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the System Group parameter.",
+        "display_name": "Suppress Parameter Validation: System Group",
+        "name": "service_config_suppression_process_groupname",
+        "value": "false"
+    },
+    {
+        "desc": "The maximum number of retries allowed during Hive Metastore Sentry HDFS Sync cache initialization.",
+        "display_name": "Max Number of Retries on Initialization",
+        "name": "sentry_hdfs_sync_metastore_cache_retry_max_num",
+        "value": "1"
+    },
+    {
+        "desc": "For advanced use only, key-value pairs (one on each line) to be inserted into a role's environment. Applies to configurations of all roles in this service except client configuration.",
+        "display_name": "Hive Service Environment Advanced Configuration Snippet (Safety Valve)",
+        "name": "hive_service_env_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>sentry-site.xml</strong>. Applies to configurations of all roles in this service except client configuration.",
+        "display_name": "Hive Service Advanced Configuration Snippet (Safety Valve) for sentry-site.xml",
+        "name": "hive_server2_sentry_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Size per reducer. If the input size is 10GiB and this is set to 1GiB, Hive will use 10 reducers.",
+        "display_name": "Hive Bytes Per Reducer",
+        "name": "hive_bytes_per_reducer",
+        "value": "67108864"
+    },
+    {
+        "desc": "The directory in which Hive lineage log files are written.",
+        "display_name": "Hive Lineage Log Directory",
+        "name": "lineage_event_log_dir",
+        "value": "/var/log/hive/lineage"
+    },
+    {
+        "desc": "Encrypt communication between clients and HiveServer2 using Transport Layer Security (TLS) (formerly known as Secure Socket Layer (SSL)).",
+        "display_name": "Enable TLS/SSL for HiveServer2",
+        "name": "hiveserver2_enable_ssl",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only, a list of derived configuration properties that will be used by the Service Monitor instead of the default ones.",
+        "display_name": "Service Monitor Derived Configs Advanced Configuration Snippet (Safety Valve)",
+        "name": "smon_derived_configs_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HiveServer2 TLS/SSL Certificate Trust Store File parameter.",
+        "display_name": "Suppress Parameter Validation: HiveServer2 TLS/SSL Certificate Trust Store File",
+        "name": "service_config_suppression_hiveserver2_truststore_file",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hive Service Advanced Configuration Snippet (Safety Valve) for sentry-site.xml parameter.",
+        "display_name": "Suppress Parameter Validation: Hive Service Advanced Configuration Snippet (Safety Valve) for sentry-site.xml",
+        "name": "service_config_suppression_hive_server2_sentry_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Password for Hive Metastore database",
+        "display_name": "Hive Metastore Database Password",
+        "name": "hive_metastore_database_password",
+        "value": ""
+    },
+    {
+        "desc": "The password for the HiveServer2 TLS/SSL Certificate Trust Store File. This password is not required to access the trust store; this field can be left blank. This password provides optional integrity checking of the file. The contents of trust stores are certificates, and certificates are public information.",
+        "display_name": "HiveServer2 TLS/SSL Certificate Trust Store Password",
+        "name": "hiveserver2_truststore_password",
+        "value": null
+    },
+    {
+        "desc": "<p>\nEvent filters are defined in a JSON object like the following:\n</p>\n\n<pre>\n{\n  \"defaultAction\" : (\"accept\", \"discard\"),\n  \"rules\" : [\n    {\n      \"action\" : (\"accept\", \"discard\"),\n      \"fields\" : [\n        {\n          \"name\" : \"fieldName\",\n          \"match\" : \"regex\"\n        }\n      ]\n    }\n  ]\n}\n</pre>\n\n<p>\nA filter has a default action and a list of rules, in order of precedence.\nEach rule defines an action, and a list of fields to match against the\naudit event.\n</p>\n\n<p>\nA rule is \"accepted\" if all the listed field entries match the audit\nevent. At that point, the action declared by the rule is taken.\n</p>\n\n<p>\nIf no rules match the event, the default action is taken. Actions\ndefault to \"accept\" if not defined in the JSON object.\n</p>\n\n<p>\nThe following is the list of fields that can be filtered for Hive events:\n</p>\n\n<ul>\n  <li>userName: the user performing the action.</li>\n  <li>ipAddress: the IP from where the request originated.</li>\n  <li>operation: the Hive operation being performed.</li>  \n  <li>databaseName: the databaseName for the operation.</li>\n  <li>tableName: the tableName for the operation.</li>\n</ul>\n\n<p>\nThe default Hive audit event filter discards HDFS directory events generated by\nHive jobs that reference the /tmp directory.\n</p>\n",
+        "display_name": "Audit Event Filter",
+        "name": "navigator_audit_event_filter",
+        "value": "{\n  \"comment\" : [\n    \"The default Hive audit event filter discards HDFS directory events \",\n    \"generated by Hive jobs that reference the /tmp directory.\"\n  ],\n  \"defaultAction\" : \"accept\",\n  \"rules\" : [\n    {\n      \"action\" : \"discard\",\n      \"fields\" : [\n        { \"name\" : \"operation\", \"match\" : \"QUERY\" },\n        { \"name\" : \"objectType\", \"match\" : \"DFS_DIR\"},\n        { \"name\" : \"resourcePath\", \"match\" : \"/tmp/hive-(?:.+)?/hive_(?:.+)?/-mr-.*\" }\n      ]\n    }\n  ]\n}\n"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the WebHCat Server Count Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: WebHCat Server Count Validator",
+        "name": "service_config_suppression_webhcat_count_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Directory name where Hive Metastore's database is stored (only for Derby)",
+        "display_name": "Hive Metastore Derby Path",
+        "name": "hive_metastore_derby_path",
+        "value": "/var/lib/hive/cloudera_manager/derby/metastore_db"
+    },
+    {
+        "desc": "Perform DataNucleus validation of metadata during startup. <strong>Note</strong>: when enabled, Hive will log DataNucleus warnings even though Hive will function normally.",
+        "display_name": "Hive Metastore Database DataNucleus Metadata Validation",
+        "name": "hive_metastore_database_datanucleus_metadata_validation",
+        "value": "false"
+    },
+    {
+        "desc": "Name of the Sentry service that this Hive service instance depends on. If selected, Hive uses this Sentry service to look up authorization privileges. Before enabling Sentry, read the requirements and configuration steps in <a class=\"bold\" href=\"http://tiny.cloudera.com/sentry-service-cm5\" target=\"_blank\">Setting Up The Sentry Service<i class=\"externalLink\"></i></a>.",
+        "display_name": "Sentry Service",
+        "name": "sentry_service",
+        "value": null
+    },
+    {
+        "desc": "Max number of reducers to use. If the configuration parameter Hive Reduce Tasks is negative, Hive will limit the number of reducers to the value of this parameter.",
+        "display_name": "Hive Max Reducers",
+        "name": "hive_max_reducers",
+        "value": "1099"
+    },
+    {
+        "desc": "Type of Hive Metastore database. Note that Derby is not recommended and Cloudera Impala does not support Derby.",
+        "display_name": "Hive Metastore Database Type",
+        "name": "hive_metastore_database_type",
+        "value": "mysql"
+    },
+    {
+        "desc": "Whether to suppress the results of the HiveServer2 Health heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: HiveServer2 Health",
+        "name": "service_health_suppression_hive_hiveserver2s_healthy",
+        "value": "false"
+    },
+    {
+        "desc": "<p>The URL of the LDAP server. The URL must be prefixed with ldap:// or ldaps://. The URL can optionally specify a custom port, for example: ldaps://ldap_server.example.com:1636. Note that usernames and passwords will be transmitted in the clear unless either an ldaps:// URL is used, or \"Enable LDAP TLS\" is turned on (where available). Also note that encryption must be in use between the client and this service for the same reason.</p><p>For more detail on the LDAP URL format, see <a target=\"_blank\" href=\"http://www.ietf.org/rfc/rfc2255.txt\">RFC 2255 <i class=\"externalLink\"></i></a>. A space-separated list of URLs can be entered; in this case the URLs will each be tried in turn until one replies.</p>",
+        "display_name": "LDAP URL",
+        "name": "hiveserver2_ldap_uri",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hive Service Environment Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: Hive Service Environment Advanced Configuration Snippet (Safety Valve)",
+        "name": "service_config_suppression_hive_service_env_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Host name of Hive Metastore database",
+        "display_name": "Hive Metastore Database Host",
+        "name": "hive_metastore_database_host",
+        "value": "localhost"
+    },
+    {
+        "desc": "Maximum size of audit log file in MB before it is rolled over.",
+        "display_name": "Maximum Audit Log File Size",
+        "name": "navigator_audit_log_max_file_size",
+        "value": "100"
+    },
+    {
+        "desc": "Prevent Metastore operations in the event of schema version incompatibility. Consider setting this to true to reduce probability of schema corruption during Metastore operations. Note that setting this property to true will also set datanucleus.autoCreateSchema property to false and datanucleus.fixedDatastore property to true. Any values set in Cloudera Manager for these properties will be overridden.",
+        "display_name": "Strict Hive Metastore Schema Validation",
+        "name": "hive_metastore_schema_verification",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Hive on Spark Dependency Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Hive on Spark Dependency Validator",
+        "name": "service_config_suppression_hive_on_spark_missing_dependency",
+        "value": "false"
+    },
+    {
+        "desc": "This configuration <strong>overrides</strong> the value set for Hive Proxy User Groups configuration in HDFS service for use by Hive Metastore Server. Specify a comma-delimited list of groups that you want to <strong>allow access to Hive Metastore metadata</strong> and allow the Hive user to impersonate. A value of '*' allows all groups. The default value of empty inherits the value set for Hive Proxy User Groups configuration in the HDFS service.",
+        "display_name": "Hive Metastore Access Control and Proxy User Groups Override",
+        "name": "hive_proxy_user_groups_list",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Sentry Global Policy File parameter.",
+        "display_name": "Suppress Parameter Validation: Sentry Global Policy File",
+        "name": "service_config_suppression_hive_sentry_provider_resource",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hive Warehouse Directory parameter.",
+        "display_name": "Suppress Parameter Validation: Hive Warehouse Directory",
+        "name": "service_config_suppression_hive_warehouse_directory",
+        "value": "false"
+    },
+    {
+        "desc": "Wait duration in milliseconds for each retry during Hive Metastore Sentry HDFS Sync Cache Initialization.",
+        "display_name": "Retry Wait Time on Initialization",
+        "name": "sentry_hdfs_sync_metastore_cache_retry_wait_duration_millis",
+        "value": "1000"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>core-site.xml</strong>. Applies to configurations of all roles in this service except client configuration.",
+        "display_name": "Hive Service Advanced Configuration Snippet (Safety Valve) for core-site.xml",
+        "name": "hive_core_site_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "For advanced use only, a list of configuration properties that will be used by the Service Monitor instead of the current client configuration for the service.",
+        "display_name": "Service Monitor Client Config Overrides",
+        "name": "smon_client_config_overrides",
+        "value": "<property><name>hive.metastore.client.socket.timeout</name><value>60</value></property>"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Bypass Sentry Authorization Users parameter.",
+        "display_name": "Suppress Parameter Validation: Bypass Sentry Authorization Users",
+        "name": "service_config_suppression_sentry_metastore_service_users",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the System User parameter.",
+        "display_name": "Suppress Parameter Validation: System User",
+        "name": "service_config_suppression_process_username",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HiveServer2 TLS/SSL Certificate Trust Store Password parameter.",
+        "display_name": "Suppress Parameter Validation: HiveServer2 TLS/SSL Certificate Trust Store Password",
+        "name": "service_config_suppression_hiveserver2_truststore_password",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hive Replication Environment Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: Hive Replication Environment Advanced Configuration Snippet (Safety Valve)",
+        "name": "service_config_suppression_hive_replication_env_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hive Auxiliary JARs Directory parameter.",
+        "display_name": "Suppress Parameter Validation: Hive Auxiliary JARs Directory",
+        "name": "service_config_suppression_hive_aux_jars_path_dir",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds of the overall WebHCat Server health. The check returns \"Concerning\" health if the percentage of \"Healthy\" WebHCat Servers falls below the warning threshold. The check is unhealthy if the total percentage of \"Healthy\" and \"Concerning\" WebHCat Servers falls below the critical threshold.",
+        "display_name": "Healthy WebHCat Server Monitoring Thresholds",
+        "name": "hive_webhcats_healthy_thresholds",
+        "value": "{\"critical\":\"51.0\",\"warning\":\"99.0\"}"
+    },
+    {
+        "desc": "Enable collection of audit events from the service's roles.",
+        "display_name": "Enable Audit Collection",
+        "name": "navigator_audit_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>hive-site.xml</strong>. Applies to all Hive Replication jobs.",
+        "display_name": "Hive Replication Advanced Configuration Snippet (Safety Valve) for hive-site.xml",
+        "name": "hive_service_replication_config_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "This parameter is useful when authenticating against a non Active Directory server such as OpenLDAP. When set, this parameter is used to convert the username into the LDAP Distinguished Name (DN), so that the resulting DN looks like uid=username,&lt;this parameter&gt;. For example, if this parameter is set to \"ou=People,dc=cloudera,dc=com\", and the username passed in is \"mike\", the resulting authentication passed to the LDAP server will look like \"uid=mike,ou=People,dc=cloudera,dc=com\". This parameter is mutually exclusive with Active Directory Domain.",
+        "display_name": "LDAP BaseDN",
+        "name": "hiveserver2_ldap_basedn",
+        "value": null
+    },
+    {
+        "desc": "If set to true, the Hive metastore will treat a problem with cache initialization as a fatal error.",
+        "display_name": "Abort on Initialization Failure",
+        "name": "sentry_hdfs_sync_metastore_cache_fail_on_partial_update",
+        "value": "true"
+    },
+    {
+        "desc": "Whether Hive Metastore should try to use direct SQL queries instead of DataNucleus for certain read paths. This can improve metastore performance when fetching many partitions by orders of magnitude. In case of failure, execution will fall back to DataNucleus. <strong>This configuration is not supported and is disabled when Hive service is configured with Postgres.</strong>",
+        "display_name": "Enable Direct SQL",
+        "name": "hive_metastore_database_datanucleus_try_direct_sql",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Hive Proxy Groups Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Hive Proxy Groups Validator",
+        "name": "service_config_suppression_hive_proxy_groups_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Audit Event Filter parameter.",
+        "display_name": "Suppress Parameter Validation: Audit Event Filter",
+        "name": "service_config_suppression_navigator_audit_event_filter",
+        "value": "false"
+    },
+    {
+        "desc": "Hive warehouse directory is the location in HDFS where Hive's tables are stored. Note that Hive's default value for its warehouse directory is '/user/hive/warehouse'.",
+        "display_name": "Hive Warehouse Directory",
+        "name": "hive_warehouse_directory",
+        "value": "/user/hive/warehouse"
+    },
+    {
+        "desc": "User for Hive Metastore database",
+        "display_name": "Hive Metastore Database User",
+        "name": "hive_metastore_database_user",
+        "value": "hive"
+    },
+    {
+        "desc": "Whether to suppress the results of the WebHCat Server Health heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: WebHCat Server Health",
+        "name": "service_health_suppression_hive_webhcats_healthy",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hive Metastore Derby Path parameter.",
+        "display_name": "Suppress Parameter Validation: Hive Metastore Derby Path",
+        "name": "service_config_suppression_hive_metastore_derby_path",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Hive Metastore Server Count Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Hive Metastore Server Count Validator",
+        "name": "service_config_suppression_hivemetastore_count_validator",
+        "value": "false"
+    },
+    {
+        "desc": "<p>The configured triggers for this service. This is a JSON formatted list of triggers. These triggers are evaluated as part as the health system. Every trigger expression is parsed, and if the trigger condition is met, the list of actions provided in the trigger expression is executed.</p><p>Each trigger has the following fields:</p><ul><li><code>triggerName</code> <b>(mandatory)</b> - The name of the trigger. This value must be unique for the specific service. </li><li><code>triggerExpression</code> <b>(mandatory)</b> - A tsquery expression representing the trigger. </li><li><code>streamThreshold</code> <b>(optional)</b> - The maximum number of streams that can satisfy a condition of a trigger before the condition fires. By default set to 0, and any stream returned causes the condition to fire. </li><li><code>enabled</code> <b> (optional)</b> - By default set to 'true'. If set to 'false', the trigger is not evaluated.</li><li><code>expressionEditorConfig</code> <b> (optional)</b> - Metadata for the trigger editor. If present, the trigger should only be edited from the Edit Trigger page; editing the trigger here can lead to inconsistencies.</li></ul><p>For example, the followig JSON formatted trigger fires if there are more than 10 DataNodes with more than 500 file descriptors opened:</p><p><pre>[{\"triggerName\": \"sample-trigger\",\n  \"triggerExpression\": \"IF (SELECT fd_open WHERE roleType = DataNode and last(fd_open) > 500) DO health:bad\",\n  \"streamThreshold\": 10, \"enabled\": \"true\"}]</pre></p><p>See the trigger rules documentation for more details on how to write triggers using tsquery.</p><p>The JSON format is evolving and may change and, as a result, backward compatibility is not guaranteed between releases.</p>",
+        "display_name": "Service Triggers",
+        "name": "service_triggers",
+        "value": "[]"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Service Monitor Client Config Overrides parameter.",
+        "display_name": "Suppress Parameter Validation: Service Monitor Client Config Overrides",
+        "name": "service_config_suppression_smon_client_config_overrides",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hive Metastore Access Control and Proxy User Groups Override parameter.",
+        "display_name": "Suppress Parameter Validation: Hive Metastore Access Control and Proxy User Groups Override",
+        "name": "service_config_suppression_hive_proxy_user_groups_list",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Active Directory Domain parameter.",
+        "display_name": "Suppress Parameter Validation: Active Directory Domain",
+        "name": "service_config_suppression_hiveserver2_ldap_domain",
+        "value": "false"
+    },
+    {
+        "desc": "This parameter is useful when authenticating against an Active Directory server. This value is appended to all usernames before authenticating against AD. For example, if this parameter is set to \"my.domain.com\", and the user authenticating is \"mike\", then \"mike@my.domain.com\" is passed to AD. If this field is unset, the username remains unaltered before being passed to AD.",
+        "display_name": "Active Directory Domain",
+        "name": "hiveserver2_ldap_domain",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HiveServer2 TLS/SSL Server JKS Keystore File Password parameter.",
+        "display_name": "Suppress Parameter Validation: HiveServer2 TLS/SSL Server JKS Keystore File Password",
+        "name": "service_config_suppression_hiveserver2_keystore_password",
+        "value": "false"
+    },
+    {
+        "desc": "When checked, LDAP-based authentication for users is enabled.",
+        "display_name": "Enable LDAP Authentication",
+        "name": "hiveserver2_enable_ldap_auth",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hive Service Advanced Configuration Snippet (Safety Valve) for core-site.xml parameter.",
+        "display_name": "Suppress Parameter Validation: Hive Service Advanced Configuration Snippet (Safety Valve) for core-site.xml",
+        "name": "service_config_suppression_hive_core_site_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Default number of reduce tasks per job. Usually set to a prime number close to the number of available hosts. Ignored when mapred.job.tracker is \"local\". Hadoop sets this to 1 by default, while Hive uses -1 as the default. When set to -1, Hive will automatically determine an appropriate number of reducers for each job.",
+        "display_name": "Hive Reduce Tasks",
+        "name": "hive_reduce_tasks",
+        "value": "-1"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Server Name for Sentry Authorization parameter.",
+        "display_name": "Suppress Parameter Validation: Server Name for Sentry Authorization",
+        "name": "service_config_suppression_hive_sentry_server",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds of the overall Hive Metastore Server health. The check returns \"Concerning\" health if the percentage of \"Healthy\" Hive Metastore Servers falls below the warning threshold. The check is unhealthy if the total percentage of \"Healthy\" and \"Concerning\" Hive Metastore Servers falls below the critical threshold.",
+        "display_name": "Healthy Hive Metastore Server Monitoring Thresholds",
+        "name": "hive_hivemetastores_healthy_thresholds",
+        "value": "{\"critical\":\"51.0\",\"warning\":\"99.0\"}"
+    },
+    {
+        "desc": "The health test thresholds of the overall HiveServer2 health. The check returns \"Concerning\" health if the percentage of \"Healthy\" HiveServer2s falls below the warning threshold. The check is unhealthy if the total percentage of \"Healthy\" and \"Concerning\" HiveServer2s falls below the critical threshold.",
+        "display_name": "Healthy HiveServer2 Monitoring Thresholds",
+        "name": "hive_hiveserver2s_healthy_thresholds",
+        "value": "{\"critical\":\"51.0\",\"warning\":\"99.0\"}"
+    },
+    {
+        "desc": "Automatically create or upgrade tables in the Hive Metastore database when needed. Consider setting this to false and managing the schema manually.",
+        "display_name": "Auto Create and Upgrade Hive Metastore Database Schema",
+        "name": "hive_metastore_database_auto_create_schema",
+        "value": "false"
+    },
+    {
+        "desc": "The server name used when defining privilege rules in Sentry authorization. Sentry uses this name as an alias for the Hive service. It does not correspond to any physical server name.",
+        "display_name": "Server Name for Sentry Authorization",
+        "name": "hive_sentry_server",
+        "value": "server1"
+    },
+    {
+        "desc": "Enable collection of lineage from the service's roles.",
+        "display_name": "Enable Lineage Collection",
+        "name": "navigator_lineage_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the LDAP URL parameter.",
+        "display_name": "Suppress Parameter Validation: LDAP URL",
+        "name": "service_config_suppression_hiveserver2_ldap_uri",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only, key-value pairs (one on each line) to be inserted into the environment of Hive replication jobs.",
+        "display_name": "Hive Replication Environment Advanced Configuration Snippet (Safety Valve)",
+        "name": "hive_replication_env_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hive Replication Advanced Configuration Snippet (Safety Valve) for hive-site.xml parameter.",
+        "display_name": "Suppress Parameter Validation: Hive Replication Advanced Configuration Snippet (Safety Valve) for hive-site.xml",
+        "name": "service_config_suppression_hive_service_replication_config_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hive Client Advanced Configuration Snippet (Safety Valve) for navigator.lineage.client.properties parameter.",
+        "display_name": "Suppress Parameter Validation: Hive Client Advanced Configuration Snippet (Safety Valve) for navigator.lineage.client.properties",
+        "name": "service_config_suppression_navigator_lineage_client_config_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Name of the HBase service that this Hive service instance depends on.",
+        "display_name": "HBase Service",
+        "name": "hbase_service",
+        "value": null
+    },
+    {
+        "desc": "Directory containing auxiliary JARs used by Hive. This should be a directory location and not a classpath containing one or more JARs. This directory must be created and managed manually on hosts that run the Hive Metastore Server, HiveServer2, or the Hive CLI. The directory location is set in the environment as HIVE_AUX_JARS_PATH and will generally override the hive.aux.jars.path property set in XML files, even if hive.aux.jars.path is set in an advanced configuration snippet.",
+        "display_name": "Hive Auxiliary JARs Directory",
+        "name": "hive_aux_jars_path_dir",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hive Metastore Database User parameter.",
+        "display_name": "Suppress Parameter Validation: Hive Metastore Database User",
+        "name": "service_config_suppression_hive_metastore_database_user",
+        "value": "false"
+    },
+    {
+        "desc": "<p>\nConfigures the rules for event tracking and coalescing. This feature is\nused to define equivalency between different audit events. When\nevents match, according to a set of configurable parameters, only one\nentry in the audit list is generated for all the matching events.\n</p>\n\n<p>\nTracking works by keeping a reference to events when they first appear,\nand comparing other incoming events against the \"tracked\" events according\nto the rules defined here.\n</p>\n\n<p>Event trackers are defined in a JSON object like the following:</p>\n\n<pre>\n{\n  \"timeToLive\" : [integer],\n  \"fields\" : [\n    {\n      \"type\" : [string],\n      \"name\" : [string]\n    }\n  ]\n}\n</pre>\n\n<p>\nWhere:\n</p>\n\n<ul>\n  <li>timeToLive: maximum amount of time an event will be tracked, in\n  milliseconds. Must be provided. This defines how long, since it's\n  first seen, an event will be tracked. A value of 0 disables tracking.</li>\n\n  <li>fields: list of fields to compare when matching events against\n  tracked events.</li>\n</ul>\n\n<p>\nEach field has an evaluator type associated with it. The evaluator defines\nhow the field data is to be compared. The following evaluators are\navailable:\n</p>\n\n<ul>\n  <li>value: uses the field value for comparison.</li>\n\n  <li>userName: treats the field value as a userNname, and ignores any\n  host-specific data. This is useful for environment using Kerberos,\n  so that only the principal name and realm are compared.</li>\n</ul>\n\n<p>\nThe following is the list of fields that can be used to compare Hive events:\n</p>\n\n<ul>\n  <li>operation: the Hive operation being performed.</li>\n  <li>username: the user performing the action.</li>\n  <li>ipAddress: the IP from where the request originated.</li>\n  <li>allowed: whether the operation was allowed or denied.</li>\n  <li>databaseName: the database affected by the operation.</li>\n  <li>tableName: the table or view affected by the operation.</li>\n  <li>objectType: the type of object affected by the operation.</li>\n  <li>resourcePath: the path of the resource affected by the operation.</li>\n</ul>\n\n",
+        "display_name": "Audit Event Tracker",
+        "name": "navigator_event_tracker",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress the results of the Hive Metastore Server Health heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Hive Metastore Server Health",
+        "name": "service_health_suppression_hive_hivemetastores_healthy",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HiveServer2 TLS/SSL Server JKS Keystore File Location parameter.",
+        "display_name": "Suppress Parameter Validation: HiveServer2 TLS/SSL Server JKS Keystore File Location",
+        "name": "service_config_suppression_hiveserver2_keystore_path",
+        "value": "false"
+    },
+    {
+        "desc": "HDFS path to the global policy file for Sentry authorization. This should be a relative path (and not a full HDFS URL). The global policy file must be in Sentry policy file format.",
+        "display_name": "Sentry Global Policy File",
+        "name": "hive_sentry_provider_resource",
+        "value": "/user/hive/sentry/sentry-provider.ini"
+    },
+    {
+        "desc": "The maximum size, in megabytes, per log file for Hive lineage logs. Typically used by log4j or logback.",
+        "display_name": "Hive Maximum Lineage Log File Size",
+        "name": "max_lineage_log_file_size",
+        "value": "100"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the LDAP BaseDN parameter.",
+        "display_name": "Suppress Parameter Validation: LDAP BaseDN",
+        "name": "service_config_suppression_hiveserver2_ldap_basedn",
+        "value": "false"
+    },
+    {
+        "desc": "Name of the ZooKeeper service that this Hive service instance depends on.",
+        "display_name": "ZooKeeper Service",
+        "name": "zookeeper_service",
+        "value": null
+    },
+    {
+        "desc": "The number of threads used during Hive Metastore Sentry HDFS Sync Cache Initialization.",
+        "display_name": "Number of Threads on Initialization",
+        "name": "sentry_hdfs_sync_metastore_cache_init_threads",
+        "value": "10"
+    },
+    {
+        "desc": "The path to the TLS/SSL keystore file containing the server certificate and private key used for TLS/SSL. Used when HiveServer2 is acting as a TLS/SSL server. The keystore must be in JKS format.",
+        "display_name": "HiveServer2 TLS/SSL Server JKS Keystore File Location",
+        "name": "hiveserver2_keystore_path",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Hive Derby Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Hive Derby Validator",
+        "name": "service_config_suppression_hive_derby_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Kerberos principal short name used by all roles of this service.",
+        "display_name": "Kerberos Principal",
+        "name": "kerberos_princ_name",
+        "value": "hive"
+    },
+    {
+        "desc": "The group that this service's processes should run as.",
+        "display_name": "System Group",
+        "name": "process_groupname",
+        "value": "hive"
+    },
+    {
+        "desc": "Let the table directories inherit the permission of the Warehouse or Database directory instead of being created with the permissions derived from dfs umask. This allows Impala to insert into tables created via Hive.",
+        "display_name": "Hive Warehouse Subdirectories Inherit Permissions",
+        "name": "hive_warehouse_subdir_inherit_perms",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Client TLS/SSL In Use With LDAP Authentication Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Client TLS/SSL In Use With LDAP Authentication Validator",
+        "name": "service_config_suppression_hive_client_ssl_recommended_with_ldap_auth_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hive Metastore Database Password parameter.",
+        "display_name": "Suppress Parameter Validation: Hive Metastore Database Password",
+        "name": "service_config_suppression_hive_metastore_database_password",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hive Lineage Log Directory parameter.",
+        "display_name": "Suppress Parameter Validation: Hive Lineage Log Directory",
+        "name": "service_config_suppression_lineage_event_log_dir",
+        "value": "false"
+    },
+    {
+        "desc": "The number of tables per RPC retrieved during Hive Metastore Sentry HDFS Sync Cache Initialization.",
+        "display_name": "Number of Tables per RPC on Initialization",
+        "name": "sentry_hdfs_sync_metastore_cache_tables_per_rpc",
+        "value": "100"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Audit Log Directory parameter.",
+        "display_name": "Suppress Parameter Validation: Audit Log Directory",
+        "name": "service_config_suppression_audit_event_log_dir",
+        "value": "false"
+    },
+    {
+        "desc": "When set, Cloudera Manager will send alerts when the health of this service reaches the threshold specified by the EventServer setting eventserver_health_events_alert_threshold",
+        "display_name": "Enable Service Level Health Alerts",
+        "name": "enable_alerts",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Hive Concurrency Configuration Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Hive Concurrency Configuration Validator",
+        "name": "service_config_suppression_hive_concurrency_validator",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into the client configuration for <strong>navigator.client.properties</strong>.",
+        "display_name": "Hive Client Advanced Configuration Snippet (Safety Valve) for navigator.client.properties",
+        "name": "navigator_client_config_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Service Monitor Derived Configs Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: Service Monitor Derived Configs Advanced Configuration Snippet (Safety Valve)",
+        "name": "service_config_suppression_smon_derived_configs_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Allows URIs when defining privileges in per-database policy files. <strong>Warning:</strong> Typically, this configuration should be disabled. Enabling it would allow database policy file owner (which is generally not Hive admin user) to grant load privileges to any directory with read access to Hive admin user, including databases controlled by other database policy files.",
+        "display_name": "Allow URIs in Database Policy File",
+        "name": "sentry_allow_uri_db_policyfile",
+        "value": "false"
+    },
+    {
+        "desc": "In unsecure mode, setting this property to true will cause the Metastore Server to execute DFS operations using the client's reported user and group permissions. Cloudera Manager will set this for all clients and servers.",
+        "display_name": "Set User and Group Information",
+        "name": "hive_set_ugi",
+        "value": "true"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into the client configuration for <strong>navigator.lineage.client.properties</strong>.",
+        "display_name": "Hive Client Advanced Configuration Snippet (Safety Valve) for navigator.lineage.client.properties",
+        "name": "navigator_lineage_client_config_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hive Service Advanced Configuration Snippet (Safety Valve) for hive-site.xml parameter.",
+        "display_name": "Suppress Parameter Validation: Hive Service Advanced Configuration Snippet (Safety Valve) for hive-site.xml",
+        "name": "service_config_suppression_hive_service_config_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "MapReduce jobs are run against this service.",
+        "display_name": "MapReduce Service",
+        "name": "mapreduce_yarn_service",
+        "value": null
+    }
+]

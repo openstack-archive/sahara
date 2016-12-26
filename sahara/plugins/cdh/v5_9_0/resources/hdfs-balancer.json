@@ -1,0 +1,68 @@
+[
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Java Configuration Options for Balancer parameter.",
+        "display_name": "Suppress Parameter Validation: Java Configuration Options for Balancer",
+        "name": "role_config_suppression_balancer_java_opts",
+        "value": "false"
+    },
+    {
+        "desc": "When set, Cloudera Manager will send alerts when this entity's configuration changes.",
+        "display_name": "Enable Configuration Change Alerts",
+        "name": "enable_config_alerts",
+        "value": "false"
+    },
+    {
+        "desc": "<p>This file contains the rules which govern how log messages are turned into events by the custom log4j appender that this role loads. It is in JSON format, and is composed of a list of rules. Every log message is evaluated against each of these rules in turn to decide whether or not to send an event for that message. If a log message matches multiple rules, the first matching rule will be used. </p><p>Each rule has some or all of the following fields:</p><ul><li><code>alert</code> - whether or not events generated from this rule should be promoted to alerts. A value of \"true\" will cause alerts to be generated. If not specified, the default is \"false\".</li><li><code>rate</code> <b>(mandatory)</b> - the maximum number of log messages matching this rule that may be sent as events every minute. If more than <code>rate</code> matching log messages are received in a single minute, the extra messages are ignored. If rate is less than 0, the number of messages per minute is unlimited.</li><li><code>periodminutes</code>  - the number of minutes during which the publisher will only publish <code>rate</code> events or fewer. If not specified, the default is <b>one minute</b></li><li><code>threshold</code> - apply this rule only to messages with this log4j severity level or above. An example is \"WARN\" for warning level messages or higher.</li><li><code>content</code> - match only those messages whose contents match this regular expression.</li><li><code>exceptiontype</code> - match only those messages which are part of an exception message. The exception type must match this regular expression.</li></ul><p>Example:</p><ul><li><pre>{\"alert\": false, \"rate\": 10, \"exceptiontype\": \"java.lang.StringIndexOutOfBoundsException\"}</pre>This rule will send events to Cloudera Manager for every <code>StringIndexOutOfBoundsException</code>, up to a maximum of 10 every minute.</li><li><pre>{\"alert\": false, \"rate\": 1, \"periodminutes\": 1, \"exceptiontype\": \".*\"}, {\"alert\": true, \"rate\": 1, \"periodminutes\": 1, \"threshold\":\"ERROR\"}</pre>In this example, an event generated may not be promoted to alert if an exception is in the ERROR log message, as the first rule with alert = false will match.</li></ul>",
+        "display_name": "Rules to Extract Events from Log Files",
+        "name": "log_event_whitelist",
+        "value": "{\n  \"version\": \"0\",\n  \"rules\": [\n    {\"alert\": false, \"rate\": 1, \"periodminutes\": 1, \"threshold\":\"FATAL\"},\n    {\"alert\": false, \"rate\": 0, \"threshold\":\"WARN\", \"content\": \".* is deprecated. Instead, use .*\"},\n    {\"alert\": false, \"rate\": 0, \"threshold\":\"WARN\", \"content\": \".* is deprecated. Use .* instead\"},\n    {\"alert\": false, \"rate\": 0, \"exceptiontype\": \"java.io.IOException\"},\n    {\"alert\": false, \"rate\": 0, \"exceptiontype\": \"java.net.SocketException\"},\n    {\"alert\": false, \"rate\": 0, \"exceptiontype\": \"java.net.SocketClosedException\"},\n    {\"alert\": false, \"rate\": 0, \"exceptiontype\": \"java.io.EOFException\"},\n    {\"alert\": false, \"rate\": 0, \"exceptiontype\": \"java.nio.channels.CancelledKeyException\"},\n    {\"alert\": false, \"rate\": 1, \"periodminutes\": 2, \"exceptiontype\": \".*\"},\n    {\"alert\": false, \"rate\": 0, \"threshold\":\"WARN\", \"content\":\"Unknown job [^ ]+ being deleted.*\"},\n    {\"alert\": false, \"rate\": 0, \"threshold\":\"WARN\", \"content\":\"Error executing shell command .+ No such process.+\"},\n    {\"alert\": false, \"rate\": 0, \"threshold\":\"WARN\", \"content\":\".*attempt to override final parameter.+\"},\n    {\"alert\": false, \"rate\": 0, \"threshold\":\"WARN\", \"content\":\"[^ ]+ is a deprecated filesystem name. Use.*\"},\n    {\"alert\": false, \"rate\": 1, \"periodminutes\": 1, \"threshold\":\"WARN\"}\n  ]\n}\n"
+    },
+    {
+        "desc": "For advanced use only. A string to be inserted into <strong>hdfs-site.xml</strong> for this role only.",
+        "display_name": "Balancer Advanced Configuration Snippet (Safety Valve) for hdfs-site.xml",
+        "name": "balancer_config_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "The policy that should be used to rebalance HDFS storage. The default DataNode policy balances the storage at the DataNode level. This is similar to the balancing policy from prior releases. The BlockPool policy balances the storage at the block pool level as well as at the DataNode level. The BlockPool policy is relevant only to a Federated HDFS service.",
+        "display_name": "Rebalancing Policy",
+        "name": "rebalancing_policy",
+        "value": "DataNode"
+    },
+    {
+        "desc": "The percentage deviation from average utilization, after which a node will be rebalanced. (for example, '10.0' for 10%)",
+        "display_name": "Rebalancing Threshold",
+        "name": "rebalancer_threshold",
+        "value": "10.0"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Balancer Advanced Configuration Snippet (Safety Valve) for hdfs-site.xml parameter.",
+        "display_name": "Suppress Parameter Validation: Balancer Advanced Configuration Snippet (Safety Valve) for hdfs-site.xml",
+        "name": "role_config_suppression_balancer_config_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "These arguments will be passed as part of the Java command line. Commonly, garbage collection flags, PermGen, or extra debugging flags would be passed here.",
+        "display_name": "Java Configuration Options for Balancer",
+        "name": "balancer_java_opts",
+        "value": ""
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Rules to Extract Events from Log Files parameter.",
+        "display_name": "Suppress Parameter Validation: Rules to Extract Events from Log Files",
+        "name": "role_config_suppression_log_event_whitelist",
+        "value": "false"
+    },
+    {
+        "desc": "Maximum size in bytes for the Java Process heap memory.  Passed to Java -Xmx.",
+        "display_name": "Java Heap Size of Balancer in Bytes",
+        "name": "balancer_java_heapsize",
+        "value": "1073741824"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the CDH Version Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: CDH Version Validator",
+        "name": "role_config_suppression_cdh_version_validator",
+        "value": "false"
+    }
+]
