@@ -210,8 +210,8 @@ class LabelHandler(object):
                 _("Plugin %s is not enabled") % plugin_name)
 
         if plb.get('deprecated', {}).get('status', False):
-            LOG.warning(_LW("Plugin %s is deprecated and can removed in next "
-                            "release") % plugin_name)
+            LOG.warning(_LW("Plugin %s is deprecated and can be removed in "
+                            "the next release") % plugin_name)
 
         vlb = details.get(VERSION_LABELS_SCOPE, {}).get(version, {})
         if not vlb.get('enabled', {}).get('status'):
