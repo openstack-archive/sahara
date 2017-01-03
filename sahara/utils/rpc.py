@@ -17,6 +17,7 @@
 from oslo_config import cfg
 from oslo_log import log as logging
 import oslo_messaging as messaging
+from oslo_messaging.rpc import dispatcher
 from oslo_serialization import jsonutils
 
 from sahara import context
@@ -84,11 +85,13 @@ class RPCServer(object):
     def __init__(self, target):
         global MESSAGING_TRANSPORT
 
+        access_policy = dispatcher.DefaultRPCAccessPolicy
         self.__server = messaging.get_rpc_server(
             target=target,
             transport=MESSAGING_TRANSPORT,
             endpoints=[self],
-            executor='eventlet')
+            executor='eventlet',
+            access_policy=access_policy)
 
     def get_service(self):
         return self.__server
