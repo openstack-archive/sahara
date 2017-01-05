@@ -86,6 +86,11 @@ class ClusterTest(test_base.ConductorManagerTestCase):
         self.assertEqual(1, len(lst))
         cl_id = lst[0]["id"]
 
+        updated_cl = self.api.cluster_update(
+            ctx, cl_id, {"is_public": True})
+        self.assertIsInstance(updated_cl, dict)
+        self.assertEqual(True, updated_cl["is_public"])
+
         self.api.cluster_destroy(ctx, cl_id)
         lst = self.api.cluster_get_all(ctx)
         self.assertEqual(0, len(lst))
