@@ -303,3 +303,21 @@ class TestApi(base.SaharaWithDbTestCase):
             'title': 'Fake plugin',
             'versions': ['0.1', '0.2']}, data)
         self.assertIsNone(api.get_plugin('name1', '0.1'))
+
+    def test_update_plugin(self):
+        data = api.get_plugin('fake', '0.1').dict
+        self.assertIsNotNone(data)
+
+        updated = api.update_plugin('fake', values={
+            'plugin_labels': {'enabled': {'status': False}}}).dict
+        self.assertFalse(updated['plugin_labels']['enabled']['status'])
+
+        updated = api.update_plugin('fake', values={
+            'plugin_labels': {'enabled': {'status': True}}}).dict
+        self.assertTrue(updated['plugin_labels']['enabled']['status'])
+
+        # restore to original status
+        updated = api.update_plugin('fake', values={
+            'plugin_labels': data['plugin_labels']}).dict
+        self.assertEqual(data['plugin_labels']['enabled']['status'],
+                         updated['plugin_labels']['enabled']['status'])
