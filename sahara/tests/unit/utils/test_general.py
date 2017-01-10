@@ -65,3 +65,11 @@ class UtilsGeneralTest(base.SaharaWithDbTestCase):
         self.assertIsNone(general.get_by_id(lst, 9))
         self.assertEqual(lst[0], general.get_by_id(lst, 5))
         self.assertEqual(lst[1], general.get_by_id(lst, 7))
+
+    def test_natural_sort_key(self):
+        str_test = "ABC123efg345DD"
+        str_list = ['abc', 123, 'efg', 345, 'dd']
+        str_sort = general.natural_sort_key(str_test)
+        self.assertEqual(len(str_list), len(str_sort))
+
+        self.assertEqual(str_list, str_sort)
