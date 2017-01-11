@@ -47,7 +47,11 @@ repo_id_map = {
     "2.4": {
         "HDP": "HDP-2.4",
         "HDP-UTILS": "HDP-UTILS-1.1.0.20"
-    }
+    },
+    "2.5": {
+        "HDP": "HDP-2.5",
+        "HDP-UTILS": "HDP-UTILS-1.1.0.20"
+    },
 }
 
 os_type_map = {
