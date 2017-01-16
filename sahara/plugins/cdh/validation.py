@@ -159,13 +159,16 @@ class Validator(object):
         hbr_count = cls._get_inst_count(cluster, 'HBASE_REGIONSERVER')
         zk_count = cls._get_inst_count(cluster, 'ZOOKEEPER_SERVER')
 
-        if hbm_count >= 1:
+        if hbm_count == 1:
             if zk_count < 1:
                 raise ex.RequiredServiceMissingException(
                     'ZOOKEEPER', required_by='HBASE')
             if hbr_count < 1:
                 raise ex.InvalidComponentCountException(
                     'HBASE_REGIONSERVER', _('at least 1'), hbr_count)
+        elif hbm_count > 1:
+            raise ex.InvalidComponentCountException('HBASE_MASTER',
+                                                    _('0 or 1'), hbm_count)
         elif hbr_count >= 1:
             raise ex.InvalidComponentCountException('HBASE_MASTER',
                                                     _('at least 1'), hbm_count)
