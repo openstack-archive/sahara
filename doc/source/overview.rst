@@ -69,6 +69,8 @@ The sahara product communicates with the following OpenStack services:
   metering and monitoring purposes.
 * Shared file systems (manila) - can be used for storage of framework job
   binaries and data that will be processed or created by jobs.
+* Key manager (barbican & castellan) - persists the authentication data
+  like passwords and private keys in a secure storage.
 
 .. image:: images/openstack-interop.png
     :width: 800 px

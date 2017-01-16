@@ -173,7 +173,7 @@ def _execute_command(cmd, run_as_root=False, get_stderr=False,
     else:
         chan.exec_command(cmd)
 
-    # todo(dmitryme): that could hang if stderr buffer overflows
+    # TODO(dmitryme): that could hang if stderr buffer overflows
     stdout = _read_paramimko_stream(chan.recv)
     stderr = _read_paramimko_stream(chan.recv_stderr)
 
