@@ -28,17 +28,7 @@ protect=1
 EOF
     rpm --import http://package.mapr.com/releases/pub/maprgpg.key
     yum install -y wget
-    release=`cat /etc/*-release`
-    if [[ $release =~ 6\.[0-9] ]]; then
-        rpm -q epel-release-6-8 || \
-            rpm -i http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
-    elif [[ $release =~ 7\.[0-9] ]]; then
-        rpm -q epel-release-7-8 || \
-            rpm -i http://download.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-8.noarch.rpm
-    else
-        echo "Unsupported distribution version"
-        exit 1
-    fi
+    yum install -y epel-release
 else
     echo "Unknown distribution"
     exit 1
