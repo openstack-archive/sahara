@@ -56,13 +56,32 @@ def unregister_image(image_id):
     return b.execute_with_retries(manager.get, image_id)
 
 
-def add_image_tags(image_id, tags):
+def get_image_tags(image_id):
+    return b.execute_with_retries(
+        sahara_images.image_manager().get, image_id).tags
+
+
+def set_image_tags(image_id, tags):
     manager = sahara_images.image_manager()
-    b.execute_with_retries(manager.tag, image_id, tags)
+    image_obj = b.execute_with_retries(manager.get, image_id)
+    org_tags = frozenset(image_obj.tags)
+    new_tags = frozenset(tags)
+
+    to_add = list(new_tags - org_tags)
+    to_remove = list(org_tags - new_tags)
+
+    if to_add:
+        b.execute_with_retries(manager.tag, image_id, to_add)
+
+    if to_remove:
+        b.execute_with_retries(manager.untag, image_id, to_remove)
+
     return b.execute_with_retries(manager.get, image_id)
 
 
-def remove_image_tags(image_id, tags):
+def remove_image_tags(image_id):
     manager = sahara_images.image_manager()
+    image_obj = b.execute_with_retries(manager.get, image_id)
+    tags = image_obj.tags
     b.execute_with_retries(manager.untag, image_id, tags)
     return b.execute_with_retries(manager.get, image_id)
