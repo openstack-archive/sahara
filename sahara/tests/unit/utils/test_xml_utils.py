@@ -15,10 +15,12 @@
 
 import xml.dom.minidom as xml
 
+import pkg_resources as pkg
 import testtools
 
 from sahara.utils import patches as p
 from sahara.utils import xmlutils as x
+from sahara import version
 
 
 class XMLUtilsTestCase(testtools.TestCase):
@@ -36,6 +38,21 @@ class XMLUtilsTestCase(testtools.TestCase):
              {'name': u'name5', 'value': u'value5', 'description': ''}],
             x.load_hadoop_xml_defaults(
                 'tests/unit/resources/test-default.xml'))
+
+    def test_parse_xml_with_name_and_value(self):
+        file_name = 'tests/unit/resources/test-default.xml'
+        fname = pkg.resource_filename(
+            version.version_info.package, file_name)
+        with open(fname, "r") as f:
+            doc = "".join(line.strip() for line in f)
+        self.assertEqual(
+            [{'name': u'name1', 'value': u'value1'},
+             {'name': u'name2', 'value': u'value2'},
+             {'name': u'name3', 'value': ''},
+             {'name': u'name4', 'value': ''},
+             {'name': u'name5', 'value': u'value5'}],
+            x.parse_hadoop_xml_with_name_and_value(doc)
+        )
 
     def test_adjust_description(self):
         self.assertEqual("", x._adjust_field("\n"))
