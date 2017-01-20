@@ -103,7 +103,7 @@ class Oozie(s.Service):
 
         if oozie_service:
             symlink_cmd = (
-                'cp /usr/share/java/mysql-connector-java.jar %s' %
+                'cp /opt/mapr/lib/mysql-connector-*.jar %s' %
                 self.libext_path())
             with oozie_inst.remote() as r:
                 LOG.debug('Installing MySQL connector for Oozie')
