@@ -28,9 +28,9 @@ Additional tests
 Additional tests reside in the sahara-tests repository (as above):
 
 * REST API tests checking to ensure that the Sahara REST API works.
-  The only parts that are not tested are cluster creation and EDP. For more
-  info about api tests see
-  http://docs.openstack.org/developer/tempest/field_guide/api.html
+  The only parts that are not tested are cluster creation and EDP.
 
-* CLI tests check read-only operations using the Sahara CLI. For more info see
-  http://docs.openstack.org/developer/tempest/field_guide/cli.html
+* CLI tests check read-only operations using the Sahara CLI.
+
+For more information about these tests, please read
+http://docs.openstack.org/developer/sahara-tests/tempest-plugin.html
