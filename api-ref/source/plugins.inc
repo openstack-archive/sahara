@@ -17,7 +17,7 @@ Shows details for a plugin.
 
 
 Normal response codes: 200
-Error response codes:
+Error response codes: 400, 500
 
 
 Request
@@ -59,7 +59,7 @@ Lists all registered plugins.
 
 
 Normal response codes: 200
-Error response codes:
+Error response codes: 400, 500
 
 
 Request
@@ -102,7 +102,7 @@ Shows details for a plugin version.
 
 
 Normal response codes: 200
-Error response codes:
+Error response codes: 400, 500
 
 
 Request
@@ -144,8 +144,8 @@ Update plugin details
 Updates details for a plugin.
 
 
-Normal response codes:202
-Error response codes:
+Normal response codes: 202
+Error response codes: 400, 500
 
 
 Request
