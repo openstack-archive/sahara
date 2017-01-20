@@ -35,16 +35,20 @@ def provision_step(name, cluster_context_reference=1, instances_reference=2):
     return wrapper
 
 
-def provision_event(instance_reference=0):
+def provision_event(instance_reference=0, name=None, instance=None):
     def wrapper(function):
         def wrapped(*args, **kwargs):
-            instance = _find_argument(instance_reference, *args, **kwargs)
+            event_instance = instance or _find_argument(instance_reference,
+                                                        *args, **kwargs)
+            if name:
+                cpo.add_provisioning_step(event_instance.node_group.cluster.id,
+                                          name, 1)
             try:
                 result = function(*args, **kwargs)
-                cpo.add_successful_event(instance)
+                cpo.add_successful_event(event_instance)
                 return result
             except Exception as exception:
-                cpo.add_fail_event(instance, exception)
+                cpo.add_fail_event(event_instance, exception)
                 raise exception
 
         return wrapped

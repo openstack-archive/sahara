@@ -26,6 +26,8 @@ import sahara.plugins.exceptions as ex
 import sahara.plugins.mapr.abstract.node_manager as s
 import sahara.plugins.mapr.services.management.management as mng
 import sahara.plugins.mapr.services.maprfs.maprfs as mfs
+import sahara.plugins.mapr.util.event_log as el
+from sahara.utils import cluster_progress_ops as cpo
 
 LOG = logging.getLogger(__name__)
 
@@ -79,15 +81,27 @@ class BaseNodeManager(s.AbstractNodeManager):
         others = filter(
             lambda i: not cluster_context.check_for_process(i, mfs.CLDB),
             instances)
+        cpo.add_provisioning_step(cluster_context.cluster.id,
+                                  _("Start ZooKeepers nodes"), len(zookeepers))
         self._start_zk_nodes(zookeepers)
+        cpo.add_provisioning_step(cluster_context.cluster.id,
+                                  _("Start CLDB nodes"), len(cldbs))
         self._start_cldb_nodes(cldbs)
-        self._start_non_cldb_nodes(others)
+        if others:
+            cpo.add_provisioning_step(cluster_context.cluster.id,
+                                      _("Start non-CLDB nodes"),
+                                      len(list(others)))
+            self._start_non_cldb_nodes(others)
         self._await_cldb(cluster_context, instances)
 
     def stop(self, cluster_context, instances=None):
         instances = instances or cluster_context.get_instances()
         zookeepers = cluster_context.filter_instances(instances, mng.ZOOKEEPER)
+        cpo.add_provisioning_step(cluster_context.cluster.id,
+                                  _("Stop ZooKeepers nodes"), len(zookeepers))
         self._stop_zk_nodes(zookeepers)
+        cpo.add_provisioning_step(cluster_context.cluster.id,
+                                  _("Stop Warden nodes"), len(instances))
         self._stop_warden_on_nodes(instances)
 
     def _await_cldb(self, cluster_context, instances=None, timeout=600):
@@ -163,9 +177,11 @@ class BaseNodeManager(s.AbstractNodeManager):
                     command=cmd, ip=instance.internal_ip))
             r.execute_command(cmd, run_as_root=True)
 
+    @el.provision_event(instance_reference=1)
     def _start_service(self, instance, service):
         return self._do_service_action(instance, service, START)
 
+    @el.provision_event(instance_reference=1)
     def _stop_service(self, instance, service):
         return self._do_service_action(instance, service, STOP)
 

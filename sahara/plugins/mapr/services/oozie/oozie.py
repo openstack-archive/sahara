@@ -15,10 +15,12 @@
 from oslo_log import log as logging
 
 import sahara.context as context
+from sahara.i18n import _
 import sahara.plugins.mapr.domain.configuration_file as bcf
 import sahara.plugins.mapr.domain.node_process as np
 import sahara.plugins.mapr.domain.service as s
 import sahara.plugins.mapr.services.mysql.mysql as mysql
+import sahara.plugins.mapr.util.event_log as el
 import sahara.plugins.mapr.util.general as g
 import sahara.plugins.mapr.util.validation_utils as vu
 
@@ -115,6 +117,7 @@ class Oozie(s.Service):
         instances = cluster_context.filter_instances(instances, OOZIE)
         self._rebuild(cluster_context, instances)
 
+    @el.provision_event(instance_reference=1)
     @g.remote_command(1)
     def _rebuild_oozie_war(self, remote, cluster_context):
         cmd = '%(home)s/bin/oozie-setup.sh -hadoop %(version)s' \
@@ -128,6 +131,7 @@ class Oozie(s.Service):
         instances = cluster_context.filter_instances(instances, OOZIE)
         self._rebuild(cluster_context, instances)
 
+    @el.provision_step(_("Rebuilt Oozie war"))
     def _rebuild(self, cluster_context, instances):
         OOZIE.stop(filter(OOZIE.is_started, instances))
         g.execute_on_instances(

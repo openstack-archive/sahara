@@ -15,10 +15,12 @@
 
 from oslo_log import log as logging
 
+from sahara.i18n import _
 import sahara.plugins.mapr.domain.configuration_file as bcf
 import sahara.plugins.mapr.domain.node_process as np
 import sahara.plugins.mapr.domain.service as s
 import sahara.plugins.mapr.services.sentry.sentry as sentry
+import sahara.plugins.mapr.util.event_log as el
 import sahara.plugins.mapr.util.validation_utils as vu
 import sahara.utils.files as files
 
@@ -137,7 +139,17 @@ class Hive(s.Service):
         self._create_sentry_role(cluster_context)
 
     def _create_sentry_role(self, cluster_context):
-        instance = cluster_context.get_instance(HIVE_METASTORE)
+
+        @el.provision_event(name=_("Create Sentry role for Hive"))
+        def _create_role(instance):
+            cmd = 'sudo -u mapr hive -e "create role admin_role;' \
+                  'grant all on server HS2 to role admin_role;' \
+                  'grant role admin_role to group mapr;"'
+            with instance.remote() as r:
+                LOG.debug("Creating hive role for sentry")
+                r.execute_command(cmd, raise_when_error=False)
+
+        hive_host = cluster_context.get_instance(HIVE_METASTORE)
         sentry_host = cluster_context.get_instance(sentry.SENTRY)
         if sentry_host:
             sentry_mode = cluster_context._get_cluster_config_value(
@@ -148,12 +160,7 @@ class Hive(s.Service):
             sentry_service = cluster_context. \
                 _find_service_instance(ui_name, sentry_version)
             if sentry_service.supports(self, sentry_mode):
-                cmd = 'sudo -u mapr hive -e "create role admin_role;' \
-                      'grant all on server HS2 to role admin_role;' \
-                      'grant role admin_role to group mapr;"'
-                with instance.remote() as r:
-                    LOG.debug("Creating hive role for sentry")
-                    r.execute_command(cmd, raise_when_error=False)
+                _create_role(hive_host)
 
 
 class HiveV013(Hive):

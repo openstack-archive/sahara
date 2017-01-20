@@ -93,8 +93,8 @@ class Service(object):
             g.execute_on_instances(_instances,
                                    self._install_packages_on_instance,
                                    _context)
-
-        _install(cluster_context, service_instances)
+        if service_instances:
+            _install(cluster_context, service_instances)
 
     @el.provision_event(instance_reference=1)
     def _install_packages_on_instance(self, instance, cluster_context):

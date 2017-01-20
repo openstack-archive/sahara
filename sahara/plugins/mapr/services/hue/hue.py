@@ -34,6 +34,7 @@ import sahara.plugins.mapr.services.sentry.sentry as sentry
 import sahara.plugins.mapr.services.spark.spark as spark
 import sahara.plugins.mapr.services.sqoop.sqoop2 as sqoop
 import sahara.plugins.mapr.services.yarn.yarn as yarn
+import sahara.plugins.mapr.util.event_log as el
 import sahara.plugins.mapr.util.general as g
 import sahara.plugins.mapr.util.password_utils as pu
 from sahara.plugins.mapr.util import service_utils as su
@@ -192,6 +193,8 @@ class Hue(s.Service):
     def post_install(self, cluster_context, instances):
         hue_instance = cluster_context.get_instance(HUE)
 
+        @el.provision_event(name=_("Migrating Hue database"),
+                            instance=hue_instance)
         def migrate_database(remote, cluster_context):
             hue_home = self.home_dir(cluster_context)
             cmd = '%(activate)s && %(syncdb)s && %(migrate)s'
@@ -272,6 +275,8 @@ class Hue(s.Service):
         }
         return path % args
 
+    @el.provision_event(name="Install Hue Job Tracker plugin",
+                        instance_reference=2)
     def _install_jt_plugin(self, cluster_context, hue_instance):
         LOG.debug("Copying Hue JobTracker plugin")
         job_trackers = cluster_context.get_instances(mr.JOB_TRACKER)

@@ -213,15 +213,24 @@ class BaseConfigurer(ac.AbstractConfigurer):
 
     def _configure_database(self, cluster_context, instances):
         mysql_instance = mysql.MySQL.get_db_instance(cluster_context)
-        distro_name = cluster_context.distro.name
-        mysql.MySQL.install_mysql(mysql_instance, distro_name)
-        mysql.MySQL.start_mysql_server(cluster_context)
-        mysql.MySQL.create_databases(cluster_context, instances)
+
+        @el.provision_event(instance=mysql_instance,
+                            name=_("Configure database"))
+        def decorated():
+            distro_name = cluster_context.distro.name
+            mysql.MySQL.install_mysql(mysql_instance, distro_name)
+            mysql.MySQL.start_mysql_server(cluster_context)
+            mysql.MySQL.create_databases(cluster_context, instances)
+
+        decorated()
 
     def _post_install_services(self, cluster_context, instances):
         LOG.debug('Executing service post install hooks')
         for s in cluster_context.cluster_services:
-            s.post_install(cluster_context, instances)
+            service_instances = cluster_context.filter_instances(instances,
+                                                                 service=s)
+            if service_instances:
+                s.post_install(cluster_context, instances)
         LOG.info(_LI('Post install hooks execution successfully executed'))
 
     def _update_cluster_info(self, cluster_context):
@@ -230,8 +239,8 @@ class BaseConfigurer(ac.AbstractConfigurer):
                                            'Password': pu.get_mapr_password
                                            (cluster_context.cluster)}}
         for service in cluster_context.cluster_services:
-            for title, node_process, ui_info in (service.get_ui_info
-                                                 (cluster_context)):
+            for title, node_process, ui_info in (
+                    service.get_ui_info(cluster_context)):
                 removed = cluster_context.removed_instances(node_process)
                 instances = cluster_context.get_instances(node_process)
                 instances = [i for i in instances if i not in removed]

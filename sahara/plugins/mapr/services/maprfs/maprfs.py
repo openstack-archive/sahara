@@ -21,9 +21,11 @@ from sahara.i18n import _LI
 import sahara.plugins.mapr.domain.configuration_file as bcf
 import sahara.plugins.mapr.domain.node_process as np
 import sahara.plugins.mapr.domain.service as s
+import sahara.plugins.mapr.util.event_log as el
 import sahara.plugins.mapr.util.general as g
 import sahara.plugins.mapr.util.validation_utils as vu
 import sahara.plugins.provisioning as p
+from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils import files
 
 LOG = logging.getLogger(__name__)
@@ -105,12 +107,15 @@ class MapRFS(s.Service):
         LOG.debug('Initializing MapR FS')
         instances = instances or cluster_context.get_instances()
         file_servers = cluster_context.filter_instances(instances, FILE_SERVER)
+        cpo.add_provisioning_step(cluster_context.cluster.id,
+                                  _("Initializing MapR-FS"), len(file_servers))
         with context.ThreadGroup() as tg:
             for instance in file_servers:
                 tg.spawn('init-mfs-%s' % instance.id,
                          self._init_mfs_instance, instance)
         LOG.info(_LI('MapR FS successfully initialized'))
 
+    @el.provision_event(instance_reference=1)
     def _init_mfs_instance(self, instance):
         self._generate_disk_list_file(instance, self._CREATE_DISK_LIST)
         self._execute_disksetup(instance)

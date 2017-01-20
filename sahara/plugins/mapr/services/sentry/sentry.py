@@ -17,6 +17,7 @@ import sahara.plugins.mapr.domain.configuration_file as cf
 import sahara.plugins.mapr.domain.node_process as np
 import sahara.plugins.mapr.domain.service as s
 import sahara.plugins.mapr.services.mysql.mysql as mysql
+import sahara.plugins.mapr.util.event_log as el
 import sahara.plugins.mapr.util.maprfs_helper as mfs
 import sahara.plugins.provisioning as p
 import sahara.utils.files as files
@@ -57,9 +58,9 @@ class Sentry(s.Service):
         return [Sentry.SENTRY_STORAGE_MODE]
 
     def get_config_files(self, cluster_context, configs, instance=None):
-        sentry_default =\
+        sentry_default = \
             'plugins/mapr/services/sentry/resources/sentry-default.xml'
-        global_policy_template =\
+        global_policy_template = \
             'plugins/mapr/services/sentry/resources/global-policy.ini'
         sentry_site = cf.HadoopXML('sentry-site.xml')
         sentry_site.remote_path = self.conf_dir(cluster_context)
@@ -112,8 +113,13 @@ class Sentry(s.Service):
               ' --conffile %(home)s/conf/sentry-site.xml' \
               ' --dbType mysql --initSchema' % {
                   'home': self.home_dir(cluster_context)}
-        with instance.remote() as r:
-            r.execute_command(cmd, run_as_root=True)
+
+        @el.provision_event(name=_("Init Sentry DB schema"), instance=instance)
+        def decorated():
+            with instance.remote() as r:
+                r.execute_command(cmd, run_as_root=True)
+
+        decorated()
 
     def post_start(self, cluster_context, instances):
         sentry_host = cluster_context.get_instance(SENTRY)
