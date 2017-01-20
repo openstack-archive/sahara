@@ -21,6 +21,7 @@ from sahara.plugins.mapr.services.hive import hive
 from sahara.plugins.mapr.services.httpfs import httpfs
 from sahara.plugins.mapr.services.hue import hue
 from sahara.plugins.mapr.services.impala import impala
+from sahara.plugins.mapr.services.kafka import kafka
 from sahara.plugins.mapr.services.mahout import mahout
 from sahara.plugins.mapr.services.management import management as mng
 from sahara.plugins.mapr.services.maprfs import maprfs
@@ -65,6 +66,9 @@ class VersionHandler(bvh.BaseVersionHandler):
             swift.Swift(),
             sentry.SentryV16(),
             spark.SparkOnYarnV201(),
+            kafka.Kafka(),
+            kafka.KafkaConnect(),
+            kafka.KafkaRest(),
         ]
 
     def get_context(self, cluster, added=None, removed=None):
