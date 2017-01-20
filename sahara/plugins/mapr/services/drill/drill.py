@@ -25,6 +25,13 @@ DRILL = np.NodeProcess(
     open_ports=[8047]
 )
 
+DRILL_YARN = np.NodeProcess(
+    name='drill-bits-yarn',
+    ui_name='Drill on YARN',
+    package='mapr-drill-yarn',
+    open_ports=[8047]
+)
+
 
 class Drill(s.Service):
     def __init__(self):
@@ -33,7 +40,9 @@ class Drill(s.Service):
         self._ui_name = 'Drill'
         self._node_processes = [DRILL]
         self._ui_info = [('Drill', DRILL, {s.SERVICE_UI: 'http://%s:8047'})]
-        self._validation_rules = [vu.at_least(1, DRILL)]
+        self._validation_rules = [
+            vu.node_client_package_conflict_vr([DRILL], DRILL_YARN)
+        ]
 
     def install(self, cluster_context, instances):
         # Drill requires running cluster
@@ -87,3 +96,17 @@ class DrillV16(Drill):
     def __init__(self):
         super(DrillV16, self).__init__()
         self._version = "1.6"
+
+
+class DrillV18(Drill):
+    def __init__(self):
+        super(DrillV18, self).__init__()
+        self._version = "1.8"
+        self._node_processes = [DRILL, DRILL_YARN]
+
+
+class DrillV19(Drill):
+    def __init__(self):
+        super(DrillV19, self).__init__()
+        self._version = "1.8"
+        self._node_processes = [DRILL, DRILL_YARN]

@@ -158,7 +158,7 @@ class SparkOnYarn(s.Service):
     def _copy_hbase_site(self, cluster_context):
         if not self._hbase(cluster_context):
             return
-        hbase_site = self._hive(cluster_context).conf_dir(
+        hbase_site = self._hbase(cluster_context).conf_dir(
             cluster_context) + '/hbase-site.xml'
         path = self.conf_dir(cluster_context) + '/hbase-site.xml'
         hbase_instance = cluster_context.get_instance(hbase.HBASE_MASTER)
@@ -272,3 +272,49 @@ class SparkOnYarnV161(SparkOnYarn):
         super(SparkOnYarnV161, self).__init__()
         self._version = '1.6.1'
         self._dependencies = [('mapr-spark', self.version)]
+
+
+class SparkOnYarnV201(SparkOnYarn):
+    def __init__(self):
+        super(SparkOnYarnV201, self).__init__()
+        self._version = '2.0.1'
+        self._dependencies = [('mapr-spark', self.version)]
+
+    def get_config_files(self, cluster_context, configs, instance=None):
+        hbase_version = self._get_hbase_version(cluster_context)
+        hive_version = self._get_hive_version(cluster_context)
+        # spark-env-sh
+        template = 'plugins/mapr/services/' \
+                   'spark/resources/spark-env.template'
+        env_sh = bcf.TemplateFile('spark-env.sh')
+        env_sh.remote_path = self.conf_dir(cluster_context)
+        env_sh.parse(files.get_file_text(template))
+        env_sh.add_property('version', self.version)
+
+        # spark-defaults
+        conf = bcf.PropertiesFile('spark-defaults.conf', separator=' ')
+        conf.remote_path = self.conf_dir(cluster_context)
+        if instance:
+            conf.fetch(instance)
+
+        # compatibility.version
+        versions = bcf.PropertiesFile('compatibility.version')
+        versions.remote_path = self.home_dir(cluster_context) + '/mapr-util'
+        if instance:
+            versions.fetch(instance)
+
+        if hive_version:
+            versions.add_property('hive_versions',
+                                  hive_version + '.0')
+            conf.add_properties(self._hive_properties(cluster_context))
+        if hbase_version:
+            versions.add_property('hbase_versions', hbase_version)
+            conf.add_property('spark.executor.extraClassPath',
+                              '%s/lib/*' % self._hbase(cluster_context)
+                              .home_dir(cluster_context))
+        return [conf, versions, env_sh]
+
+    def post_start(self, cluster_context, instances):
+        self._create_hadoop_spark_dirs(cluster_context)
+        self._copy_hive_site(cluster_context)
+        self._copy_hbase_site(cluster_context)

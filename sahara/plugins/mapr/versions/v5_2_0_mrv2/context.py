@@ -28,10 +28,10 @@ class Context(bc.BaseClusterContext):
         self._resource_manager_uri = "maprfs:///"
         self._mapr_version = "5.2.0"
         self._ubuntu_ecosystem_repo = (
-            "http://package.mapr.com/releases/MEP/MEP-1.0.0/ubuntu/"
+            "http://package.mapr.com/releases/MEP/MEP-2.0.0/ubuntu/"
             " binary trusty")
         self._centos_ecosystem_repo = (
-            "http://package.mapr.com/releases/MEP/MEP-1.0.0/redhat")
+            "http://package.mapr.com/releases/MEP/MEP-2.0.0/redhat")
 
     @property
     def hadoop_lib(self):

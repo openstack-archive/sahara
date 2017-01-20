@@ -48,22 +48,23 @@ class VersionHandler(bvh.BaseVersionHandler):
         ]
         self._services = [
             hive.HiveV12(),
-            pig.PigV015(),
+            pig.PigV016(),
             impala.ImpalaV250(),
             flume.FlumeV16(),
             sqoop2.Sqoop2(),
             mahout.MahoutV012(),
             oozie.OozieV420(),
-            hue.HueV390(),
+            hue.HueV310(),
+            hue.HueLivyV310(),
             hbase.HBaseV111(),
-            drill.DrillV16(),
+            drill.DrillV19(),
             yarn.YARNv270(),
             maprfs.MapRFS(),
             mng.Management(),
             httpfs.HttpFS(),
             swift.Swift(),
             sentry.SentryV16(),
-            spark.SparkOnYarnV161(),
+            spark.SparkOnYarnV201(),
         ]
 
     def get_context(self, cluster, added=None, removed=None):

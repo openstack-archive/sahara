@@ -49,3 +49,9 @@ class PigV015(Pig):
     def __init__(self):
         super(PigV015, self).__init__()
         self._version = '0.15'
+
+
+class PigV016(Pig):
+    def __init__(self):
+        super(PigV016, self).__init__()
+        self._version = '0.16'

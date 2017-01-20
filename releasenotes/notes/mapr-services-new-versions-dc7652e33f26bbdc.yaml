@@ -1,0 +1,7 @@
+---
+features:
+  - The following service versions were added to MapR 5.2.0 plugin
+    - Pig 0.16
+    - Spark 2.0.1
+    - Hue 3.10
+    - Drill 1.8, 1.9

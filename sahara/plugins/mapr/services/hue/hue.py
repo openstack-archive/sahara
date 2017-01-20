@@ -37,7 +37,6 @@ import sahara.plugins.mapr.services.yarn.yarn as yarn
 import sahara.plugins.mapr.util.event_log as el
 import sahara.plugins.mapr.util.general as g
 import sahara.plugins.mapr.util.password_utils as pu
-from sahara.plugins.mapr.util import service_utils as su
 import sahara.plugins.mapr.util.validation_utils as vu
 import sahara.plugins.provisioning as p
 import sahara.utils.files as files
@@ -240,18 +239,10 @@ class Hue(s.Service):
 
     def update(self, cluster_context, instances=None):
         if self._should_restart(cluster_context, instances):
-            hue_instance = cluster_context.get_instance(HUE)
-            self.restart([hue_instance])
+            self.restart(instances)
 
     def post_start(self, cluster_context, instances):
         self.update(cluster_context, instances=instances)
-
-    def restart(self, instances):
-        for node_process in [HUE]:
-            filtered_instances = su.filter_by_node_process(instances,
-                                                           node_process)
-            if filtered_instances:
-                node_process.restart(filtered_instances)
 
     def _should_restart(self, cluster_context, instances):
         app_services = [
@@ -322,3 +313,53 @@ class HueV390(Hue):
         self._dependencies = [("mapr-hue-base", self.version)]
         self._node_processes = [HUE, HUE_LIVY]
         self._validation_rules.append(vu.at_most(1, HUE_LIVY))
+
+
+class HueV310(Hue):
+    def __init__(self):
+        super(HueV310, self).__init__()
+        self._version = "3.10.0"
+        self._node_processes = [HUE]
+        self._validation_rules.append(vu.at_most(1, HUE_LIVY))
+
+
+class HueLivyV310(s.Service):
+    def __init__(self):
+        super(HueLivyV310, self).__init__()
+        self._name = 'hue-livy'
+        self._ui_name = 'Livy'
+        self._version = "3.10.0"
+        self._node_processes = [HUE_LIVY]
+        self._validation_rules = [vu.at_most(1, HUE_LIVY),
+                                  vu.depends_on(HueV310(), self),
+                                  vu.depends_on(spark.SparkOnYarnV201(), self),
+                                  vu.on_same_node(HUE_LIVY, spark.SPARK_SLAVE)]
+
+    def get_config_files(self, cluster_context, configs, instance=None):
+        livy_conf_template = 'plugins/mapr/services/hue/' \
+                             'resources/livy_conf_%s.template'
+        livy_conf = bcf.TemplateFile("livy.conf")
+        livy_conf.parse(files.get_file_text(livy_conf_template % self.version))
+        livy_conf.remote_path = self.home_dir(cluster_context) + '/conf'
+
+        livy_sh_template = 'plugins/mapr/services/hue/' \
+                           'resources/livy_sh_%s.template'
+        livy_sh = bcf.TemplateFile("livy-env.sh")
+        livy_sh.remote_path = self.home_dir(cluster_context) + '/conf'
+        livy_sh.parse(files.get_file_text(livy_sh_template % self.version))
+        livy_sh.add_property('hadoop_version', cluster_context.hadoop_version)
+        livy_sh.add_property('spark_version', spark.SparkOnYarnV201().version)
+        livy_sh.mode = 777
+
+        hue_instances = cluster_context.get_instances(HUE)
+        for instance in hue_instances:
+            if instance not in cluster_context.changed_instances():
+                cluster_context.should_be_restarted[self] += [instance]
+
+        return [livy_sh, livy_conf]
+
+    def post_install(self, cluster_context, instances):
+        self._set_service_dir_owner(cluster_context, instances)
+
+    def post_start(self, cluster_context, instances):
+        self.restart(instances)
