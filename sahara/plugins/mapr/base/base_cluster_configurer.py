@@ -218,7 +218,9 @@ class BaseConfigurer(ac.AbstractConfigurer):
                             name=_("Configure database"))
         def decorated():
             distro_name = cluster_context.distro.name
-            mysql.MySQL.install_mysql(mysql_instance, distro_name)
+            distro_version = cluster_context.distro_version
+            mysql.MySQL.install_mysql(mysql_instance, distro_name,
+                                      distro_version)
             mysql.MySQL.start_mysql_server(cluster_context)
             mysql.MySQL.create_databases(cluster_context, instances)
 

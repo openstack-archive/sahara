@@ -15,8 +15,11 @@ if [ ! -f /etc/init.d/mysql* ]; then
         sudo service mysql restart
     elif [[ $1 == *"CentOS"* ]] || \
         [[ $1 == "RedHatEnterpriseServer" ]]; then
-        sudo yum install -y mysql-server
-        sudo yum install -y mysql-connector-java
+            if [[ $2 == "7" ]]; then
+                sudo yum install -y mariadb-server
+            else
+                sudo yum install -y mysql-server
+            fi
     elif [[ $1 == *"SUSE"* ]]; then
         sudo zypper mysql-server
     else

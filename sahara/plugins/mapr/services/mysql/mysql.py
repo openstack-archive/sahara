@@ -202,5 +202,6 @@ class MySQL(s.Service):
         MySQL._execute_script(instance, script.remote_path, script.render())
 
     @staticmethod
-    def install_mysql(instance, distro_name):
-        g.run_script(instance, MySQL.MYSQL_INSTALL_SCRIPT, 'root', distro_name)
+    def install_mysql(instance, distro_name, distro_version):
+        g.run_script(instance, MySQL.MYSQL_INSTALL_SCRIPT, 'root', distro_name,
+                     distro_version.split('.')[0])
