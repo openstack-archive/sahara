@@ -20,7 +20,7 @@ from sahara.plugins.mapr.services.management import management
 from sahara.plugins.mapr.services.maprfs import maprfs
 from sahara.plugins.mapr.services.oozie import oozie
 from sahara.plugins.mapr.services.yarn import yarn
-import sahara.plugins.mapr.versions.v5_0_0_mrv2.version_handler as handler
+import sahara.plugins.mapr.versions.v5_2_0_mrv2.version_handler as handler
 from sahara.plugins import provisioning as p
 from sahara.tests.unit import base as b
 from sahara.tests.unit import testutils as tu
@@ -56,7 +56,7 @@ class TestHandler(b.SaharaTestCase):
             name='test_cluster',
             tenant='large',
             plugin='mapr',
-            version='5.0.0.mrv2',
+            version='5.2.0.mrv2',
             node_groups=[master_ng],
             cluster_configs=cluster_configs,
         )
@@ -94,7 +94,6 @@ class TestHandler(b.SaharaTestCase):
         for conf in version_configs:
             self.assertIsInstance(conf, p.Config)
             self.assertNotEqual(0, len(conf.config_values))
-            self.assertNotEqual(1, len(conf.config_values))
             self.assertEqual('dropdown', conf.config_type)
 
     def test_get_configs_dict(self):
