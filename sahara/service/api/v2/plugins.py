@@ -13,15 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from sahara import conductor as c
-from sahara import context
 from sahara.plugins import base as plugin_base
 
 
-conductor = c.API
-
-
 # Plugins ops
+
 
 def get_plugins():
     return plugin_base.PLUGINS.get_plugins(serialized=True)
@@ -33,14 +29,3 @@ def get_plugin(plugin_name, version=None):
 
 def update_plugin(plugin_name, values):
     return plugin_base.PLUGINS.update_plugin(plugin_name, values)
-
-
-def construct_ngs_for_scaling(cluster, additional_node_groups):
-    ctx = context.ctx()
-    additional = {}
-    for ng in additional_node_groups:
-        count = ng['count']
-        ng['count'] = 0
-        ng_id = conductor.node_group_add(ctx, cluster, ng)
-        additional.update({ng_id: count})
-    return additional

@@ -73,7 +73,7 @@ class AuthValidatorV2(base.Middleware):
         Handle incoming requests by checking tenant info from the
         headers and url ({tenant_id} url attribute), if using v1 or v1.1
         APIs. If using the v2 API, this function will check the token
-        tenant and the requested tenent in the headers.
+        tenant and the requested tenant in the headers.
 
         Pass request downstream on success.
         Reject request if tenant_id from headers is not equal to the
@@ -91,7 +91,6 @@ class AuthValidatorV2(base.Middleware):
                     version, rest = strutils.split_path(path, 2, 2, True)
                     requested_tenant = req.headers.get('OpenStack-Project-ID')
                 else:
-
                     version, requested_tenant, rest = strutils.split_path(
                         path, 3, 3, True)
             except ValueError:
