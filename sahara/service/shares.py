@@ -93,6 +93,7 @@ def unmount_shares(cluster, unmount_share_list):
                 handlers_by_share_id[share['id']].unmount_from_instance(
                     instance.remote(), share)
 
+
 _mount = collections.namedtuple('Mount', ['node_group', 'share_config'])
 
 
@@ -169,9 +170,9 @@ class _ShareHandler(object):
     def allow_access_to_instance(self, instance, share_config):
         """Mounts a specific share to a specific instance."""
         access_level = self._get_access_level(share_config)
-        ip_filter = lambda x: (x.access_type == 'ip' and
-                               x.access_to == instance.internal_ip)
-        accesses = list(filter(ip_filter, self.share.access_list()))
+        accesses = list(filter(lambda x: (x.access_type == 'ip' and
+                               x.access_to == instance.internal_ip),
+                               self.share.access_list()))
         if accesses:
             access = accesses[0]
             if access.access_level not in ('ro', 'rw'):
@@ -268,7 +269,7 @@ _share_types = {"NFS": _NFSMounter}
 SUPPORTED_SHARE_TYPES = _share_types.keys()
 
 
-def _make_share_path(mount_point, path):
+def make_share_path(mount_point, path):
     return "{0}{1}".format(mount_point, path)
 
 
@@ -298,5 +299,5 @@ def get_share_path(url, shares):
             # share without a path, so the default mnt was used
             # during cluster provisioning.
             mount_point = default_mount(share_list[0]['id'])
-        path = _make_share_path(mount_point, url.path)
+        path = make_share_path(mount_point, url.path)
     return path
