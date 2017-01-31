@@ -14,7 +14,6 @@
 # limitations under the License.
 
 from oslo_config import cfg
-from oslo_log import log as logging
 from oslo_utils import uuidutils
 import six.moves.urllib.parse as urlparse
 
@@ -26,16 +25,14 @@ import sahara.service.validations.edp.base as b
 
 CONF = cfg.CONF
 conductor = c.API
-LOG = logging.getLogger(__name__)
 
 
 class InternalDBType(JobBinaryType):
     def copy_binary_to_cluster(self, job_binary, **kwargs):
         # url example: 'internal-db://JobBinaryInternal-UUID'
         r = kwargs.pop('remote')
-        job_exec_id = kwargs.pop('job_exec_id')
 
-        dst = self._generate_valid_path(job_exec_id, job_binary)
+        dst = self._generate_valid_path(job_binary)
         raw = self.get_raw_data(job_binary, **kwargs)
 
         r.write_file_to(dst, raw)
@@ -63,11 +60,11 @@ class InternalDBType(JobBinaryType):
     def _validate_url(self, url):
         if len(url) == 0:
             raise ex.InvalidDataException(
-                _("Intenal data base url must not be empty"))
+                _("Internal data base url must not be empty"))
         url = urlparse.urlparse(url)
         if url.scheme != "internal-db":
             raise ex.InvalidDataException(
                 _("URL scheme must be 'internal-db'"))
         if not uuidutils.is_uuid_like(url.netloc):
             raise ex.InvalidDataException(
-                _("Intenal data base url netloc must be a uuid"))
+                _("Internal data base url netloc must be a uuid"))

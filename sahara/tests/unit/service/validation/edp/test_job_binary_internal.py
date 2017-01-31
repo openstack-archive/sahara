@@ -17,6 +17,7 @@ import mock
 
 from sahara.service.api import v10 as api
 from sahara.service.validations.edp import job_binary_internal as jb
+from sahara.service.validations.edp.job_binary_internal import jb_manager
 from sahara.service.validations.edp import job_binary_internal_schema as jbs
 from sahara.tests.unit.service.validation import utils as u
 
@@ -26,6 +27,7 @@ class TestJobBinaryInternalCreateValidation(u.ValidationTestCase):
         super(TestJobBinaryInternalCreateValidation, self).setUp()
         self._create_object_fun = jb.check_job_binary_internal
         api.plugin_base.setup_plugins()
+        jb_manager.setup_job_binaries()
 
     def test_job_binary_internal_create(self):
         self._assert_create_object_validation(data='text')

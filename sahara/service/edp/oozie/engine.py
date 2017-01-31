@@ -24,8 +24,8 @@ import six
 from sahara import conductor as c
 from sahara import context
 from sahara.service.edp import base_engine
-from sahara.service.edp.binary_retrievers import dispatch
 from sahara.service.edp import hdfs_helper as h
+from sahara.service.edp.job_binaries import manager as jb_manager
 from sahara.service.edp import job_utils
 from sahara.service.edp.oozie import oozie as o
 from sahara.service.edp.oozie.workflow_creator import workflow_factory
@@ -134,7 +134,8 @@ class OozieJobEngine(base_engine.JobEngine):
         prepared_job_params = {}
 
         job = conductor.job_get(ctx, job_execution.job_id)
-        input_source, output_source = job_utils.get_data_sources(
+
+        input_source, output_source = job_utils.get_input_output_data_sources(
             job_execution, job, data_source_urls, self.cluster)
 
         # Updated_job_configs will be a copy of job_execution.job_configs with
@@ -159,6 +160,11 @@ class OozieJobEngine(base_engine.JobEngine):
         data_source_urls = job_utils.to_url_dict(data_source_urls,
                                                  runtime=True)
 
+        data_sources = additional_sources + [input_source, output_source]
+        job_utils.prepare_cluster_for_ds(data_sources,
+                                         self.cluster, updated_job_configs,
+                                         data_source_urls)
+
         proxy_configs = updated_job_configs.get('proxy_configs')
         configs = updated_job_configs.get('configs', {})
         use_hbase_lib = configs.get('edp.hbase_common_lib', {})
@@ -170,12 +176,6 @@ class OozieJobEngine(base_engine.JobEngine):
         for k in list(configs):
             if k.startswith('oozie.'):
                 oozie_params[k] = configs[k]
-
-        for data_source in [input_source, output_source] + additional_sources:
-            if data_source and data_source.type == 'hdfs':
-                h.configure_cluster_for_hdfs(
-                    self.cluster, data_source_urls[data_source.id])
-                break
 
         external_hdfs_urls = self._resolve_external_hdfs_urls(
             job_execution.job_configs)
@@ -334,10 +334,16 @@ class OozieJobEngine(base_engine.JobEngine):
                 edp.JOB_TYPE_PIG,
                 edp.JOB_TYPE_SHELL]
 
+    def _prepare_job_binaries(self, job_binaries, r):
+        for jb in job_binaries:
+            jb_manager.JOB_BINARIES.get_job_binary_by_url(jb.url). \
+                prepare_cluster(jb, remote=r)
+
     def _upload_job_files_to_hdfs(self, where, job_dir, job, configs,
                                   proxy_configs=None):
-        mains = job.mains or []
-        libs = job.libs or []
+
+        mains = list(job.mains) if job.mains else []
+        libs = list(job.libs) if job.libs else []
         builtin_libs = edp.get_builtin_binaries(job, configs)
         uploaded_paths = []
         hdfs_user = self.get_hdfs_user()
@@ -345,33 +351,40 @@ class OozieJobEngine(base_engine.JobEngine):
         lib_dir = os.path.join(job_dir, job_dir_suffix)
 
         with remote.get_remote(where) as r:
-            for main in mains:
-                raw_data = dispatch.get_raw_binary(
-                    main, proxy_configs=proxy_configs, remote=r)
-                if isinstance(raw_data, dict) and raw_data["type"] == "path":
-                    h.copy_from_local(r, raw_data['path'],
-                                      job_dir, hdfs_user)
-                else:
-                    h.put_file_to_hdfs(r, raw_data, main.name,
-                                       job_dir, hdfs_user)
-                uploaded_paths.append(job_dir + '/' + main.name)
+            job_binaries = mains + libs
+            self._prepare_job_binaries(job_binaries, r)
+
+            # upload mains
+            uploaded_paths.extend(self._upload_job_binaries(r, mains,
+                                                            proxy_configs,
+                                                            hdfs_user,
+                                                            job_dir))
+            # upload libs
             if len(libs) and job_dir_suffix:
                 # HDFS 2.2.0 fails to put file if the lib dir does not exist
                 self.create_hdfs_dir(r, lib_dir)
-            for lib in libs:
-                raw_data = dispatch.get_raw_binary(
-                    lib, proxy_configs=proxy_configs, remote=remote)
-                if isinstance(raw_data, dict) and raw_data["type"] == "path":
-                    h.copy_from_local(r, raw_data['path'],
-                                      lib_dir, hdfs_user)
-                else:
-                    h.put_file_to_hdfs(r, raw_data, lib.name,
-                                       lib_dir, hdfs_user)
-                uploaded_paths.append(lib_dir + '/' + lib.name)
+            uploaded_paths.extend(self._upload_job_binaries(r, libs,
+                                                            proxy_configs,
+                                                            hdfs_user,
+                                                            lib_dir))
+            # upload buitin_libs
             for lib in builtin_libs:
                 h.put_file_to_hdfs(r, lib['raw'], lib['name'], lib_dir,
                                    hdfs_user)
-                uploaded_paths.append(lib_dir + '/' + lib['name'])
+                uploaded_paths.append(lib_dir + lib['name'])
+        return uploaded_paths
+
+    def _upload_job_binaries(self, r, job_binaries, proxy_configs,
+                             hdfs_user, job_dir):
+        uploaded_paths = []
+        for jb in job_binaries:
+            path = jb_manager.JOB_BINARIES. \
+                get_job_binary_by_url(jb.url). \
+                copy_binary_to_cluster(jb, proxy_configs=proxy_configs,
+                                       remote=r, context=context.ctx())
+
+            h.copy_from_local(r, path, job_dir, hdfs_user)
+            uploaded_paths.append(path)
         return uploaded_paths
 
     def _create_hdfs_workflow_dir(self, where, job):

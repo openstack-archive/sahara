@@ -19,6 +19,7 @@ from oslo_utils import uuidutils
 import testtools
 
 from sahara import conductor as cond
+from sahara.service.edp.data_sources import manager as ds_manager
 from sahara.service.edp import job_utils
 from sahara.tests.unit.service.edp import edp_test_utils as u
 
@@ -29,6 +30,7 @@ class JobUtilsTestCase(testtools.TestCase):
 
     def setUp(self):
         super(JobUtilsTestCase, self).setUp()
+        ds_manager.setup_data_sources()
 
     def test_args_may_contain_data_sources(self):
         job_configs = None
@@ -205,39 +207,6 @@ class JobUtilsTestCase(testtools.TestCase):
                                                           job_exec_id, urls)
         self.assertEqual(2, len(ds))
         self.assertEqual([input.url, output_url, input.url], nc['args'])
-        # Swift configs should be filled in since they were blank
-        self.assertEqual(input.credentials['user'],
-                         nc['configs']['fs.swift.service.sahara.username'])
-        self.assertEqual(input.credentials['password'],
-                         nc['configs']['fs.swift.service.sahara.password'])
-        self.assertEqual(2, len(urls))
-        self.assertItemsEqual({input.id: (input_url, input_url),
-                               output.id: (output_url, output_url)}, urls)
-
-        job_configs['configs'] = {'fs.swift.service.sahara.username': 'sam',
-                                  'fs.swift.service.sahara.password': 'gamgee',
-                                  job_utils.DATA_SOURCE_SUBST_NAME: False,
-                                  job_utils.DATA_SOURCE_SUBST_UUID: True}
-        ds, nc = job_utils.resolve_data_source_references(job_configs,
-                                                          job_exec_id, {})
-        self.assertEqual(2, len(ds))
-        self.assertEqual([name_ref, output_url, input.url], nc['args'])
-        # Swift configs should not be overwritten
-        self.assertEqual(job_configs['configs'], nc['configs'])
-
-        job_configs['configs'] = {job_utils.DATA_SOURCE_SUBST_NAME: True,
-                                  job_utils.DATA_SOURCE_SUBST_UUID: False}
-        job_configs['proxy_configs'] = {'proxy_username': 'john',
-                                        'proxy_password': 'smith',
-                                        'proxy_trust_id': 'trustme'}
-        ds, nc = job_utils.resolve_data_source_references(job_configs,
-                                                          job_exec_id, {})
-        self.assertEqual(1, len(ds))
-        self.assertEqual([input.url, output.id, input.id], nc['args'])
-
-        # Swift configs should be empty and proxy configs should be preserved
-        self.assertEqual(job_configs['configs'], nc['configs'])
-        self.assertEqual(job_configs['proxy_configs'], nc['proxy_configs'])
 
         # Substitution not enabled
         job_configs['configs'] = {job_utils.DATA_SOURCE_SUBST_NAME: False,
@@ -270,28 +239,20 @@ class JobUtilsTestCase(testtools.TestCase):
                               job_utils.to_url_dict(data_source_urls,
                                                     runtime=True))
 
-    def test_construct_data_source_url_no_placeholders(self):
-        base_url = "swift://container/input"
-        job_exec_id = uuidutils.generate_uuid()
+    @mock.patch('sahara.service.edp.hdfs_helper.configure_cluster_for_hdfs')
+    def test_prepare_cluster_for_ds(self, configure):
+        data_source_urls = {'1': '1_runtime',
+                            '2': '2_runtime'}
 
-        url = job_utils._construct_data_source_url(base_url, job_exec_id)
+        data_source = mock.Mock()
+        data_source.type = 'hdfs'
+        data_source.id = '1'
 
-        self.assertEqual(base_url, url)
+        cluster = mock.Mock()
+        job_configs = mock.Mock()
 
-    def test_construct_data_source_url_job_exec_id_placeholder(self):
-        base_url = "swift://container/input.%JOB_EXEC_ID%.out"
-        job_exec_id = uuidutils.generate_uuid()
+        job_utils.prepare_cluster_for_ds([data_source], cluster, job_configs,
+                                         data_source_urls)
 
-        url = job_utils._construct_data_source_url(base_url, job_exec_id)
-
-        self.assertEqual(
-            "swift://container/input." + job_exec_id + ".out", url)
-
-    def test_construct_data_source_url_randstr_placeholder(self):
-        base_url = "swift://container/input.%RANDSTR(4)%.%RANDSTR(7)%.out"
-        job_exec_id = uuidutils.generate_uuid()
-
-        url = job_utils._construct_data_source_url(base_url, job_exec_id)
-
-        self.assertRegex(
-            url, "swift://container/input\.[a-z]{4}\.[a-z]{7}\.out")
+        configure.assert_called_once()
+        configure.assert_called_with(cluster, '1_runtime')

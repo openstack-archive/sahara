@@ -13,8 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import mock
+
 from sahara.service.api import v10 as api
 from sahara.service.validations.edp import job_binary as b
+from sahara.service.validations.edp.job_binary import jb_manager
 from sahara.service.validations.edp import job_binary_schema as b_s
 from sahara.swift import utils as su
 from sahara.tests.unit.service.validation import utils as u
@@ -26,8 +29,18 @@ class TestJobBinaryValidation(u.ValidationTestCase):
         self._create_object_fun = b.check_job_binary
         self.scheme = b_s.JOB_BINARY_SCHEMA
         api.plugin_base.setup_plugins()
+        jb_manager.setup_job_binaries()
 
-    def test_creation(self):
+    @mock.patch('sahara.utils.api_validator.jb_manager')
+    def test_creation(self, mock_jb_manager):
+        JOB_BINARIES = mock.Mock()
+        mock_jb = mock.Mock()
+        mock_jb_manager.JOB_BINARIES = JOB_BINARIES
+
+        JOB_BINARIES.get_job_binary_by_url = mock.Mock(return_value=mock_jb)
+
+        mock_jb.validate_job_location_format = mock.Mock(return_value=True)
+
         data = {
             "name": "main.jar",
             "url": "internal-db://3e4651a5-1f08-4880-94c4-596372b37c64",
@@ -39,7 +52,15 @@ class TestJobBinaryValidation(u.ValidationTestCase):
         }
         self._assert_types(data)
 
-    def test_job_binary_create_swift(self):
+    @mock.patch('sahara.utils.api_validator.jb_manager')
+    def test_job_binary_create_swift(self, mock_jb_manager):
+        JOB_BINARIES = mock.Mock()
+        mock_jb = mock.Mock()
+        mock_jb_manager.JOB_BINARIES = JOB_BINARIES
+
+        JOB_BINARIES.get_job_binary_by_url = mock.Mock(return_value=mock_jb)
+
+        mock_jb.validate_job_location_format = mock.Mock(return_value=True)
         self._assert_create_object_validation(
             data={
                 "name": "j_o_w",
@@ -55,7 +76,15 @@ class TestJobBinaryValidation(u.ValidationTestCase):
                 "url": su.SWIFT_INTERNAL_PREFIX + "o.sahara/k"
             })
 
-    def test_job_binary_create_internal(self):
+    @mock.patch('sahara.utils.api_validator.jb_manager')
+    def test_job_binary_create_internal(self, mock_jb_manager):
+        JOB_BINARIES = mock.Mock()
+        mock_jb = mock.Mock()
+        mock_jb_manager.JOB_BINARIES = JOB_BINARIES
+
+        JOB_BINARIES.get_job_binary_by_url = mock.Mock(return_value=mock_jb)
+
+        mock_jb.validate_job_location_format = mock.Mock(return_value=False)
         self._assert_create_object_validation(
             data={
                 "name": "main.jar",
@@ -63,4 +92,22 @@ class TestJobBinaryValidation(u.ValidationTestCase):
             },
             bad_req_i=(1, "VALIDATION_ERROR",
                        "url: 'internal-db://abacaba' is not a "
+                       "'valid_job_location'"))
+
+    @mock.patch('sahara.utils.api_validator.jb_manager')
+    def test_job_binary_create_manila(self, mock_jb_manager):
+        JOB_BINARIES = mock.Mock()
+        mock_jb = mock.Mock()
+        mock_jb_manager.JOB_BINARIES = JOB_BINARIES
+
+        JOB_BINARIES.get_job_binary_by_url = mock.Mock(return_value=mock_jb)
+
+        mock_jb.validate_job_location_format = mock.Mock(return_value=False)
+        self._assert_create_object_validation(
+            data={
+                "name": "main.jar",
+                "url": "manila://abacaba",
+            },
+            bad_req_i=(1, "VALIDATION_ERROR",
+                       "url: 'manila://abacaba' is not a "
                        "'valid_job_location'"))

@@ -18,10 +18,8 @@ import re
 import jsonschema
 from oslo_utils import uuidutils
 import six
-import six.moves.urllib.parse as urlparse
 
-from sahara.swift import utils as su
-from sahara.utils.openstack import manila as m
+from sahara.service.edp.job_binaries import manager as jb_manager
 
 
 @jsonschema.FormatChecker.cls_checks('valid_name_hostname')
@@ -63,19 +61,9 @@ def validate_job_location_format(entry):
         # should fail type validation
         return True
 
-    if entry.startswith('internal-db://'):
-        return uuidutils.is_uuid_like(entry[len("internal-db://"):])
-
-    if entry.startswith(su.SWIFT_INTERNAL_PREFIX):
-        # TODO(nprivalova):add hostname validation
-        return True
-
-    if entry.startswith(m.MANILA_PREFIX):
-        url = urlparse.urlparse(entry)
-        if (uuidutils.is_uuid_like(url.netloc) and
-                len(url.path) > 1):
-            return True
-    return False
+    return jb_manager.JOB_BINARIES \
+                     .get_job_binary_by_url(entry) \
+                     .validate_job_location_format(entry)
 
 
 @jsonschema.FormatChecker.cls_checks('valid_tag')

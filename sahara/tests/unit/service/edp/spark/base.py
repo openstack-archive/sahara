@@ -19,6 +19,7 @@ import os
 import mock
 
 import sahara.exceptions as ex
+from sahara.service.edp.job_utils import ds_manager
 from sahara.service.edp.spark import engine as se
 from sahara.tests.unit import base
 from sahara.utils import edp
@@ -43,6 +44,8 @@ class TestSpark(base.SaharaTestCase):
         self.spark_home = "/opt/spark"
         self.workflow_dir = "/wfdir"
         self.driver_cp = "/usr/lib/hadoop-mapreduce/hadoop-openstack.jar:"
+
+        ds_manager.setup_data_sources()
 
     def test_get_pid_and_inst_id(self):
         '''Test parsing of job ids
@@ -326,9 +329,9 @@ class TestSpark(base.SaharaTestCase):
         # check that we have nothing new to report ...
         self.assertIsNone(status)
 
-    @mock.patch('sahara.service.edp.binary_retrievers.dispatch.get_raw_binary')
+    @mock.patch('sahara.service.edp.spark.engine.jb_manager')
     @mock.patch('sahara.utils.remote.get_remote')
-    def test_upload_job_files(self, get_remote, get_raw_binary):
+    def test_upload_job_files(self, get_remote, jb_manager):
         main_names = ["main1", "main2", "main3"]
         lib_names = ["lib1", "lib2", "lib3"]
 
@@ -352,14 +355,26 @@ class TestSpark(base.SaharaTestCase):
         get_remote.return_value.__enter__ = mock.Mock(
             return_value=remote_instance)
 
-        get_raw_binary.return_value = "data"
+        JOB_BINARIES = mock.Mock()
+        mock_jb = mock.Mock()
+        jb_manager.JOB_BINARIES = JOB_BINARIES
+
+        JOB_BINARIES.get_job_binary_by_url = mock.Mock(return_value=mock_jb)
+
+        mock_jb.copy_binary_to_cluster = mock.Mock(side_effect=[
+                                                   '/somedir/main1',
+                                                   '/somedir/main2',
+                                                   '/somedir/main3',
+                                                   '/somedir/lib1',
+                                                   '/somedir/lib2',
+                                                   '/somedir/lib3'])
 
         eng = se.SparkJobEngine("cluster")
+        eng._prepare_job_binaries = mock.Mock()
+
         paths, builtins = eng._upload_job_files("where", "/somedir", job, {})
         self.assertEqual(["/somedir/" + n for n in main_names + lib_names],
                          paths)
-        for path in paths:
-            remote_instance.write_file_to.assert_any_call(path, "data")
 
     def _make_master_instance(self, return_code=0):
         master = mock.Mock()
@@ -651,9 +666,9 @@ class TestSpark(base.SaharaTestCase):
                           edp.JOB_STATUS_RUNNING,
                           {"spark-path": self.workflow_dir}), status)
 
-    @mock.patch('sahara.service.edp.hdfs_helper.configure_cluster_for_hdfs')
+    @mock.patch('sahara.service.edp.job_utils.prepare_cluster_for_ds')
     @mock.patch('sahara.service.edp.job_utils.resolve_data_source_references')
-    def test_external_hdfs_config(self, resolver, configurer):
+    def test_external_hdfs_config(self, resolver, prepare):
         job_configs = {
             'configs': {"edp.java.main_class": "org.me.myclass"},
         }
@@ -662,16 +677,17 @@ class TestSpark(base.SaharaTestCase):
 
         data_source = mock.Mock()
         data_source.type = 'hdfs'
+        data_source.id = 'id'
         resolver.return_value = ([data_source], job_configs)
 
         master_instance = self._make_master_instance()
         self._setup_run_job(master_instance, job_configs, files)
 
-        configurer.assert_called_with("cluster", data_source)
+        prepare.assert_called_once()
 
-    @mock.patch('sahara.service.edp.hdfs_helper.configure_cluster_for_hdfs')
+    @mock.patch('sahara.service.edp.job_utils.prepare_cluster_for_ds')
     @mock.patch('sahara.service.edp.job_utils.resolve_data_source_references')
-    def test_overridden_driver_classpath(self, resolver, configurer):
+    def test_overridden_driver_classpath(self, resolver, prepare):
         job_configs = {
             'configs': {"edp.java.main_class": "org.me.myclass",
                         'edp.spark.driver.classpath': "my-classpath.jar"},
@@ -681,6 +697,7 @@ class TestSpark(base.SaharaTestCase):
 
         data_source = mock.Mock()
         data_source.type = 'hdfs'
+        data_source.id = 'id'
         resolver.return_value = ([data_source], job_configs)
 
         master_instance = self._make_master_instance()

@@ -47,6 +47,13 @@ class JobBinaryType(object):
 
         :returns: String representing the local path
         """
+
+        # TODO(mariannelm): currently for the job binaries it's true
+        # that the raw data must be available at a FS path in the cluster, but
+        # for most of the job binary types there's no need to keep this data
+        # in the cluster after the job is done, so it would be a good thing to
+        # have a method responsible for removing the job binary raw data
+        # after the end of the job
         return None
 
     @plugins_base.required_with_default
@@ -62,7 +69,7 @@ class JobBinaryType(object):
 
     @plugins_base.optional
     def _validate_url(self, url):
-        """Auxiliar method used by the validate method"""
+        """Auxiliary method used by the validate method"""
         pass
 
     @plugins_base.required_with_default
@@ -91,6 +98,6 @@ class JobBinaryType(object):
         raise ex.NotImplementedException()
 
     @plugins_base.optional
-    def _generate_valid_path(self, job_exec_id, job_binary):
+    def _generate_valid_path(self, job_binary):
         """Generates a valid FS path for the binary be placed"""
-        return '/tmp/%s.%s' % (job_exec_id, job_binary.name)
+        return '/tmp/' + job_binary.name

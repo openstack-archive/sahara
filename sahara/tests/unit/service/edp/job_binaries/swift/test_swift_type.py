@@ -64,12 +64,11 @@ class TestSwiftType(base.SaharaTestCase):
         get_raw_data.return_value = 'test'
 
         res = self.i_s.copy_binary_to_cluster(job_binary,
-                                              remote=remote,
-                                              job_exec_id='job_exec_id')
+                                              remote=remote)
 
-        self.assertEqual('/tmp/job_exec_id.test', res)
+        self.assertEqual('/tmp/test', res)
         remote.write_file_to.assert_called_with(
-            '/tmp/job_exec_id.test',
+            '/tmp/test',
             'test')
 
     def test__get_raw_data(self):

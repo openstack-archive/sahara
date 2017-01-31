@@ -14,7 +14,7 @@
 # limitations under the License.
 
 from sahara.service.edp import job_utils
-from sahara.service import shares as shares_service
+from sahara.service.edp.utils import shares as shares_service
 
 
 def get_file_info(job_binary, remote):

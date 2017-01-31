@@ -20,7 +20,7 @@ from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.service.edp.data_sources.base import DataSourceType
 from sahara.service.edp import job_utils
-from sahara.service import shares as shares_service
+from sahara.service.edp.utils import shares as shares_service
 
 
 class ManilaType(DataSourceType):
@@ -49,6 +49,11 @@ class ManilaType(DataSourceType):
         return path
 
     def get_runtime_url(self, url, cluster):
+        # TODO(mariannelm): currently the get_runtime_url method is responsible
+        # for preparing the cluster for the manila job type which is not the
+        # best approach. In order to make a prepare_cluster method for manila
+        # the edp/job_utils.py resolve_data_source_reference function must be
+        # refactored
         path = self._prepare_cluster(url, cluster)
         # This gets us the mount point, but we need a file:// scheme to
         # indicate a local filesystem path

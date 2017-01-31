@@ -63,6 +63,9 @@ class SwiftType(DataSourceType):
         if hasattr(data_source, "credentials"):
             job_configs = kwargs.pop('job_configs')
 
+            # if no data source was passed as a reference for the job, the
+            # job_configs will not be changed (so it will be a FronzenDict)
+            # and we don't need to change it as well
             if isinstance(job_configs, FrozenDict) or \
                job_configs.get('configs', None) is None:
                 return

@@ -49,7 +49,7 @@ class TestManilaType(base.SaharaTestCase):
             self.assertTrue(self.manila_type.
                             validate_job_location_format(valid_url))
 
-        @mock.patch('sahara.service.shares.default_mount')
+        @mock.patch('sahara.service.edp.utils.shares.default_mount')
         @mock.patch('sahara.utils.openstack.manila.client')
         def test_copy_binary_to_cluster(self, f_manilaclient, default_mount):
             cluster_shares = [
@@ -92,7 +92,7 @@ class TestManilaType(base.SaharaTestCase):
 
         @mock.patch('sahara.utils.openstack.manila.client')
         @mock.patch('sahara.conductor.API.cluster_update')
-        @mock.patch('sahara.service.shares.mount_shares')
+        @mock.patch('sahara.service.edp.utils.shares.mount_shares')
         def test_prepare_cluster(self, mount_shares, cluster_update,
                                  f_manilaclient):
 

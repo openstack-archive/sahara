@@ -31,7 +31,7 @@ class TestManilaShare(base.SaharaTestCase):
 
     @mock.patch('sahara.utils.openstack.manila.client')
     @mock.patch('sahara.conductor.API.cluster_update')
-    @mock.patch('sahara.service.shares.mount_shares')
+    @mock.patch('sahara.service.edp.utils.shares.mount_shares')
     def test_get_file_info(self, mount_shares, cluster_update, f_manilaclient):
         cluster_shares = [
             {'id': 'the_share_id',

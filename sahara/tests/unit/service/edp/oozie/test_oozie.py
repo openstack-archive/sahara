@@ -17,7 +17,9 @@ import mock
 
 from sahara import context as ctx
 from sahara.plugins import base as pb
+from sahara.service.edp.job_utils import ds_manager
 from sahara.service.edp.oozie import engine as oe
+from sahara.service.edp.oozie.engine import jb_manager
 from sahara.tests.unit import base
 from sahara.tests.unit.service.edp import edp_test_utils as u
 from sahara.utils import edp
@@ -27,6 +29,8 @@ class TestOozieEngine(base.SaharaTestCase):
     def setUp(self):
         super(TestOozieEngine, self).setUp()
         pb.setup_plugins()
+        jb_manager.setup_job_binaries()
+        ds_manager.setup_data_sources()
 
     def test_get_job_status(self):
         oje = FakeOozieJobEngine(u.create_cluster())
@@ -98,13 +102,15 @@ class TestOozieEngine(base.SaharaTestCase):
         conductor_raw_data.return_value = 'ok'
 
         oje = FakeOozieJobEngine(u.create_cluster())
+        oje._prepare_job_binaries = mock.Mock()
+
         job, _ = u.create_job_exec(edp.JOB_TYPE_PIG)
         res = oje._upload_job_files_to_hdfs(mock.Mock(), 'job_prefix', job, {})
-        self.assertEqual(['job_prefix/script.pig'], res)
+        self.assertEqual(['/tmp/script.pig'], res)
 
         job, _ = u.create_job_exec(edp.JOB_TYPE_MAPREDUCE)
         res = oje._upload_job_files_to_hdfs(mock.Mock(), 'job_prefix', job, {})
-        self.assertEqual(['job_prefix/lib/main.jar'], res)
+        self.assertEqual(['/tmp/main.jar'], res)
 
     @mock.patch('sahara.utils.remote.get_remote')
     def test_upload_workflow_file(self, remote_get):
@@ -176,6 +182,8 @@ class TestOozieEngine(base.SaharaTestCase):
         oje.cancel_job(job_exec)
         self.assertEqual(1, kill_get.call_count)
 
+    @mock.patch('sahara.service.edp.job_utils.prepare_cluster_for_ds')
+    @mock.patch('sahara.service.edp.job_utils._get_data_source_urls')
     @mock.patch('sahara.service.edp.oozie.workflow_creator.'
                 'workflow_factory.get_workflow_xml')
     @mock.patch('sahara.utils.remote.get_remote')
@@ -183,7 +191,8 @@ class TestOozieEngine(base.SaharaTestCase):
     @mock.patch('sahara.conductor.API.data_source_get')
     @mock.patch('sahara.conductor.API.job_get')
     def test_prepare_run_job(self, job, data_source, update,
-                             remote, wf_factory):
+                             remote, wf_factory, get_ds_urls,
+                             prepare_cluster):
         wf_factory.return_value = mock.MagicMock()
 
         remote_class = mock.MagicMock()
@@ -197,6 +206,8 @@ class TestOozieEngine(base.SaharaTestCase):
         source = mock.MagicMock()
         source.url = "localhost"
 
+        get_ds_urls.return_value = ('url', 'url')
+
         data_source.return_value = source
         oje = FakeOozieJobEngine(u.create_cluster())
         _, job_exec = u.create_job_exec(edp.JOB_TYPE_PIG)
@@ -208,6 +219,8 @@ class TestOozieEngine(base.SaharaTestCase):
         self.assertEqual(job_exec, res['job_execution'])
         self.assertEqual({}, res['oozie_params'])
 
+    @mock.patch('sahara.service.edp.job_utils.prepare_cluster_for_ds')
+    @mock.patch('sahara.service.edp.job_utils._get_data_source_urls')
     @mock.patch('sahara.service.edp.oozie.workflow_creator.'
                 'workflow_factory.get_workflow_xml')
     @mock.patch('sahara.utils.remote.get_remote')
@@ -216,7 +229,8 @@ class TestOozieEngine(base.SaharaTestCase):
     @mock.patch('sahara.conductor.API.job_get')
     @mock.patch('sahara.conductor.API.job_execution_get')
     def test_run_job(self, exec_get, job, data_source,
-                     update, remote, wf_factory):
+                     update, remote, wf_factory, get_ds_urls,
+                     prepare_cluster):
         wf_factory.return_value = mock.MagicMock()
         remote_class = mock.MagicMock()
         remote_class.__exit__.return_value = 'closed'
@@ -229,6 +243,8 @@ class TestOozieEngine(base.SaharaTestCase):
         source = mock.MagicMock()
         source.url = "localhost"
         data_source.return_value = source
+
+        get_ds_urls.return_value = ('url', 'url')
 
         oje = FakeOozieJobEngine(u.create_cluster())
         client_class = mock.MagicMock()

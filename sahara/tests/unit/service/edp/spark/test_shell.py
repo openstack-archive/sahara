@@ -16,6 +16,7 @@
 import mock
 
 from sahara.plugins.spark import shell_engine as shell_engine
+from sahara.service.edp.job_utils import ds_manager
 from sahara.tests.unit import base
 from sahara.utils import edp
 
@@ -29,6 +30,8 @@ class TestSparkShellEngine(base.SaharaTestCase):
         self.spark_pid = "12345"
         self.spark_home = "/opt/spark"
         self.workflow_dir = "/wfdir"
+
+        ds_manager.setup_data_sources()
 
     def _create_master_instance(self, return_code=0):
         master = mock.Mock()

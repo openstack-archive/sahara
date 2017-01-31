@@ -33,5 +33,5 @@ class JobBinaryManagerSupportTest(base.SaharaTestCase):
         def test_generate_valid_path(self):
             jb = mock.Mock()
             jb.name = 'jb_name.jar'
-            res = self.job_binary._generate_valid_path('job_exec_id', jb)
-            self.assertEqual('/tmp/job_exec_id.jb_name.jar', res)
+            res = self.job_binary._generate_valid_path(jb)
+            self.assertEqual('/tmp/jb_name.jar', res)

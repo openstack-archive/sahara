@@ -13,10 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import random
-import re
-import string
-
 from oslo_config import cfg
 from oslo_utils import uuidutils
 import six
@@ -24,9 +20,8 @@ import six
 from sahara import conductor as c
 from sahara import context
 from sahara.plugins import base as plugin_base
-from sahara.service import shares as shares_service
-from sahara.swift import swift_helper as sw
-from sahara.utils.openstack import manila as m
+from sahara.service.edp.data_sources import manager as ds_manager
+from sahara.service.edp.utils import shares as shares_service
 from sahara.utils import remote
 
 
@@ -53,6 +48,10 @@ def get_plugin(cluster):
     return plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
 
 
+def get_data_source(ds_name):
+    return ds_manager.DATA_SOURCES.get_data_source(ds_name)
+
+
 def create_workflow_dir(where, path, job, use_uuid=None, chmod=""):
 
     if use_uuid is None:
@@ -68,14 +67,20 @@ def create_workflow_dir(where, path, job, use_uuid=None, chmod=""):
     return constructed_dir
 
 
-def get_data_sources(job_execution, job, data_source_urls, cluster=None):
+def _get_data_source_urls(ds, cluster, job_exec_id):
+    # returns a tuple (native_url, runtime_url)
+    return get_data_source(ds.type).get_urls(ds.url, cluster, job_exec_id)
 
+
+def get_input_output_data_sources(job_execution, job, data_source_urls,
+                                  cluster=None):
     def _construct(ctx, ds_id):
+        job_exec_id = job_execution.id
         source = conductor.data_source_get(ctx, ds_id)
         if source and source.id not in data_source_urls:
-            url = _construct_data_source_url(source.url, job_execution.id)
-            runtime_url = _runtime_url(url, cluster)
-            data_source_urls[source.id] = (url, runtime_url)
+            data_source_urls[source.id] = _get_data_source_urls(source,
+                                                                cluster,
+                                                                job_exec_id)
         return source
 
     ctx = context.ctx()
@@ -159,26 +164,6 @@ def find_possible_data_source_refs_by_uuid(job_configs):
     return _data_source_ref_search(job_configs, uuidutils.is_uuid_like)
 
 
-def _add_credentials_for_data_sources(ds_list, configs):
-
-    username = password = None
-    for src in ds_list:
-        if src.type == "swift" and hasattr(src, "credentials"):
-            if "user" in src.credentials:
-                username = src.credentials['user']
-            if "password" in src.credentials:
-                password = src.credentials['password']
-            break
-
-    # Don't overwrite if there is already a value here
-    if configs.get(sw.HADOOP_SWIFT_USERNAME, None) is None and (
-            username is not None):
-        configs[sw.HADOOP_SWIFT_USERNAME] = username
-    if configs.get(sw.HADOOP_SWIFT_PASSWORD, None) is None and (
-            password is not None):
-        configs[sw.HADOOP_SWIFT_PASSWORD] = password
-
-
 def resolve_data_source_references(job_configs,
                                    job_exec_id,
                                    data_source_urls,
@@ -236,10 +221,8 @@ def resolve_data_source_references(job_configs,
                 ds = ds[0]
                 ds_seen[ds.id] = ds
                 if ds.id not in data_source_urls:
-                    url = _construct_data_source_url(ds.url, job_exec_id)
-                    runtime_url = _runtime_url(url, cluster)
-                    data_source_urls[ds.id] = (url, runtime_url)
-
+                    data_source_urls[ds.id] = _get_data_source_urls(
+                        ds, cluster, job_exec_id)
                 return data_source_urls[ds.id][1]
         return value
 
@@ -259,50 +242,21 @@ def resolve_data_source_references(job_configs,
     if not ds_seen:
         return [], job_configs
 
-    # If there are no proxy_configs and the user has not already set configs
-    # for swift credentials, set those configs based on data_sources we found
-    if not job_configs.get('proxy_configs'):
-        _add_credentials_for_data_sources(ds_seen, new_configs['configs'])
-    else:
-        # we'll need to copy these, too, so job_configs is complete
+    # If there are proxy_configs we'll need to copy these, too,
+    # so job_configs is complete
+    if job_configs.get('proxy_configs'):
         new_configs['proxy_configs'] = {
             k: v for k, v in six.iteritems(job_configs.get('proxy_configs'))}
 
     return ds_seen, new_configs
 
 
-def _construct_data_source_url(url, job_exec_id):
-    """Resolve placeholders in data_source URL.
-
-    Supported placeholders:
-
-    * %RANDSTR(len)% - will be replaced with random string of lowercase
-                       letters of length `len`.
-    * %JOB_EXEC_ID%  - will be replaced with the job execution ID.
-
-    """
-
-    def _randstr(match):
-        len = int(match.group(1))
-        return ''.join(random.choice(string.ascii_lowercase)
-                       for _ in six.moves.range(len))
-
-    url = url.replace("%JOB_EXEC_ID%", job_exec_id)
-
-    url = re.sub(r"%RANDSTR\((\d+)\)%", _randstr, url)
-
-    return url
-
-
-def _runtime_url(url, cluster):
-    if url.startswith(m.MANILA_PREFIX) and cluster:
-        path = shares_service.get_share_path(url, cluster.shares or [])
-        if path is None:
-            path = mount_share_at_default_path(url, cluster)
-        # This gets us the mount point, but we need a file:// scheme to
-        # indicate a local filesystem path
-        return "file://{path}".format(path=path)
-    return url
+def prepare_cluster_for_ds(data_sources, cluster, job_configs, ds_urls):
+    for ds in data_sources:
+        if ds:
+            get_data_source(ds.type).prepare_cluster(
+                ds, cluster, job_configs=job_configs,
+                runtime_url=ds_urls[ds.id])
 
 
 def to_url_dict(data_source_urls, runtime=False):

@@ -25,6 +25,7 @@ from sahara.plugins import base as pb
 from sahara.service.castellan import config as castellan
 from sahara.service.edp import job_manager
 from sahara.service.edp import job_utils
+from sahara.service.edp.job_utils import ds_manager
 from sahara.service.edp.oozie.workflow_creator import workflow_factory
 from sahara.swift import swift_helper as sw
 from sahara.swift import utils as su
@@ -47,6 +48,7 @@ class TestJobManager(base.SaharaWithDbTestCase):
         p.patch_minidom_writexml()
         pb.setup_plugins()
         castellan.validate_config()
+        ds_manager.setup_data_sources()
 
     @mock.patch('uuid.uuid4')
     @mock.patch('sahara.utils.remote.get_remote')
@@ -562,9 +564,9 @@ class TestJobManager(base.SaharaWithDbTestCase):
             job_manager._run_job(job_exec.id)
 
     @mock.patch('sahara.conductor.API.data_source_get')
-    def test_get_data_sources(self, ds):
+    def test_get_input_output_data_sources(self, ds):
         def _conductor_data_source_get(ctx, id):
-            return mock.Mock(id=id, url="obj_" + id)
+            return mock.Mock(id=id, url="hdfs://obj_" + id, type='hdfs')
 
         job, job_exec = u.create_job_exec(edp.JOB_TYPE_PIG)
 
@@ -573,18 +575,18 @@ class TestJobManager(base.SaharaWithDbTestCase):
 
         ds.side_effect = _conductor_data_source_get
         input_source, output_source = (
-            job_utils.get_data_sources(job_exec, job, {}))
+            job_utils.get_input_output_data_sources(job_exec, job, {}))
 
-        self.assertEqual('obj_s1', input_source.url)
-        self.assertEqual('obj_s2', output_source.url)
+        self.assertEqual('hdfs://obj_s1', input_source.url)
+        self.assertEqual('hdfs://obj_s2', output_source.url)
 
-    def test_get_data_sources_with_null_id(self):
+    def test_get_input_output_data_sources_with_null_id(self):
         configs = {sw.HADOOP_SWIFT_USERNAME: 'admin',
                    sw.HADOOP_SWIFT_PASSWORD: 'admin1'}
 
         configs = {
             'configs': configs,
-            'args': ['swift://ex/i',
+            'args': ['hdfs://ex/i',
                      'output_path']
         }
 
@@ -594,7 +596,7 @@ class TestJobManager(base.SaharaWithDbTestCase):
         job_exec.output_id = None
 
         input_source, output_source = (
-            job_utils.get_data_sources(job_exec, job, {}))
+            job_utils.get_input_output_data_sources(job_exec, job, {}))
 
         self.assertIsNone(input_source)
         self.assertIsNone(output_source)
