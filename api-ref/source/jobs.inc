@@ -13,7 +13,7 @@ You can run a job on an existing or new transient cluster.
 Run job
 =======
 
-.. rest_method::  POST /v1.1/{tenant_id}/jobs/{job_id}/execute
+.. rest_method::  POST /v1.1/{project_id}/jobs/{job_id}/execute
 
 Runs a job.
 
@@ -25,7 +25,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
    - job_id: job_id
 
 Request Example
@@ -43,7 +43,7 @@ Request Example
 List jobs
 =========
 
-.. rest_method::  GET /v1.1/{tenant_id}/jobs
+.. rest_method::  GET /v1.1/{project_id}/jobs
 
 Lists all jobs.
 
@@ -56,7 +56,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
    - limit: limit
    - marker: marker
    - sort_by: sort_by_jobs
@@ -88,7 +88,7 @@ Response Parameters
 
 Response Example
 ----------------
-..rest_method:: GET /v1.1/{tenant_id}/jobs?limit=2
+..rest_method:: GET /v1.1/{project_id}/jobs?limit=2
 
 .. literalinclude:: samples/jobs/jobs-list-response.json
    :language: javascript
@@ -99,7 +99,7 @@ Response Example
 Create job
 ==========
 
-.. rest_method::  POST /v1.1/{tenant_id}/jobs
+.. rest_method::  POST /v1.1/{project_id}/jobs
 
 Creates a job object.
 
@@ -111,7 +111,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
 
 
 Request Example
@@ -147,7 +147,7 @@ Response Parameters
 Show job details
 ================
 
-.. rest_method::  GET /v1.1/{tenant_id}/jobs/{job_id}
+.. rest_method::  GET /v1.1/{project_id}/jobs/{job_id}
 
 Shows details for a job.
 
@@ -160,7 +160,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
    - job_id: job_id
 
 
@@ -196,7 +196,7 @@ Response Example
 Remove job
 ==========
 
-.. rest_method::  DELETE /v1.1/{tenant_id}/jobs/{job_id}
+.. rest_method::  DELETE /v1.1/{project_id}/jobs/{job_id}
 
 Removes a job.
 
@@ -208,7 +208,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
    - job_id: job_id
 
 
@@ -219,7 +219,7 @@ Request
 Update job object
 =================
 
-.. rest_method::  PATCH /v1.1/{tenant_id}/jobs/{job_id}
+.. rest_method::  PATCH /v1.1/{project_id}/jobs/{job_id}
 
 Updates a job object.
 
@@ -231,7 +231,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
    - job_id: job_id
 
 Request Example

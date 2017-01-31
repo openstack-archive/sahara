@@ -15,7 +15,7 @@ job types and how to configure the job types.
 List job types
 ==============
 
-.. rest_method::  GET /v1.1/{tenant_id}/job-types
+.. rest_method::  GET /v1.1/{project_id}/job-types
 
 Lists all job types.
 
@@ -31,7 +31,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
    - plugin: plugin
    - version: version
    - type: type

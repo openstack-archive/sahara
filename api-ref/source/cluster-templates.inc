@@ -13,7 +13,7 @@ template.
 Show cluster template details
 =============================
 
-.. rest_method::  GET /v1.1/{tenant_id}/cluster-templates/{cluster_template_id}
+.. rest_method::  GET /v1.1/{project_id}/cluster-templates/{cluster_template_id}
 
 Shows details for a cluster template.
 
@@ -26,7 +26,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
    - cluster_template_id: cluster_template_id
 
 
@@ -67,7 +67,7 @@ Response Example
 Update cluster templates
 ========================
 
-.. rest_method::  PUT /v1.1/{tenant_id}/cluster-templates/{cluster_template_id}
+.. rest_method::  PUT /v1.1/{project_id}/cluster-templates/{cluster_template_id}
 
 Updates a cluster template.
 
@@ -79,7 +79,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
    - cluster_template_id: cluster_template_id
 
 Request Example
@@ -120,7 +120,7 @@ Response Parameters
 Delete cluster template
 =======================
 
-.. rest_method::  DELETE /v1.1/{tenant_id}/cluster-templates/{cluster_template_id}
+.. rest_method::  DELETE /v1.1/{project_id}/cluster-templates/{cluster_template_id}
 
 Deletes a cluster template.
 
@@ -132,7 +132,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
    - cluster_template_id: cluster_template_id
 
 
@@ -143,7 +143,7 @@ Request
 List cluster templates
 ======================
 
-.. rest_method::  GET /v1.1/{tenant_id}/cluster-templates
+.. rest_method::  GET /v1.1/{project_id}/cluster-templates
 
 Lists available cluster templates.
 
@@ -156,7 +156,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
    - limit: limit
    - marker: marker
    - sort_by: sort_by_cluster_templates
@@ -191,7 +191,7 @@ Response Parameters
 
 Response Example
 ----------------
-.. rest_method:: GET /v1.1/{tenant_id}/cluster-templates?limit=2
+.. rest_method:: GET /v1.1/{project_id}/cluster-templates?limit=2
 
 .. literalinclude:: samples/cluster-templates/cluster-templates-list-response.json
    :language: javascript
@@ -202,7 +202,7 @@ Response Example
 Create cluster templates
 ========================
 
-.. rest_method::  POST /v1.1/{tenant_id}/cluster-templates
+.. rest_method::  POST /v1.1/{project_id}/cluster-templates
 
 Creates a cluster template.
 
@@ -214,7 +214,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: tenant_id
+   - project_id: project_id
 
 
 Request Example

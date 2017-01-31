@@ -11,7 +11,7 @@ install and which configurations can be set for the cluster.
 Show plugin details
 ===================
 
-.. rest_method::  GET /v1.1/{tenant_id}/plugins/{plugin_name}
+.. rest_method::  GET /v1.1/{project_id}/plugins/{plugin_name}
 
 Shows details for a plugin.
 
@@ -25,7 +25,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
    - plugin_name: plugin_name
 
 
@@ -53,7 +53,7 @@ Response Example
 List plugins
 ============
 
-.. rest_method::  GET /v1.1/{tenant_id}/plugins
+.. rest_method::  GET /v1.1/{project_id}/plugins
 
 Lists all registered plugins.
 
@@ -67,7 +67,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
 
 
 
@@ -96,7 +96,7 @@ Response Example
 Show plugin version details
 ===========================
 
-.. rest_method::  GET /v1.1/{tenant_id}/plugins/{plugin_name}/{version}
+.. rest_method::  GET /v1.1/{project_id}/plugins/{plugin_name}/{version}
 
 Shows details for a plugin version.
 
@@ -110,7 +110,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
    - plugin_name: plugin_name
    - version: version
 
@@ -139,7 +139,7 @@ Response Example
 Update plugin details
 =====================
 
-.. rest_method::  PATCH /v1.1/{tenant_id}/plugins/{plugin_name}
+.. rest_method::  PATCH /v1.1/{project_id}/plugins/{plugin_name}
 
 Updates details for a plugin.
 
@@ -153,7 +153,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
    - plugin_name: plugin_name
 
 

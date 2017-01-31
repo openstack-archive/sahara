@@ -11,7 +11,7 @@ and libraries that are stored in the internal database.
 Create job binary internal
 ==========================
 
-.. rest_method::  PUT /v1.1/{tenant_id}/job-binary-internals/{name}
+.. rest_method::  PUT /v1.1/{project_id}/job-binary-internals/{name}
 
 Creates a job binary internal.
 
@@ -30,7 +30,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
    - name: name
 
 
@@ -55,7 +55,7 @@ Response Parameters
 Show job binary internal data
 =============================
 
-.. rest_method::  GET /v1.1/{tenant_id}/job-binary-internals/{job_binary_internals_id}/data
+.. rest_method::  GET /v1.1/{project_id}/job-binary-internals/{job_binary_internals_id}/data
 
 Shows data for a job binary internal.
 
@@ -84,7 +84,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
    - job_binary_internals_id: job_binary_internals_id
 
 
@@ -109,7 +109,7 @@ Response Example
 Show job binary internal details
 ================================
 
-.. rest_method::  GET /v1.1/{tenant_id}/job-binary-internals/{job_binary_internals_id}
+.. rest_method::  GET /v1.1/{project_id}/job-binary-internals/{job_binary_internals_id}
 
 Shows details for a job binary internal.
 
@@ -122,7 +122,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
    - job_binary_internals_id: job_binary_internals_id
 
 
@@ -154,7 +154,7 @@ Response Example
 Delete job binary internal
 ==========================
 
-.. rest_method::  DELETE /v1.1/{tenant_id}/job-binary-internals/{job_binary_internals_id}
+.. rest_method::  DELETE /v1.1/{project_id}/job-binary-internals/{job_binary_internals_id}
 
 Deletes a job binary internal.
 
@@ -166,7 +166,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
    - job_binary_internals_id: job_binary_internals_id
 
 
@@ -177,7 +177,7 @@ Request
 Update job binary internal
 ==========================
 
-.. rest_method::  PATCH /v1.1/{tenant_id}/job-binary-internals/{job_binary_internals_id}
+.. rest_method::  PATCH /v1.1/{project_id}/job-binary-internals/{job_binary_internals_id}
 
 Updates a job binary internal.
 
@@ -189,7 +189,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
    - job_binary_internals_id: job_binary_internals_id
 
 Request Example
@@ -207,7 +207,7 @@ Request Example
 List job binary internals
 =========================
 
-.. rest_method::  GET /v1.1/{tenant_id}/job-binary-internals
+.. rest_method::  GET /v1.1/{project_id}/job-binary-internals
 
 Lists the available job binary internals.
 
@@ -220,7 +220,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
    - limit: limit
    - marker: marker
    - sort_by: sort_by_job_binary_internals
@@ -249,7 +249,7 @@ Response Parameters
 
 Response Example
 ----------------
-.. rest_method:: GET /v1.1/{tenant_id}/job-binary-internals
+.. rest_method:: GET /v1.1/{project_id}/job-binary-internals
 
 .. literalinclude:: samples/job-binary-internals/list-response.json
    :language: javascript
