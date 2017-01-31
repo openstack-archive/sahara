@@ -31,6 +31,7 @@ from sahara.i18n import _LI
 from sahara.plugins import base as plugins_base
 from sahara.service import api
 from sahara.service.castellan import config as castellan
+from sahara.service.edp.data_sources import manager as ds_manager
 from sahara.service import ops as service_ops
 from sahara.service import periodic
 from sahara.utils.openstack import cinder
@@ -84,6 +85,8 @@ def setup_common(possible_topdir, service_name):
     messaging.setup(service_name)
 
     plugins_base.setup_plugins()
+
+    ds_manager.setup_data_sources()
 
     LOG.info(_LI('Sahara {service} started').format(service=service_name))
 

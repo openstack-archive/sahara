@@ -24,6 +24,7 @@ from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.plugins import opts as plugins_base
 from sahara.service.castellan import config as castellan
+from sahara.service.edp.data_sources import opts as data_source
 from sahara.topology import topology_helper
 from sahara.utils.notification import sender
 from sahara.utils.openstack import cinder
@@ -180,7 +181,8 @@ def list_opts():
                          heat_engine.heat_engine_opts,
                          templates.heat_engine_opts,
                          ssh_remote.ssh_config_options,
-                         castellan.opts)),
+                         castellan.opts,
+                         data_source.opts)),
         (poll_utils.timeouts.name,
          itertools.chain(poll_utils.timeouts_opts)),
         (api.conductor_group.name,
