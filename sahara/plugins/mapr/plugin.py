@@ -39,10 +39,7 @@ class MapRPlugin(p.ProvisioningPluginBase):
             'plugin_labels': {'enabled': {'status': True}},
             'version_labels': {
                 '5.2.0.mrv2': {'enabled': {'status': True}},
-                '5.1.0.mrv2': {'enabled': {'status': True},
-                               'deprecated': {'status': True}},
-                '5.0.0.mrv2': {'enabled': {'status': False},
-                               'deprecated': {'status': True}}
+                '5.1.0.mrv2': {'enabled': {'status': False}},
             }
         }
 

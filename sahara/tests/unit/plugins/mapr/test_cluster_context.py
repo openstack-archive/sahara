@@ -21,8 +21,8 @@ from sahara.plugins.mapr.services.maprfs import maprfs
 from sahara.plugins.mapr.services.oozie import oozie
 from sahara.plugins.mapr.services.swift import swift
 from sahara.plugins.mapr.services.yarn import yarn
-import sahara.plugins.mapr.versions.v5_0_0_mrv2.context as cc
-import sahara.plugins.mapr.versions.v5_0_0_mrv2.version_handler as handler
+import sahara.plugins.mapr.versions.v5_2_0_mrv2.context as cc
+import sahara.plugins.mapr.versions.v5_2_0_mrv2.version_handler as handler
 from sahara.plugins import provisioning as p
 from sahara.tests.unit import base as b
 from sahara.tests.unit import testutils as tu
@@ -56,14 +56,14 @@ class TestClusterContext(b.SaharaTestCase):
                 'Service Version': '1.1',
             },
             'Oozie': {
-                'Oozie Version': '4.1.0',
+                'Oozie Version': '4.2.0',
             }
         }
         cluster = tu.create_cluster(
             name='test_cluster',
             tenant='large',
             plugin='mapr',
-            version='5.0.0.mrv2',
+            version='5.2.0.mrv2',
             node_groups=[master_ng],
             cluster_configs=cluster_configs,
         )
@@ -281,4 +281,4 @@ class TestClusterContext(b.SaharaTestCase):
 
         self.assertTrue(cluster_context.is_present(oozie.Oozie()))
         self.assertFalse(cluster_context.is_present(oozie.OozieV401()))
-        self.assertTrue(cluster_context.is_present(oozie.OozieV410()))
+        self.assertTrue(cluster_context.is_present(oozie.OozieV420()))
