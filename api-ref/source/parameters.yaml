@@ -215,9 +215,9 @@ sort_by_node_group_templates:
   required: false
   type: string
 
-url_tenant_id:
+url_project_id:
   description: |
-    UUID of the tenant.
+    UUID of the project.
   in: path
   required: true
   type: string
@@ -829,6 +829,12 @@ progress:
   in: body
   required: true
   type: integer
+project_id:
+  description: |
+    The UUID of the project.
+  in: body
+  required: true
+  type: string
 provision_progress:
   description: |
     A list of the cluster progresses.

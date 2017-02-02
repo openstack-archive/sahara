@@ -10,7 +10,7 @@ A cluster is a group of nodes with the same configuration.
 List available clusters
 =======================
 
-.. rest_method::  GET /v1.1/{tenant_id}/clusters
+.. rest_method::  GET /v1.1/{project_id}/clusters
 
 Lists available clusters.
 
@@ -23,7 +23,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
    - limit: limit
    - marker: marker
    - sort_by: sort_by_clusters
@@ -55,7 +55,7 @@ Response Parameters
 
 Response Example
 ----------------
-.. rest_method:: GET /v1.1/{tenant_id}/clusters
+.. rest_method:: GET /v1.1/{project_id}/clusters
 
 .. literalinclude:: samples/clusters/clusters-list-response.json
    :language: javascript
@@ -66,7 +66,7 @@ Response Example
 Create cluster
 ==============
 
-.. rest_method::  POST /v1.1/{tenant_id}/clusters
+.. rest_method::  POST /v1.1/{project_id}/clusters
 
 Creates a cluster.
 
@@ -78,7 +78,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
 
 
 Request Example
@@ -113,7 +113,7 @@ Response Parameters
 Create multiple clusters
 ========================
 
-.. rest_method::  POST /v1.1/{tenant_id}/clusters/multiple
+.. rest_method::  POST /v1.1/{project_id}/clusters/multiple
 
 Creates multiple clusters.
 
@@ -125,7 +125,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
 
 
 Request Example
@@ -143,7 +143,7 @@ Request Example
 Show details of a cluster
 =========================
 
-.. rest_method::  GET /v1.1/{tenant_id}/clusters/{cluster_id}
+.. rest_method::  GET /v1.1/{project_id}/clusters/{cluster_id}
 
 Shows details for a cluster, by ID.
 
@@ -156,7 +156,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
    - cluster_id: cluster_id
 
 
@@ -191,7 +191,7 @@ Response Example
 Delete a cluster
 ================
 
-.. rest_method::  DELETE /v1.1/{tenant_id}/clusters/{cluster_id}
+.. rest_method::  DELETE /v1.1/{project_id}/clusters/{cluster_id}
 
 Deletes a cluster.
 
@@ -203,7 +203,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
    - cluster_id: cluster_id
 
 
@@ -214,7 +214,7 @@ Request
 Scale cluster
 =============
 
-.. rest_method::  PUT /v1.1/{tenant_id}/clusters/{cluster_id}
+.. rest_method::  PUT /v1.1/{project_id}/clusters/{cluster_id}
 
 Scales a cluster.
 
@@ -226,7 +226,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
    - cluster_id: cluster_id
 
 Request Example
@@ -260,7 +260,7 @@ Response Parameters
 Update cluster
 ==============
 
-.. rest_method::  PATCH /v1.1/{tenant_id}/clusters/{cluster_id}
+.. rest_method::  PATCH /v1.1/{project_id}/clusters/{cluster_id}
 
 Updates a cluster.
 
@@ -272,7 +272,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
    - cluster_id: cluster_id
 
 Request Example
@@ -306,7 +306,7 @@ Response Parameters
 Show progress
 =============
 
-.. rest_method::  GET /v1.1/{tenant_id}/clusters/{cluster_id}
+.. rest_method::  GET /v1.1/{project_id}/clusters/{cluster_id}
 
 Shows provisioning progress for a cluster.
 
@@ -319,7 +319,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
    - cluster_id: cluster_id
 
 

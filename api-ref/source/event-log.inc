@@ -12,7 +12,7 @@ reason for the failure.
 Show progress
 =============
 
-.. rest_method::  GET /v1.1/{tenant_id}/clusters/{cluster_id}
+.. rest_method::  GET /v1.1/{project_id}/clusters/{cluster_id}
 
 Shows provisioning progress of cluster.
 
@@ -26,7 +26,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
    - cluster_id: cluster_id
 
 

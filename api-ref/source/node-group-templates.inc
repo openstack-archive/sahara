@@ -16,7 +16,7 @@ characteristics through an OpenStack flavor.
 List node group templates
 =========================
 
-.. rest_method::  GET /v1.1/{tenant_id}/node-group-templates
+.. rest_method::  GET /v1.1/{project_id}/node-group-templates
 
 Lists available node group templates.
 
@@ -29,7 +29,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
    - limit: limit
    - marker: marker
    - sort_by: sort_by_node_groups
@@ -77,7 +77,7 @@ Response Parameters
 
 Response Example
 ----------------
-.. rest_method:: GET /v1.1/{tenant_id}/node-group-templates?limit=2&marker=38b4e146-1d39-4822-bad2-fef1bf304a52&sort_by=name
+.. rest_method:: GET /v1.1/{project_id}/node-group-templates?limit=2&marker=38b4e146-1d39-4822-bad2-fef1bf304a52&sort_by=name
 
 .. literalinclude:: samples/node-group-templates/node-group-templates-list-response.json
    :language: javascript
@@ -88,7 +88,7 @@ Response Example
 Create node group template
 ==========================
 
-.. rest_method::  POST /v1.1/{tenant_id}/node-group-templates
+.. rest_method::  POST /v1.1/{project_id}/node-group-templates
 
 Creates a node group template.
 
@@ -100,7 +100,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
 
 
 Request Example
@@ -152,7 +152,7 @@ Response Parameters
 Show node group template details
 ================================
 
-.. rest_method::  GET /v1.1/{tenant_id}/node-group-templates/{node_group_template_id}
+.. rest_method::  GET /v1.1/{project_id}/node-group-templates/{node_group_template_id}
 
 Shows a node group template, by ID.
 
@@ -165,7 +165,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
    - node_group_template_id: node_group_template_id
 
 
@@ -218,7 +218,7 @@ Response Example
 Delete node group template
 ==========================
 
-.. rest_method::  DELETE /v1.1/{tenant_id}/node-group-templates/{node_group_template_id}
+.. rest_method::  DELETE /v1.1/{project_id}/node-group-templates/{node_group_template_id}
 
 Deletes a node group template.
 
@@ -230,7 +230,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
    - node_group_template_id: node_group_template_id
 
 
@@ -241,7 +241,7 @@ Request
 Update node group template
 ==========================
 
-.. rest_method::  PUT /v1.1/{tenant_id}/node-group-templates/{node_group_template_id}
+.. rest_method::  PUT /v1.1/{project_id}/node-group-templates/{node_group_template_id}
 
 Updates a node group template.
 
@@ -253,7 +253,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
    - node_group_template_id: node_group_template_id
 
 Request Example

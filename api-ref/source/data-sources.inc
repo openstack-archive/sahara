@@ -14,7 +14,7 @@ locations.
 Show data source details
 ========================
 
-.. rest_method::  GET /v1.1/{tenant_id}/data-sources/{data_source_id}
+.. rest_method::  GET /v1.1/{project_id}/data-sources/{data_source_id}
 
 Shows details for a data source.
 
@@ -27,7 +27,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
    - data_source_id: data_source_id
 
 
@@ -61,7 +61,7 @@ Response Example
 Delete data source
 ==================
 
-.. rest_method::  DELETE /v1.1/{tenant_id}/data-sources/{data_source_id}
+.. rest_method::  DELETE /v1.1/{project_id}/data-sources/{data_source_id}
 
 Deletes a data source.
 
@@ -73,7 +73,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
    - data_source_id: data_source_id
 
 
@@ -84,7 +84,7 @@ Request
 Update data source
 ==================
 
-.. rest_method::  PUT /v1.1/{tenant_id}/data-sources/{data_source_id}
+.. rest_method::  PUT /v1.1/{project_id}/data-sources/{data_source_id}
 
 Updates a data source.
 
@@ -96,7 +96,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
    - data_source_id: data_source_id
 
 Request Example
@@ -114,7 +114,7 @@ Request Example
 List data sources
 =================
 
-.. rest_method::  GET /v1.1/{tenant_id}/data-sources
+.. rest_method::  GET /v1.1/{project_id}/data-sources
 
 Lists all data sources.
 
@@ -127,7 +127,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
    - limit: limit
    - marker: marker
    - sort_by: sort_by_data_sources
@@ -157,7 +157,7 @@ Response Parameters
 Response Example
 ----------------
 
-.. rest_method:: GET /v1.1/{tenant-id}/data-sourses?sort_by=-name
+.. rest_method:: GET /v1.1/{project_id}/data-sourses?sort_by=-name
 
 .. literalinclude:: samples/data-sources/data-sources-list-response.json
    :language: javascript
@@ -168,7 +168,7 @@ Response Example
 Create data source
 ==================
 
-.. rest_method::  POST /v1.1/{tenant_id}/data-sources
+.. rest_method::  POST /v1.1/{project_id}/data-sources
 
 Creates a data source.
 
@@ -180,7 +180,7 @@ Request
 
 .. rest_parameters:: parameters.yaml
 
-   - tenant_id: url_tenant_id
+   - project_id: url_project_id
 
 
 Request Example
