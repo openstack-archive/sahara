@@ -26,7 +26,7 @@ Request
 .. rest_parameters:: parameters.yaml
 
    - project_id: url_project_id
-   - job_execution_id: job_execution_id
+   - job_execution_id: url_job_execution_id
 
 
 Response Parameters
@@ -45,15 +45,15 @@ Response Parameters
    - data_source_urls: data_source_urls
    - return_code: return_code
    - oozie_job_id: oozie_job_id
-   - is_protected: is_protected
+   - is_protected: is_protected_3
    - cluster_id: cluster_id
    - end_time: end_time
    - params: params
-   - is_public: is_public
+   - is_public: job_execution_is_public
    - input_id: input_id
    - configs: configs
    - job_execution: job_execution
-   - id: id
+   - id: job_execution_id
 
 
 
@@ -108,15 +108,15 @@ Response Parameters
    - data_source_urls: data_source_urls
    - return_code: return_code
    - oozie_job_id: oozie_job_id
-   - is_protected: is_protected
+   - is_protected: is_protected_3
    - cluster_id: cluster_id
    - end_time: end_time
    - params: params
-   - is_public: is_public
+   - is_public: job_execution_is_public
    - input_id: input_id
    - configs: configs
    - job_execution: job_execution
-   - id: id
+   - id: job_execution_id
    - job_executions: job_executions
 
 
@@ -148,7 +148,7 @@ Request
 .. rest_parameters:: parameters.yaml
 
    - project_id: url_project_id
-   - job_execution_id: job_execution_id
+   - job_execution_id: url_job_execution_id
 
 
 Response Parameters
@@ -167,15 +167,15 @@ Response Parameters
    - data_source_urls: data_source_urls
    - return_code: return_code
    - oozie_job_id: oozie_job_id
-   - is_protected: is_protected
+   - is_protected: is_protected_3
    - cluster_id: cluster_id
    - end_time: end_time
    - params: params
-   - is_public: is_public
+   - is_public: job_execution_is_public
    - input_id: input_id
    - configs: configs
    - job_execution: job_execution
-   - id: id
+   - id: job_execution_id
 
 
 
@@ -204,7 +204,7 @@ Request
 .. rest_parameters:: parameters.yaml
 
    - project_id: url_project_id
-   - job_execution_id: job_execution_id
+   - job_execution_id: url_job_execution_id
 
 
 
@@ -227,7 +227,7 @@ Request
 .. rest_parameters:: parameters.yaml
 
    - project_id: url_project_id
-   - job_execution_id: job_execution_id
+   - job_execution_id: url_job_execution_id
 
 Request Example
 ---------------
@@ -253,15 +253,15 @@ Response Parameters
    - data_source_urls: data_source_urls
    - return_code: return_code
    - oozie_job_id: oozie_job_id
-   - is_protected: is_protected
+   - is_protected: is_protected_3
    - cluster_id: cluster_id
    - end_time: end_time
    - params: params
-   - is_public: is_public
+   - is_public: job_execution_is_public
    - input_id: input_id
    - configs: configs
    - job_execution: job_execution
-   - id: id
+   - id: job_execution_id
 
 
 
@@ -284,7 +284,7 @@ Request
 .. rest_parameters:: parameters.yaml
 
    - project_id: url_project_id
-   - job_execution_id: job_execution_id
+   - job_execution_id: url_job_execution_id
 
 
 Response Parameters
@@ -303,15 +303,15 @@ Response Parameters
    - data_source_urls: data_source_urls
    - return_code: return_code
    - oozie_job_id: oozie_job_id
-   - is_protected: is_protected
+   - is_protected: is_protected_3
    - cluster_id: cluster_id
    - end_time: end_time
    - params: params
-   - is_public: is_public
+   - is_public: job_execution_is_public
    - input_id: input_id
    - configs: configs
    - job_execution: job_execution
-   - id: id
+   - id: job_execution_id
 
 
 

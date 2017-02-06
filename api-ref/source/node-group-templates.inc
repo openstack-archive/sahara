@@ -32,7 +32,7 @@ Request
    - project_id: url_project_id
    - limit: limit
    - marker: marker
-   - sort_by: sort_by_node_groups
+   - sort_by: sort_by_node_group_templates
 
 
 
@@ -49,13 +49,13 @@ Response Parameters
    - updated_at: updated_at
    - use_autoconfig: use_autoconfig
    - volumes_per_node: volumes_per_node
-   - id: id
+   - id: node_group_template_id
    - security_groups: security_groups
-   - shares: shares
+   - shares: object_shares
    - node_configs: node_configs
    - auto_security_group: auto_security_group
    - volumes_availability_zone: volumes_availability_zone
-   - description: description
+   - description: node_group_template_description
    - volume_mount_prefix: volume_mount_prefix
    - plugin_name: plugin_name
    - floating_ip_pool: floating_ip_pool
@@ -63,13 +63,13 @@ Response Parameters
    - image_id: image_id
    - volumes_size: volumes_size
    - is_proxy_gateway: is_proxy_gateway
-   - is_public: is_public
+   - is_public: object_is_public
    - hadoop_version: hadoop_version
-   - name: name
+   - name: node_group_template_name
    - tenant_id: tenant_id
    - created_at: created_at
    - volume_type: volume_type
-   - is_protected: is_protected
+   - is_protected: object_is_protected
    - node_processes: node_processes
    - flavor_id: flavor_id
 
@@ -121,13 +121,13 @@ Response Parameters
    - updated_at: updated_at
    - use_autoconfig: use_autoconfig
    - volumes_per_node: volumes_per_node
-   - id: id
+   - id: node_group_template_id
    - security_groups: security_groups
-   - shares: shares
+   - shares: object_shares
    - node_configs: node_configs
    - auto_security_group: auto_security_group
    - volumes_availability_zone: volumes_availability_zone
-   - description: description
+   - description: node_group_template_description
    - volume_mount_prefix: volume_mount_prefix
    - plugin_name: plugin_name
    - floating_ip_pool: floating_ip_pool
@@ -135,13 +135,13 @@ Response Parameters
    - image_id: image_id
    - volumes_size: volumes_size
    - is_proxy_gateway: is_proxy_gateway
-   - is_public: is_public
+   - is_public: object_is_public
    - hadoop_version: hadoop_version
-   - name: name
+   - name: node_group_template_name
    - tenant_id: tenant_id
    - created_at: created_at
    - volume_type: volume_type
-   - is_protected: is_protected
+   - is_protected: object_is_protected
    - node_processes: node_processes
    - flavor_id: flavor_id
 
@@ -166,7 +166,7 @@ Request
 .. rest_parameters:: parameters.yaml
 
    - project_id: url_project_id
-   - node_group_template_id: node_group_template_id
+   - node_group_template_id: url_node_group_template_id
 
 
 
@@ -180,13 +180,13 @@ Response Parameters
    - updated_at: updated_at
    - use_autoconfig: use_autoconfig
    - volumes_per_node: volumes_per_node
-   - id: id
+   - id: node_group_template_id
    - security_groups: security_groups
-   - shares: shares
+   - shares: object_shares
    - node_configs: node_configs
    - auto_security_group: auto_security_group
    - volumes_availability_zone: volumes_availability_zone
-   - description: description
+   - description: node_group_template_description
    - volume_mount_prefix: volume_mount_prefix
    - plugin_name: plugin_name
    - floating_ip_pool: floating_ip_pool
@@ -194,13 +194,13 @@ Response Parameters
    - image_id: image_id
    - volumes_size: volumes_size
    - is_proxy_gateway: is_proxy_gateway
-   - is_public: is_public
+   - is_public: object_is_public
    - hadoop_version: hadoop_version
-   - name: name
+   - name: node_group_template_name
    - tenant_id: tenant_id
    - created_at: created_at
    - volume_type: volume_type
-   - is_protected: is_protected
+   - is_protected: object_is_protected
    - node_processes: node_processes
    - flavor_id: flavor_id
 
@@ -231,7 +231,7 @@ Request
 .. rest_parameters:: parameters.yaml
 
    - project_id: url_project_id
-   - node_group_template_id: node_group_template_id
+   - node_group_template_id: url_node_group_template_id
 
 
 
@@ -254,7 +254,7 @@ Request
 .. rest_parameters:: parameters.yaml
 
    - project_id: url_project_id
-   - node_group_template_id: node_group_template_id
+   - node_group_template_id: url_node_group_template_id
 
 Request Example
 ---------------

@@ -28,7 +28,7 @@ Request
 .. rest_parameters:: parameters.yaml
 
    - project_id: url_project_id
-   - data_source_id: data_source_id
+   - data_source_id: url_data_source_id
 
 
 Response Parameters
@@ -36,16 +36,16 @@ Response Parameters
 
 .. rest_parameters:: parameters.yaml
 
-   - description: description
+   - description: data_source_description
    - url: url
    - tenant_id: tenant_id
    - created_at: created_at
    - updated_at: updated_at
-   - is_protected: is_protected
-   - is_public: is_public
+   - is_protected: object_is_protected
+   - is_public: object_is_public
    - type: type
-   - id: id
-   - name: name
+   - id: data_source_id
+   - name: data_source_name
 
 
 
@@ -74,7 +74,7 @@ Request
 .. rest_parameters:: parameters.yaml
 
    - project_id: url_project_id
-   - data_source_id: data_source_id
+   - data_source_id: url_data_source_id
 
 
 
@@ -97,7 +97,7 @@ Request
 .. rest_parameters:: parameters.yaml
 
    - project_id: url_project_id
-   - data_source_id: data_source_id
+   - data_source_id: url_data_source_id
 
 Request Example
 ---------------
@@ -141,16 +141,16 @@ Response Parameters
    - markers: markers
    - prev: prev
    - next: next
-   - description: description
+   - description: data_source_description
    - url: url
    - tenant_id: tenant_id
    - created_at: created_at
    - updated_at: updated_at
-   - is_protected: is_protected
-   - is_public: is_public
+   - is_protected: object_is_protected
+   - is_public: object_is_public
    - type: type
-   - id: id
-   - name: name
+   - id: data_source_id
+   - name: data_source_name
 
 
 
@@ -196,16 +196,16 @@ Response Parameters
 
 .. rest_parameters:: parameters.yaml
 
-   - description: description
+   - description: data_source_description
    - url: url
    - tenant_id: tenant_id
    - created_at: created_at
    - updated_at: updated_at
-   - is_protected: is_protected
-   - is_public: is_public
+   - is_protected: object_is_protected
+   - is_public: object_is_public
    - type: type
-   - id: id
-   - name: name
+   - id: data_source_id
+   - name: data_source_name
 
 
 

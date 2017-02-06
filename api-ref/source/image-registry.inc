@@ -59,7 +59,7 @@ Request
 .. rest_parameters:: parameters.yaml
 
    - project_id: url_project_id
-   - image_id: image_id
+   - image_id: url_image_id
 
 
 Response Parameters
@@ -70,15 +70,15 @@ Response Parameters
    - status: status
    - username: username
    - updated: updated
-   - description: description
+   - description: image_description
    - created: created
    - image: image
    - tags: tags
    - minDisk: minDisk
-   - name: name
+   - name: image_name
    - progress: progress
    - minRam: minRam
-   - id: id
+   - id: image_id
    - metadata: metadata
 
 
@@ -109,8 +109,8 @@ Request
 
    - project_id: url_project_id
    - username: username
-   - description: description
-   - image_id: image_id
+   - description: image_description
+   - image_id: url_image_id
 
 Request Example
 ---------------
@@ -128,15 +128,15 @@ Response Parameters
    - status: status
    - username: username
    - updated: updated
-   - description: description
+   - description: image_description
    - created: created
    - image: image
    - tags: tags
    - minDisk: minDisk
-   - name: name
+   - name: image_name
    - progress: progress
    - minRam: minRam
-   - id: id
+   - id: image_id
    - metadata: metadata
 
 
@@ -159,7 +159,7 @@ Request
 .. rest_parameters:: parameters.yaml
 
    - project_id: url_project_id
-   - image_id: image_id
+   - image_id: url_image_id
 
 
 
@@ -183,7 +183,7 @@ Request
 
    - project_id: url_project_id
    - tags: tags
-   - image_id: image_id
+   - image_id: url_image_id
 
 Request Example
 ---------------
@@ -225,16 +225,16 @@ Response Parameters
    - status: status
    - username: username
    - updated: updated
-   - description: description
+   - description: image_description
    - created: created
    - image: image
    - tags: tags
    - minDisk: minDisk
-   - name: name
+   - name: image_name
    - images: images
    - progress: progress
    - minRam: minRam
-   - id: id
+   - id: image_id
    - metadata: metadata
 
 

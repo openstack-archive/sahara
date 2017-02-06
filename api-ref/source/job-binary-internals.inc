@@ -31,7 +31,7 @@ Request
 .. rest_parameters:: parameters.yaml
 
    - project_id: url_project_id
-   - name: name
+   - name: url_job_binary_internals_name
 
 
 Response Parameters
@@ -39,14 +39,14 @@ Response Parameters
 
 .. rest_parameters:: parameters.yaml
 
-   - name: name
+   - name: job_binary_internals_name
    - tenant_id: tenant_id
    - created_at: created_at
    - updated_at: updated_at
-   - is_protected: is_protected
-   - is_public: is_public
+   - is_protected: object_is_protected
+   - is_public: object_is_public
    - datasize: datasize
-   - id: id
+   - id: job_binary_internals_id
 
 
 
@@ -85,7 +85,7 @@ Request
 .. rest_parameters:: parameters.yaml
 
    - project_id: url_project_id
-   - job_binary_internals_id: job_binary_internals_id
+   - job_binary_internals_id: url_job_binary_internals_id
 
 
 Response Parameters
@@ -123,7 +123,7 @@ Request
 .. rest_parameters:: parameters.yaml
 
    - project_id: url_project_id
-   - job_binary_internals_id: job_binary_internals_id
+   - job_binary_internals_id: url_job_binary_internals_id
 
 
 Response Parameters
@@ -131,14 +131,14 @@ Response Parameters
 
 .. rest_parameters:: parameters.yaml
 
-   - name: name
+   - name: job_binary_internals_name
    - tenant_id: tenant_id
    - created_at: created_at
    - updated_at: updated_at
-   - is_protected: is_protected
-   - is_public: is_public
+   - is_protected: object_is_protected
+   - is_public: object_is_public
    - datasize: datasize
-   - id: id
+   - id: job_binary_internals_id
 
 
 
@@ -167,7 +167,7 @@ Request
 .. rest_parameters:: parameters.yaml
 
    - project_id: url_project_id
-   - job_binary_internals_id: job_binary_internals_id
+   - job_binary_internals_id: url_job_binary_internals_id
 
 
 
@@ -190,7 +190,7 @@ Request
 .. rest_parameters:: parameters.yaml
 
    - project_id: url_project_id
-   - job_binary_internals_id: job_binary_internals_id
+   - job_binary_internals_id: url_job_binary_internals_id
 
 Request Example
 ---------------
@@ -236,14 +236,14 @@ Response Parameters
    - prev: prev
    - next: next
    - binaries: binaries
-   - name: name
+   - name: job_binary_internals_name
    - tenant_id: tenant_id
    - created_at: created_at
    - updated_at: updated_at
-   - is_protected: is_protected
-   - is_public: is_public
+   - is_protected: object_is_protected
+   - is_public: object_is_public
    - datasize: datasize
-   - id: id
+   - id: job_binary_internals_id
 
 
 

@@ -40,16 +40,16 @@ Response Parameters
    - markers: markers
    - prev: prev
    - next: next
-   - description: description
+   - description: job_binary_description
    - url: url
    - tenant_id: tenant_id
    - created_at: created_at
    - updated_at: updated_at
-   - is_protected: is_protected
-   - is_public: is_public
+   - is_protected: object_is_protected
+   - is_public: object_is_public
    - binaries: binaries
-   - id: id
-   - name: name
+   - id: job_binary_id
+   - name: job_binary_name
 
 
 
@@ -94,15 +94,15 @@ Response Parameters
 
 .. rest_parameters:: parameters.yaml
 
-   - description: description
+   - description: job_binary_description
    - url: url
    - tenant_id: tenant_id
    - created_at: created_at
    - updated_at: updated_at
-   - is_protected: is_protected
-   - is_public: is_public
-   - id: id
-   - name: name
+   - is_protected: object_is_protected
+   - is_public: object_is_public
+   - id: job_binary_id
+   - name: job_binary_name
 
 
 
@@ -125,6 +125,7 @@ Request
 .. rest_parameters:: parameters.yaml
 
    - project_id: url_project_id
+   - job_binary_id: url_job_binary_id
 
 
 
@@ -133,15 +134,15 @@ Response Parameters
 
 .. rest_parameters:: parameters.yaml
 
-   - description: description
+   - description: job_binary_description
    - url: url
    - tenant_id: tenant_id
    - created_at: created_at
    - updated_at: updated_at
-   - is_protected: is_protected
-   - is_public: is_public
-   - id: id
-   - name: name
+   - is_protected: object_is_protected
+   - is_public: object_is_public
+   - id: job_binary_id
+   - name: job_binary_name
 
 
 
@@ -171,6 +172,7 @@ Request
 
 
    - project_id: url_project_id
+   - job_binary_id: url_job_binary_id
 
 
 
@@ -194,6 +196,7 @@ Request
 
 
    - project_id: url_project_id
+   - job_binary_id: url_job_binary_id
 
 
 Request Example
@@ -241,7 +244,7 @@ Request
 .. rest_parameters:: parameters.yaml
 
    - project_id: url_project_id
-   - job_binary_id: job_binary_id
+   - job_binary_id: url_job_binary_id
 
 
 Response Parameters

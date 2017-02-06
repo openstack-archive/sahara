@@ -26,7 +26,7 @@ Request
 .. rest_parameters:: parameters.yaml
 
    - project_id: url_project_id
-   - plugin_name: plugin_name
+   - plugin_name: url_plugin_name
 
 
 Response Parameters
@@ -36,8 +36,8 @@ Response Parameters
 
    - versions: versions
    - title: title
-   - description: description
-   - name: name
+   - description: description_plugin
+   - name: plugin_name
 
 
 
@@ -79,8 +79,8 @@ Response Parameters
    - title: title
    - versions: versions
    - plugins: plugins
-   - description: description
-   - name: name
+   - description: description_plugin
+   - name: plugin_name
 
 
 
@@ -111,7 +111,7 @@ Request
 .. rest_parameters:: parameters.yaml
 
    - project_id: url_project_id
-   - plugin_name: plugin_name
+   - plugin_name: url_plugin_name
    - version: version
 
 
@@ -122,8 +122,8 @@ Response Parameters
 
    - versions: versions
    - title: title
-   - description: description
-   - name: name
+   - description: description_plugin
+   - name: plugin_name
 
 
 
@@ -154,7 +154,7 @@ Request
 .. rest_parameters:: parameters.yaml
 
    - project_id: url_project_id
-   - plugin_name: plugin_name
+   - plugin_name: url_plugin_name
 
 
 Request Example
@@ -172,8 +172,8 @@ Response Parameters
 
    - title: title
    - versions: versions
-   - description: description
-   - name: name
+   - description: description_plugin
+   - name: plugin_name
 
 
 Response Example
