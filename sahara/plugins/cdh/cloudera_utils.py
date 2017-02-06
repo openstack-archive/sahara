@@ -169,6 +169,7 @@ class ClouderaUtils(object):
             for instance in instances:
                 tg.spawn("update-configs-%s" % instance.instance_name,
                          self._update_configs, instance)
+                context.sleep(1)
 
     @cpo.event_wrapper(True)
     @cloudera_cmd
