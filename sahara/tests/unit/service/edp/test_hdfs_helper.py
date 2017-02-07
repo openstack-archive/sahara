@@ -61,6 +61,12 @@ class HDFSHelperTestCase(base.SaharaTestCase):
         self.cluster.execute_command.assert_called_once_with(
             'sudo su - -c "hadoop dfs -copyFromLocal Galaxy Earth" BigBang')
 
+    def test_move_from_local(self):
+        helper.move_from_local(self.cluster, 'Galaxy', 'Earth', 'BigBang')
+        self.cluster.execute_command.assert_called_once_with(
+            'sudo su - -c "hadoop dfs -copyFromLocal Galaxy Earth" BigBang '
+            '&& sudo rm -f Galaxy')
+
     def test_create_dir_hadoop1(self):
         helper.create_dir_hadoop1(self.cluster, 'Earth', 'BigBang')
         self.cluster.execute_command.assert_called_once_with(
