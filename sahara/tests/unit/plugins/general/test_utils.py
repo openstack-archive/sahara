@@ -68,6 +68,11 @@ class GeneralUtilsTest(testtools.TestCase):
                          u.generate_host_names(self.ng2.instances))
         self.assertEqual("", u.generate_host_names([]))
 
+    def test_get_port_from_address(self):
+        self.assertEqual(8000, u.get_port_from_address("0.0.0.0:8000"))
+        self.assertEqual(8000,
+                         u.get_port_from_address("http://localhost:8000"))
+
 
 class GetPortUtilsTest(testtools.TestCase):
     def setUp(self):
