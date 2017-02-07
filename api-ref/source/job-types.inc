@@ -45,9 +45,9 @@ Response Parameters
 
    - versions: versions
    - title: title
-   - description: description
+   - description: description_plugin
    - job_types: job_types
-   - name: name
+   - name: plugin_name
 
 
 

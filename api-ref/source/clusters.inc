@@ -157,7 +157,7 @@ Request
 .. rest_parameters:: parameters.yaml
 
    - project_id: url_project_id
-   - cluster_id: cluster_id
+   - cluster_id: url_cluster_id
 
 
 Response Parameters
@@ -204,7 +204,7 @@ Request
 .. rest_parameters:: parameters.yaml
 
    - project_id: url_project_id
-   - cluster_id: cluster_id
+   - cluster_id: url_cluster_id
 
 
 
@@ -273,7 +273,7 @@ Request
 .. rest_parameters:: parameters.yaml
 
    - project_id: url_project_id
-   - cluster_id: cluster_id
+   - cluster_id: url_cluster_id
 
 Request Example
 ---------------
@@ -320,7 +320,7 @@ Request
 .. rest_parameters:: parameters.yaml
 
    - project_id: url_project_id
-   - cluster_id: cluster_id
+   - cluster_id: url_cluster_id
 
 
 

@@ -26,7 +26,7 @@ Request
 .. rest_parameters:: parameters.yaml
 
    - project_id: url_project_id
-   - job_id: job_id
+   - job_id: url_job_id
 
 Request Example
 ---------------
@@ -69,18 +69,18 @@ Response Parameters
 .. rest_parameters:: parameters.yaml
 
    - jobs: jobs
-   - description: description
+   - description: job_description
    - tenant_id: tenant_id
    - created_at: created_at
    - mains: mains
    - updated_at: updated_at
    - libs: libs
-   - is_protected: is_protected
+   - is_protected: object_is_protected
    - interface: interface
-   - is_public: is_public
+   - is_public: object_is_public
    - type: type
-   - id: id
-   - name: name
+   - id: job_id
+   - name: job_name
    - markers: markers
    - prev: prev
    - next: next
@@ -127,18 +127,18 @@ Response Parameters
 
 .. rest_parameters:: parameters.yaml
 
-   - description: description
+   - description: job_description
    - tenant_id: tenant_id
    - created_at: created_at
    - mains: mains
    - updated_at: updated_at
    - libs: libs
-   - is_protected: is_protected
+   - is_protected: object_is_protected
    - interface: interface
-   - is_public: is_public
+   - is_public: object_is_public
    - type: type
-   - id: id
-   - name: name
+   - id: job_id
+   - name: job_name
 
 
 
@@ -161,7 +161,7 @@ Request
 .. rest_parameters:: parameters.yaml
 
    - project_id: url_project_id
-   - job_id: job_id
+   - job_id: url_job_id
 
 
 Response Parameters
@@ -169,18 +169,18 @@ Response Parameters
 
 .. rest_parameters:: parameters.yaml
 
-   - description: description
+   - description: job_description
    - tenant_id: tenant_id
    - created_at: created_at
    - mains: mains
    - updated_at: updated_at
    - libs: libs
-   - is_protected: is_protected
+   - is_protected: object_is_protected
    - interface: interface
-   - is_public: is_public
+   - is_public: object_is_public
    - type: type
-   - id: id
-   - name: name
+   - id: job_id
+   - name: job_name
 
 
 
@@ -209,7 +209,7 @@ Request
 .. rest_parameters:: parameters.yaml
 
    - project_id: url_project_id
-   - job_id: job_id
+   - job_id: url_job_id
 
 
 
@@ -232,7 +232,7 @@ Request
 .. rest_parameters:: parameters.yaml
 
    - project_id: url_project_id
-   - job_id: job_id
+   - job_id: url_job_id
 
 Request Example
 ---------------
@@ -247,18 +247,18 @@ Response Parameters
 
 .. rest_parameters:: parameters.yaml
 
-   - description: description
+   - description: job_description
    - tenant_id: tenant_id
    - created_at: created_at
    - mains: mains
    - updated_at: updated_at
    - libs: libs
-   - is_protected: is_protected
+   - is_protected: object_is_protected
    - interface: interface
-   - is_public: is_public
+   - is_public: object_is_public
    - type: type
-   - id: id
-   - name: name
+   - id: job_id
+   - name: job_name
 
 
 

@@ -27,7 +27,7 @@ Request
 .. rest_parameters:: parameters.yaml
 
    - project_id: url_project_id
-   - cluster_template_id: cluster_template_id
+   - cluster_template_id: url_cluster_template_id
 
 
 Response Parameters
@@ -35,7 +35,7 @@ Response Parameters
 
 .. rest_parameters:: parameters.yaml
 
-   - description: description
+   - description: cluster_template_description
    - use_autoconfig: use_autoconfig
    - cluster_configs: cluster_configs
    - created_at: created_at
@@ -43,15 +43,15 @@ Response Parameters
    - updated_at: updated_at
    - plugin_name: plugin_name
    - is_default: is_default
-   - is_protected: is_protected
-   - shares: shares
+   - is_protected: object_is_protected
+   - shares: object_shares
    - domain_name: domain_name
    - tenant_id: tenant_id
    - node_groups: node_groups
-   - is_public: is_public
+   - is_public: object_is_public
    - hadoop_version: hadoop_version
-   - id: id
-   - name: name
+   - id: cluster_template_id
+   - name: cluster_template_name
 
 
 
@@ -95,7 +95,7 @@ Response Parameters
 
 .. rest_parameters:: parameters.yaml
 
-   - description: description
+   - description: cluster_template_description
    - use_autoconfig: use_autoconfig
    - cluster_configs: cluster_configs
    - created_at: created_at
@@ -103,15 +103,15 @@ Response Parameters
    - updated_at: updated_at
    - plugin_name: plugin_name
    - is_default: is_default
-   - is_protected: is_protected
-   - shares: shares
+   - is_protected: object_is_protected
+   - shares: object_shares
    - domain_name: domain_name
    - tenant_id: tenant_id
    - node_groups: node_groups
-   - is_public: is_public
+   - is_public: object_is_public
    - hadoop_version: hadoop_version
-   - id: id
-   - name: name
+   - id: cluster_template_id
+   - name: cluster_template_name
 
 
 
@@ -169,7 +169,7 @@ Response Parameters
    - markers: markers
    - prev: prev
    - next: next
-   - description: description
+   - description: cluster_template_description
    - use_autoconfig: use_autoconfig
    - cluster_configs: cluster_configs
    - created_at: created_at
@@ -177,15 +177,15 @@ Response Parameters
    - updated_at: updated_at
    - plugin_name: plugin_name
    - is_default: is_default
-   - is_protected: is_protected
-   - shares: shares
+   - is_protected: object_is_protected
+   - shares: object_shares
    - domain_name: domain_name
    - tenant_id: tenant_id
    - node_groups: node_groups
-   - is_public: is_public
+   - is_public: object_is_public
    - hadoop_version: hadoop_version
-   - id: id
-   - name: name
+   - id: cluster_template_id
+   - name: cluster_template_name
 
 
 
@@ -230,7 +230,7 @@ Response Parameters
 
 .. rest_parameters:: parameters.yaml
 
-   - description: description
+   - description: cluster_template_description
    - use_autoconfig: use_autoconfig
    - cluster_configs: cluster_configs
    - created_at: created_at
@@ -238,15 +238,15 @@ Response Parameters
    - updated_at: updated_at
    - plugin_name: plugin_name
    - is_default: is_default
-   - is_protected: is_protected
-   - shares: shares
+   - is_protected: object_is_protected
+   - shares: object_shares
    - domain_name: domain_name
    - tenant_id: tenant_id
    - node_groups: node_groups
-   - is_public: is_public
+   - is_public: object_is_public
    - hadoop_version: hadoop_version
-   - id: id
-   - name: name
+   - id: cluster_template_id
+   - name: cluster_template_name
 
 
 
