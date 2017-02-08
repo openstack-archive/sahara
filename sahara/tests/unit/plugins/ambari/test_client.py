@@ -180,6 +180,22 @@ class AmbariClientTestCase(base.SaharaTestCase):
             data=jsonutils.dumps({"some": "data"}), verify=False,
             auth=client._auth, headers=self.headers)
 
+    def test_add_host_to_cluster(self):
+        client = ambari_client.AmbariClient(self.instance)
+        resp = mock.Mock()
+        resp.text = ""
+        resp.status_code = 200
+        self.http_client.post.return_value = resp
+
+        instance = mock.MagicMock()
+        instance.fqdn.return_value = "i1"
+        instance.cluster.name = "cl"
+
+        client.add_host_to_cluster(instance)
+        self.http_client.post.assert_called_with(
+            "http://1.2.3.4:8080/api/v1/clusters/cl/hosts/i1",
+            verify=False, auth=client._auth, headers=self.headers)
+
     def test_start_process_on_host(self):
         client = ambari_client.AmbariClient(self.instance)
         self.http_client.put.return_value = self.good_pending_resp
