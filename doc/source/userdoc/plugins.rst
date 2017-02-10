@@ -31,7 +31,7 @@ can run the following command:
          }
      }
  }
- openstack plugin update vanilla update_configs.json
+ openstack dataprocessing plugin update vanilla update_configs.json
 
 
 Additionally, specific versions can be disabled by the following command:
@@ -48,7 +48,7 @@ Additionally, specific versions can be disabled by the following command:
          }
      }
  }
- openstack plugin update vanilla update_configs.json
+ openstack dataprocessing plugin update vanilla update_configs.json
 
 
 Finally, to see all labels of a specific plugin and to see the current status
@@ -57,6 +57,6 @@ can be executed from the CLI:
 
 .. sourcecode:: console
 
- openstack plugin show vanilla
+ openstack dataprocessing plugin show vanilla
 
 The same actions are available from UI respectively.
