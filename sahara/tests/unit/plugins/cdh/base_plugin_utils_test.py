@@ -58,7 +58,7 @@ def get_concrete_cluster():
                "KS_INDEXER": {}, "SPARK_ON_YARN": {}, "SENTRY": {}, "YARN": {},
                "ZOOKEEPER": {}, "OOZIE": {}, "HBASE": {}, "IMPALA": {}}
     # cluster is immutable, a work around
-    dict.__setitem__(cluster, "cluster_config", configs)
+    dict.__setitem__(cluster, "cluster_configs", configs)
 
     # add fake remotes to instances
     instances = [i for ng in cluster.node_groups for i in ng.instances]
@@ -144,7 +144,7 @@ class TestPluginUtils(b.SaharaTestCase):
     def test_configure_swift(self, log_cfg):
 
         cluster = get_concrete_cluster()
-        cluster.cluster_config['general']['Enable Swift'] = True
+        cluster.cluster_configs['general']['Enable Swift'] = True
         instances = [i for ng in cluster.node_groups for i in ng.instances]
 
         self.plug_utils.configure_swift(cluster)
@@ -279,6 +279,15 @@ class TestPluginUtils(b.SaharaTestCase):
                 _("Await starting Cloudera Manager"),
                 2, {'manager': manager}]
         plugin_option_poll.assert_called_once_with(*call)
+
+    def test_get_config_value(self):
+        cluster = get_concrete_cluster()
+        dfs_replication = self.plug_utils.get_config_value(
+            'HDFS', 'dfs_replication', cluster)
+        self.assertEqual(1, dfs_replication)
+        dfs_replication_default = self.plug_utils.get_config_value(
+            'HDFS', 'dfs_replication')
+        self.assertEqual(3, dfs_replication_default)
 
 
 class TestPluginUtilsHigherThanV5(TestPluginUtils):
