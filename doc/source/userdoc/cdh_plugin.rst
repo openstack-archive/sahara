@@ -12,11 +12,11 @@ You need to build images using :doc:`cdh_imagebuilder` to produce images used
 to provision cluster or you could download prepared images from
 http://sahara-files.mirantis.com/images/upstream/
 They already have Cloudera Express installed (version 5.0.0, 5.3.0, 5.4.0,
-5.5.0 or 5.7.x).
+5.5.0, 5.7.x and 5.9.x).
 
 The cloudera plugin requires an image to be tagged in Sahara Image Registry
 with two tags: 'cdh' and '<cloudera version>' (e.g. '5', '5.3.0', '5.4.0',
-'5.5.0', '5.7.0' or '5.7.1', here '5' stands for '5.0.0').
+'5.5.0', '5.7.0', '5.9.0' or '5.9.1', here '5' stands for '5.0.0').
 
 The default username specified for these images is different for each
 distribution:
@@ -31,7 +31,7 @@ for 5.0.0, 5.3.0 and 5.4.0 version:
 | CentOS 6.6   | cloud-user |
 +--------------+------------+
 
-for 5.5.0 and 5.7.x version:
+for 5.5.0 and higher versions:
 
 +--------------+------------+
 | OS           | username   |
@@ -50,7 +50,7 @@ Currently below services are supported in both versions of Cloudera plugin:
 HDFS, Oozie, YARN, Spark, Zookeeper, Hive, Hue, HBase. 5.3.0 version of
 Cloudera Plugin also supported following services: Impala, Flume, Solr, Sqoop,
 and Key-value Store Indexer. In version 5.4.0 KMS service support was added
-based on version 5.3.0. Kafka 2.0.2 was added for CDH 5.5 and 5.7.
+based on version 5.3.0. Kafka 2.0.2 was added for CDH 5.5 and higher.
 
 .. note::
 
@@ -105,8 +105,8 @@ cloudera plugin versions:
     and at least one hbase regionserver.
   + Cluster can't contain hbase regionserver without at least one hbase maser.
 
-In case of 5.3.0, 5.4.0, 5.5.0 or 5.7.x version of Cloudera Plugin there are
-few extra limitations in the cluster topology:
+In case of 5.3.0, 5.4.0, 5.5.0, 5.7.x or 5.9.x version of Cloudera Plugin
+there are few extra limitations in the cluster topology:
 
   + Cluster can't contain flume without at least one datanode.
   + Cluster can contain at most one sentry server service.
@@ -125,8 +125,8 @@ few extra limitations in the cluster topology:
     at least one impalad service, at least one datanode, and metastore.
   + If using Impala, the daemons must be installed on every datanode.
 
-In case of version 5.5.0 or 5.7.x of Cloudera Plugin additional services in
-the cluster topology are available:
+In case of version 5.5.0, 5.7.x or 5.9.x of Cloudera Plugin additional
+services in the cluster topology are available:
 
   + Cluster can have the kafka service and several kafka brokers.
 
