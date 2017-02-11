@@ -133,9 +133,10 @@ Managing sahara in DevStack
 ---------------------------
 
 If you install DevStack with sahara included you can rejoin screen with the
-``rejoin-stack.sh`` command and switch to the ``sahara`` tab. Here you can
-manage the sahara service as other OpenStack services. Sahara source code is
-located at ``$DEST/sahara`` which is usually ``/opt/stack/sahara``.
+``screen -c stack-screenrc`` command and switch to the ``sahara`` tab.
+Here you can manage the sahara service as other OpenStack services.
+Sahara source code is located at ``$DEST/sahara`` which is usually
+``/opt/stack/sahara``.
 
 
 .. _fusion-fixed-ip:
