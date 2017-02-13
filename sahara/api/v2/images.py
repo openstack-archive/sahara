@@ -54,17 +54,25 @@ def images_unset(image_id):
     return u.render()
 
 
-@rest.post('/images/<image_id>/tag')
-@acl.enforce("data-processing:images:add_tags")
+@rest.get('/images/<image_id>/tags')
+@acl.enforce("data-processing:images:get_tags")
+@v.check_exists(api.get_image, id='image_id')
+def image_tags_get(image_id):
+    return u.render(api.get_image_tags(image_id))
+
+
+@rest.put('/images/<image_id>/tags', status_code=200)
+@acl.enforce("data-processing:images:set_tags")
 @v.check_exists(api.get_image, id='image_id')
 @v.validate(v_images.image_tags_schema, v_images.check_tags)
-def image_tags_add(image_id, data):
-    return u.render(api.add_image_tags(image_id, **data).wrapped_dict)
+def image_tags_update(image_id, data):
+    return u.render(api.set_image_tags(image_id, **data).wrapped_dict)
 
 
-@rest.post('/images/<image_id>/untag')
+@rest.delete('/images/<image_id>/tags')
 @acl.enforce("data-processing:images:remove_tags")
 @v.check_exists(api.get_image, id='image_id')
 @v.validate(v_images.image_tags_schema)
-def image_tags_delete(image_id, data):
-    return u.render(api.remove_image_tags(image_id, **data).wrapped_dict)
+def image_tags_delete(image_id):
+    api.remove_image_tags(image_id)
+    return u.render()

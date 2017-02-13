@@ -32,6 +32,7 @@
     "data-processing:images:register": "",
     "data-processing:images:unregister": "",
     "data-processing:images:add_tags": "",
+    "data-processing:images:set_tags": "",
     "data-processing:images:remove_tags": "",
 
     "data-processing:job-executions:get_all": "",
