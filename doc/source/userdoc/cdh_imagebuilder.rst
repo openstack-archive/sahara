@@ -5,7 +5,7 @@ Building Images for Cloudera Plugin
 
 In this document you will find instructions on how to build Ubuntu and CentOS
 images with Cloudera Express (now only versions {5.0.0, 5.3.0 5.4.0, 5.5.0,
-5.7.x} are supported).
+5.7.x, 5.9.x} are supported).
 
 To simplify the task of building such images we use
 `Disk Image Builder <https://github.com/openstack/diskimage-builder>`_.
@@ -40,9 +40,9 @@ To create cloudera images follow these steps:
    specific operating system, you should use the "-i ubuntu|centos|centos7"
    parameter to assign the operating system (the cloudera plugin only supports
    Ubuntu and Centos). If you want to create the image only for a specific
-   Cloudera version, you should use the "-v 5.0|5.3|5.4|5.5|5.7" parameter to
-   assign the version. Note that Centos 7 can only be used with CDH 5.5 and
-   CDH 5.7. Below is an example to create Cloudera images for both Ubuntu and
+   Cloudera version, you should use the "-v 5.0|5.3|5.4|5.5|5.7|5.9" parameter
+   to assign the version. Note that Centos 7 can only be used with CDH 5.5 and
+   higher. Below is an example to create Cloudera images for both Ubuntu and
    CentOS with Cloudera Express 5.5.0 version.
 
    .. sourcecode:: console
@@ -56,8 +56,8 @@ To create cloudera images follow these steps:
 
       tox -e venv -- sahara-image-create -p cloudera -i ubuntu -v 5.5
 
-   For CDH 5.7 we support minor versions. If you want to build a minor version
-   just export DIB_CDH_MINOR_VERSION before sahara-image-create launch, e.g.:
+   For CDH 5.7 and higher we support minor versions. If you want to build a minor
+   version just export DIB_CDH_MINOR_VERSION before sahara-image-create launch, e.g.:
 
    .. sourcecode:: console
 
