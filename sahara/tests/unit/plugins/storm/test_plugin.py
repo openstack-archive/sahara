@@ -85,6 +85,61 @@ class StormPluginTest(base.SaharaWithDbTestCase):
                 plugin._validate_existing_ng_scaling(cluster,
                                                      supervisor_id))
 
+    @mock.patch("sahara.plugins.storm.plugin.utils")
+    def test_validate(self, mock_utils):
+
+        cluster_data = self._get_cluster('cluster', '0.9.2')
+        cluster = conductor.cluster_create(context.ctx(), cluster_data)
+        plugin = pb.PLUGINS.get_plugin(cluster.plugin_name)
+
+        # number of nimbus nodes != 1 should raise an exception
+        fake_ng = mock.Mock()
+        fake_ng.count = 0
+        mock_ng = mock.Mock(return_value=[fake_ng])
+        mock_utils.get_node_groups = mock_ng
+
+        self.assertRaises(ex.RequiredServiceMissingException,
+                          plugin.validate, cluster)
+
+        mock_ng.assert_called_once_with(cluster, "nimbus")
+
+        fake_ng.count = 2
+        self.assertRaises(ex.RequiredServiceMissingException, plugin.validate,
+                          cluster)
+
+        mock_ng.assert_called_with(cluster, "nimbus")
+        self.assertEqual(2, mock_ng.call_count)
+
+        # no supervisor should raise an exception
+        fake_nimbus = mock.Mock()
+        fake_nimbus.count = 1
+
+        fake_supervisor = mock.Mock()
+        fake_supervisor.count = 0
+
+        mock_ng = mock.Mock(side_effect=[[fake_nimbus], [fake_supervisor]])
+        mock_utils.get_node_groups = mock_ng
+
+        self.assertRaises(ex.InvalidComponentCountException, plugin.validate,
+                          cluster)
+
+        mock_ng.assert_any_call(cluster, "nimbus")
+        mock_ng.assert_any_call(cluster, "supervisor")
+        self.assertEqual(2, mock_ng.call_count)
+
+        # one nimbus and one or more supervisors should not raise an exception
+        fake_nimbus.count = 1
+        fake_supervisor.count = 2
+
+        mock_ng = mock.Mock(side_effect=[[fake_nimbus], [fake_supervisor]])
+        mock_utils.get_node_groups = mock_ng
+
+        plugin.validate(cluster)
+
+        mock_ng.assert_any_call(cluster, "nimbus")
+        mock_ng.assert_any_call(cluster, "supervisor")
+        self.assertEqual(2, mock_ng.call_count)
+
     def test_validate_additional_ng_scaling(self):
         data = [
             {'name': 'master',
