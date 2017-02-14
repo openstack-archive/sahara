@@ -61,12 +61,9 @@ be set to ``false``.
 
 With these parameters set, sahara is ready to run.
 
-If you wish to increase the logging levels for troubleshooting there
-are two parameters in the ``[DEFAULT]`` section of the configuration
-file which control the level of logging output; ``verbose`` and
-``debug``. With ``verbose`` set to ``true`` sahara's default logging
-level will be set to INFO, and with ``debug`` set to ``true`` it will
-be set to DEBUG. By default the sahara's log level is set to WARNING.
+By default the sahara's log level is set to INFO. If you wish to increase
+the logging levels for troubleshooting, set ``debug`` to ``true`` in the
+``[DEFAULT]`` section of the configuration file.
 
 .. _neutron-nova-network:
 
