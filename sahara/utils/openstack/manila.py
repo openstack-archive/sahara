@@ -27,7 +27,7 @@ from sahara.utils.openstack import base
 
 
 opts = [
-    cfg.IntOpt('api_version', default=1,
+    cfg.StrOpt('api_version', default='1',
                help='Version of the manila API to use.'),
     cfg.BoolOpt('api_insecure',
                 default=True,
