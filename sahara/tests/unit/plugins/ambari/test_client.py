@@ -95,6 +95,20 @@ class AmbariClientTestCase(base.SaharaTestCase):
             "http://spam", verify=False, auth=client._auth,
             headers=self.headers)
 
+    def test_import_credential(self):
+        resp = mock.Mock()
+        resp.text = ""
+        resp.status_code = 200
+        self.http_client.post.return_value = resp
+        client = ambari_client.AmbariClient(self.instance)
+
+        client.import_credential("test", alias="credential",
+                                 data={"some": "data"})
+        self.http_client.post.assert_called_once_with(
+            "http://1.2.3.4:8080/api/v1/clusters/test/credentials/credential",
+            verify=False, data=jsonutils.dumps({"some": "data"}),
+            auth=client._auth, headers=self.headers)
+
     def test_get_registered_hosts(self):
         client = ambari_client.AmbariClient(self.instance)
         resp_data = """{
