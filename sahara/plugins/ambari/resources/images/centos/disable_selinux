@@ -1,0 +1,12 @@
+#!/bin/bash
+
+check=$(cat /etc/selinux/config | grep 'SELINUX=disabled' | wc -l)
+
+if [ $check -eq 0 ]; then
+    if [ $test_only -eq 0 ]; then
+    config=/etc/selinux/config
+    [ -e $config ] && sed -i "s%^\(SELINUX=\s*\).*$%SELINUX=disabled%" $config
+    else
+        exit 0
+    fi
+fi

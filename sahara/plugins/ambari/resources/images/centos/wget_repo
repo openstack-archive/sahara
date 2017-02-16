@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+if [ ! -f /etc/yum.repos.d/ambari.repo ]; then
+    if [ $test_only -eq 0 ]; then
+        wget http://public-repo-1.hortonworks.com/ambari/centos7/2.x/updates/$ambari_version/ambari.repo -O /etc/yum.repos.d/ambari.repo
+    else
+        exit 0
+    fi
+fi

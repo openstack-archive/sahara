@@ -1,0 +1,31 @@
+#!/bin/bash
+
+JAVA_RC="/etc/profile.d/99-java.sh"
+JAVA_BIN_RC="/etc/profile.d/98-java-bin.sh"
+
+if [ ! -f $JAVA_RC ]; then
+    if [ $test_only -eq 0 ]; then
+        case "$java_distro" in
+            openjdk )
+                JRE_HOME="/usr/lib/jvm/java-openjdk/jre"
+                JDK_HOME="/usr/lib/jvm/java-openjdk"
+            ;;
+            oracle-java )
+                JRE_HOME="/usr/java/oracle-jdk"
+                JDK_HOME="/usr/java/oracle-jdk"
+            ;;
+        esac
+
+        echo "export JAVA_HOME=$JRE_HOME" >> $JAVA_RC
+        chmod +x $JAVA_RC
+
+        echo "export PATH=$JRE_HOME/bin:\$PATH" >> $JAVA_BIN_RC
+        echo "export PATH=$JDK_HOME/bin:\$PATH" >> $JAVA_BIN_RC
+        chmod +x $JAVA_BIN_RC
+
+        alternatives --install /usr/bin/java java $JRE_HOME/bin/java 200000
+        alternatives --install /usr/bin/javac javac $JDK_HOME/bin/javac 200000
+    else
+        exit 0
+    fi
+fi

@@ -23,6 +23,7 @@ from sahara.plugins.ambari import deploy
 from sahara.plugins.ambari import edp_engine
 from sahara.plugins.ambari import health
 from sahara.plugins.ambari import validation
+from sahara.plugins import images
 from sahara.plugins import kerberos
 from sahara.plugins import provisioning as p
 from sahara.plugins import utils as plugin_utils
@@ -263,3 +264,28 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
 
     def get_health_checks(self, cluster):
         return health.get_health_checks(cluster)
+
+    validator = images.SaharaImageValidator.from_yaml(
+        'plugins/ambari/resources/images/image.yaml',
+        resource_roots=['plugins/ambari/resources/images'])
+
+    def get_image_arguments(self, hadoop_version):
+        if hadoop_version != '2.4':
+            return NotImplemented
+        return self.validator.get_argument_list()
+
+    def pack_image(self, hadoop_version, remote,
+                   test_only=False, image_arguments=None):
+        self.validator.validate(remote, test_only=test_only,
+                                image_arguments=image_arguments)
+
+    def validate_images(self, cluster, test_only=False, image_arguments=None):
+        image_arguments = self.get_image_arguments(cluster['hadoop_version'])
+        if not test_only:
+            instances = plugin_utils.get_instances(cluster)
+        else:
+            instances = plugin_utils.get_instances(cluster)[0]
+        for instance in instances:
+            with instance.remote() as r:
+                self.validator.validate(r, test_only=test_only,
+                                        image_arguments=image_arguments)

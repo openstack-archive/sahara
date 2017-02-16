@@ -1,0 +1,31 @@
+#! /bin/bash
+
+hadoop="2.7.1"
+
+HDFS_LIB_DIR=${hdfs_lib_dir:-"/usr/share/hadoop/lib"}
+JAR_BUILD_DATE="2016-03-17"
+SWIFT_LIB_URI="http://tarballs.openstack.org/sahara/dist/hadoop-openstack/hadoop-openstack-${hadoop}.jar"
+HADOOP_SWIFT_JAR_NAME=hadoop-openstack.jar
+
+if [ ! -f $HDFS_LIB_DIR/$HADOOP_SWIFT_JAR_NAME ]; then
+    if [ $test_only -eq 0 ]; then
+        if [ -z "${swift_url:-}" ]; then
+            wget -O $HDFS_LIB_DIR/$HADOOP_SWIFT_JAR_NAME $SWIFT_LIB_URI
+        else
+            wget -O $HDFS_LIB_DIR/$HADOOP_SWIFT_JAR_NAME $swift_url
+        fi
+
+        if [ $? -ne 0 ]; then
+            echo -e "Could not download Swift Hadoop FS implementation.\nAborting"
+            exit 1
+        fi
+
+        chmod 0644 $HDFS_LIB_DIR/$HADOOP_SWIFT_JAR_NAME
+    else
+        exit 0
+    fi
+fi
+
+
+
+

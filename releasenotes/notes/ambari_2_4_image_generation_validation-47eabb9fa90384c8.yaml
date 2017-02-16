@@ -1,0 +1,4 @@
+---
+features:
+  - Enables the creation and validation of Ambari 2.4 images using the
+    new image generation process where libguestfs replaces the use of DIB.

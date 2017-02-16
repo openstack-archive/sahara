@@ -1,6 +1,103 @@
 arguments:
-  fish:
-    description: awesome
-    default: trout
+  ambari_version:
+    description: The version of Ambari to install. Defaults to 2.2.1.0.
+    default: 2.2.1.0
+    choices:
+      - 2.2.0.0  # HDP 2.3
+      - 2.2.1.0  # HDP 2.4
+  java_distro:
+    default: openjdk
+    description: The distribution of Java to install. Defaults to openjdk.
+    choices:
+      - openjdk
+      - oracle-java
+  hdfs_lib_dir:
+    default: /opt
+    description: The path to HDFS lib. Defaults to /opt.
+    required: False
+  swift_url:
+    default: https://tarballs.openstack.org/sahara/dist/hadoop-openstack/master/
+    description: Location of the swift jar file.
+    required: False
 
-validators: []
+validators:
+  - argument_case:
+       argument_name: java_distro
+       cases:
+           openjdk:
+               - package: java-1.7.0-openjdk-devel
+           oracle-java:
+               - script: common/oracle_java
+  - os_case:
+      - centos:
+          - script: centos/disable_selinux
+          - script:
+              centos/setup_java_home:
+                env_vars: [java_distro]
+          - package: wget
+          - script:
+              centos/wget_repo:
+                env_vars: [ambari_version]
+          - package: redhat-lsb
+          - package:
+            - mariadb
+            - mariadb-libs
+            - mariadb-server
+            - mysql-connector-java
+          - package: ntp
+          - package:
+            - ambari-metrics-monitor
+            - ambari-server
+            - ambari-metrics-collector
+            - ambari-metrics-hadoop-sink
+          - package: nmap-ncat
+          - package: fuse-libs
+          - package: snappy-devel
+      - ubuntu:
+          - script:
+              ubuntu/wget_repo:
+                env_vars: [ambari_version]
+          - package:
+              - ambari-metrics-assembly
+              - netcat
+          - package: fuse
+          - package:
+              - mysql-client-5.5
+              - mysql-server-5.5
+              - libmysql-java
+  - package: ambari-agent
+  - package:
+      - unzip
+      - zip
+      - curl
+      - tar
+      - rpcbind
+      - rng-tools
+      - iptables-services
+  - os_case:
+      - centos:
+          - script: centos/disable_ambari
+          - script: centos/disable_firewall
+          - script:
+              common/add_jar:
+                env_vars: [hdfs_lib_dir, swift_url]
+          - script:
+              centos/unlimited_security_artifacts:
+                env_vars: [unlimited_security_location]
+      - ubuntu:
+          - script:
+              common/add_jar:
+                env_vars: [hdfs_lib_dir, swift_url]
+  - os_case:
+    - centos:
+      - package:
+        - krb5-server
+        - krb5-libs
+        - krb5-workstation
+    - ubuntu:
+      - package:
+        - krb5-admin-server
+        - libpam-krb5
+        - krb5-user
+        - ldap-utils
+

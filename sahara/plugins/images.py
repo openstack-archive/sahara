@@ -684,7 +684,7 @@ class SaharaScriptValidator(SaharaImageValidatorBase):
         path = '/tmp/%s.sh' % uuidutils.generate_uuid()
         remote.write_file_to(path, script, run_as_root=True)
         _sudo(remote, 'chmod +x %s' % path)
-        code, stdout = _sudo(remote, '%s' % path)
+        code, stdout = _sudo(remote, path)
         if self.output_var:
             image_arguments[self.output_var] = stdout
 

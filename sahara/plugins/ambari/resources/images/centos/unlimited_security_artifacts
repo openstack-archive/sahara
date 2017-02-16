@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [ ! -d /tmp/UnlimitedPolicy/ ]; then
+    if [ $test_only -eq 0 ]; then
+        mkdir /tmp/UnlimitedPolicy/
+        wget http://tarballs.openstack.org/sahara/dist/common-artifacts/local_policy.jar -O /tmp/UnlimitedPolicy/local_policy.jar
+        wget http://tarballs.openstack.org/sahara/dist/common-artifacts/US_export_policy.jar -O /tmp/UnlimitedPolicy/US_export_policy.jar
+    else
+        exit 0
+    fi
+fi
