@@ -78,6 +78,19 @@ class AbstractVersionHandler(object):
     def on_terminate_cluster(self, cluster):
         dh.delete_passwords_from_keymanager(cluster)
 
+    @abc.abstractmethod
+    def get_image_arguments(self):
+        return NotImplemented
+
+    @abc.abstractmethod
+    def pack_image(self, hadoop_version, remote, test_only=False,
+                   image_arguments=None):
+        pass
+
+    @abc.abstractmethod
+    def validate_images(self, cluster, test_only=False, image_arguments=None):
+        pass
+
 
 class BaseVersionHandler(AbstractVersionHandler):
 
@@ -202,3 +215,20 @@ class BaseVersionHandler(AbstractVersionHandler):
 
     def get_health_checks(self, cluster):
         return health.get_health_checks(cluster, self.cloudera_utils)
+
+    def get_image_arguments(self):
+        if hasattr(self, 'images'):
+            return self.images.get_image_arguments()
+        else:
+            return NotImplemented
+
+    def pack_image(self, hadoop_version, remote, test_only=False,
+                   image_arguments=None):
+        if hasattr(self, 'images'):
+            self.images.pack_image(
+                remote, test_only=test_only, image_arguments=image_arguments)
+
+    def validate_images(self, cluster, test_only=False, image_arguments=None):
+        if hasattr(self, 'images'):
+            self.images.validate_images(
+                cluster, test_only=test_only, image_arguments=image_arguments)

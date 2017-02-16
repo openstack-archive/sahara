@@ -101,6 +101,11 @@ class ImageRemote(remote.TerminalOnlyRemote):
     def get_os_distrib(self):
         return self.guest.inspect_get_distro(self.root_drive)
 
+    def write_file_to(self, path, script, run_as_root):
+        LOG.info("Writing script to : {path}".format(path=path))
+        stdout = self.guest.write(path, script)
+        return 0, stdout
+
 
 def setup_plugins():
     plugins_base.setup_plugins()
@@ -117,7 +122,6 @@ def get_plugin_arguments(plugin_name):
 def pack_image(image_path, plugin_name, plugin_version, image_arguments,
                root_drive=None, test_only=False):
     with ImageRemote(image_path, root_drive) as image_remote:
-        reconcile = not test_only
         plugin = plugins_base.PLUGINS.get_plugin(plugin_name)
-        plugin.pack_image(plugin_version, image_remote, reconcile=reconcile,
+        plugin.pack_image(plugin_version, image_remote, test_only=test_only,
                           image_arguments=image_arguments)

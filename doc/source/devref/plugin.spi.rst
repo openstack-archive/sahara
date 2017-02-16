@@ -170,7 +170,7 @@ support. See :doc:`image-gen`.
 
 *Returns*: A sequence with items of type sahara.plugins.images.ImageArgument.
 
-pack_image( self, hadoop_version, remote, reconcile=True, ... ):
+pack_image( self, hadoop_version, remote, test_only=False, ... ):
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Optional method which packs an image for registration in Glance and use by
@@ -179,7 +179,7 @@ the Sahara api or engine service. See :doc:`image-gen`.
 
 *Returns*: None (modifies the image pointed to by the remote in-place.)
 
-validate_images( self, cluster, reconcile=True, image_arguments=None ):
+validate_images( self, cluster, test_only=False, image_arguments=None ):
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Validates the image to be used to create a cluster, to ensure that it meets
