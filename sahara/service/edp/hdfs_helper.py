@@ -31,7 +31,7 @@ HBASE_COMMON_LIB_PATH = "/user/sahara-hbase-lib"
 
 def create_hbase_common_lib(r):
     r.execute_command(
-        'sudo su - -c "hadoop dfs -mkdir -p %s" hdfs' % (
+        'sudo su - -c "hdfs dfs -mkdir -p %s" hdfs' % (
             HBASE_COMMON_LIB_PATH))
     ret_code, stdout = r.execute_command(
         'hbase classpath')
@@ -39,7 +39,7 @@ def create_hbase_common_lib(r):
         paths = stdout.split(':')
         for p in paths:
             if p.endswith(".jar"):
-                r.execute_command('sudo su - -c "hadoop fs -put -p %s %s" hdfs'
+                r.execute_command('sudo su - -c "hdfs fs -put -p %s %s" hdfs'
                                   % (p, HBASE_COMMON_LIB_PATH))
     else:
         raise ex.RequiredServiceMissingException('hbase')
@@ -53,26 +53,26 @@ def put_file_to_hdfs(r, file, file_name, path, hdfs_user):
 
 
 def copy_from_local(r, source, target, hdfs_user):
-    r.execute_command('sudo su - -c "hadoop dfs -copyFromLocal '
+    r.execute_command('sudo su - -c "hdfs dfs -copyFromLocal '
                       '%s %s" %s' % (source, target, hdfs_user))
 
 
 def move_from_local(r, source, target, hdfs_user):
     # using copyFromLocal followed by rm to address permission issues that
     # arise when image user is not the same as hdfs user (permissions-wise).
-    r.execute_command('sudo su - -c "hadoop dfs -copyFromLocal %(source)s '
+    r.execute_command('sudo su - -c "hdfs dfs -copyFromLocal %(source)s '
                       '%(target)s" %(user)s && sudo rm -f %(source)s' %
                       {"source": source, "target": target, "user": hdfs_user})
 
 
 def create_dir_hadoop1(r, dir_name, hdfs_user):
     r.execute_command(
-        'sudo su - -c "hadoop dfs -mkdir %s" %s' % (dir_name, hdfs_user))
+        'sudo su - -c "hdfs dfs -mkdir %s" %s' % (dir_name, hdfs_user))
 
 
 def create_dir_hadoop2(r, dir_name, hdfs_user):
     r.execute_command(
-        'sudo su - -c "hadoop dfs -mkdir -p %s" %s' % (dir_name, hdfs_user))
+        'sudo su - -c "hdfs dfs -mkdir -p %s" %s' % (dir_name, hdfs_user))
 
 
 def _get_cluster_hosts_information(host, cluster):

@@ -37,10 +37,10 @@ class HDFSHelperTestCase(base.SaharaTestCase):
 
         helper.create_hbase_common_lib(self.cluster)
         calls = [
-            mock.call(('sudo su - -c "hadoop dfs -mkdir -p '
+            mock.call(('sudo su - -c "hdfs dfs -mkdir -p '
                        '/user/sahara-hbase-lib" hdfs')),
             mock.call('hbase classpath'),
-            mock.call(('sudo su - -c "hadoop fs -put -p may.jar '
+            mock.call(('sudo su - -c "hdfs fs -put -p may.jar '
                       '/user/sahara-hbase-lib" hdfs'))]
         self.cluster.execute_command.assert_has_calls(calls)
 
@@ -59,23 +59,23 @@ class HDFSHelperTestCase(base.SaharaTestCase):
     def test_copy_from_local(self):
         helper.copy_from_local(self.cluster, 'Galaxy', 'Earth', 'BigBang')
         self.cluster.execute_command.assert_called_once_with(
-            'sudo su - -c "hadoop dfs -copyFromLocal Galaxy Earth" BigBang')
+            'sudo su - -c "hdfs dfs -copyFromLocal Galaxy Earth" BigBang')
 
     def test_move_from_local(self):
         helper.move_from_local(self.cluster, 'Galaxy', 'Earth', 'BigBang')
         self.cluster.execute_command.assert_called_once_with(
-            'sudo su - -c "hadoop dfs -copyFromLocal Galaxy Earth" BigBang '
+            'sudo su - -c "hdfs dfs -copyFromLocal Galaxy Earth" BigBang '
             '&& sudo rm -f Galaxy')
 
     def test_create_dir_hadoop1(self):
         helper.create_dir_hadoop1(self.cluster, 'Earth', 'BigBang')
         self.cluster.execute_command.assert_called_once_with(
-            'sudo su - -c "hadoop dfs -mkdir Earth" BigBang')
+            'sudo su - -c "hdfs dfs -mkdir Earth" BigBang')
 
     def test_create_dir_hadoop2(self):
         helper.create_dir_hadoop2(self.cluster, 'Earth', 'BigBang')
         self.cluster.execute_command.assert_called_once_with(
-            'sudo su - -c "hadoop dfs -mkdir -p Earth" BigBang')
+            'sudo su - -c "hdfs dfs -mkdir -p Earth" BigBang')
 
     @mock.patch('sahara.utils.cluster.generate_etc_hosts')
     @mock.patch('sahara.plugins.utils.get_instances')
@@ -147,5 +147,5 @@ class HDFSHelperTestCase(base.SaharaTestCase):
         helper.put_file_to_hdfs(self.cluster, open_get, 'workflow',
                                 '/tmp', 'hdfs')
         self.cluster.execute_command.assert_called_once_with(
-            'sudo su - -c "hadoop dfs -copyFromLocal /tmp/workflow.111'
+            'sudo su - -c "hdfs dfs -copyFromLocal /tmp/workflow.111'
             ' /tmp/workflow" hdfs && sudo rm -f /tmp/workflow.111')
