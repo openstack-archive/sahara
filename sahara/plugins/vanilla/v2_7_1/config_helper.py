@@ -14,7 +14,6 @@
 # limitations under the License.
 
 from oslo_config import cfg
-from oslo_log import log as logging
 import six
 
 from sahara.plugins import provisioning as p
@@ -23,8 +22,6 @@ from sahara.utils import xmlutils as x
 
 CONF = cfg.CONF
 CONF.import_opt("enable_data_locality", "sahara.topology.topology_helper")
-
-LOG = logging.getLogger(__name__)
 
 CORE_DEFAULT = x.load_hadoop_xml_defaults(
     'plugins/vanilla/v2_7_1/resources/core-default.xml')

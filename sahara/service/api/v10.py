@@ -14,7 +14,6 @@
 # limitations under the License.
 
 from oslo_config import cfg
-from oslo_log import log as logging
 from oslo_utils import excutils
 import six
 
@@ -33,7 +32,6 @@ from sahara.utils.openstack import images as sahara_images
 
 conductor = c.API
 CONF = cfg.CONF
-LOG = logging.getLogger(__name__)
 
 
 # Cluster ops
