@@ -20,12 +20,12 @@ To check your code against PEP 8 and bashate run:
 Static analysis
 ---------------
 
-The static analysis checks are optional in Sahara. but they are still very
-useful.  The gate job will inform you if the number of static analysis warnings
+The static analysis checks are optional in Sahara, but they are still very
+useful. The gate job will inform you if the number of static analysis warnings
 has increased after your change. We recommend to always check the static
 warnings.
 
-To run the check commit yor change first and execute the following command:
+To run check first commit your change, then execute the following command:
 
 .. sourcecode:: console
 
@@ -35,15 +35,15 @@ Modification of Upstream Files
 ------------------------------
 
 We never modify upstream files in Sahara. Any changes in upstream files should
-be made in the upstream project and then merged back in to Sahara.  This
+be made in the upstream project and then merged back in to Sahara. This
 includes whitespace changes, comments, and typos. Any change requests
 containing upstream file modifications are almost certain to receive lots of
-negative reviews.  Be warned.
+negative reviews. Be warned.
 
 Examples of upstream files are default xml configuration files used to
 configure Hadoop, or code imported from the OpenStack Oslo project. The xml
 files will usually be found in ``resource`` directories with an accompanying
-``README`` file that identifies where the files came from.  For example:
+``README`` file that identifies where the files came from. For example:
 
 .. sourcecode:: console
 
@@ -60,7 +60,7 @@ Testing Guidelines
 
 Sahara has a suite of tests that are run on all submitted code,
 and it is recommended that developers execute the tests themselves to
-catch regressions early.  Developers are also expected to keep the
+catch regressions early. Developers are also expected to keep the
 test suite up-to-date with any submitted code changes.
 
 Unit tests are located at ``sahara/tests/unit``.
