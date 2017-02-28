@@ -98,3 +98,41 @@ class TestTrusts(base.SaharaTestCase):
 
         cluster_update.assert_called_with(ctx, fake_cluster,
                                           {"trust_id": "trust_id"})
+
+    @mock.patch('sahara.utils.openstack.keystone.client_from_auth')
+    @mock.patch('sahara.utils.openstack.keystone.auth_for_admin')
+    @mock.patch('sahara.service.trusts.create_trust')
+    def test_delete_trust(self, trust, auth_for_admin,
+                          client_from_auth):
+        client = self._client()
+        client_from_auth.return_value = client
+        trust.return_value = 'test_id'
+        trustor_auth = mock.Mock()
+        trustee_auth = mock.Mock()
+        auth_for_admin.return_value = trustee_auth
+        trust_id = trusts.create_trust(trustor_auth, trustee_auth,
+                                       "role_names")
+
+        trusts.delete_trust(trustee_auth, trust_id)
+        client.trusts.delete.assert_called_with(trust_id)
+
+    @mock.patch('sahara.conductor.API.cluster_update')
+    @mock.patch('sahara.utils.openstack.keystone.auth_for_admin')
+    @mock.patch('sahara.service.trusts.delete_trust')
+    @mock.patch('sahara.conductor.API.cluster_get')
+    @mock.patch('sahara.context.current')
+    def test_delete_trust_from_cluster(self, context_current, cl_get,
+                                       delete_trust, auth_for_admin,
+                                       cluster_update):
+        fake_cluster = mock.Mock(trust_id='test_id')
+        cl_get.return_value = fake_cluster
+        trustor_auth = mock.Mock()
+        trustee_auth = mock.Mock()
+        auth_for_admin.return_value = trustee_auth
+        ctx = mock.Mock(roles="role_names", auth_plugin=trustor_auth)
+        context_current.return_value = ctx
+        trusts.delete_trust_from_cluster("cluster")
+
+        delete_trust.assert_called_with(trustee_auth, 'test_id')
+        cluster_update.assert_called_with(ctx, fake_cluster,
+                                          {"trust_id": None})
