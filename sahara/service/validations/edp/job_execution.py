@@ -100,7 +100,7 @@ def check_scheduled_job_execution_info(job_execution_info):
             "Job start time should be later than now"))
 
 
-def check_job_execution(data, job_id):
+def check_job_execution(data, job_templates_id):
     ctx = context.ctx()
     job_execution_info = data.get('job_execution_info', {})
 
@@ -110,7 +110,7 @@ def check_job_execution(data, job_id):
             _("Cluster with id '%s' doesn't exist") % data['cluster_id'])
 
     val_base.check_plugin_labels(cluster.plugin_name, cluster.hadoop_version)
-    job = conductor.job_get(ctx, job_id)
+    job = conductor.job_get(ctx, job_templates_id)
 
     plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
     edp_engine = plugin.get_edp_engine(cluster, job.type)
@@ -140,41 +140,41 @@ def check_data_sources(data, job):
     b.check_data_sources_are_different(data['input_id'], data['output_id'])
 
 
-def check_job_execution_cancel(job_execution_id, **kwargs):
+def check_job_execution_cancel(job_id, **kwargs):
     ctx = context.current()
-    je = conductor.job_execution_get(ctx, job_execution_id)
+    je = conductor.job_execution_get(ctx, job_id)
 
     if je.tenant_id != ctx.tenant_id:
             raise ex.CancelingFailed(
                 _("Job execution with id '%s' cannot be canceled "
                   "because it wasn't created in this tenant")
-                % job_execution_id)
+                % job_id)
 
     if je.is_protected:
         raise ex.CancelingFailed(
             _("Job Execution with id '%s' cannot be canceled "
-              "because it's marked as protected") % job_execution_id)
+              "because it's marked as protected") % job_id)
 
 
-def check_job_execution_delete(job_execution_id, **kwargs):
+def check_job_execution_delete(job_id, **kwargs):
     ctx = context.current()
-    je = conductor.job_execution_get(ctx, job_execution_id)
+    je = conductor.job_execution_get(ctx, job_id)
 
     acl.check_tenant_for_delete(ctx, je)
     acl.check_protected_from_delete(je)
 
 
-def check_job_execution_update(job_execution_id, data, **kwargs):
+def check_job_execution_update(job_id, data, **kwargs):
     ctx = context.current()
-    je = conductor.job_execution_get(ctx, job_execution_id)
+    je = conductor.job_execution_get(ctx, job_id)
 
     acl.check_tenant_for_update(ctx, je)
     acl.check_protected_from_update(je, data)
 
 
-def check_job_status_update(job_execution_id, data):
+def check_job_status_update(job_id, data):
     ctx = context.ctx()
-    job_execution = conductor.job_execution_get(ctx, job_execution_id)
+    job_execution = conductor.job_execution_get(ctx, job_id)
     # check we are updating status
     if 'info' in data:
         if len(data) != 1:
@@ -184,8 +184,8 @@ def check_job_status_update(job_execution_id, data):
         raise ex.InvalidDataException(
             _("Suspending operation can not be performed on an inactive or "
               "non-existent cluster"))
-    job_id = conductor.job_execution_get(ctx, job_execution_id).job_id
-    job_type = conductor.job_get(ctx, job_id).type
+    job_templates_id = conductor.job_execution_get(ctx, job_id).job_id
+    job_type = conductor.job_get(ctx, job_templates_id).type
     engine = j_u.get_plugin(cluster).get_edp_engine(cluster, job_type)
     if 'info' in data:
         if data.info['status'] == edp.JOB_ACTION_SUSPEND:
