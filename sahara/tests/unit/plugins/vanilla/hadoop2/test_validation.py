@@ -77,6 +77,18 @@ class ValidationTest(base.SaharaTestCase):
         with testtools.ExpectedException(ex.InvalidComponentCountException):
             self.pl.validate(cl)
 
+        self.ng.append(tu.make_ng_dict("hi", "f1", ["hiveserver"], 0))
+        self.ng.append(tu.make_ng_dict("sh", "f1",
+                                       ["spark history server"], 0))
+
+        self._validate_case(1, 1, 0, 0, 3, 0, 0, 1, 0)
+        self._validate_case(1, 1, 0, 0, 3, 0, 0, 0, 1)
+
+        with testtools.ExpectedException(ex.InvalidComponentCountException):
+            self._validate_case(1, 1, 0, 0, 3, 0, 0, 2, 0)
+        with testtools.ExpectedException(ex.InvalidComponentCountException):
+            self._validate_case(1, 1, 0, 0, 3, 0, 0, 0, 2)
+
     def _create_cluster(self, *args, **kwargs):
         lst = []
         for i in range(0, len(args)):
