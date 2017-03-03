@@ -54,6 +54,17 @@ class UtilsClusterTest(base.SaharaWithDbTestCase):
             cluster_id, "desc")
         self.assertIsNone(cluster)
 
+    def test_count_instances(self):
+        cluster = self._make_sample()
+        self.assertEqual(4, cluster_utils.count_instances(cluster))
+
+    def test_check_cluster_exists(self):
+        ctx = context.ctx()
+        cluster = self._make_sample()
+        self.assertTrue(cluster_utils.check_cluster_exists(cluster))
+        self.api.cluster_destroy(ctx, cluster)
+        self.assertFalse(cluster_utils.check_cluster_exists(cluster))
+
     def test_get_instances(self):
         cluster = self._make_sample()
         ctx = context.ctx()
