@@ -61,6 +61,18 @@ class TestUtils(base.SaharaWithDbTestCase):
                                [self.ng_manager])
         self.assertIsNone(u.get_namenode(cl))
 
+    def test_get_nodemanagers(self):
+        cl = tu.create_cluster('cl1', 't1', 'vanilla', '2.7.1',
+                               [self.ng_manager, self.ng_nodemanager])
+        nodemanagers = u.get_nodemanagers(cl)
+        self.assertEqual(2, len(nodemanagers))
+        self.assertEqual(set(['tt1', 'tt2']),
+                         set([nodemanagers[0].instance_id,
+                             nodemanagers[1].instance_id]))
+        cl = tu.create_cluster('cl1', 't1', 'vanilla', '2.7.1',
+                               [self.ng_namenode])
+        self.assertEqual([], u.get_nodemanagers(cl))
+
     def test_get_oozie(self):
         cl = tu.create_cluster('cl1', 't1', 'vanilla', '2.7.1',
                                [self.ng_manager, self.ng_oozie])
