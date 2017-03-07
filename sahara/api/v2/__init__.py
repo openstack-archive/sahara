@@ -37,7 +37,7 @@ from sahara.api.v2 import clusters
 from sahara.api.v2 import data_sources
 from sahara.api.v2 import images
 from sahara.api.v2 import job_binaries
-from sahara.api.v2 import job_executions
+from sahara.api.v2 import job_templates
 from sahara.api.v2 import job_types
 from sahara.api.v2 import jobs
 from sahara.api.v2 import node_group_templates
@@ -59,8 +59,8 @@ def register_blueprints(app, url_prefix):
     app.register_blueprint(data_sources.rest, url_prefix=url_prefix)
     app.register_blueprint(images.rest, url_prefix=url_prefix)
     app.register_blueprint(job_binaries.rest, url_prefix=url_prefix)
-    app.register_blueprint(job_executions.rest, url_prefix=url_prefix)
-    app.register_blueprint(job_types.rest, url_prefix=url_prefix)
     app.register_blueprint(jobs.rest, url_prefix=url_prefix)
+    app.register_blueprint(job_types.rest, url_prefix=url_prefix)
+    app.register_blueprint(job_templates.rest, url_prefix=url_prefix)
     app.register_blueprint(node_group_templates.rest, url_prefix=url_prefix)
     app.register_blueprint(plugins.rest, url_prefix=url_prefix)

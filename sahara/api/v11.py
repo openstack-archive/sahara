@@ -46,44 +46,44 @@ def job_executions_list():
     return u.render(res=result, name='job_executions')
 
 
-@rest.get('/job-executions/<job_execution_id>')
+@rest.get('/job-executions/<job_id>')
 @acl.enforce("data-processing:job-executions:get")
-@v.check_exists(api.get_job_execution, id='job_execution_id')
-def job_executions(job_execution_id):
-    return u.to_wrapped_dict(api.get_job_execution, job_execution_id)
+@v.check_exists(api.get_job_execution, id='job_id')
+def job_executions(job_id):
+    return u.to_wrapped_dict(api.get_job_execution, job_id)
 
 
-@rest.get('/job-executions/<job_execution_id>/refresh-status')
+@rest.get('/job-executions/<job_id>/refresh-status')
 @acl.enforce("data-processing:job-executions:refresh_status")
-@v.check_exists(api.get_job_execution, id='job_execution_id')
-def job_executions_status(job_execution_id):
-    return u.to_wrapped_dict(api.get_job_execution_status, job_execution_id)
+@v.check_exists(api.get_job_execution, id='job_id')
+def job_executions_status(job_id):
+    return u.to_wrapped_dict(api.get_job_execution_status, job_id)
 
 
-@rest.get('/job-executions/<job_execution_id>/cancel')
+@rest.get('/job-executions/<job_id>/cancel')
 @acl.enforce("data-processing:job-executions:cancel")
-@v.check_exists(api.get_job_execution, id='job_execution_id')
+@v.check_exists(api.get_job_execution, id='job_id')
 @v.validate(None, v_j_e.check_job_execution_cancel)
-def job_executions_cancel(job_execution_id):
-    return u.to_wrapped_dict(api.cancel_job_execution, job_execution_id)
+def job_executions_cancel(job_id):
+    return u.to_wrapped_dict(api.cancel_job_execution, job_id)
 
 
-@rest.patch('/job-executions/<job_execution_id>')
+@rest.patch('/job-executions/<job_id>')
 @acl.enforce("data-processing:job-executions:modify")
-@v.check_exists(api.get_job_execution, id='job_execution_id')
+@v.check_exists(api.get_job_execution, id='job_id')
 @v.validate(v_j_e_schema.JOB_EXEC_UPDATE_SCHEMA,
             v_j_e.check_job_execution_update,
             v_j_e.check_job_status_update)
-def job_executions_update(job_execution_id, data):
-    return u.to_wrapped_dict(api.update_job_execution, job_execution_id, data)
+def job_executions_update(job_id, data):
+    return u.to_wrapped_dict(api.update_job_execution, job_id, data)
 
 
-@rest.delete('/job-executions/<job_execution_id>')
+@rest.delete('/job-executions/<job_id>')
 @acl.enforce("data-processing:job-executions:delete")
-@v.check_exists(api.get_job_execution, id='job_execution_id')
+@v.check_exists(api.get_job_execution, id='job_id')
 @v.validate(None, v_j_e.check_job_execution_delete)
-def job_executions_delete(job_execution_id):
-    api.delete_job_execution(job_execution_id)
+def job_executions_delete(job_id):
+    api.delete_job_execution(job_id)
     return u.render()
 
 
@@ -151,35 +151,36 @@ def job_create(data):
     return u.render(api.create_job(data).to_wrapped_dict())
 
 
-@rest.get('/jobs/<job_id>')
+@rest.get('/jobs/<job_templates_id>')
 @acl.enforce("data-processing:jobs:get")
-@v.check_exists(api.get_job, id='job_id')
-def job_get(job_id):
-    return u.to_wrapped_dict(api.get_job, job_id)
+@v.check_exists(api.get_job, id='job_templates_id')
+def job_get(job_templates_id):
+    return u.to_wrapped_dict(api.get_job, job_templates_id)
 
 
-@rest.patch('/jobs/<job_id>')
+@rest.patch('/jobs/<job_templates_id>')
 @acl.enforce("data-processing:jobs:modify")
-@v.check_exists(api.get_job, id='job_id')
+@v.check_exists(api.get_job, id='job_templates_id')
 @v.validate(v_j_schema.JOB_UPDATE_SCHEMA)
-def job_update(job_id, data):
-    return u.to_wrapped_dict(api.update_job, job_id, data)
+def job_update(job_templates_id, data):
+    return u.to_wrapped_dict(api.update_job, job_templates_id, data)
 
 
-@rest.delete('/jobs/<job_id>')
+@rest.delete('/jobs/<job_templates_id>')
 @acl.enforce("data-processing:jobs:delete")
-@v.check_exists(api.get_job, id='job_id')
-def job_delete(job_id):
-    api.delete_job(job_id)
+@v.check_exists(api.get_job, id='job_templates_id')
+def job_delete(job_templates_id):
+    api.delete_job(job_templates_id)
     return u.render()
 
 
-@rest.post('/jobs/<job_id>/execute')
+@rest.post('/jobs/<job_templates_id>/execute')
 @acl.enforce("data-processing:jobs:execute")
-@v.check_exists(api.get_job, id='job_id')
+@v.check_exists(api.get_job, id='job_templates_id')
 @v.validate(v_j_e_schema.JOB_EXEC_SCHEMA, v_j_e.check_job_execution)
-def job_execute(job_id, data):
-    return u.render(job_execution=api.execute_job(job_id, data).to_dict())
+def job_execute(job_templates_id, data):
+    return u.render(job_execution=api.execute_job(
+        job_templates_id, data).to_dict())
 
 
 @rest.get('/jobs/config-hints/<job_type>')
