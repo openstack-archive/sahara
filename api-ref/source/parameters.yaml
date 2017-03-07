@@ -7,93 +7,28 @@ Content-Length:
   type: string
 
 # variables in path
-url_cluster_id:
-  description: |
-    The ID of the cluster
-  in: path
-  required: true
-  type: string
-url_cluster_template_id:
-  description: |
-    The unique identifier of the cluster template.
-  in: path
-  required: true
-  type: string
-url_data_source_id:
-  description: |
-    The UUID of the data source.
-  in: path
-  required: true
-  type: string
-data_source_id:
-  description: |
-    The UUID of the data source.
-  in: body
-  required: true
-  type: string
 hints:
   description: |
     Includes configuration hints in the response.
   in: path
   required: false
   type: boolean
-url_image_id:
-  description: |
-    The UUID of the image.
-  in: path
-  required: true
-  type: string
-url_job_binary_id:
-  description: |
-    The UUID of the job binary.
-  in: path
-  required: true
-  type: string
 job_binary_id:
   description: |
     The UUID of the job binary.
   in: path
   required: true
   type: string
-url_job_binary_internals_id:
+limit:
   description: |
-    The UUID of the job binary internal.
+    Maximum number of objects in response data.
   in: path
-  required: true
-  type: string
-job_binary_internals_id:
+  required: false
+  type: integer
+marker:
   description: |
-    The UUID of the job binary internal.
-  in: body
-  required: true
-  type: string
-url_job_execution_id:
-  description: |
-    The UUID of the job execution.
-  in: path
-  required: true
-  type: string
-url_job_id:
-  description: |
-    The UUID of the job.
-  in: path
-  required: true
-  type: string
-url_job_binary_internals_name:
-  description: |
-    The name of the job binary internal.
-  in: path
-  required: true
-  type: string
-job_binary_internals_name:
-  description: |
-    The name of the job binary internal.
-  in: body
-  required: true
-  type: string
-url_node_group_template_id:
-  description: |
-    The UUID of the node group template.
+    ID of the last element on the list which
+    won't be in response.
   in: path
   required: false
   type: string
@@ -103,48 +38,6 @@ plugin:
   in: path
   required: false
   type: string
-url_plugin_name:
-  description: |
-    Name of the plugin.
-  in: path
-  required: false
-  type: string
-type_2:
-  description: |
-    Filters the response by a job type.
-  in: path
-  required: false
-  type: string
-version:
-  description: |
-    Filters the response by a plugin version.
-  in: path
-  required: false
-  type: string
-version_1:
-  description: |
-    Version of the plugin.
-  in: path
-  required: false
-  type: string
-
-
-# variables in query
-limit:
-  description: |
-    Maximum number of objects in response data.
-  in: path
-  required: false
-  type: integer
-
-marker:
-  description: |
-    ID of the last element on the list which
-    won't be in response.
-  in: path
-  required: false
-  type: string
-
 sort_by_cluster_templates:
   description: |
     The field for sorting cluster templates.
@@ -181,7 +74,7 @@ sort_by_data_sources:
     required: false
     type: string
 
-sort_by_job_binaries:
+sort_by_job_binary:
   description: |
     The field for sorting job binaries.
     this parameter accepts the following values:
@@ -203,7 +96,7 @@ sort_by_job_binary_internals:
     required: false
     type: string
 
-sort_by_job_executions:
+sort_by_job_execution:
     description: |
       The field for sorting job executions.
       this parameter accepts the following values:
@@ -239,11 +132,95 @@ sort_by_node_group_templates:
   required: false
   type: string
 
+type_2:
+  description: |
+    Filters the response by a job type.
+  in: path
+  required: false
+  type: string
+url_cluster_id:
+  description: |
+    The ID of the cluster
+  in: path
+  required: true
+  type: string
+url_cluster_template_id:
+  description: |
+    The unique identifier of the cluster template.
+  in: path
+  required: true
+  type: string
+url_data_source_id:
+  description: |
+    The UUID of the data source.
+  in: path
+  required: true
+  type: string
+url_image_id:
+  description: |
+    The UUID of the image.
+  in: path
+  required: true
+  type: string
+url_job_binary_id:
+  description: |
+    The UUID of the job binary.
+  in: path
+  required: true
+  type: string
+url_job_binary_internals_id:
+  description: |
+    The UUID of the job binary internal.
+  in: path
+  required: true
+  type: string
+url_job_binary_internals_name:
+  description: |
+    The name of the job binary internal.
+  in: path
+  required: true
+  type: string
+url_job_execution_id:
+  description: |
+    The UUID of the job execution.
+  in: path
+  required: true
+  type: string
+url_job_id:
+  description: |
+    The UUID of the job.
+  in: path
+  required: true
+  type: string
+url_node_group_template_id:
+  description: |
+    The UUID of the node group template.
+  in: path
+  required: false
+  type: string
+url_plugin_name:
+  description: |
+    Name of the plugin.
+  in: path
+  required: false
+  type: string
 url_project_id:
   description: |
     UUID of the project.
   in: path
   required: true
+  type: string
+version:
+  description: |
+    Filters the response by a plugin version.
+  in: path
+  required: false
+  type: string
+version_1:
+  description: |
+    Version of the plugin.
+  in: path
+  required: false
   type: string
 
 
@@ -280,15 +257,27 @@ cluster_configs:
   in: body
   required: true
   type: object
-cluster_id_1:
+cluster_id:
   description: |
     The UUID of the cluster.
   in: body
   required: true
   type: string
+cluster_template_description:
+  description: |
+    Description of the cluster template
+  in: body
+  required: false
+  type: string
 cluster_template_id:
   description: |
     The UUID of the cluster template.
+  in: body
+  required: true
+  type: string
+cluster_template_name:
+  description: |
+    The name of the cluster template.
   in: body
   required: true
   type: string
@@ -400,6 +389,24 @@ created_at_3:
   in: body
   required: true
   type: string
+data_source_description:
+  description: |
+    The description of the data source object.
+  in: body
+  required: true
+  type: string
+data_source_id:
+  description: |
+    The UUID of the data source.
+  in: body
+  required: true
+  type: string
+data_source_name:
+  description: |
+    The name of the data source.
+  in: body
+  required: true
+  type: string
 data_source_urls:
   description: |
     The data source URLs.
@@ -425,39 +432,9 @@ description:
   in: body
   required: true
   type: string
-data_source_description:
-  description: |
-    The description of the data source object.
-  in: body
-  required: true
-  type: string
-job_description:
-  description: |
-    The description of the job object.
-  in: body
-  required: true
-  type: string
 description_3:
   description: |
     The description of the node in the cluster.
-  in: body
-  required: true
-  type: string
-job_binary_description:
-  description: |
-    The description of the job binary object.
-  in: body
-  required: true
-  type: string
-image_description:
-  description: |
-    The description of the image.
-  in: body
-  required: true
-  type: string
-description_plugin:
-  description: |
-    The full description of the plugin.
   in: body
   required: true
   type: string
@@ -467,17 +444,11 @@ description_7:
   in: body
   required: false
   type: string
-cluster_template_description:
+description_plugin:
   description: |
-    Description of the cluster template
+    The full description of the plugin.
   in: body
-  required: false
-  type: string
-node_group_template_description:
-  description: |
-    Description of the node group template
-  in: body
-  required: false
+  required: true
   type: string
 domain_name:
   description: |
@@ -542,9 +513,16 @@ id_1:
   in: body
   required: true
   type: string
-job_execution_id:
+image:
   description: |
-    The UUID of the job execution object.
+    A set of key and value pairs that contain image
+    properties.
+  in: body
+  required: true
+  type: object
+image_description:
+  description: |
+    The description of the image.
   in: body
   required: true
   type: string
@@ -554,19 +532,12 @@ image_id:
   in: body
   required: true
   type: string
-node_group_template_id:
+image_name:
   description: |
-    The UUID of the node group template.
+    The name of the operating system image.
   in: body
   required: true
   type: string
-image:
-  description: |
-    A set of key and value pairs that contain image
-    properties.
-  in: body
-  required: true
-  type: object
 images:
   description: |
     The list of images and their properties.
@@ -611,12 +582,6 @@ is_protected:
   in: body
   required: true
   type: boolean
-object_is_protected:
-  description: |
-    If set to ``true``, the object is protected.
-  in: body
-  required: true
-  type: boolean
 is_protected_2:
   description: |
     If set to ``true``, the node is protected.
@@ -643,25 +608,42 @@ is_public:
   in: body
   required: true
   type: boolean
-object_is_public:
-  description: |
-    If set to ``true``, the object is public.
-  in: body
-  required: true
-  type: boolean
-job_execution_is_public:
-  description: |
-    If set to ``true``, the job execution object is
-    public.
-  in: body
-  required: true
-  type: boolean
 is_transient:
   description: |
     If set to ``true``, the cluster is transient.
   in: body
   required: true
   type: boolean
+job_binary_description:
+  description: |
+    The description of the job binary object.
+  in: body
+  required: true
+  type: string
+job_binary_internals_id:
+  description: |
+    The UUID of the job binary internal.
+  in: body
+  required: true
+  type: string
+job_binary_internals_name:
+  description: |
+    The name of the job binary internal.
+  in: body
+  required: true
+  type: string
+job_binary_name:
+  description: |
+    The name of the object.
+  in: body
+  required: true
+  type: string
+job_description:
+  description: |
+    The description of the job object.
+  in: body
+  required: true
+  type: string
 job_execution:
   description: |
     A set of key and value pairs that contain the job
@@ -669,6 +651,19 @@ job_execution:
   in: body
   required: true
   type: object
+job_execution_id:
+  description: |
+    The UUID of the job execution object.
+  in: body
+  required: true
+  type: string
+job_execution_is_public:
+  description: |
+    If set to ``true``, the job execution object is
+    public.
+  in: body
+  required: true
+  type: boolean
 job_executions:
   description: |
     The list of job execution objects.
@@ -711,6 +706,12 @@ mains:
   in: body
   required: true
   type: array
+management_public_key:
+  description: |
+    The SSH key for the management network.
+  in: body
+  required: true
+  type: string
 markers:
   description: |
     The markers of previous and following pages of data.
@@ -719,12 +720,6 @@ markers:
   in: body
   required: false
   type: object
-management_public_key:
-  description: |
-    The SSH key for the management network.
-  in: body
-  required: true
-  type: string
 metadata:
   description: |
     A set of key and value pairs that contain image
@@ -757,36 +752,6 @@ name_1:
   in: body
   required: true
   type: string
-job_binary_name:
-  description: |
-    The name of the object.
-  in: body
-  required: true
-  type: string
-data_source_name:
-  description: |
-    The name of the data source.
-  in: body
-  required: true
-  type: string
-image_name:
-  description: |
-    The name of the operating system image.
-  in: body
-  required: true
-  type: string
-node_group_template_name:
-  description: |
-    The name of the node group template.
-  in: body
-  required: true
-  type: string
-cluster_template_name:
-  description: |
-    The name of the cluster template.
-  in: body
-  required: true
-  type: string
 neutron_management_network:
   description: |
     The UUID of the neutron management network.
@@ -806,6 +771,24 @@ node_configs:
   in: body
   required: true
   type: object
+node_group_template_description:
+  description: |
+    Description of the node group template
+  in: body
+  required: false
+  type: string
+node_group_template_id:
+  description: |
+    The UUID of the node group template.
+  in: body
+  required: true
+  type: string
+node_group_template_name:
+  description: |
+    The name of the node group template.
+  in: body
+  required: true
+  type: string
 node_groups:
   description: |
     The detail properties of the node in key-value
@@ -819,6 +802,24 @@ node_processes:
   in: body
   required: true
   type: array
+object_is_protected:
+  description: |
+    If set to ``true``, the object is protected.
+  in: body
+  required: true
+  type: boolean
+object_is_public:
+  description: |
+    If set to ``true``, the object is public.
+  in: body
+  required: true
+  type: boolean
+object_shares:
+  description: |
+    The sharing of resources in the cluster.
+  in: body
+  required: true
+  type: string
 oozie_job_id:
   description: |
     The UUID of the ``oozie_job``.
@@ -890,12 +891,6 @@ security_groups:
 shares:
   description: |
     The shares of the cluster.
-  in: body
-  required: true
-  type: string
-object_shares:
-  description: |
-    The sharing of resources in the cluster.
   in: body
   required: true
   type: string
