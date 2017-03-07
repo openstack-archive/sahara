@@ -48,6 +48,7 @@ class Cluster(object):
                       see the docs for details
     default_image_id
     anti_affinity
+    anti_affinity_ratio
     management_private_key
     management_public_key
     user_keypair_id

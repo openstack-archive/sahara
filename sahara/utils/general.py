@@ -73,5 +73,5 @@ def generate_auto_security_group_name(node_group):
                           node_group.id[:8])).lower()
 
 
-def generate_aa_group_name(cluster_name):
-    return ("%s-aa-group" % cluster_name).lower()
+def generate_aa_group_name(cluster_name, server_group_index):
+    return ("%s-aa-group-%d" % (cluster_name, server_group_index)).lower()

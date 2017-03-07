@@ -202,7 +202,7 @@ class HeatEngine(e.Engine):
             # Stack not found. Trying to delete cluster like direct engine
             #  do it
             self._shutdown_instances(cluster)
-            self._delete_aa_server_group(cluster)
+            self._delete_aa_server_groups(cluster)
 
         self._clean_job_executions(cluster)
         self._remove_db_objects(cluster)

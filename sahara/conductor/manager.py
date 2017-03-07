@@ -33,6 +33,7 @@ CLUSTER_DEFAULTS = {
     "cluster_configs": {},
     "status": "undefined",
     "anti_affinity": [],
+    "anti_affinity_ratio": 1,
     "status_description": "",
     "info": {},
     "rollback_info": {},

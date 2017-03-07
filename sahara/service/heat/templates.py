@@ -34,7 +34,7 @@ LOG = logging.getLogger(__name__)
 
 SSH_PORT = 22
 INSTANCE_RESOURCE_NAME = "inst"
-SERVER_GROUP_PARAM_NAME = "servgroup"
+SERVER_GROUP_NAMES = "servgroups"
 AUTO_SECURITY_GROUP_PARAM_NAME = "autosecgroup"
 INTERNAL_DESIGNATE_REC = "internal_designate_record"
 INTERNAL_DESIGNATE_REV_REC = "internal_designate_reverse_record"
@@ -80,8 +80,8 @@ def _get_inst_domain_name(domain):
     }
 
 
-def _get_aa_group_name(cluster):
-    return g.generate_aa_group_name(cluster.name)
+def _get_aa_group_name(cluster, server_group_index):
+    return g.generate_aa_group_name(cluster.name, server_group_index)
 
 
 def _get_port_name(ng):
@@ -148,6 +148,7 @@ class ClusterStack(object):
             "Sahara engine: {version}".format(
                 cluster=cluster.name, version=heat_common.HEAT_ENGINE_VERSION)
         )
+        self._current_sg_index = 1
 
     def _node_group_description(self, ng):
         return "{info}\nNode group {node_group}".format(
@@ -212,6 +213,15 @@ class ClusterStack(object):
                       "{args}".format(stack=stack, args=log_kwargs))
             b.execute_with_retries(stack.update, **kwargs)
 
+    def _get_server_group_name(self):
+        index = self._current_sg_index
+        # computing server group index in round robin fashion
+        if index < self.cluster.anti_affinity_ratio:
+            self._current_sg_index = (index + 1)
+        else:
+            self._current_sg_index = 1
+        return _get_aa_group_name(self.cluster, self._current_sg_index)
+
     def _need_aa_server_group(self, node_group):
         for node_process in node_group.node_processes:
             if node_process in self.cluster.anti_affinity:
@@ -225,7 +235,8 @@ class ClusterStack(object):
         return {
             "scheduler_hints": {
                 "group": {
-                    "get_param": SERVER_GROUP_PARAM_NAME,
+                    "get_param": [SERVER_GROUP_NAMES,
+                                  {"get_param": "instance_index"}]
                 }
             }
         }
@@ -234,7 +245,9 @@ class ClusterStack(object):
         resources = {}
 
         if self.cluster.anti_affinity:
-            resources.update(self._serialize_aa_server_group())
+            # Creating server groups equal to the anti_affinity_ratio
+            for i in range(1, self.cluster.anti_affinity_ratio):
+                resources.update(self._serialize_aa_server_group(i))
 
         for ng in self.cluster.node_groups:
             resources.update(self._serialize_ng_group(ng, outputs))
@@ -253,8 +266,14 @@ class ClusterStack(object):
         properties = {"instance_index": "%index%"}
 
         if ng.cluster.anti_affinity:
-            properties[SERVER_GROUP_PARAM_NAME] = {
-                'get_resource': _get_aa_group_name(ng.cluster)}
+            ng_count = ng.count
+            # assuming instance_index also start from index 0
+            for i in range(0, ng_count - 1):
+                server_group_name = self._get_server_group_name()
+                server_group_resource = {
+                    "get_resource": server_group_name
+                }
+                properties[SERVER_GROUP_NAMES].insert(i, server_group_resource)
 
         if ng.auto_security_group:
             properties[AUTO_SECURITY_GROUP_PARAM_NAME] = {
@@ -277,7 +296,8 @@ class ClusterStack(object):
         parameters = {"instance_index": {"type": "string"}}
 
         if ng.cluster.anti_affinity:
-            parameters[SERVER_GROUP_PARAM_NAME] = {'type': "string"}
+            parameters[SERVER_GROUP_NAMES] = {"type": "comma_delimited_list",
+                                              "default": []}
 
         if ng.auto_security_group:
             parameters[AUTO_SECURITY_GROUP_PARAM_NAME] = {'type': "string"}
@@ -609,8 +629,9 @@ class ClusterStack(object):
             ]
         return node_group_sg
 
-    def _serialize_aa_server_group(self):
-        server_group_name = _get_aa_group_name(self.cluster)
+    def _serialize_aa_server_group(self, server_group_index):
+        server_group_name = _get_aa_group_name(self.cluster,
+                                               server_group_index)
         return {
             server_group_name: {
                 "type": "OS::Nova::ServerGroup",
