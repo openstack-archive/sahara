@@ -74,7 +74,7 @@ JOB_EXEC_UPDATE_SCHEMA = {
             "type": "simple_config",
             "properties": {
                     "status": {
-                        "enum": ["suspend"]
+                        "enum": ["suspend", "cancel"]
                     }
             },
             "additionalProperties": False
