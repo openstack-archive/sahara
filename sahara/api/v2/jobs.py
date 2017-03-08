@@ -30,22 +30,29 @@ rest = u.RestV2('jobs', __name__)
 @v.check_exists(api.get_job_execution, 'marker')
 @v.validate(None, v.validate_pagination_limit,
             v.validate_sorting_job_executions)
-def job_executions_list():
+def jobs_list():
     result = api.job_execution_list(**u.get_request_args().to_dict())
     return u.render(res=result, name='jobs')
+
+
+@rest.post('/jobs')
+@acl.enforce("data-processing:job-executions:execute")
+@v.validate(v_j_e_schema.JOB_EXEC_SCHEMA_V2, v_j_e.check_job_execution)
+def jobs_execute(data):
+    return u.render(api.execute_job(data).to_wrapped_dict())
 
 
 @rest.get('/jobs/<job_id>')
 @acl.enforce("data-processing:job-executions:get")
 @v.check_exists(api.get_job_execution, id='job_id')
-def job_executions(job_id):
+def jobs_get(job_id):
     return u.to_wrapped_dict(api.get_job_execution, job_id)
 
 
 @rest.get('/jobs/<job_id>/refresh-status')
 @acl.enforce("data-processing:job-executions:refresh_status")
 @v.check_exists(api.get_job_execution, id='job_id')
-def job_executions_status(job_id):
+def jobs_status(job_id):
     return u.to_wrapped_dict(
         api.get_job_execution_status, job_id)
 
@@ -54,7 +61,7 @@ def job_executions_status(job_id):
 @acl.enforce("data-processing:job-executions:cancel")
 @v.check_exists(api.get_job_execution, id='job_id')
 @v.validate(None, v_j_e.check_job_execution_cancel)
-def job_executions_cancel(job_id):
+def jobs_cancel(job_id):
     return u.to_wrapped_dict(api.cancel_job_execution, job_id)
 
 
@@ -63,7 +70,7 @@ def job_executions_cancel(job_id):
 @v.check_exists(api.get_job_execution, id='job_id')
 @v.validate(
     v_j_e_schema.JOB_EXEC_UPDATE_SCHEMA, v_j_e.check_job_execution_update)
-def job_executions_update(job_id, data):
+def jobs_update(job_id, data):
     return u.to_wrapped_dict(
         api.update_job_execution, job_id, data)
 
@@ -72,6 +79,6 @@ def job_executions_update(job_id, data):
 @acl.enforce("data-processing:job-executions:delete")
 @v.check_exists(api.get_job_execution, id='job_id')
 @v.validate(None, v_j_e.check_job_execution_delete)
-def job_executions_delete(job_id):
+def jobs_delete(job_id):
     api.delete_job_execution(job_id)
     return u.render()
