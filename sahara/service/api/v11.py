@@ -161,11 +161,11 @@ def cancel_job_execution(id):
 
 
 def update_job_execution(id, values):
-    _update_status(values.pop("info", None))
+    _update_status(values.pop("info", None), id)
     return conductor.job_execution_update(context.ctx(), id, values)
 
 
-def _update_status(info):
+def _update_status(info, id):
     if info:
         status = info.get("status", None)
         if status == edp.JOB_ACTION_SUSPEND:

@@ -188,7 +188,7 @@ def check_job_status_update(job_id, data):
     job_type = conductor.job_get(ctx, job_templates_id).type
     engine = j_u.get_plugin(cluster).get_edp_engine(cluster, job_type)
     if 'info' in data:
-        if data.info['status'] == edp.JOB_ACTION_SUSPEND:
+        if data['info']['status'] == edp.JOB_ACTION_SUSPEND:
             if not engine.does_engine_implement('suspend_job'):
                 raise ex.InvalidReferenceException(
                     _("Engine doesn't support suspending job feature"))
