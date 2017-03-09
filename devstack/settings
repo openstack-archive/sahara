@@ -36,6 +36,9 @@ True}
 SAHARA_PERIODIC_COORDINATOR_URL=${SAHARA_PERIODIC_COORDINATOR_URL:-\
 kazoo://127.0.0.1:2181}
 
+#Toggle for deploying Sahara API with Apache + mod_wsgi
+SAHARA_USE_MOD_WSGI=${SAHARA_USE_MOD_WSGI:-False}
+
 # Tell Tempest this project is present
 TEMPEST_SERVICES+=,sahara
 
