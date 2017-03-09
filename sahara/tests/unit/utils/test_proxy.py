@@ -26,6 +26,40 @@ class TestProxyUtils(base.SaharaWithDbTestCase):
     def setUp(self):
         super(TestProxyUtils, self).setUp()
 
+    @mock.patch('sahara.service.castellan.utils.store_secret')
+    @mock.patch('sahara.context.ctx')
+    @mock.patch('sahara.conductor.API.job_execution_update')
+    @mock.patch('sahara.service.trusts.create_trust')
+    @mock.patch('sahara.utils.openstack.keystone.auth_for_proxy')
+    @mock.patch('sahara.utils.openstack.keystone.auth')
+    @mock.patch('sahara.utils.proxy.proxy_user_create')
+    def test_create_proxy_user_for_job_execution(self, proxy_user, trustor,
+                                                 trustee, trust,
+                                                 job_execution_update,
+                                                 context_current, passwd):
+        job_execution = mock.Mock(id=1,
+                                  output_id=2,
+                                  job_id=3,
+                                  job_configs=None)
+        job_execution.job_configs = mock.Mock(to_dict=mock.Mock(
+            return_value={}
+        ))
+        proxy_user.return_value = "proxy_user"
+        passwd.return_value = "test_password"
+        trustor.return_value = "test_trustor"
+        trustee.return_value = "test_trustee"
+        trust.return_value = "123456"
+        ctx = mock.Mock()
+        context_current.return_value = ctx
+        p.create_proxy_user_for_job_execution(job_execution)
+        update = {'job_configs': {'proxy_configs': None}}
+        update['job_configs']['proxy_configs'] = {
+            'proxy_username': 'job_1',
+            'proxy_password': 'test_password',
+            'proxy_trust_id': '123456'
+        }
+        job_execution_update.assert_called_with(ctx, job_execution, update)
+
     @mock.patch('sahara.conductor.API.job_get')
     @mock.patch('sahara.conductor.API.data_source_get')
     @mock.patch('sahara.conductor.API.data_source_count')
