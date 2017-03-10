@@ -14,7 +14,6 @@
 # limitations under the License.
 
 from oslo_config import cfg
-from oslo_log import log as logging
 
 from sahara import conductor
 from sahara import context
@@ -36,7 +35,6 @@ from sahara.utils import cluster as cluster_utils
 
 
 conductor = conductor.API
-LOG = logging.getLogger(__name__)
 CONF = cfg.CONF
 
 

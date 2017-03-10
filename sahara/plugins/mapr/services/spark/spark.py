@@ -13,8 +13,6 @@
 # under the License.
 
 
-from oslo_log import log as logging
-
 import sahara.plugins.mapr.domain.configuration_file as bcf
 import sahara.plugins.mapr.domain.node_process as np
 import sahara.plugins.mapr.domain.service as s
@@ -27,8 +25,6 @@ import sahara.utils.files as files
 
 SPARK_SLAVE_UI_PORT = 8081
 SPARK_HS_UI_PORT = 18080
-
-LOG = logging.getLogger(__name__)
 
 SPARK_HISTORY_SERVER = np.NodeProcess(
     name='spark-historyserver',
