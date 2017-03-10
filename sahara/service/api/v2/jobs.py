@@ -71,17 +71,16 @@ def execute_job(data):
     return job_execution
 
 
-def get_job_execution_status(id):
-    return manager.get_job_status(id)
-
-
 def job_execution_list(**kwargs):
     return conductor.job_execution_get_all(context.ctx(),
                                            regex_search=True, **kwargs)
 
 
-def get_job_execution(id):
-    return conductor.job_execution_get(context.ctx(), id)
+def get_job_execution(id, refresh_status=False):
+    if refresh_status:
+        return manager.get_job_status(id)
+    else:
+        return conductor.job_execution_get(context.ctx(), id)
 
 
 def cancel_job_execution(id):
