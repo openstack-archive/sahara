@@ -80,7 +80,7 @@ Sahara service should be present in keystone service list with service type
 
   .. sourcecode:: console
 
-      $ cp {HORIZON_DIR}/openstack_dashboard/local/local_settings.py.example
+      $ cp {HORIZON_DIR}/openstack_dashboard/local/local_settings.py.example \
                 {HORIZON_DIR}/openstack_dashboard/local/local_settings.py
   ..
 
