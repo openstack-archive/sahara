@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import uuid
 
+from oslo_utils import uuidutils
 import six
 from six.moves.urllib import parse as urlparse
 
@@ -46,7 +46,8 @@ def create_hbase_common_lib(r):
 
 
 def put_file_to_hdfs(r, file, file_name, path, hdfs_user):
-    tmp_file_name = '%s.%s' % (file_name, six.text_type(uuid.uuid4()))
+    tmp_file_name = '%s.%s' % (file_name, six.text_type(
+        uuidutils.generate_uuid()))
     r.write_file_to('/tmp/%s' % tmp_file_name, file)
     move_from_local(r, '/tmp/%s' % tmp_file_name, path + '/' + file_name,
                     hdfs_user)
@@ -95,8 +96,10 @@ def configure_cluster_for_hdfs(cluster, data_source_url):
         # Ip address hasn't been resolved, the last chance is for VM itself
         return
 
-    etc_hosts_update = '/tmp/etc-hosts-update.%s' % six.text_type(uuid.uuid4())
-    tmp_etc_hosts = '/tmp/etc-hosts.%s' % six.text_type(uuid.uuid4())
+    etc_hosts_update = '/tmp/etc-hosts-update.%s' % six.text_type(
+        uuidutils.generate_uuid())
+    tmp_etc_hosts = '/tmp/etc-hosts.%s' % six.text_type(
+        uuidutils.generate_uuid())
     update_etc_hosts_cmd = (
         'cat %(etc_hosts_update)s /etc/hosts | '
         'sort | uniq > %(tmp_etc_hosts)s && '
