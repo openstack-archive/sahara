@@ -13,12 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from sahara.plugins.cdh.v5_3_0 import plugin_utils as pu
+from sahara.plugins.cdh import plugin_utils as pu
 from sahara.tests.unit import base
 from sahara.tests.unit.plugins.cdh import utils as tu
 
 
-PU = pu.PluginUtilsV530()
+PU = pu.AbstractPluginUtils()
 
 
 class UtilsTestCase(base.SaharaTestCase):
