@@ -109,6 +109,23 @@ class AmbariClientTestCase(base.SaharaTestCase):
             verify=False, data=jsonutils.dumps({"some": "data"}),
             auth=client._auth, headers=self.headers)
 
+    def test_get_credential(self):
+        resp = mock.Mock()
+        resp.text = ""
+        resp.status_code = 200
+        self.http_client.get.return_value = resp
+        client = ambari_client.AmbariClient(self.instance)
+
+        client.get_credential("test", alias="credential")
+        self.http_client.get.assert_called_once_with(
+            "http://1.2.3.4:8080/api/v1/clusters/test/credentials/credential",
+            verify=False, auth=client._auth, headers=self.headers)
+
+        resp.status_code = 404
+        self.assertRaises(ambari_client.AmbariNotFound,
+                          ambari_client.AmbariClient.check_response,
+                          resp, True)
+
     @mock.patch("sahara.plugins.ambari.client.AmbariClient.check_response")
     def test_get_alerts_data(self, mock_check_response):
         cluster = mock.Mock()
