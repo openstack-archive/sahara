@@ -672,9 +672,7 @@ class SaharaScriptValidator(SaharaImageValidatorBase):
         arguments = copy.deepcopy(image_arguments)
         arguments[self.RECONCILE_KEY] = 1 if reconcile else 0
         script = "\n".join(["%(env_vars)s",
-                            "bash <<_SIV_",
-                            "%(script)s",
-                            "_SIV_"])
+                            "%(script)s"])
         env_vars = "\n".join("export %s=%s" % (key, value) for (key, value)
                              in six.iteritems(image_arguments)
                              if key in self.env_vars)

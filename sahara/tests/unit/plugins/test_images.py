@@ -272,7 +272,6 @@ class TestImages(b.SaharaTestCase):
         image_arguments = {"distro": 'centos'}
         map_rep = "export distro=centos\n"
         cmd = "It's dangerous to go alone. Run this."
-        expected_cmd = "bash <<_SIV_\n%s\n_SIV_" % cmd
         validator = cls(cmd, env_vars=image_arguments.keys(),
                         output_var="distro")
 
@@ -282,7 +281,7 @@ class TestImages(b.SaharaTestCase):
 
         validator.validate(remote, reconcile=True,
                            image_arguments=image_arguments)
-        call = [mock.call(map_rep + expected_cmd, run_as_root=True)]
+        call = [mock.call(map_rep + cmd, run_as_root=True)]
         remote.execute_command.assert_has_calls(call)
         self.assertEqual(image_arguments['distro'], 'fedora')
 
