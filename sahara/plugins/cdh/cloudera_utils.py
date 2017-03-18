@@ -23,6 +23,7 @@ from sahara.i18n import _
 from sahara.plugins.cdh.client import api_client
 from sahara.plugins.cdh.client import services
 from sahara.plugins.cdh import db_helper
+from sahara.plugins.cdh import plugin_utils
 from sahara.plugins import exceptions as ex
 from sahara.plugins import kerberos
 from sahara.topology import topology_helper as t_helper
@@ -62,8 +63,7 @@ class ClouderaUtils(object):
     HBASE_SERVICE_NAME = 'hbase01'
 
     def __init__(self):
-        # pu will be defined in derived class.
-        self.pu = None
+        self.pu = plugin_utils.AbstractPluginUtils()
 
     def get_api_client_by_default_password(self, cluster):
         manager_ip = self.pu.get_manager(cluster).management_ip

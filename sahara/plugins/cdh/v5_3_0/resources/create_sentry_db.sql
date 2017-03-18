@@ -1,4 +1,0 @@
-CREATE ROLE sentry LOGIN PASSWORD '%s';
-CREATE DATABASE sentry OWNER sentry encoding 'UTF8';
-GRANT ALL PRIVILEGES ON DATABASE sentry TO sentry;
-COMMIT;

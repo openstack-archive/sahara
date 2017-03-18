@@ -16,16 +16,16 @@
 import mock
 import testtools
 
-from sahara.plugins.cdh.v5_3_0 import cloudera_utils as cu
+from sahara.plugins.cdh import cloudera_utils as cu
 from sahara.tests.unit import base
 from sahara.tests.unit.plugins.cdh import utils as ctu
 
 
-CU = cu.ClouderaUtilsV530()
+CU = cu.ClouderaUtils()
 
 
 class ClouderaUtilsTestCase(base.SaharaTestCase):
-    @mock.patch('sahara.plugins.cdh.v5_3_0.cloudera_utils.ClouderaUtilsV530.'
+    @mock.patch('sahara.plugins.cdh.cloudera_utils.ClouderaUtils.'
                 'get_cloudera_cluster')
     def test_get_service(self, mock_get_cl_cluster):
         self.assertRaises(ValueError, CU.get_service_by_role, 'NAMENODE')
@@ -83,7 +83,7 @@ class ClouderaUtilsTestCase(base.SaharaTestCase):
                  'yarn01', 'yarn01', 'oozie01', 'hive01', 'hive01', 'hive01',
                  'hue01', 'spark_on_yarn01', 'zookeeper01', 'hbase01',
                  'hbase01']
-        provider = cu.ClouderaUtilsV530()
+        provider = cu.ClouderaUtils()
         cluster = mock.Mock()
         for (role, resp) in zip(roles, resps):
             self.assertEqual(
