@@ -25,6 +25,7 @@ from sahara.i18n import _
 from sahara.plugins import opts as plugins_base
 from sahara.service.castellan import config as castellan
 from sahara.service.edp.data_sources import opts as data_source
+from sahara.service.edp.job_binaries import opts as job_binary
 from sahara.topology import topology_helper
 from sahara.utils.notification import sender
 from sahara.utils.openstack import cinder
@@ -182,7 +183,8 @@ def list_opts():
                          templates.heat_engine_opts,
                          ssh_remote.ssh_config_options,
                          castellan.opts,
-                         data_source.opts)),
+                         data_source.opts,
+                         job_binary.opts)),
         (poll_utils.timeouts.name,
          itertools.chain(poll_utils.timeouts_opts)),
         (api.conductor_group.name,
