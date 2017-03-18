@@ -17,6 +17,7 @@
 import collections
 
 import mock
+import six
 
 from sahara.plugins.ambari import configs
 from sahara.tests.unit import base
@@ -46,6 +47,42 @@ class AmbariConfigsTestCase(base.SaharaTestCase):
                     cnt_act[j] += 1
         self.assertEqual(len(expected), len(cnt_ex))
         self.assertEqual(len(actual), len(cnt_act))
+
+    def test_get_service_to_configs_map(self):
+        self.assertIsNone(configs.SERVICES_TO_CONFIGS_MAP)
+        configs_map = configs.get_service_to_configs_map()
+        configs_expected = {
+            'ZooKeeper': ['zoo.cfg', 'zookeeper-env'],
+            'Knox': ['knox-env', 'ranger-knox-plugin-properties',
+                     'gateway-site'],
+            'YARN': ['yarn-site', 'mapred-env', 'yarn-env',
+                     'capacity-scheduler', 'mapred-site'],
+            'general': ['cluster-env'], 'Flume': ['flume-env'],
+            'Ambari': ['ams-hbase-policy', 'ams-site', 'ams-env',
+                       'ams-hbase-site', 'ams-hbase-env',
+                       'ams-hbase-security-site'],
+            'HDFS': ['core-site', 'ranger-hdfs-plugin-properties',
+                     'hadoop-policy', 'hdfs-site', 'hadoop-env'],
+            'Ranger': ['ranger-env', 'admin-properties',
+                       'usersync-properties', 'ranger-site'],
+            'Spark': ['spark-defaults', 'spark-env'],
+            'Hive': ['hive-env', 'hive-site', 'hiveserver2-site',
+                     'ranger-hive-plugin-properties'],
+            'Storm': ['ranger-storm-plugin-properties', 'storm-site',
+                      'storm-env'],
+            'Oozie': ['oozie-env', 'oozie-site', 'tez-site'],
+            'HBase': ['ranger-hbase-plugin-properties', 'hbase-env',
+                      'hbase-site', 'hbase-policy'],
+            'Sqoop': ['sqoop-env'], 'Kafka': ['kafka-broker', 'kafka-env'],
+            'Falcon': ['falcon-startup.properties',
+                       'falcon-runtime.properties', 'falcon-env']
+        }
+        for (key, item) in six.iteritems(configs_map):
+            item.sort()
+        for (key, item) in six.iteritems(configs_expected):
+            item.sort()
+        self.assertEqual(configs_map, configs_expected)
+        self.assertIsNotNone(configs.SERVICES_TO_CONFIGS_MAP)
 
     def test_get_instance_params_default(self):
         instance_configs = configs.get_instance_params(self.instance)
