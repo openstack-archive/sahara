@@ -17,7 +17,7 @@
 
 # Save trace setting
 XTRACE=$(set +o | grep xtrace)
-set +o xtrace
+set -o xtrace
 
 
 # Functions
