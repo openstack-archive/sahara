@@ -19,12 +19,6 @@ from sahara import main
 from sahara.tests.unit import base
 from sahara.utils import rpc as messaging
 
-_ALIASES = {
-    'sahara.openstack.common.rpc.impl_kombu': 'rabbit',
-    'sahara.openstack.common.rpc.impl_qpid': 'qpid',
-    'sahara.openstack.common.rpc.impl_zmq': 'zmq',
-}
-
 
 class TestMessagingSetup(base.SaharaTestCase):
     def setUp(self):
@@ -67,10 +61,10 @@ class TestMessagingSetup(base.SaharaTestCase):
         ]
         self.assertEqual(expected, self.set_transport_def.call_args_list)
         self.assertEqual(
-            [mock.call(main.CONF, aliases=_ALIASES)],
+            [mock.call(main.CONF)],
             self.get_transport.call_args_list)
         self.assertEqual(
-            [mock.call(main.CONF, aliases=_ALIASES)],
+            [mock.call(main.CONF)],
             self.get_notify_transport.call_args_list)
         self.assertEqual(1, self.notifier_init.call_count)
 
@@ -89,10 +83,10 @@ class TestMessagingSetup(base.SaharaTestCase):
         ]
         self.assertEqual(expected, self.set_transport_def.call_args_list)
         self.assertEqual(
-            [mock.call(main.CONF, aliases=_ALIASES)],
+            [mock.call(main.CONF)],
             self.get_transport.call_args_list)
         self.assertEqual(
-            [mock.call(main.CONF, aliases=_ALIASES)],
+            [mock.call(main.CONF)],
             self.get_notify_transport.call_args_list)
         self.assertEqual(1, self.notifier_init.call_count)
 
