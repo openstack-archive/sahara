@@ -388,7 +388,7 @@ def generate_spark_executor_classpath(cluster):
 def extract_hadoop_environment_confs(configs):
     """Returns environment specific Hadoop configurations.
 
-    :returns list of Hadoop parameters which should be passed via environment
+    :returns: list of Hadoop parameters which should be passed via environment
     """
 
     lst = []
@@ -404,8 +404,8 @@ def extract_hadoop_environment_confs(configs):
 def extract_hadoop_xml_confs(configs):
     """Returns xml specific Hadoop configurations.
 
-    :returns list of Hadoop parameters which should be passed into general
-    configs like core-site.xml
+    :returns: list of Hadoop parameters which should be passed into general
+     configs like core-site.xml
     """
 
     lst = []
