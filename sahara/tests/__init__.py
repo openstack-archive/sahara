@@ -13,6 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from sahara.utils import patches
+patches.patch_all()
+
 import oslo_i18n
 
 # NOTE(slukjanov): i18n.enable_lazy() must be called before
