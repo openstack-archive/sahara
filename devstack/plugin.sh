@@ -46,6 +46,37 @@ function cleanup_sahara {
 
     # Cleanup auth cache dir
     sudo rm -rf $SAHARA_AUTH_CACHE_DIR
+    if [ "$SAHARA_USE_MOD_WSGI" == "True" ]; then
+        sudo rm -f $(apache_site_config_for sahara-api)
+    fi
+}
+
+function configure_sahara_apache_wsgi {
+
+    local sahara_apache_conf=$(apache_site_config_for sahara-api)
+    local sahara_ssl=""
+    local sahara_certfile=""
+    local sahara_keyfile=""
+    local venv_path=""
+
+    if is_ssl_enabled_service sahara; then
+        sahara_ssl="SSLEngine On"
+        sahara_certfile="SSLCertificateFile $SAHARA_SSL_CERT"
+        sahara_keyfile="SSLCertificateKeyFile $SAHARA_SSL_KEY"
+    fi
+
+    sudo cp $SAHARA_DIR/devstack/files/apache-sahara-api.template $sahara_apache_conf
+    sudo sed -e "
+        s|%PUBLICPORT%|$SAHARA_SERVICE_PORT|g;
+        s|%APACHE_NAME%|$APACHE_NAME|g;
+        s|%SAHARA_BIN_DIR%|$SAHARA_BIN_DIR|g;
+        s|%SSLENGINE%|$sahara_ssl|g;
+        s|%SSLCERTFILE%|$sahara_certfile|g;
+        s|%SSLKEYFILE%|$sahara_keyfile|g;
+        s|%USER%|$STACK_USER|g;
+        s|%VIRTUALENV%|$venv_path|g
+    " -i $sahara_apache_conf
+
 }
 
 # configure_sahara() - Set config files, create data dirs, etc
@@ -140,7 +171,9 @@ function configure_sahara {
 
     # Format logging
     if [ "$LOG_COLOR" == "True" ] && [ "$SYSLOG" == "False" ]; then
-        setup_colorized_logging $SAHARA_CONF_FILE DEFAULT
+        if [ "$SAHARA_USE_MOD_WSGI" == "False" ]; then
+            setup_colorized_logging $SAHARA_CONF_FILE DEFAULT
+        fi
     fi
 
     if is_service_enabled tls-proxy; then
@@ -158,11 +191,18 @@ function configure_sahara {
     recreate_database sahara
     $SAHARA_BIN_DIR/sahara-db-manage \
         --config-file $SAHARA_CONF_FILE upgrade head
+
+    if [ "$SAHARA_USE_MOD_WSGI" == "True" ]; then
+        configure_sahara_apache_wsgi
+    fi
 }
 
 # install_sahara() - Collect source and prepare
 function install_sahara {
     setup_develop $SAHARA_DIR
+    if [ "$SAHARA_USE_MOD_WSGI" == "True" ]; then
+        install_apache_wsgi
+    fi
 }
 
 # install_python_saharaclient() - Collect source and prepare
@@ -182,10 +222,17 @@ function start_sahara {
         service_protocol="http"
     fi
 
-    run_process sahara-all "$SAHARA_BIN_DIR/sahara-all \
-        --config-file $SAHARA_CONF_FILE"
-    run_process sahara-api "$SAHARA_BIN_DIR/sahara-api \
-        --config-file $SAHARA_CONF_FILE"
+    if [ "$SAHARA_USE_MOD_WSGI" == "True" ] ; then
+        enable_apache_site sahara-api
+        restart_apache_server
+        tail_log sahara-api /var/log/$APACHE_NAME/sahara-api.log
+    else
+        run_process sahara-all "$SAHARA_BIN_DIR/sahara-all \
+            --config-file $SAHARA_CONF_FILE"
+        run_process sahara-api "$SAHARA_BIN_DIR/sahara-api \
+            --config-file $SAHARA_CONF_FILE"
+    fi
+
     run_process sahara-eng "$SAHARA_BIN_DIR/sahara-engine \
         --config-file $SAHARA_CONF_FILE"
 
@@ -214,9 +261,14 @@ function configure_tempest_for_sahara {
 # stop_sahara() - Stop running processes
 function stop_sahara {
     # Kill the Sahara screen windows
-    stop_process sahara-all
-    stop_process sahara-api
-    stop_process sahara-eng
+    if [ "$SAHARA_USE_MOD_WSGI" == "True" ]; then
+        disable_apache_site sahara-api
+        restart_apache_server
+    else
+        stop_process sahara-all
+        stop_process sahara-api
+        stop_process sahara-eng
+    fi
 }
 
 # is_sahara_enabled. This allows is_service_enabled sahara work
