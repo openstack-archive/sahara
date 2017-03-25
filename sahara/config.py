@@ -35,8 +35,9 @@ from sahara import version
 
 
 cli_opts = [
-    cfg.StrOpt('host', default='',
-               help='Hostname or IP address that will be used to listen on.'),
+    cfg.HostAddressOpt('host', default='0.0.0.0',
+                       help='Hostname or IP address that will be used '
+                            'to listen on.'),
     cfg.PortOpt('port', default=8386,
                 help='Port that will be used to listen on.'),
     cfg.BoolOpt('log-exchange', default=False,
