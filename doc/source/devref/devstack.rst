@@ -47,6 +47,9 @@ Install DevStack
 The instructions assume that you've decided to install DevStack into
 Ubuntu 14.04 system.
 
+**Note:** Make sure to use bash, as other shells are not fully compatible
+and may cause hard to debug problems.
+
 1. Clone DevStack:
 
 .. sourcecode:: console
