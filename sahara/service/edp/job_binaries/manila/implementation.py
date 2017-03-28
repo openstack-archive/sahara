@@ -21,7 +21,7 @@ from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.service.edp.job_binaries.base import JobBinaryType
 from sahara.service.edp import job_utils
-from sahara.service import shares as shares_service
+from sahara.service.edp.utils import shares as shares_service
 from sahara.utils.openstack import manila as m
 
 conductor = c.API

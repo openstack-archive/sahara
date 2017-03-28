@@ -408,7 +408,7 @@ class ClusterTest(test_base.ConductorManagerTestCase):
                                    "tenant_id"])
         self.assertEqual(args[3], {"name": "fox"})
 
-    @mock.patch("sahara.service.shares.mount_shares")
+    @mock.patch("sahara.service.edp.utils.shares.mount_shares")
     def test_cluster_update_shares(self, mount_shares):
         ctx = context.ctx()
         cluster_db_obj = self.api.cluster_create(ctx, SAMPLE_CLUSTER)

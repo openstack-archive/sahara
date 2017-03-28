@@ -15,8 +15,7 @@
 
 from sahara import conductor as c
 from sahara import context
-from sahara.service.edp.binary_retrievers import dispatch
-
+from sahara.service.edp.job_binaries import manager as jb_manager
 
 conductor = c.API
 
@@ -69,4 +68,5 @@ def update_job_binary_internal(id, values):
 
 def get_job_binary_data(id):
     job_binary = conductor.job_binary_get(context.ctx(), id)
-    return dispatch.get_raw_binary(job_binary, with_context=True)
+    return jb_manager.JOB_BINARIES.get_job_binary(job_binary.type). \
+        get_raw_data(job_binary, with_context=True)

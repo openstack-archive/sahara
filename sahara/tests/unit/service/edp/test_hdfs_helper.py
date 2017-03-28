@@ -118,11 +118,14 @@ class HDFSHelperTestCase(base.SaharaTestCase):
         res = helper._get_cluster_hosts_information('host', self.cluster)
         self.assertEqual(res, mock_generate())
 
+    @mock.patch('sahara.service.edp.hdfs_helper._is_cluster_configured')
     @mock.patch('six.text_type')
     @mock.patch('sahara.plugins.utils.get_instances')
     @mock.patch(('sahara.service.edp.hdfs_helper._get_cluster_hosts_'
                  'information'))
-    def test_configure_cluster_for_hdfs(self, mock_helper, mock_get, mock_six):
+    def test_configure_cluster_for_hdfs(self, mock_helper, mock_get, mock_six,
+                                        cluster_conf):
+        cluster_conf.return_value = False
         inst = mock.MagicMock()
         inst.remote = mock.MagicMock()
         mock_six.return_value = 111
@@ -138,6 +141,29 @@ class HDFSHelperTestCase(base.SaharaTestCase):
              mock.call().__enter__().write_file_to(str1, mock_helper()),
              mock.call().__enter__().execute_command(str2, run_as_root=True),
              mock.call().__exit__(None, None, None)])
+
+    @mock.patch('sahara.plugins.utils.get_instances')
+    def test_is_cluster_configured(self, mock_get):
+        inst = mock.Mock()
+        r = mock.MagicMock()
+        inst.remote = mock.Mock(return_value=r)
+        enter_r = mock.Mock()
+        enter_r.execute_command = mock.Mock()
+        enter_r.execute_command.return_value = 0, "127.0.0.1 localhost\n" + \
+            "127.0.0.2 t1 t1"
+        r.__enter__.return_value = enter_r
+
+        cmd = 'cat /etc/hosts'
+        host_info = ['127.0.0.1 localhost', '127.0.0.2 t1 t1']
+        mock_get.return_value = [inst]
+        res = helper._is_cluster_configured(self.cluster, host_info)
+        self.assertTrue(res)
+        enter_r.execute_command.assert_called_with(cmd)
+
+        enter_r.execute_command.return_value = 0, "127.0.0.1 localhost\n"
+        res = helper._is_cluster_configured(self.cluster, host_info)
+        self.assertFalse(res)
+        enter_r.execute_command.assert_called_with(cmd)
 
     @mock.patch('six.text_type')
     @mock.patch('os.open')

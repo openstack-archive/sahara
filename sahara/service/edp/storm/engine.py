@@ -24,7 +24,7 @@ from sahara import exceptions as e
 from sahara.i18n import _
 from sahara.plugins import utils as plugin_utils
 from sahara.service.edp import base_engine
-from sahara.service.edp.binary_retrievers import dispatch
+from sahara.service.edp.job_binaries import manager as jb_manager
 from sahara.service.edp import job_utils
 from sahara.service.validations.edp import job_execution as j
 from sahara.utils import cluster as cluster_utils
@@ -111,24 +111,29 @@ class StormJobEngine(base_engine.JobEngine):
         path = "service/edp/resources/launch_command.py"
         return files.get_file_text(path)
 
+    def _prepare_job_binaries(self, job_binaries, r):
+        for jb in job_binaries:
+            jb_manager.JOB_BINARIES.get_job_binary_by_url(jb.url). \
+                prepare_cluster(jb, remote=r)
+
     def _upload_job_files(self, where, job_dir, job, job_configs):
 
         def upload(r, dir, job_file, proxy_configs):
-            dst = os.path.join(dir, job_file.name)
-            raw_data = dispatch.get_raw_binary(job_file,
-                                               proxy_configs=proxy_configs,
-                                               remote=remote)
-            if isinstance(raw_data, dict) and raw_data["type"] == "path":
-                dst = raw_data['path']
-            else:
-                r.write_file_to(dst, raw_data)
-            return dst
-
+            path = jb_manager.JOB_BINARIES. \
+                get_job_binary_by_url(job_file.url). \
+                copy_binary_to_cluster(job_file,
+                                       proxy_configs=proxy_configs,
+                                       remote=r, context=context.ctx())
+            return path
         uploaded_paths = []
         with remote.get_remote(where) as r:
             mains = list(job.mains) if job.mains else []
             libs = list(job.libs) if job.libs else []
-            for job_file in mains+libs:
+
+            job_binaries = mains + libs
+            self._prepare_job_binaries(job_binaries, r)
+
+            for job_file in job_binaries:
                 uploaded_paths.append(
                     upload(r, job_dir, job_file,
                            job_configs.get('proxy_configs')))
@@ -234,6 +239,10 @@ class StormJobEngine(base_engine.JobEngine):
         data_source_urls = job_utils.to_url_dict(data_source_urls,
                                                  runtime=True)
 
+        job_utils.prepare_cluster_for_ds(additional_sources,
+                                         self.cluster, updated_job_configs,
+                                         data_source_urls)
+
         # We'll always run the driver program on the master
         master = plugin_utils.get_instance(self.cluster, "nimbus")
 
@@ -245,8 +254,6 @@ class StormJobEngine(base_engine.JobEngine):
         paths = self._upload_job_files(master, wf_dir, job,
                                        updated_job_configs)
 
-        # We can shorten the paths in this case since we'll run out of wf_dir
-        paths = [os.path.basename(p) for p in paths]
         topology_name = self._set_topology_name(job_execution, job.name)
 
         # Launch the storm job using storm jar

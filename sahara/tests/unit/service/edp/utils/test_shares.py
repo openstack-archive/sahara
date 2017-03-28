@@ -23,7 +23,7 @@ from oslo_utils import uuidutils
 import testtools
 
 from sahara import exceptions
-from sahara.service import shares
+from sahara.service.edp.utils import shares
 from sahara.tests.unit import base
 
 _NAMENODE_IPS = ['192.168.122.3', '192.168.122.4']

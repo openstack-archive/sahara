@@ -15,9 +15,10 @@
 
 import os
 
+from sahara import context
 import sahara.plugins.mapr.util.maprfs_helper as mfs
 import sahara.plugins.mapr.versions.version_handler_factory as vhf
-import sahara.service.edp.binary_retrievers.dispatch as d
+from sahara.service.edp.job_binaries import manager as jb_manager
 import sahara.service.edp.oozie.engine as e
 from sahara.utils import edp
 
@@ -52,16 +53,23 @@ class MapROozieJobEngine(e.OozieJobEngine):
 
         with where.remote() as r:
             for m in mains:
-                raw_data = d.get_raw_binary(m, proxy_configs)
-                mfs.put_file_to_maprfs(r, raw_data, m.name, job_dir, hdfs_user)
-                uploaded_paths.append(os.path.join(job_dir, m.name))
+                path = jb_manager.JOB_BINARIES. \
+                    get_job_binary_by_url(m.url). \
+                    copy_binary_to_cluster(m, proxy_configs=proxy_configs,
+                                           remote=r, context=context.ctx())
+                target = os.path.join(job_dir, m.name)
+                mfs.copy_from_local(r, path, target, hdfs_user)
+                uploaded_paths.append(target)
             if len(libs) > 0:
                 self.create_hdfs_dir(r, lib_dir)
             for l in libs:
-                raw_data = d.get_raw_binary(l, proxy_configs)
-                mfs.put_file_to_maprfs(r, raw_data, l.name, lib_dir,
-                                       hdfs_user)
-                uploaded_paths.append(os.path.join(lib_dir, l.name))
+                path = jb_manager.JOB_BINARIES. \
+                    get_job_binary_by_url(l.url). \
+                    copy_binary_to_cluster(l, proxy_configs=proxy_configs,
+                                           remote=r, context=context.ctx())
+                target = os.path.join(lib_dir, l.name)
+                mfs.copy_from_local(r, path, target, hdfs_user)
+                uploaded_paths.append(target)
             for lib in builtin_libs:
                 mfs.put_file_to_maprfs(r, lib['raw'], lib['name'], lib_dir,
                                        hdfs_user)

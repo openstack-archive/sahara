@@ -25,8 +25,7 @@ from sahara import exceptions as e
 from sahara.i18n import _
 from sahara.service.castellan import utils as key_manager
 from sahara.service.edp import base_engine
-from sahara.service.edp.binary_retrievers import dispatch
-from sahara.service.edp import hdfs_helper as h
+from sahara.service.edp.job_binaries import manager as jb_manager
 from sahara.service.edp import job_utils
 from sahara.service.validations.edp import job_execution as j
 from sahara.swift import swift_helper as sw
@@ -134,17 +133,20 @@ class SparkJobEngine(base_engine.JobEngine):
             r.write_file_to(dst, content)
         return xml_name
 
+    def _prepare_job_binaries(self, job_binaries, r):
+        for jb in job_binaries:
+            jb_manager.JOB_BINARIES.get_job_binary_by_url(jb.url). \
+                prepare_cluster(jb, remote=r)
+
     def _upload_job_files(self, where, job_dir, job, job_configs):
 
         def upload(r, dir, job_file, proxy_configs):
-            dst = os.path.join(dir, job_file.name)
-            raw_data = dispatch.get_raw_binary(
-                job_file, proxy_configs=proxy_configs, remote=r)
-            if isinstance(raw_data, dict) and raw_data["type"] == "path":
-                dst = raw_data['path']
-            else:
-                r.write_file_to(dst, raw_data)
-            return dst
+            path = jb_manager.JOB_BINARIES. \
+                get_job_binary_by_url(job_file.url). \
+                copy_binary_to_cluster(job_file,
+                                       proxy_configs=proxy_configs,
+                                       remote=r, context=context.ctx())
+            return path
 
         def upload_builtin(r, dir, builtin):
             dst = os.path.join(dir, builtin['name'])
@@ -164,7 +166,11 @@ class SparkJobEngine(base_engine.JobEngine):
         with remote.get_remote(where) as r:
             mains = list(job.mains) if job.mains else []
             libs = list(job.libs) if job.libs else []
-            for job_file in mains+libs:
+
+            job_binaries = mains + libs
+            self._prepare_job_binaries(job_binaries, r)
+
+            for job_file in job_binaries:
                 uploaded_paths.append(
                     upload(r, job_dir, job_file,
                            job_configs.get('proxy_configs')))
@@ -310,10 +316,9 @@ class SparkJobEngine(base_engine.JobEngine):
         data_source_urls = job_utils.to_url_dict(data_source_urls,
                                                  runtime=True)
 
-        for data_source in additional_sources:
-            if data_source and data_source.type == 'hdfs':
-                h.configure_cluster_for_hdfs(self.cluster, data_source)
-                break
+        job_utils.prepare_cluster_for_ds(additional_sources,
+                                         self.cluster, updated_job_configs,
+                                         data_source_urls)
 
         # It is needed in case we are working with Spark plugin
         self.plugin_params['master'] = (

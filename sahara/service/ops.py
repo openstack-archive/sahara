@@ -28,9 +28,9 @@ from sahara.i18n import _
 from sahara.i18n import _LE
 from sahara.plugins import base as plugin_base
 from sahara.service.edp import job_manager
+from sahara.service.edp.utils import shares
 from sahara.service.health import verification_base as ver_base
 from sahara.service import ntp_service
-from sahara.service import shares
 from sahara.service import trusts
 from sahara.utils import cluster as c_u
 from sahara.utils import remote

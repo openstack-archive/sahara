@@ -88,6 +88,14 @@ def _get_cluster_hosts_information(host, cluster):
     return None
 
 
+def _is_cluster_configured(cluster, host_info):
+    inst = u.get_instances(cluster)[0]
+    cat_etc_hosts = 'cat /etc/hosts'
+    with inst.remote() as r:
+        exit_code, etc_hosts = r.execute_command(cat_etc_hosts)
+        return all(host in etc_hosts for host in host_info)
+
+
 def configure_cluster_for_hdfs(cluster, data_source_url):
     host = urlparse.urlparse(data_source_url).hostname
 
@@ -96,10 +104,15 @@ def configure_cluster_for_hdfs(cluster, data_source_url):
         # Ip address hasn't been resolved, the last chance is for VM itself
         return
 
-    etc_hosts_update = '/tmp/etc-hosts-update.%s' % six.text_type(
-        uuidutils.generate_uuid())
-    tmp_etc_hosts = '/tmp/etc-hosts.%s' % six.text_type(
-        uuidutils.generate_uuid())
+    # If the cluster was already configured for this data source
+    # there's no need to configure it again
+    if _is_cluster_configured(cluster, etc_hosts_information.splitlines()):
+        return
+
+    etc_hosts_update = ('/tmp/etc-hosts-update'
+                        '.%s' % six.text_type(uuidutils.generate_uuid()))
+    tmp_etc_hosts = ('/tmp/etc-hosts'
+                     '.%s' % six.text_type(uuidutils.generate_uuid()))
     update_etc_hosts_cmd = (
         'cat %(etc_hosts_update)s /etc/hosts | '
         'sort | uniq > %(tmp_etc_hosts)s && '

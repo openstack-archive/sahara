@@ -18,7 +18,9 @@ import os
 import mock
 
 import sahara.exceptions as ex
+from sahara.service.edp.job_utils import ds_manager
 from sahara.service.edp.storm import engine as se
+from sahara.service.edp.storm.engine import jb_manager
 from sahara.tests.unit import base
 from sahara.utils import edp
 
@@ -31,6 +33,9 @@ class TestStorm(base.SaharaTestCase):
         self.master_inst = "6789"
         self.storm_topology_name = "MyJob_ed8347a9-39aa-477c-8108-066202eb6130"
         self.workflow_dir = "/wfdir"
+
+        jb_manager.setup_job_binaries()
+        ds_manager.setup_data_sources()
 
     def test_get_topology_and_inst_id(self):
         '''Test parsing of job ids
@@ -210,9 +215,9 @@ class TestStorm(base.SaharaTestCase):
 
         self.assertEqual({"status": edp.JOB_STATUS_KILLED}, status)
 
-    @mock.patch('sahara.service.edp.binary_retrievers.dispatch.get_raw_binary')
+    @mock.patch('sahara.service.edp.storm.engine.jb_manager')
     @mock.patch('sahara.utils.remote.get_remote')
-    def test_upload_job_files(self, get_remote, get_raw_binary):
+    def test_upload_job_files(self, get_remote, jb_manager):
         main_names = ["main1", "main2", "main3"]
         lib_names = ["lib1", "lib2", "lib3"]
 
@@ -225,7 +230,7 @@ class TestStorm(base.SaharaTestCase):
             return objs
 
         job = mock.Mock()
-        job.name = "job"
+        job.id = "job_exec_id"
         job.mains = make_data_objects(*main_names)
         job.libs = make_data_objects(*lib_names)
 
@@ -236,14 +241,23 @@ class TestStorm(base.SaharaTestCase):
         remote_instance.instance.node_group.cluster.shares = []
         remote_instance.instance.node_group.shares = []
 
-        get_raw_binary.return_value = "data"
+        JOB_BINARIES = mock.Mock()
+        mock_jb = mock.Mock()
+        jb_manager.JOB_BINARIES = JOB_BINARIES
+
+        JOB_BINARIES.get_job_binary_by_url = mock.Mock(return_value=mock_jb)
+
+        jbs = main_names + lib_names
+
+        mock_jb.copy_binary_to_cluster = mock.Mock(
+            side_effect=['/tmp/%s.%s' % (job.id, j) for j in jbs])
 
         eng = se.StormJobEngine("cluster")
+        eng._prepare_job_binaries = mock.Mock()
+
         paths = eng._upload_job_files("where", "/somedir", job, {})
-        self.assertEqual(["/somedir/" + n for n in main_names + lib_names],
+        self.assertEqual(['/tmp/%s.%s' % (job.id, j) for j in jbs],
                          paths)
-        for path in paths:
-            remote_instance.write_file_to.assert_any_call(path, "data")
 
     def _make_master_instance(self, return_code=0):
         master = mock.Mock()
@@ -346,7 +360,7 @@ class TestStorm(base.SaharaTestCase):
             'cd %(workflow_dir)s; '
             './launch_command /usr/local/storm/bin/storm jar '
             '-c nimbus.host=master '
-            'app.jar org.me.myclass %(topology_name)s '
+            '%(workflow_dir)s/app.jar org.me.myclass %(topology_name)s '
             '> /dev/null 2>&1 & echo $!' % {"workflow_dir": self.workflow_dir,
                                             "topology_name": (
                                                 self.storm_topology_name)})
@@ -375,7 +389,8 @@ class TestStorm(base.SaharaTestCase):
             'cd %(workflow_dir)s; '
             './launch_command /usr/local/storm/bin/storm jar '
             '-c nimbus.host=master '
-            'app.jar org.me.myclass %(topology_name)s input_arg output_arg '
+            '%(workflow_dir)s/app.jar org.me.myclass %(topology_name)s '
+            'input_arg output_arg '
             '> /dev/null 2>&1 & echo $!' % {"workflow_dir": self.workflow_dir,
                                             "topology_name": (
                                                 self.storm_topology_name)})

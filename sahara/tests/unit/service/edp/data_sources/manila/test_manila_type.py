@@ -35,7 +35,7 @@ class TestManilaType(base.SaharaTestCase):
 
     @mock.patch('sahara.utils.openstack.manila.client')
     @mock.patch('sahara.conductor.API.cluster_update')
-    @mock.patch('sahara.service.shares.mount_shares')
+    @mock.patch('sahara.service.edp.utils.shares.mount_shares')
     def test_prepare_cluster(self, mount_shares, cluster_update,
                              f_manilaclient):
 
@@ -59,10 +59,10 @@ class TestManilaType(base.SaharaTestCase):
         self.assertEqual(1, mount_shares.call_count)
         self.assertEqual(1, cluster_update.call_count)
 
-    @mock.patch('sahara.service.shares.get_share_path')
+    @mock.patch('sahara.service.edp.utils.shares.get_share_path')
     @mock.patch('sahara.utils.openstack.manila.client')
     @mock.patch('sahara.conductor.API.cluster_update')
-    @mock.patch('sahara.service.shares.mount_shares')
+    @mock.patch('sahara.service.edp.utils.shares.mount_shares')
     def test_get_runtime_url(self, mount_shares, cluster_update,
                              f_manilaclient, get_share_path):
 

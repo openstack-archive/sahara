@@ -50,12 +50,11 @@ class TestInternalDBType(testtools.TestCase):
 
             res = self.internal_db.copy_binary_to_cluster(job_binary,
                                                           context=context,
-                                                          remote=remote,
-                                                          job_exec_id='id')
+                                                          remote=remote)
 
-            self.assertEqual('/tmp/id.test', res)
+            self.assertEqual('/tmp/test', res)
             remote.write_file_to.assert_called_with(
-                '/tmp/id.test',
+                '/tmp/test',
                 'ok')
 
         @mock.patch('sahara.conductor.API.job_binary_internal_get_raw_data')

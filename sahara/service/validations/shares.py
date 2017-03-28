@@ -15,7 +15,7 @@
 
 from sahara import exceptions as ex
 from sahara.i18n import _
-from sahara.service import shares
+from sahara.service.edp.utils import shares
 from sahara.utils.openstack import manila
 
 

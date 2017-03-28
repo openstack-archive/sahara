@@ -17,15 +17,14 @@ from oslo_config import cfg
 
 import sahara.exceptions as e
 from sahara.i18n import _
+from sahara.service.edp.job_binaries import manager as jb_manager
 from sahara.utils import api_validator as a
 
 CONF = cfg.CONF
 
 
 def is_internal_db_enabled():
-    if not CONF.edp_internal_db_enabled:
-        return False
-    return True
+    return 'internal-db' in jb_manager.JOB_BINARIES.get_job_binaries()
 
 
 def check_job_binary_internal(data, **kwargs):

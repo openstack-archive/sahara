@@ -31,9 +31,8 @@ CONF = cfg.CONF
 class SwiftType(JobBinaryType):
     def copy_binary_to_cluster(self, job_binary, **kwargs):
         r = kwargs.pop('remote')
-        job_exec_id = kwargs.pop('job_exec_id')
 
-        dst = self._generate_valid_path(job_exec_id, job_binary)
+        dst = self._generate_valid_path(job_binary)
         raw = self.get_raw_data(job_binary, **kwargs)
 
         r.write_file_to(dst, raw)
