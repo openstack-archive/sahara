@@ -70,6 +70,7 @@ def _check_installed_xfs(instance):
         "centos": redhat,
         "fedora": redhat,
         "redhatenterpriseserver": redhat,
+        "redhat": redhat,
         "ubuntu": debian,
         'debian': debian
     }

@@ -58,7 +58,7 @@ class MySQL(s.Service):
             return 'mysql'
         if distro.lower() == 'suse':
             return 'mysqld'
-        if distro.lower() in ['centos', 'redhatenterpriseserver']:
+        if distro.lower() in ['centos', 'redhatenterpriseserver', 'redhat']:
             if distro_version.split('.')[0] == '7':
                 return 'mariadb'
             return 'mysqld'

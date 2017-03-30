@@ -201,7 +201,7 @@ class TestImages(b.SaharaTestCase):
             "rpm -q java-8 hadoop", run_as_root=True)
         self.assertEqual(remote.execute_command.call_count, 1)
 
-        image_arguments = {"distro": 'redhatenterpriseserver'}
+        image_arguments = {"distro": 'redhat'}
         packages = [cls.Package("java", "8"), cls.Package("hadoop")]
         validator = images.SaharaPackageValidator(packages)
         remote = mock.Mock()

@@ -183,6 +183,7 @@ class SaharaImageValidatorBase(ImageValidator):
         'centos': 'redhat',
         'centos7': 'redhat',
         'fedora': 'redhat',
+        'redhat': 'redhat',
         'redhatenterpriseserver': 'redhat',
         'ubuntu': 'debian'
     }
