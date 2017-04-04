@@ -74,6 +74,14 @@ class SparkPluginTest(base.SaharaWithDbTestCase):
         self._test_engine('1.6.0', edp.JOB_TYPE_SHELL,
                           engine.SparkShellJobEngine)
 
+    def test_plugin21_edp_engine(self):
+        self._test_engine('2.1.0', edp.JOB_TYPE_SPARK,
+                          engine.SparkJobEngine)
+
+    def test_plugin22_shell_engine(self):
+        self._test_engine('2.1.0', edp.JOB_TYPE_SHELL,
+                          engine.SparkShellJobEngine)
+
     def _test_engine(self, version, job_type, eng):
         cluster_dict = self._init_cluster_dict(version)
 
@@ -140,6 +148,8 @@ class SparkProviderTest(base.SaharaTestCase):
                          res['1.3.1'])
         self.assertEqual([edp.JOB_TYPE_SHELL, edp.JOB_TYPE_SPARK],
                          res['1.6.0'])
+        self.assertEqual([edp.JOB_TYPE_SHELL, edp.JOB_TYPE_SPARK],
+                         res['2.1.0'])
 
     def test_edp_config_hints(self):
         provider = pl.SparkProvider()
@@ -157,5 +167,13 @@ class SparkProviderTest(base.SaharaTestCase):
                          res['job_config'])
 
         res = provider.get_edp_config_hints(edp.JOB_TYPE_SPARK, "1.6.0")
+        self.assertEqual({'args': [], 'configs': []},
+                         res['job_config'])
+
+        res = provider.get_edp_config_hints(edp.JOB_TYPE_SPARK, "2.1.0")
+        self.assertEqual({'args': [], 'configs': []},
+                         res['job_config'])
+
+        res = provider.get_edp_config_hints(edp.JOB_TYPE_SPARK, "2.1.0")
         self.assertEqual({'args': [], 'configs': []},
                          res['job_config'])
