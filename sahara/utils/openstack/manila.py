@@ -59,7 +59,7 @@ def client():
         'ca_cert': CONF.manila.ca_file,
         'insecure': CONF.manila.api_insecure
     }
-    return manila_client.Client(str(CONF.manila.api_version), **args)
+    return manila_client.Client(CONF.manila.api_version, **args)
 
 
 def get_share(client_instance, share_id, raise_on_error=False):
