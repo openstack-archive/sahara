@@ -102,8 +102,12 @@ class SparkProvider(p.ProvisioningPluginBase):
         sm_count = sum([ng.count for ng
                         in utils.get_node_groups(cluster, "master")])
 
-        if sm_count != 1:
+        if sm_count < 1:
             raise ex.RequiredServiceMissingException("Spark master")
+
+        if sm_count >= 2:
+            raise ex.InvalidComponentCountException("Spark master", "1",
+                                                    sm_count)
 
         sl_count = sum([ng.count for ng
                         in utils.get_node_groups(cluster, "slave")])
