@@ -593,9 +593,11 @@ following configs for the cluster:
 
 .. sourcecode:: json
 
-  cluster_configs: {
-      "general": {
-          "URL of NTP server": "your_server.net",
+  {
+      "cluster_configs": {
+          "general": {
+              "URL of NTP server": "your_server.net"
+          }
       }
   }
 
@@ -604,9 +606,11 @@ configs for the cluster:
 
 .. sourcecode:: json
 
-  "cluster_configs": {
-      "general": {
-          "Enable NTP service": false,
+  {
+      "cluster_configs": {
+          "general": {
+              "Enable NTP service": false
+          }
       }
   }
 

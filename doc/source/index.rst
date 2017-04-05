@@ -96,6 +96,7 @@ Developer Guide
     devref/testing
     devref/log.guidelines
     devref/apiv2
+    devref/image-gen
 
 **Background Concepts for Sahara**
 
