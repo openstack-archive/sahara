@@ -68,7 +68,7 @@ def job_binary_data(job_binary_id):
     return data
 
 
-@rest.put('/job-binaries/<job_binary_id>')
+@rest.patch('/job-binaries/<job_binary_id>')
 @acl.enforce("data-processing:job-binaries:modify")
 @v.validate(v_j_b_schema.JOB_BINARY_UPDATE_SCHEMA, v_j_b.check_job_binary)
 def job_binary_update(job_binary_id, data):

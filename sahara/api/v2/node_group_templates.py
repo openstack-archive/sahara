@@ -51,7 +51,7 @@ def node_group_templates_get(node_group_template_id):
         api.get_node_group_template, node_group_template_id)
 
 
-@rest.put('/node-group-templates/<node_group_template_id>')
+@rest.patch('/node-group-templates/<node_group_template_id>')
 @acl.enforce("data-processing:node-group-templates:modify")
 @v.check_exists(api.get_node_group_template, 'node_group_template_id')
 @v.validate(ngt_schema.NODE_GROUP_TEMPLATE_UPDATE_SCHEMA,

@@ -49,7 +49,7 @@ def cluster_templates_get(cluster_template_id):
     return u.to_wrapped_dict(api.get_cluster_template, cluster_template_id)
 
 
-@rest.put('/cluster-templates/<cluster_template_id>')
+@rest.patch('/cluster-templates/<cluster_template_id>')
 @acl.enforce("data-processing:cluster-templates:modify")
 @v.check_exists(api.get_cluster_template, 'cluster_template_id')
 @v.validate(ct_schema.CLUSTER_TEMPLATE_UPDATE_SCHEMA,
