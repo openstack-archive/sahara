@@ -104,7 +104,7 @@ class StormPluginTest(base.SaharaWithDbTestCase):
         mock_ng.assert_called_once_with(cluster, "nimbus")
 
         fake_ng.count = 2
-        self.assertRaises(ex.RequiredServiceMissingException, plugin.validate,
+        self.assertRaises(ex.InvalidComponentCountException, plugin.validate,
                           cluster)
 
         mock_ng.assert_called_with(cluster, "nimbus")

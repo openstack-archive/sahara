@@ -64,8 +64,12 @@ class StormProvider(p.ProvisioningPluginBase):
         sm_count = sum([ng.count for ng
                         in utils.get_node_groups(cluster, "nimbus")])
 
-        if sm_count != 1:
+        if sm_count < 1:
             raise ex.RequiredServiceMissingException("Storm nimbus")
+
+        if sm_count >= 2:
+            raise ex.InvalidComponentCountException("Storm nimbus", "1",
+                                                    sm_count)
 
         sl_count = sum([ng.count for ng
                         in utils.get_node_groups(cluster, "supervisor")])
