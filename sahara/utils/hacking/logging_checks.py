@@ -26,8 +26,6 @@ log_translation_LE = re.compile(
     r"(.)*LOG\.(exception)\(\s*(_\(|'|\")")
 log_translation_LW = re.compile(
     r"(.)*LOG\.(warning)\(\s*(_\(|'|\")")
-log_translation_LC = re.compile(
-    r"(.)*LOG\.(critical)\(\s*('|\")")
 accepted_log_level = re.compile(
     r"^LOG\.(debug|info|exception|warning|error|critical)\(")
 
@@ -63,9 +61,6 @@ def validate_log_translations(logical_line, filename):
         yield (0, msg)
     msg = "S371: LOG.warning messages require translations `_LW()`!"
     if log_translation_LW.search(logical_line):
-        yield (0, msg)
-    msg = "S372: LOG.critical messages require translations `_LC()`!"
-    if log_translation_LC.search(logical_line):
         yield (0, msg)
 
 
