@@ -82,8 +82,7 @@ class ClouderaManagerHealthCheck(health_check_base.BasicHealthCheck):
         return _("Cloudera Manager health check")
 
     def is_available(self):
-        return (self.cluster.plugin_name == 'cdh' and
-                self.cluster.hadoop_version >= '5.4.0')
+        return self.cluster.plugin_name == 'cdh'
 
     def check_health(self):
         return self.provider.is_cloudera_active()
@@ -99,8 +98,7 @@ class ServiceHealthCheck(health_check_base.BasicHealthCheck):
         return _("CDH %s health check") % self.service
 
     def is_available(self):
-        return (self.cluster.plugin_name == 'cdh' and
-                self.cluster.hadoop_version >= '5.4.0')
+        return self.cluster.plugin_name == 'cdh'
 
     def check_health(self):
         important_services = self.provider.get_important_services()

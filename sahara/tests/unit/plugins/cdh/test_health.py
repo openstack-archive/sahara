@@ -24,22 +24,10 @@ from sahara.tests.unit import base as unit_base
 
 class TestHealthCheck(unit_base.SaharaTestCase):
     def test_check_health_availability(self):
-        cluster = mock.Mock(plugin_name='cdh', hadoop_version='5.3.0')
-        self.assertFalse(health.ClouderaManagerHealthCheck(
-            cluster, mock.Mock()).is_available())
-        cluster = mock.Mock(plugin_name='cdh', hadoop_version='5.4.0')
-        self.assertTrue(health.ClouderaManagerHealthCheck(
-            cluster, mock.Mock()).is_available())
         cluster = mock.Mock(plugin_name='cdh', hadoop_version='5.5.0')
         self.assertTrue(health.ClouderaManagerHealthCheck(
             cluster, mock.Mock()).is_available())
 
-        cluster = mock.Mock(plugin_name='cdh', hadoop_version='5.3.0')
-        self.assertFalse(health.ServiceHealthCheck(
-            cluster, mock.Mock(), mock.Mock()).is_available())
-        cluster = mock.Mock(plugin_name='cdh', hadoop_version='5.4.0')
-        self.assertTrue(health.ServiceHealthCheck(
-            cluster, mock.Mock(), mock.Mock()).is_available())
         cluster = mock.Mock(plugin_name='cdh', hadoop_version='5.5.0')
         self.assertTrue(health.ServiceHealthCheck(
             cluster, mock.Mock(), mock.Mock()).is_available())
