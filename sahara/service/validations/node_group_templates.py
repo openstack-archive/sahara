@@ -22,16 +22,20 @@ from sahara.service.validations import shares
 
 
 def check_node_group_template_create(data, **kwargs):
+    plugin_version = 'hadoop_version'
+    if data.get('plugin_version'):
+        plugin_version = 'plugin_version'
+
     b.check_node_group_template_unique_name(data['name'])
     b.check_plugin_name_exists(data['plugin_name'])
     b.check_plugin_supports_version(data['plugin_name'],
-                                    data['hadoop_version'])
+                                    data[plugin_version])
     b.check_node_group_basic_fields(data['plugin_name'],
-                                    data['hadoop_version'], data)
+                                    data[plugin_version], data)
     if data.get('image_id'):
         b.check_image_registered(data['image_id'])
         b.check_required_image_tags(data['plugin_name'],
-                                    data['hadoop_version'],
+                                    data[plugin_version],
                                     data['image_id'])
     if data.get('shares'):
         shares.check_shares(data['shares'])
@@ -63,21 +67,25 @@ def check_node_group_template_usage(node_group_template_id, **kwargs):
 
 
 def check_node_group_template_update(node_group_template_id, data, **kwargs):
-    if data.get('plugin_name') and not data.get('hadoop_version'):
+    plugin_version = 'hadoop_version'
+    if data.get('plugin_version'):
+        plugin_version = 'plugin_version'
+
+    if data.get('plugin_name') and not data.get(plugin_version):
         raise ex.InvalidReferenceException(
-            _("You must specify a hadoop_version value "
-              "for your plugin_name"))
+            _("You must specify a %s value "
+              "for your plugin_name") % plugin_version)
 
     if data.get('plugin_name'):
         plugin = data.get('plugin_name')
-        version = data.get('hadoop_version')
+        version = data.get(plugin_version)
         b.check_plugin_name_exists(plugin)
         b.check_plugin_supports_version(plugin, version)
     else:
         ngt = api.get_node_group_template(node_group_template_id)
         plugin = ngt.plugin_name
-        if data.get('hadoop_version'):
-            version = data.get('hadoop_version')
+        if data.get(plugin_version):
+            version = data.get(plugin_version)
             b.check_plugin_supports_version(plugin, version)
         else:
             version = ngt.hadoop_version

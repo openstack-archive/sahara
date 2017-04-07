@@ -38,16 +38,22 @@ def clusters_list():
 
 @rest.post('/clusters')
 @acl.enforce("data-processing:clusters:create")
-@v.validate(v_c_schema.CLUSTER_SCHEMA, v_c.check_cluster_create)
+@v.validate(v_c_schema.CLUSTER_SCHEMA_V2, v_c.check_cluster_create)
 def clusters_create(data):
+    # renaming hadoop_version -> plugin_version
+    # this can be removed once APIv1 is deprecated
+    data['hadoop_version'] = data['plugin_version']
+    del data['plugin_version']
     return u.render(api.create_cluster(data).to_wrapped_dict())
 
 
 @rest.post('/clusters/multiple')
 @acl.enforce("data-processing:clusters:create")
 @v.validate(
-    v_c_schema.MULTIPLE_CLUSTER_SCHEMA, v_c.check_multiple_clusters_create)
+    v_c_schema.MULTIPLE_CLUSTER_SCHEMA_V2, v_c.check_multiple_clusters_create)
 def clusters_create_multiple(data):
+    data['hadoop_version'] = data['plugin_version']
+    del data['plugin_version']
     return u.render(api.create_multiple_clusters(data))
 
 

@@ -27,7 +27,7 @@ NODE_GROUP_TEMPLATE_SCHEMA = {
             "format": "valid_name_hostname",
         },
         "flavor_id": {
-            'type': 'flavor',
+            "type": "flavor",
         },
         "plugin_name": {
             "type": "string",
@@ -110,7 +110,20 @@ NODE_GROUP_TEMPLATE_SCHEMA = {
     ]
 }
 
+# APIv2: renaming hadoop_version -> plugin_version
+NODE_GROUP_TEMPLATE_SCHEMA_V2 = copy.deepcopy(NODE_GROUP_TEMPLATE_SCHEMA)
+del NODE_GROUP_TEMPLATE_SCHEMA_V2["properties"]["hadoop_version"]
+NODE_GROUP_TEMPLATE_SCHEMA_V2["required"].remove("hadoop_version")
+NODE_GROUP_TEMPLATE_SCHEMA_V2["properties"].update({
+    "plugin_version": {
+        "type": "string",
+    }})
+NODE_GROUP_TEMPLATE_SCHEMA_V2["required"].append("plugin_version")
+
 # For an update we do not require any fields but we want the given
 # fields to be validated
 NODE_GROUP_TEMPLATE_UPDATE_SCHEMA = copy.copy(NODE_GROUP_TEMPLATE_SCHEMA)
 NODE_GROUP_TEMPLATE_UPDATE_SCHEMA["required"] = []
+
+NODE_GROUP_TEMPLATE_UPDATE_SCHEMA_V2 = copy.copy(NODE_GROUP_TEMPLATE_SCHEMA_V2)
+NODE_GROUP_TEMPLATE_UPDATE_SCHEMA_V2["required"] = []

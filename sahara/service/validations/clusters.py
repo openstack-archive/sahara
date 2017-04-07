@@ -41,11 +41,14 @@ def check_multiple_clusters_create(data, **kwargs):
 
 
 def _check_cluster_create(data):
+    plugin_version = 'hadoop_version'
+    if data.get('plugin_version'):
+        plugin_version = 'plugin_version'
     b.check_plugin_name_exists(data['plugin_name'])
     b.check_plugin_supports_version(data['plugin_name'],
-                                    data['hadoop_version'])
+                                    data[plugin_version])
     b.check_plugin_labels(
-        data['plugin_name'], data['hadoop_version'])
+        data['plugin_name'], data[plugin_version])
 
     if data.get('cluster_template_id'):
         ct_id = data['cluster_template_id']
@@ -53,7 +56,7 @@ def _check_cluster_create(data):
         if not data.get('node_groups'):
             b.check_node_groups_in_cluster_templates(data['name'],
                                                      data['plugin_name'],
-                                                     data['hadoop_version'],
+                                                     data[plugin_version],
                                                      ct_id)
 
     if data.get('user_keypair_id'):
@@ -63,7 +66,7 @@ def _check_cluster_create(data):
     if default_image_id:
         b.check_image_registered(default_image_id)
         b.check_required_image_tags(data['plugin_name'],
-                                    data['hadoop_version'],
+                                    data[plugin_version],
                                     default_image_id)
     else:
         raise ex.NotFoundException('default_image_id',
@@ -72,7 +75,7 @@ def _check_cluster_create(data):
     b.check_all_configurations(data)
 
     if data.get('anti_affinity'):
-        b.check_node_processes(data['plugin_name'], data['hadoop_version'],
+        b.check_node_processes(data['plugin_name'], data[plugin_version],
                                data['anti_affinity'])
 
     if data.get('node_groups'):

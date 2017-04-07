@@ -21,11 +21,13 @@ from sahara.service.validations import shares
 
 def _build_ng_schema_for_cluster_tmpl():
     cl_tmpl_ng_schema = copy.deepcopy(ngt_schema.NODE_GROUP_TEMPLATE_SCHEMA)
-    cl_tmpl_ng_schema['properties'].update({"count": {"type": "integer"}})
-    cl_tmpl_ng_schema["required"] = ['name', 'flavor_id',
-                                     'node_processes', 'count']
-    del cl_tmpl_ng_schema['properties']['hadoop_version']
-    del cl_tmpl_ng_schema['properties']['plugin_name']
+    cl_tmpl_ng_schema["properties"].update({"count": {"type": "integer"}})
+    cl_tmpl_ng_schema["required"] = ["name", "flavor_id",
+                                     "node_processes", "count"]
+
+    del cl_tmpl_ng_schema["properties"]["plugin_name"]
+    del cl_tmpl_ng_schema["properties"]["hadoop_version"]
+
     return cl_tmpl_ng_schema
 
 
@@ -34,7 +36,7 @@ _cluster_tmpl_ng_schema = _build_ng_schema_for_cluster_tmpl()
 
 def _build_ng_tmpl_schema_for_cluster_template():
     cl_tmpl_ng_tmpl_schema = copy.deepcopy(_cluster_tmpl_ng_schema)
-    cl_tmpl_ng_tmpl_schema['properties'].update(
+    cl_tmpl_ng_tmpl_schema["properties"].update(
         {
             "node_group_template_id": {
                 "type": "string",
@@ -47,6 +49,7 @@ def _build_ng_tmpl_schema_for_cluster_template():
 
 
 _cluster_tmpl_ng_tmpl_schema = _build_ng_tmpl_schema_for_cluster_template()
+
 
 CLUSTER_TEMPLATE_SCHEMA = {
     "type": "object",
@@ -112,5 +115,18 @@ CLUSTER_TEMPLATE_SCHEMA = {
     ]
 }
 
+# APIv2: renaming hadoop_version -> plugin_version
+CLUSTER_TEMPLATE_SCHEMA_V2 = copy.deepcopy(CLUSTER_TEMPLATE_SCHEMA)
+del CLUSTER_TEMPLATE_SCHEMA_V2["properties"]["hadoop_version"]
+CLUSTER_TEMPLATE_SCHEMA_V2["required"].remove("hadoop_version")
+CLUSTER_TEMPLATE_SCHEMA_V2["properties"].update({
+    "plugin_version": {
+        "type": "string",
+    }})
+CLUSTER_TEMPLATE_SCHEMA_V2["required"].append("plugin_version")
+
 CLUSTER_TEMPLATE_UPDATE_SCHEMA = copy.copy(CLUSTER_TEMPLATE_SCHEMA)
 CLUSTER_TEMPLATE_UPDATE_SCHEMA["required"] = []
+
+CLUSTER_TEMPLATE_UPDATE_SCHEMA_V2 = copy.copy(CLUSTER_TEMPLATE_SCHEMA_V2)
+CLUSTER_TEMPLATE_UPDATE_SCHEMA_V2["required"] = []

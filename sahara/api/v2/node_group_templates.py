@@ -37,9 +37,13 @@ def node_group_templates_list():
 
 @rest.post('/node-group-templates')
 @acl.enforce("data-processing:node-group-templates:create")
-@v.validate(ngt_schema.NODE_GROUP_TEMPLATE_SCHEMA,
+@v.validate(ngt_schema.NODE_GROUP_TEMPLATE_SCHEMA_V2,
             v_ngt.check_node_group_template_create)
 def node_group_templates_create(data):
+    # renaming hadoop_version -> plugin_version
+    # this can be removed once APIv1 is deprecated
+    data['hadoop_version'] = data['plugin_version']
+    del data['plugin_version']
     return u.render(api.create_node_group_template(data).to_wrapped_dict())
 
 
@@ -54,9 +58,11 @@ def node_group_templates_get(node_group_template_id):
 @rest.patch('/node-group-templates/<node_group_template_id>')
 @acl.enforce("data-processing:node-group-templates:modify")
 @v.check_exists(api.get_node_group_template, 'node_group_template_id')
-@v.validate(ngt_schema.NODE_GROUP_TEMPLATE_UPDATE_SCHEMA,
+@v.validate(ngt_schema.NODE_GROUP_TEMPLATE_UPDATE_SCHEMA_V2,
             v_ngt.check_node_group_template_update)
 def node_group_templates_update(node_group_template_id, data):
+    data['hadoop_version'] = data['plugin_version']
+    del data['plugin_version']
     return u.to_wrapped_dict(
         api.update_node_group_template, node_group_template_id, data)
 
