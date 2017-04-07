@@ -22,7 +22,6 @@ from sahara import conductor as c
 from sahara import context
 from sahara import exceptions as ex
 from sahara.i18n import _
-from sahara.i18n import _LE
 from sahara.utils.openstack import keystone
 
 conductor = c.API
@@ -70,8 +69,7 @@ def create_trust(trustor, trustee, role_names, impersonation=True,
             trust_id=six.text_type(trust.id)))
         return trust.id
     except Exception as e:
-        LOG.error(_LE('Unable to create trust (reason: {reason})').format(
-            reason=e))
+        LOG.error('Unable to create trust (reason: {reason})'.format(reason=e))
         raise ex.CreationFailed(_('Failed to create trust'))
 
 
@@ -117,8 +115,7 @@ def delete_trust(trustee, trust_id):
         LOG.debug('Deleted trust {trust_id}'.format(
             trust_id=six.text_type(trust_id)))
     except Exception as e:
-        LOG.error(_LE('Unable to delete trust (reason: {reason})').format(
-            reason=e))
+        LOG.error('Unable to delete trust (reason: {reason})'.format(reason=e))
         raise ex.DeletionFailed(
             _('Failed to delete trust {0}').format(trust_id))
 

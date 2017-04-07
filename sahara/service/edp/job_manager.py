@@ -23,7 +23,6 @@ from sahara import conductor as c
 from sahara import context
 from sahara import exceptions as e
 from sahara.i18n import _
-from sahara.i18n import _LE
 from sahara.i18n import _LI
 from sahara.i18n import _LW
 from sahara.service.edp import job_utils
@@ -136,9 +135,8 @@ def run_job(job_execution_id):
     try:
         _run_job(job_execution_id)
     except Exception as ex:
-        LOG.exception(
-            _LE("Can't run job execution (reason: {reason})").format(
-                reason=ex))
+        LOG.exception("Can't run job execution (reason: {reason})".format(
+                      reason=ex))
 
         job_execution = conductor.job_execution_get(
             context.ctx(), job_execution_id)
@@ -218,7 +216,7 @@ def update_job_status(job_execution_id):
     try:
         get_job_status(job_execution_id)
     except Exception as e:
-        LOG.exception(_LE("Error during update job execution {job}: {error}")
+        LOG.exception("Error during update job execution {job}: {error}"
                       .format(job=job_execution_id, error=e))
 
 

@@ -19,7 +19,6 @@ from sahara import conductor as cond
 from sahara import context
 from sahara import exceptions as ex
 from sahara.i18n import _
-from sahara.i18n import _LE
 from sahara.i18n import _LW
 
 conductor = cond.API
@@ -108,7 +107,7 @@ class LabelHandler(object):
         try:
             plugin = conductor.plugin_get(context.ctx(), plugin_name)
         except Exception:
-            LOG.error(_LE("Unable to retrieve plugin data from database"))
+            LOG.error("Unable to retrieve plugin data from database")
             plugin = None
         if not plugin:
             plugin = self.get_default_label_details(plugin_name)

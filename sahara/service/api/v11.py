@@ -20,7 +20,6 @@ import six
 from sahara import conductor as c
 from sahara import context
 from sahara import exceptions as ex
-from sahara.i18n import _LE
 from sahara.plugins import base as plugin_base
 from sahara.service import api
 from sahara.service.edp.binary_retrievers import dispatch
@@ -129,8 +128,8 @@ def execute_job(job_id, data):
         try:
             p.create_proxy_user_for_job_execution(job_execution)
         except ex.SaharaException as e:
-            LOG.error(_LE("Can't run job execution. "
-                          "(Reasons: {reason})").format(reason=e))
+            LOG.error("Can't run job execution. "
+                      "(Reasons: {reason})".format(reason=e))
             conductor.job_execution_destroy(context.ctx(), job_execution)
             raise
 

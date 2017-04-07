@@ -32,7 +32,6 @@ from six.moves import urllib
 
 from sahara import context
 from sahara.i18n import _
-from sahara.i18n import _LE
 from sahara.i18n import _LW
 from sahara.plugins.cdh import exceptions as ex
 
@@ -93,7 +92,7 @@ class Resource(object):
                 json_dict = json.loads(body)
                 return json_dict
             except Exception:
-                LOG.error(_LE('JSON decode error: {body}').format(body=body))
+                LOG.error('JSON decode error: {body}'.format(body=body))
                 raise
         else:
             return body

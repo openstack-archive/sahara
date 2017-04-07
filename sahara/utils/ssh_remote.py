@@ -53,7 +53,6 @@ import six
 from sahara import context
 from sahara import exceptions as ex
 from sahara.i18n import _
-from sahara.i18n import _LE
 from sahara.service import trusts
 from sahara.utils import crypto
 from sahara.utils import network as net_utils
@@ -345,8 +344,7 @@ def _read_file_from(remote_file, run_as_root=False):
     try:
         return _read_file(_ssh.open_sftp(), fl)
     except IOError:
-        LOG.error(_LE("Can't read file {filename}").format(
-            filename=remote_file))
+        LOG.error("Can't read file {filename}".format(filename=remote_file))
         raise
     finally:
         if run_as_root:
@@ -672,7 +670,7 @@ class InstanceInteropHelper(remote.Remote):
         try:
             command = command.format(**keywords)
         except KeyError as e:
-            LOG.error(_LE('Invalid keyword in proxy_command: {result}').format(
+            LOG.error('Invalid keyword in proxy_command: {result}'.format(
                 result=e))
             # Do not give more details to the end-user
             raise ex.SystemError('Misconfiguration')

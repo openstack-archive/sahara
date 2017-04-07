@@ -13,7 +13,6 @@
 # limitations under the License.
 
 from sahara import conductor  # noqa
-from sahara.i18n import _LE
 from sahara.i18n import _LI
 from sahara.plugins import base as plugins_base
 from sahara.utils import remote
@@ -21,9 +20,9 @@ from sahara.utils import remote
 try:
     import guestfs
 except ImportError:
-    raise Exception(_LE("The image packing API depends on the system package "
-                        "python-libguestfs (and libguestfs itself.) Please "
-                        "install these packages to proceed."))
+    raise Exception("The image packing API depends on the system package "
+                    "python-libguestfs (and libguestfs itself.) Please "
+                    "install these packages to proceed.")
 
 
 LOG = None

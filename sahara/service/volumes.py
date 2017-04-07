@@ -22,7 +22,6 @@ from oslo_log import log as logging
 from sahara import conductor as c
 from sahara import context
 from sahara.i18n import _
-from sahara.i18n import _LE
 from sahara.i18n import _LW
 from sahara.plugins import provisioning as plugin_base
 from sahara.utils import cluster_progress_ops as cpo
@@ -231,7 +230,7 @@ def _mount_volume(instance, device_path, mount_point, use_xfs):
                 'sudo sh -c "grep %s /etc/mtab >> /etc/fstab"' % device_path)
 
         except Exception:
-            LOG.error(_LE("Error mounting volume to instance"))
+            LOG.error("Error mounting volume to instance")
             raise
 
 
@@ -257,7 +256,7 @@ def _detach_volume(instance, volume_id):
         b.execute_with_retries(nova.client().volumes.delete_server_volume,
                                instance.instance_id, volume_id)
     except Exception:
-        LOG.error(_LE("Can't detach volume {id}").format(id=volume.id))
+        LOG.error("Can't detach volume {id}".format(id=volume.id))
 
     detach_timeout = CONF.timeouts.detach_volume_timeout
     LOG.debug("Waiting {timeout} seconds to detach {id} volume".format(
@@ -271,5 +270,4 @@ def _delete_volume(volume_id):
     try:
         b.execute_with_retries(volume.delete)
     except Exception:
-        LOG.error(_LE("Can't delete volume {volume}").format(
-            volume=volume.id))
+        LOG.error("Can't delete volume {volume}".format(volume=volume.id))

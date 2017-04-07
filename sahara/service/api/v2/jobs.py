@@ -18,7 +18,6 @@ from oslo_log import log as logging
 from sahara import conductor as c
 from sahara import context
 from sahara import exceptions as ex
-from sahara.i18n import _LE
 from sahara.service import api
 from sahara.service.edp import job_manager as manager
 from sahara.utils import edp
@@ -61,8 +60,8 @@ def execute_job(job_id, data):
         try:
             p.create_proxy_user_for_job_execution(job_execution)
         except ex.SaharaException as e:
-            LOG.error(_LE("Can't run job execution. "
-                          "(Reasons: {reason})").format(reason=e))
+            LOG.error("Can't run job execution. "
+                      "(Reasons: {reason})".format(reason=e))
             conductor.job_execution_destroy(context.ctx(), job_execution)
             raise e
 

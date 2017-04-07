@@ -25,7 +25,6 @@ from sahara import conductor as c
 from sahara import context
 from sahara import exceptions
 from sahara.i18n import _
-from sahara.i18n import _LE
 from sahara.plugins import base as plugin_base
 from sahara.service.edp import job_manager
 from sahara.service.edp.utils import shares
@@ -202,8 +201,8 @@ def ops_error_handler(description):
                     return
 
                 msg = six.text_type(ex)
-                LOG.exception(_LE("Error during operating on cluster (reason: "
-                                  "{reason})").format(reason=msg))
+                LOG.exception("Error during operating on cluster (reason: "
+                              "{reason})".format(reason=msg))
 
                 try:
                     # trying to rollback
@@ -225,8 +224,8 @@ def ops_error_handler(description):
                         return
 
                     LOG.exception(
-                        _LE("Error during rollback of cluster (reason:"
-                            " {reason})").format(reason=six.text_type(rex)))
+                        "Error during rollback of cluster (reason:"
+                        " {reason})".format(reason=six.text_type(rex)))
                     desc = "{0}, {1}".format(msg, six.text_type(rex))
                     c_u.change_cluster_status(
                         cluster, c_u.CLUSTER_STATUS_ERROR,
@@ -393,8 +392,8 @@ def _delete_job_execution(job_execution_id):
             # job_execution was deleted already, nothing to do
             return
     except exceptions.CancelingFailed:
-        LOG.error(_LE("Job execution can't be cancelled in time. "
-                      "Deleting it anyway."))
+        LOG.error("Job execution can't be cancelled in time. "
+                  "Deleting it anyway.")
     conductor.job_execution_destroy(context.ctx(), job_execution_id)
 
 

@@ -23,7 +23,6 @@ from werkzeug import datastructures
 from sahara import context
 from sahara import exceptions as ex
 from sahara.i18n import _
-from sahara.i18n import _LE
 from sahara.utils import types
 from sahara.utils import wsgi
 
@@ -259,9 +258,8 @@ def get_request_args():
 
 
 def abort_and_log(status_code, descr, exc=None):
-    LOG.error(_LE("Request aborted with status code {code} and "
-                  "message '{message}'").format(code=status_code,
-                                                message=descr))
+    LOG.error("Request aborted with status code {code} and "
+              "message '{message}'".format(code=status_code, message=descr))
 
     if exc is not None:
         LOG.error(traceback.format_exc())
@@ -283,9 +281,8 @@ def render_error_message(error_code, error_message, error_name):
 
 
 def internal_error(status_code, descr, exc=None):
-    LOG.error(_LE("Request aborted with status code {code} and "
-                  "message '{message}'").format(code=status_code,
-                                                message=descr))
+    LOG.error("Request aborted with status code {code} and "
+              "message '{message}'".format(code=status_code, message=descr))
 
     if exc is not None:
         LOG.error(traceback.format_exc())
@@ -300,11 +297,11 @@ def internal_error(status_code, descr, exc=None):
 def bad_request(error):
     error_code = 400
 
-    LOG.error(_LE("Validation Error occurred: "
-                  "error_code={code}, error_message={message}, "
-                  "error_name={name}").format(code=error_code,
-                                              message=error.message,
-                                              name=error.code))
+    LOG.error("Validation Error occurred: "
+              "error_code={code}, error_message={message}, "
+              "error_name={name}".format(code=error_code,
+                                         message=error.message,
+                                         name=error.code))
 
     return render_error_message(error_code, error.message, error.code)
 
@@ -312,11 +309,10 @@ def bad_request(error):
 def access_denied(error):
     error_code = 403
 
-    LOG.error(_LE("Access Denied: "
-                  "error_code={code}, error_message={message}, "
-                  "error_name={name}").format(code=error_code,
-                                              message=error.message,
-                                              name=error.code))
+    LOG.error("Access Denied: error_code={code}, error_message={message}, "
+              "error_name={name}".format(code=error_code,
+                                         message=error.message,
+                                         name=error.code))
 
     return render_error_message(error_code, error.message, error.code)
 
@@ -324,11 +320,11 @@ def access_denied(error):
 def not_found(error):
     error_code = 404
 
-    LOG.error(_LE("Not Found exception occurred: "
-                  "error_code={code}, error_message={message}, "
-                  "error_name={name}").format(code=error_code,
-                                              message=error.message,
-                                              name=error.code))
+    LOG.error("Not Found exception occurred: "
+              "error_code={code}, error_message={message}, "
+              "error_name={name}".format(code=error_code,
+                                         message=error.message,
+                                         name=error.code))
 
     return render_error_message(error_code, error.message, error.code)
 

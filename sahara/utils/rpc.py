@@ -21,7 +21,6 @@ from oslo_messaging.rpc import dispatcher
 from oslo_serialization import jsonutils
 
 from sahara import context
-from sahara.i18n import _LE
 
 
 MESSAGING_TRANSPORT = None
@@ -105,8 +104,8 @@ def setup_notifications():
         NOTIFICATION_TRANSPORT = \
             messaging.get_notification_transport(cfg.CONF)
     except Exception:
-        LOG.error(_LE("Unable to setup notification transport. Reusing "
-                      "service transport for that."))
+        LOG.error("Unable to setup notification transport. Reusing "
+                  "service transport for that.")
         setup_service_messaging()
         NOTIFICATION_TRANSPORT = MESSAGING_TRANSPORT
 

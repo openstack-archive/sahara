@@ -25,7 +25,6 @@ from sahara import conductor
 from sahara import context
 from sahara import exceptions
 from sahara.i18n import _
-from sahara.i18n import _LE
 from sahara.plugins import base as plugin_base
 from sahara.service.health import common
 from sahara.utils import cluster as cluster_utils
@@ -141,7 +140,7 @@ class AllInstancesAccessible(BasicHealthCheck):
         if inst_ips_or_names:
             insts = ', '.join(inst_ips_or_names)
             LOG.exception(
-                _LE("Instances (%s) are not available in the cluster") % insts)
+                "Instances (%s) are not available in the cluster" % insts)
             raise RedHealthError(
                 _("Instances (%s) are not available in the cluster.") % insts)
         return _("All instances are available")
@@ -173,7 +172,7 @@ class ResolvConfIsUnchanged(BasicHealthCheck):
                 "Instances ({}) have incorrect '/etc/resolv.conf' "
                 "file, expected nameservers: {}.").format(insts, ns)
         if bad_inst_msg or res_conf_msg:
-            LOG.exception(_LE("{} {}").format(res_conf_msg, bad_inst_msg))
+            LOG.exception("{} {}".format(res_conf_msg, bad_inst_msg))
             raise RedHealthError(_("{} {}").format(res_conf_msg, bad_inst_msg))
         return _("All instances have correct '/etc/resolv.conf' file")
 
@@ -191,7 +190,7 @@ class AlertsProvider(object):
                 data = self._get_resolv_conf(r)
         except Exception:
             data = None
-            LOG.exception(_LE("Couldn't read '/etc/resolv.conf'"))
+            LOG.exception("Couldn't read '/etc/resolv.conf'")
         with lock:
             self._data[instance.get_ip_or_dns_name()] = data
 

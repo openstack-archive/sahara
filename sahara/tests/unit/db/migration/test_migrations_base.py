@@ -37,7 +37,6 @@ from oslo_log import log as logging
 import sahara.db.migration
 from sahara.db.sqlalchemy import api as sa
 from sahara.db.sqlalchemy import model_base
-from sahara.i18n import _LE
 
 
 LOG = logging.getLogger(__name__)
@@ -152,8 +151,8 @@ class BaseWalkMigrationTestCase(object):
                 if check:
                     check(engine, data)
         except Exception:
-            LOG.error(_LE("Failed to migrate to version {version} on engine "
-                      "{engine}").format(version=version, engine=engine))
+            LOG.error("Failed to migrate to version {version} on engine "
+                      "{engine}".format(version=version, engine=engine))
             raise
 
 

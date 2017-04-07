@@ -22,8 +22,6 @@ import re
 
 log_translation_LI = re.compile(
     r"(.)*LOG\.(info)\(\s*(_\(|'|\")")
-log_translation_LE = re.compile(
-    r"(.)*LOG\.(exception)\(\s*(_\(|'|\")")
 log_translation_LW = re.compile(
     r"(.)*LOG\.(warning)\(\s*(_\(|'|\")")
 accepted_log_level = re.compile(
@@ -54,10 +52,6 @@ def validate_log_translations(logical_line, filename):
     # misuse of the form LOG.info('Message').
     msg = "S369: LOG.info messages require translations `_LI()`!"
     if log_translation_LI.search(logical_line):
-        yield (0, msg)
-    msg = ("S370: LOG.exception and LOG.error messages require "
-           "translations `_LE()`!")
-    if log_translation_LE.search(logical_line):
         yield (0, msg)
     msg = "S371: LOG.warning messages require translations `_LW()`!"
     if log_translation_LW.search(logical_line):

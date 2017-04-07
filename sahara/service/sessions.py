@@ -19,7 +19,6 @@ from oslo_log import log as logging
 
 from sahara import exceptions as ex
 from sahara.i18n import _
-from sahara.i18n import _LE
 
 
 CONF = cfg.CONF
@@ -90,9 +89,8 @@ class SessionCache(object):
         if session_function:
             return session_function()
         else:
-            LOG.error(
-                _LE('Requesting an unknown session type (type: {type})').
-                format(type=session_type))
+            LOG.error('Requesting an unknown session type (type: {type})'.
+                      format(type=session_type))
             raise ex.SaharaException(
                 _('Session type {type} not recognized').
                 format(type=session_type))
