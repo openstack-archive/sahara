@@ -32,6 +32,12 @@ rest = u.RestV2('jobs', __name__)
             v.validate_sorting_job_executions)
 def jobs_list():
     result = api.job_execution_list(**u.get_request_args().to_dict())
+    # APIv2: renaming oozie_job_id -> engine_job_id
+    # once APIv1 is deprecated this can be
+    # removed
+    for je in result:
+        je['engine_job_id'] = je['oozie_job_id']
+        del je['oozie_job_id']
     return u.render(res=result, name='jobs')
 
 
@@ -46,15 +52,20 @@ def jobs_execute(data):
 @acl.enforce("data-processing:job-executions:get")
 @v.check_exists(api.get_job_execution, id='job_id')
 def jobs_get(job_id):
-    return u.to_wrapped_dict(api.get_job_execution, job_id)
+    result = u.to_wrapped_dict_no_render(api.get_job_execution, job_id)
+    result['engine_job_id'] = result['oozie_job_id']
+    del result['oozie_job_id']
+    return u.render(result)
 
 
 @rest.get('/jobs/<job_id>/refresh-status')
 @acl.enforce("data-processing:job-executions:refresh_status")
 @v.check_exists(api.get_job_execution, id='job_id')
 def jobs_status(job_id):
-    return u.to_wrapped_dict(
-        api.get_job_execution_status, job_id)
+    result = u.to_wrapped_dict_no_render(api.get_job_execution_status, job_id)
+    result['engine_job_id'] = result['oozie_job_id']
+    del result['oozie_job_id']
+    return u.render(result)
 
 
 @rest.get('/jobs/<job_id>/cancel')
@@ -62,7 +73,10 @@ def jobs_status(job_id):
 @v.check_exists(api.get_job_execution, id='job_id')
 @v.validate(None, v_j_e.check_job_execution_cancel)
 def jobs_cancel(job_id):
-    return u.to_wrapped_dict(api.cancel_job_execution, job_id)
+    result = u.to_wrapped_dict_no_render(api.cancel_job_execution, job_id)
+    result['engine_job_id'] = result['oozie_job_id']
+    del result['oozie_job_id']
+    return u.render(result)
 
 
 @rest.patch('/jobs/<job_id>')
@@ -71,8 +85,11 @@ def jobs_cancel(job_id):
 @v.validate(
     v_j_e_schema.JOB_EXEC_UPDATE_SCHEMA, v_j_e.check_job_execution_update)
 def jobs_update(job_id, data):
-    return u.to_wrapped_dict(
+    result = u.to_wrapped_dict_no_render(
         api.update_job_execution, job_id, data)
+    result['engine_job_id'] = result['oozie_job_id']
+    del result['oozie_job_id']
+    return u.render(result)
 
 
 @rest.delete('/jobs/<job_id>')
