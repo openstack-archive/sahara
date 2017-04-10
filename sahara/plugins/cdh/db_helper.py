@@ -19,6 +19,7 @@ from oslo_utils import uuidutils
 from sahara import conductor
 from sahara import context
 from sahara.service.castellan import utils as key_manager
+from sahara.utils import files
 
 CM_PASSWORD = 'cm_password'
 HIVE_DB_PASSWORD = 'hive_db_password'
@@ -76,7 +77,7 @@ def get_password_from_db(cluster, pwname):
     passwd = uuidutils.generate_uuid()
     extra = cluster.extra.to_dict() if cluster.extra else {}
     extra[pwname] = key_manager.store_secret(passwd, ctx)
-    cluster = conductor.cluster_update(ctx, cluster, {'extra': extra})
+    conductor.cluster_update(ctx, cluster, {'extra': extra})
     return passwd
 
 
@@ -93,3 +94,27 @@ def remote_execute_db_script(remote, script_content):
                 '-h localhost -p 7432 -d scm -f %s') % script_name
     remote.execute_command(psql_cmd)
     remote.execute_command('rm %s' % script_name)
+
+
+def get_hive_db_password(cluster):
+    return get_password_from_db(cluster, 'hive_db_password')
+
+
+def get_sentry_db_password(cluster):
+    return get_password_from_db(cluster, 'sentry_db_password')
+
+
+def create_hive_database(cluster, remote):
+    db_password = get_hive_db_password(cluster)
+    create_db_script = files.get_file_text(
+        'plugins/cdh/db_resources/create_hive_db.sql')
+    create_db_script = create_db_script % db_password
+    remote_execute_db_script(remote, create_db_script)
+
+
+def create_sentry_database(cluster, remote):
+    db_password = get_sentry_db_password(cluster)
+    create_db_script = files.get_file_text(
+        'plugins/cdh/db_resources/create_sentry_db.sql')
+    create_db_script = create_db_script % db_password
+    remote_execute_db_script(remote, create_db_script)

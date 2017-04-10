@@ -15,6 +15,7 @@
 
 from sahara.i18n import _
 from sahara.plugins.cdh import cloudera_utils as cu
+from sahara.plugins.cdh import db_helper as dh
 from sahara.plugins.cdh.v5_5_0 import config_helper
 from sahara.plugins.cdh.v5_5_0 import plugin_utils as pu
 from sahara.plugins.cdh.v5_5_0 import validation
@@ -357,7 +358,7 @@ class ClouderaUtilsV550(cu.ClouderaUtils):
                         self.pu.get_manager(cluster).internal_ip,
                     'hive_metastore_database_port': '7432',
                     'hive_metastore_database_password':
-                        self.pu.db_helper.get_hive_db_password(cluster)
+                        dh.get_hive_db_password(cluster)
                 }
             }
             hue_confs = {
@@ -373,7 +374,7 @@ class ClouderaUtilsV550(cu.ClouderaUtils):
                         self.pu.get_manager(cluster).internal_ip,
                     'sentry_server_database_port': '7432',
                     'sentry_server_database_password':
-                        self.pu.db_helper.get_sentry_db_password(cluster)
+                        dh.get_sentry_db_password(cluster)
                 }
             }
             kafka_confs = {

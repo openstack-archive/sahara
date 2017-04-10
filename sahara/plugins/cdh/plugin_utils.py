@@ -25,6 +25,7 @@ from sahara import context
 from sahara import exceptions as exc
 from sahara.i18n import _
 from sahara.plugins.cdh import commands as cmd
+from sahara.plugins.cdh import db_helper as dh
 from sahara.plugins import recommendations_utils as ru
 from sahara.plugins import utils as u
 from sahara.swift import swift_helper
@@ -80,7 +81,6 @@ class AbstractPluginUtils(object):
     def __init__(self):
         # c_helper and db_helper will be defined in derived classes.
         self.c_helper = None
-        self.db_helper = None
 
     def get_role_name(self, instance, service):
         # NOTE: role name must match regexp "[_A-Za-z][-_A-Za-z0-9]{0,63}"
@@ -289,7 +289,7 @@ class AbstractPluginUtils(object):
     def configure_hive(self, cluster):
         manager = self.get_manager(cluster)
         with manager.remote() as r:
-            self.db_helper.create_hive_database(cluster, r)
+            dh.create_hive_database(cluster, r)
 
     def install_extjs(self, cluster):
         extjs_remote_location = self.c_helper.get_extjs_lib_url(cluster)

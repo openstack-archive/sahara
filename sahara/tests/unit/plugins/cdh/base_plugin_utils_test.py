@@ -174,7 +174,7 @@ class TestPluginUtils(b.SaharaTestCase):
         db_password = 'a8f2939f-ff9f-4659-a333-abc012ee9b2d'
         uuid4.return_value = db_password
         create_db_script = files.get_file_text(
-            'plugins/cdh/{version}/resources/create_hive_db.sql'
+            'plugins/cdh/db_resources/create_hive_db.sql'
                                 .format(version=self.version))
         create_db_script = create_db_script % db_password
 
@@ -305,7 +305,7 @@ class TestPluginUtilsHigherThanV5(TestPluginUtils):
         db_password = 'a8f2939f-ff9f-4659-a333-abc012ee9b2d'
         uuid4.return_value = db_password
         create_db_script = files.get_file_text(
-            'plugins/cdh/{version}/resources/create_sentry_db.sql'
+            'plugins/cdh/db_resources/create_sentry_db.sql'
                                 .format(version=self.version))
         create_db_script = create_db_script % db_password
 

@@ -15,9 +15,9 @@
 
 from sahara.conductor import resource as res
 from sahara.plugins.cdh import commands as cmd
+from sahara.plugins.cdh import db_helper as dh
 from sahara.plugins.cdh import plugin_utils as pu
 from sahara.plugins.cdh.v5_5_0 import config_helper
-from sahara.plugins.cdh.v5_5_0 import db_helper
 from sahara.plugins import utils as u
 
 
@@ -25,7 +25,6 @@ class PluginUtilsV550(pu.AbstractPluginUtils):
 
     def __init__(self):
         self.c_helper = config_helper.ConfigHelperV550()
-        self.db_helper = db_helper
 
     def get_role_name(self, instance, service):
         # NOTE: role name must match regexp "[_A-Za-z][-_A-Za-z0-9]{0,63}"
@@ -146,7 +145,7 @@ class PluginUtilsV550(pu.AbstractPluginUtils):
     def configure_sentry(self, cluster):
         manager = self.get_manager(cluster)
         with manager.remote() as r:
-            self.db_helper.create_sentry_database(cluster, r)
+            dh.create_sentry_database(cluster, r)
 
     def _configure_repo_from_inst(self, instance):
         super(PluginUtilsV550, self)._configure_repo_from_inst(instance)
