@@ -21,6 +21,7 @@ from sahara import conductor
 from sahara import context
 from sahara.plugins.cdh import db_helper as dh
 from sahara.plugins.cdh import health
+from sahara.plugins import kerberos
 
 
 @six.add_metaclass(abc.ABCMeta)
@@ -90,10 +91,55 @@ class BaseVersionHandler(AbstractVersionHandler):
         self.validation = None  # to validate
 
     def get_plugin_configs(self):
-        return self.config_helper.get_plugin_configs()
+        result = self.config_helper.get_plugin_configs()
+        result.extend(kerberos.get_config_list())
+        return result
 
     def get_node_processes(self):
-        raise NotImplementedError()
+        return {
+            "CLOUDERA": ['CLOUDERA_MANAGER'],
+            "HDFS": ['HDFS_NAMENODE', 'HDFS_DATANODE',
+                     'HDFS_SECONDARYNAMENODE', 'HDFS_JOURNALNODE'],
+            "YARN": ['YARN_RESOURCEMANAGER', 'YARN_NODEMANAGER',
+                     'YARN_JOBHISTORY', 'YARN_STANDBYRM'],
+            "OOZIE": ['OOZIE_SERVER'],
+            "HIVE": ['HIVE_SERVER2', 'HIVE_METASTORE', 'HIVE_WEBHCAT'],
+            "HUE": ['HUE_SERVER'],
+            "SPARK_ON_YARN": ['SPARK_YARN_HISTORY_SERVER'],
+            "ZOOKEEPER": ['ZOOKEEPER_SERVER'],
+            "HBASE": ['HBASE_MASTER', 'HBASE_REGIONSERVER'],
+            "FLUME": ['FLUME_AGENT'],
+            "IMPALA": ['IMPALA_CATALOGSERVER', 'IMPALA_STATESTORE', 'IMPALAD'],
+            "KS_INDEXER": ['KEY_VALUE_STORE_INDEXER'],
+            "SOLR": ['SOLR_SERVER'],
+            "SQOOP": ['SQOOP_SERVER'],
+            "SENTRY": ['SENTRY_SERVER'],
+            "KMS": ['KMS'],
+            "KAFKA": ['KAFKA_BROKER'],
+
+            "YARN_GATEWAY": [],
+            "RESOURCEMANAGER": [],
+            "NODEMANAGER": [],
+            "JOBHISTORY": [],
+
+            "HDFS_GATEWAY": [],
+            'DATANODE': [],
+            'NAMENODE': [],
+            'SECONDARYNAMENODE': [],
+            'JOURNALNODE': [],
+
+            'REGIONSERVER': [],
+            'MASTER': [],
+
+            'HIVEMETASTORE': [],
+            'HIVESERVER': [],
+            'WEBCAT': [],
+
+            'CATALOGSERVER': [],
+            'STATESTORE': [],
+            'IMPALAD': [],
+            'Kerberos': [],
+        }
 
     def validate(self, cluster):
         self.validation.validate_cluster_creating(cluster)
@@ -133,12 +179,16 @@ class BaseVersionHandler(AbstractVersionHandler):
 
     def get_edp_engine(self, cluster, job_type):
         oozie_type = self.edp_engine.EdpOozieEngine.get_supported_job_types()
+        spark_type = self.edp_engine.EdpSparkEngine.get_supported_job_types()
         if job_type in oozie_type:
             return self.edp_engine.EdpOozieEngine(cluster)
+        if job_type in spark_type:
+            return self.edp_engine.EdpSparkEngine(cluster)
         return None
 
     def get_edp_job_types(self):
-        return self.edp_engine.EdpOozieEngine.get_supported_job_types()
+        return (self.edp_engine.EdpOozieEngine.get_supported_job_types() +
+                self.edp_engine.EdpSparkEngine.get_supported_job_types())
 
     def get_edp_config_hints(self, job_type):
         return self.edp_engine.EdpOozieEngine.get_possible_job_config(job_type)

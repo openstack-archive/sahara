@@ -79,19 +79,26 @@ class CDHPluginAutoConfigsProvider(ru.HadoopAutoConfigsProvider):
 class AbstractPluginUtils(object):
 
     def __init__(self):
-        # c_helper and db_helper will be defined in derived classes.
+        # c_helper will be defined in derived classes.
         self.c_helper = None
 
     def get_role_name(self, instance, service):
         # NOTE: role name must match regexp "[_A-Za-z][-_A-Za-z0-9]{0,63}"
         shortcuts = {
+            'AGENT': 'A',
             'ALERTPUBLISHER': 'AP',
+            'CATALOGSERVER': 'ICS',
             'DATANODE': 'DN',
             'EVENTSERVER': 'ES',
+            'HBASE_INDEXER': 'LHBI',
             'HIVEMETASTORE': 'HVM',
             'HIVESERVER2': 'HVS',
             'HOSTMONITOR': 'HM',
+            'IMPALAD': 'ID',
             'JOBHISTORY': 'JS',
+            'JOURNALNODE': 'JN',
+            'KAFKA_BROKER': 'KB',
+            'KMS': 'KMS',
             'MASTER': 'M',
             'NAMENODE': 'NN',
             'NODEMANAGER': 'NM',
@@ -99,10 +106,16 @@ class AbstractPluginUtils(object):
             'REGIONSERVER': 'RS',
             'RESOURCEMANAGER': 'RM',
             'SECONDARYNAMENODE': 'SNN',
+            'SENTRY_SERVER': 'SNT',
             'SERVER': 'S',
             'SERVICEMONITOR': 'SM',
+            'SOLR_SERVER': 'SLR',
             'SPARK_YARN_HISTORY_SERVER': 'SHS',
-            'WEBHCAT': 'WHC'
+            'SQOOP_SERVER': 'S2S',
+            'STATESTORE': 'ISS',
+            'WEBHCAT': 'WHC',
+            'HDFS_GATEWAY': 'HG',
+            'YARN_GATEWAY': 'YG'
         }
         return '%s_%s' % (shortcuts.get(service, service),
                           instance.hostname().replace('-', '_'))
@@ -155,6 +168,42 @@ class AbstractPluginUtils(object):
     def get_hbase_master(self, cluster):
         return u.get_instance(cluster, 'HBASE_MASTER')
 
+    def get_sentry(self, cluster):
+        return u.get_instance(cluster, 'SENTRY_SERVER')
+
+    def get_flumes(self, cluster):
+        return u.get_instances(cluster, 'FLUME_AGENT')
+
+    def get_solrs(self, cluster):
+        return u.get_instances(cluster, 'SOLR_SERVER')
+
+    def get_sqoop(self, cluster):
+        return u.get_instance(cluster, 'SQOOP_SERVER')
+
+    def get_hbase_indexers(self, cluster):
+        return u.get_instances(cluster, 'KEY_VALUE_STORE_INDEXER')
+
+    def get_catalogserver(self, cluster):
+        return u.get_instance(cluster, 'IMPALA_CATALOGSERVER')
+
+    def get_statestore(self, cluster):
+        return u.get_instance(cluster, 'IMPALA_STATESTORE')
+
+    def get_impalads(self, cluster):
+        return u.get_instances(cluster, 'IMPALAD')
+
+    def get_kms(self, cluster):
+        return u.get_instances(cluster, 'KMS')
+
+    def get_jns(self, cluster):
+        return u.get_instances(cluster, 'HDFS_JOURNALNODE')
+
+    def get_stdb_rm(self, cluster):
+        return u.get_instance(cluster, 'YARN_STANDBYRM')
+
+    def get_kafka_brokers(self, cluster):
+        return u.get_instances(cluster, 'KAFKA_BROKER')
+
     def convert_process_configs(self, configs):
         p_dict = {
             "CLOUDERA": ['MANAGER'],
@@ -173,9 +222,21 @@ class AbstractPluginUtils(object):
             "ZOOKEEPER": ['SERVER'],
             "MASTER": ['MASTER'],
             "REGIONSERVER": ['REGIONSERVER'],
-            'YARN_GATEWAY': ['YARN_GATEWAY'],
-            'HDFS_GATEWAY': ['HDFS_GATEWAY']
+            "FLUME": ['AGENT'],
+            "CATALOGSERVER": ['CATALOGSERVER'],
+            "STATESTORE": ['STATESTORE'],
+            "IMPALAD": ['IMPALAD'],
+            "KS_INDEXER": ['HBASE_INDEXER'],
+            "SENTRY": ['SENTRY_SERVER'],
+            "SOLR": ['SOLR_SERVER'],
+            "SQOOP": ['SQOOP_SERVER'],
+            "KMS": ['KMS'],
+            "YARN_GATEWAY": ['YARN_GATEWAY'],
+            "HDFS_GATEWAY": ['HDFS_GATEWAY'],
+            "JOURNALNODE": ['JOURNALNODE'],
+            "KAFKA": ['KAFKA_BROKER']
         }
+
         if isinstance(configs, res.Resource):
             configs = configs.to_dict()
         for k in configs.keys():
@@ -275,6 +336,11 @@ class AbstractPluginUtils(object):
                 r.execute_command('sudo curl %s -o %s/hadoop-openstack.jar' % (
                     swift_lib_remote_url, HADOOP_LIB_DIR))
 
+    def configure_sentry(self, cluster):
+        manager = self.get_manager(cluster)
+        with manager.remote() as r:
+            dh.create_sentry_database(cluster, r)
+
     def put_hive_hdfs_xml(self, cluster):
         servers = self.get_hive_servers(cluster)
         with servers[0].remote() as r:
@@ -339,31 +405,38 @@ class AbstractPluginUtils(object):
                   instance=instance.instance_name))
         cluster = instance.cluster
 
-        cdh5_key = self.c_helper.get_cdh5_key_url(cluster)
-        cm5_key = self.c_helper.get_cm5_key_url(cluster)
-
         with instance.remote() as r:
             if cmd.is_ubuntu_os(r):
-                cdh5_key = (cdh5_key or
-                            self.c_helper.DEFAULT_CDH5_UBUNTU_REPO_KEY_URL)
-                cm5_key = (cm5_key or
-                           self.c_helper.DEFAULT_CM5_UBUNTU_REPO_KEY_URL)
+                cdh5_key = (
+                    self.c_helper.get_cdh5_key_url(cluster) or
+                    self.c_helper.DEFAULT_CDH5_UBUNTU_REPO_KEY_URL)
+                cm5_key = (
+                    self.c_helper.get_cm5_key_url(cluster) or
+                    self.c_helper.DEFAULT_CM5_UBUNTU_REPO_KEY_URL)
+                kms_key = (
+                    self.c_helper.get_kms_key_url(cluster) or
+                    self.c_helper.DEFAULT_KEY_TRUSTEE_UBUNTU_REPO_KEY_URL)
 
                 cdh5_repo_content = self.c_helper.CDH5_UBUNTU_REPO
                 cm5_repo_content = self.c_helper.CM5_UBUNTU_REPO
+                kms_repo_url = self.c_helper.KEY_TRUSTEE_UBUNTU_REPO_URL
 
                 cmd.write_ubuntu_repository(r, cdh5_repo_content, 'cdh')
                 cmd.add_apt_key(r, cdh5_key)
                 cmd.write_ubuntu_repository(r, cm5_repo_content, 'cm')
                 cmd.add_apt_key(r, cm5_key)
+                cmd.add_ubuntu_repository(r, kms_repo_url, 'kms')
+                cmd.add_apt_key(r, kms_key)
                 cmd.update_repository(r)
 
             if cmd.is_centos_os(r):
                 cdh5_repo_content = self.c_helper.CDH5_CENTOS_REPO
                 cm5_repo_content = self.c_helper.CM5_CENTOS_REPO
+                kms_repo_url = self.c_helper.KEY_TRUSTEE_CENTOS_REPO_URL
 
                 cmd.write_centos_repository(r, cdh5_repo_content, 'cdh')
                 cmd.write_centos_repository(r, cm5_repo_content, 'cm')
+                cmd.add_centos_repository(r, kms_repo_url, 'kms')
                 cmd.update_repository(r)
 
     def _get_config_value(self, service, name, configs, cluster=None):

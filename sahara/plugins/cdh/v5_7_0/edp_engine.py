@@ -26,13 +26,6 @@ class EdpOozieEngine(edp_engine.EdpOozieEngine):
         super(EdpOozieEngine, self).__init__(cluster)
         self.cloudera_utils = cu.ClouderaUtilsV570()
 
-    def get_name_node_uri(self, cluster):
-        if len(self.cloudera_utils.pu.get_jns(cluster)) > 0:
-            return 'hdfs://%s' % self.cloudera_utils.NAME_SERVICE
-        else:
-            namenode_ip = self.cloudera_utils.pu.get_namenode(cluster).fqdn()
-            return 'hdfs://%s:8020' % namenode_ip
-
     @staticmethod
     def get_possible_job_config(job_type):
         if edp.compare_job_type(job_type, edp.JOB_TYPE_HIVE):
