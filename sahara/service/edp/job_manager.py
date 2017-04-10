@@ -24,7 +24,6 @@ from sahara import context
 from sahara import exceptions as e
 from sahara.i18n import _
 from sahara.i18n import _LI
-from sahara.i18n import _LW
 from sahara.service.edp import job_utils
 from sahara.service.edp.oozie import engine as oozie_engine
 from sahara.service.edp.spark import engine as spark_engine
@@ -176,9 +175,8 @@ def cancel_job(job_execution_id):
                     job_info = engine.cancel_job(job_execution)
                 except Exception as ex:
                     job_info = None
-                    LOG.warning(
-                        _LW("Error during cancel of job execution: "
-                            "{error}").format(error=ex))
+                    LOG.warning("Error during cancel of job execution: "
+                                "{error}".format(error=ex))
                 if job_info is not None:
                     job_execution = _write_job_status(job_execution, job_info)
                     LOG.info(_LI("Job execution was canceled successfully"))

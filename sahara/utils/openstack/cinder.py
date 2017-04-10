@@ -21,7 +21,6 @@ from oslo_config import cfg
 from oslo_log import log as logging
 
 from sahara import context
-from sahara.i18n import _LW
 from sahara.service import sessions
 from sahara.utils.openstack import base
 from sahara.utils.openstack import keystone
@@ -55,10 +54,10 @@ CONF.register_opts(opts, group=cinder_group)
 
 def validate_config():
     if CONF.cinder.api_version != 2:
-        LOG.warning(_LW('Unsupported Cinder API version: {bad}.  Please set a '
-                        'correct value for cinder.api_version in your '
-                        'sahara.conf file (currently supported versions are: '
-                        '{supported}). Falling back to Cinder API version 2.')
+        LOG.warning('Unsupported Cinder API version: {bad}.  Please set a '
+                    'correct value for cinder.api_version in your '
+                    'sahara.conf file (currently supported versions are: '
+                    '{supported}). Falling back to Cinder API version 2.'
                     .format(bad=CONF.cinder.api_version,
                             supported=[2]))
         CONF.set_override('api_version', 2, group='cinder', enforce_type=True)

@@ -24,7 +24,6 @@ from six.moves.urllib import parse as urlparse
 
 from sahara import context
 from sahara import exceptions as ex
-from sahara.i18n import _LW
 
 LOG = logging.getLogger(__name__)
 
@@ -94,12 +93,12 @@ def execute_with_retries(method, *args, **kwargs):
             error_code = getattr(e, 'http_status', None) or getattr(
                 e, 'status_code', None) or getattr(e, 'code', None)
             if error_code in ERRORS_TO_RETRY:
-                LOG.warning(_LW('Occasional error occurred during "{method}" '
-                                'execution: {error_msg} ({error_code}). '
-                                'Operation will be retried.').format(
-                            method=method.__name__,
-                            error_msg=e,
-                            error_code=error_code))
+                LOG.warning('Occasional error occurred during "{method}" '
+                            'execution: {error_msg} ({error_code}). '
+                            'Operation will be retried.'.format(
+                                method=method.__name__,
+                                error_msg=e,
+                                error_code=error_code))
                 attempts -= 1
                 retry_after = getattr(e, 'retry_after', 0)
                 context.sleep(max(retry_after, CONF.retries.retry_after))

@@ -22,7 +22,6 @@ from oslo_log import log as logging
 from sahara import conductor as c
 from sahara import context
 from sahara.i18n import _
-from sahara.i18n import _LW
 from sahara.plugins import provisioning as plugin_base
 from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils.openstack import base as b
@@ -77,16 +76,14 @@ def _check_installed_xfs(instance):
     with instance.remote() as r:
         distro = _get_os_distrib(r)
         if not cmd_map.get(distro):
-            LOG.warning(
-                _LW("Cannot verify installation of XFS tools for "
-                    "unknown distro {distro}.").format(distro=distro))
+            LOG.warning("Cannot verify installation of XFS tools for "
+                        "unknown distro {distro}.".format(distro=distro))
             return False
         try:
             r.execute_command(cmd_map.get(distro), run_as_root=True)
             return True
         except Exception as e:
-            LOG.warning(
-                _LW("Cannot install xfsprogs: {reason}").format(reason=e))
+            LOG.warning("Cannot install xfsprogs: {reason}".format(reason=e))
             return False
 
 
@@ -202,9 +199,8 @@ def _format_device(
                 with lock:
                     formatted_devices.append(device)
         except Exception as e:
-            LOG.warning(
-                _LW("Device {dev} cannot be formatted: {reason}").format(
-                    dev=device, reason=e))
+            LOG.warning("Device {dev} cannot be formatted: {reason}".format(
+                        dev=device, reason=e))
             cpo.add_fail_event(instance, e)
 
 

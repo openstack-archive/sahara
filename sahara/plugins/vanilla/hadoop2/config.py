@@ -20,7 +20,6 @@ import six
 
 from sahara import context
 from sahara.i18n import _
-from sahara.i18n import _LW
 from sahara.plugins import utils
 from sahara.plugins.vanilla.hadoop2 import config_helper as c_helper
 from sahara.plugins.vanilla.hadoop2 import oozie_helper as o_helper
@@ -419,9 +418,8 @@ def _make_hadoop_paths(paths, hadoop_dir):
     True, step=_("Configure topology data"), param=('cluster', 1))
 def configure_topology_data(pctx, cluster):
     if c_helper.is_data_locality_enabled(pctx, cluster):
-        LOG.warning(_LW("Node group awareness is not implemented in YARN yet "
-                        "so enable_hypervisor_awareness set to False "
-                        "explicitly"))
+        LOG.warning("Node group awareness is not implemented in YARN yet "
+                    "so enable_hypervisor_awareness set to False explicitly")
         tpl_map = th.generate_topology_map(cluster, is_node_awareness=False)
         topology_data = "\n".join(
             [k + " " + v for k, v in tpl_map.items()]) + "\n"

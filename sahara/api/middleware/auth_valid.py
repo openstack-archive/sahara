@@ -20,7 +20,6 @@ import webob
 import webob.exc as ex
 
 from sahara.i18n import _
-from sahara.i18n import _LW
 
 
 LOG = logging.getLogger(__name__)
@@ -43,7 +42,7 @@ class AuthValidator(base.Middleware):
         """
         token_tenant = req.environ.get("HTTP_X_TENANT_ID")
         if not token_tenant:
-            LOG.warning(_LW("Can't get tenant_id from env"))
+            LOG.warning("Can't get tenant_id from env")
             raise ex.HTTPServiceUnavailable()
 
         path = req.environ['PATH_INFO']
@@ -52,7 +51,7 @@ class AuthValidator(base.Middleware):
                 version, url_tenant, rest = strutils.split_path(path, 3, 3,
                                                                 True)
             except ValueError:
-                LOG.warning(_LW("Incorrect path: {path}").format(path=path))
+                LOG.warning("Incorrect path: {path}".format(path=path))
                 raise ex.HTTPNotFound(_("Incorrect path"))
 
             if token_tenant != url_tenant:
@@ -83,7 +82,7 @@ class AuthValidatorV2(base.Middleware):
         if path != '/':
             token_tenant = req.environ.get("HTTP_X_TENANT_ID")
             if not token_tenant:
-                LOG.warning(_LW("Can't get tenant_id from env"))
+                LOG.warning("Can't get tenant_id from env")
                 raise ex.HTTPServiceUnavailable()
 
             try:
@@ -94,7 +93,7 @@ class AuthValidatorV2(base.Middleware):
                     version, requested_tenant, rest = strutils.split_path(
                         path, 3, 3, True)
             except ValueError:
-                LOG.warning(_LW("Incorrect path: {path}").format(path=path))
+                LOG.warning("Incorrect path: {path}".format(path=path))
                 raise ex.HTTPNotFound(_("Incorrect path"))
 
             if token_tenant != requested_tenant:

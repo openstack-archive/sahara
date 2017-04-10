@@ -30,4 +30,3 @@ _ = _translators.primary
 # name like '_'. The "L" is for "log" and the other letter comes from
 # the level.
 _LI = _translators.log_info
-_LW = _translators.log_warning

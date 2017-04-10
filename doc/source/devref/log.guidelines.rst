@@ -30,13 +30,6 @@ Formatting Guidelines
 
 Sahara uses string formatting defined in `PEP 3101`_ for logs.
 
-.. code:: python
-
-    LOG.warning(_LW("Incorrect path: {path}").format(path=path))
-
-
-..
-
 
 Translation Guidelines
 ----------------------
@@ -46,6 +39,5 @@ CLI tools packaged with sahara contain log translations.
 
 * Debug: no translation
 * Info: _LI
-* Warning: _LW
 
 .. _PEP 3101: https://www.python.org/dev/peps/pep-3101/

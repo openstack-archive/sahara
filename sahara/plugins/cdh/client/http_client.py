@@ -29,7 +29,6 @@ from oslo_serialization import jsonutils as json
 import six
 from six.moves import urllib
 
-from sahara.i18n import _LW
 from sahara.plugins.cdh import exceptions as ex
 
 LOG = logging.getLogger(__name__)
@@ -106,9 +105,9 @@ class HttpClient(object):
         url = self._make_url(path, params)
         if http_method in ("GET", "DELETE"):
             if data is not None:
-                LOG.warning(_LW("{method} method does not pass any data. "
-                                "Path {path}").format(method=http_method,
-                                                      path=path))
+                LOG.warning("{method} method does not pass any data. "
+                            "Path {path}".format(method=http_method,
+                                                 path=path))
                 data = None
 
         # Setup the request

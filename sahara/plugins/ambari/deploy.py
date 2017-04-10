@@ -23,7 +23,6 @@ from oslo_utils import uuidutils
 from sahara import conductor
 from sahara import context
 from sahara.i18n import _
-from sahara.i18n import _LW
 from sahara.plugins.ambari import client as ambari_client
 from sahara.plugins.ambari import common as p_common
 from sahara.plugins.ambari import configs
@@ -169,8 +168,8 @@ def resolve_package_conflicts(cluster, instances=None):
                     r.execute_command(
                         "apt-get remove -y libmysql-java", run_as_root=True)
                 except Exception:
-                    LOG.warning(_LW("Can't remove libmysql-java, "
-                                    "it's probably not installed"))
+                    LOG.warning("Can't remove libmysql-java, "
+                                "it's probably not installed")
 
 
 def _prepare_ranger(cluster):
@@ -623,9 +622,9 @@ def _get_topology_data(cluster):
     if not t_helper.is_data_locality_enabled():
         return {}
 
-    LOG.warning(_LW("Node group awareness is not implemented in YARN yet "
-                    "so enable_hypervisor_awareness set to False "
-                    "explicitly"))
+    LOG.warning("Node group awareness is not implemented in YARN yet "
+                "so enable_hypervisor_awareness set to False "
+                "explicitly")
     return t_helper.generate_topology_map(cluster, is_node_awareness=False)
 
 
@@ -672,9 +671,9 @@ def _add_hadoop_swift_jar(instance, new_jar):
                     amb_code, amb_hadoop_version))
             r.execute_command("sudo cp {} {}".format(new_jar, origin_jar))
         else:
-            LOG.warning(_LW("The {jar_file} file cannot be found "
-                            "in the {dir} directory so Keystone API v3 "
-                            "is not enabled for this cluster.")
+            LOG.warning("The {jar_file} file cannot be found "
+                        "in the {dir} directory so Keystone API v3 "
+                        "is not enabled for this cluster."
                         .format(jar_file="hadoop-openstack.jar",
                                 dir="/opt"))
 

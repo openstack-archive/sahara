@@ -21,7 +21,6 @@ from oslo_log import log
 from sahara import context
 from sahara import exceptions as ex
 from sahara.i18n import _
-from sahara.i18n import _LW
 from sahara.utils.openstack import base as b
 from sahara.utils.openstack import nova
 from sahara.utils import xmlutils as x
@@ -77,7 +76,7 @@ def _read_swift_topology():
                 (host, path) = line.split()
                 topology[host] = path
     except IOError:
-        LOG.warning(_LW("Unable to read Swift nodes topology from {config}")
+        LOG.warning("Unable to read Swift nodes topology from {config}"
                     .format(config=CONF.swift_topology_file))
         return {}
 
