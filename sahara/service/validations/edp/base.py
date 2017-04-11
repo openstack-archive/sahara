@@ -50,11 +50,13 @@ job_configs = {
 }
 
 
-def check_data_source_unique_name(name):
-    if name in [ds.name for ds in conductor.data_source_get_all(
-            context.ctx())]:
-        raise ex.NameAlreadyExistsException(_("Data source with name '%s' "
-                                            "already exists") % name)
+def check_data_source_unique_name(ds_name):
+    if ds_name in [ds.name for ds in
+                   conductor.data_source_get_all(context.ctx(),
+                                                 name=ds_name)]:
+        raise ex.NameAlreadyExistsException(
+            _("Data source with name '%s' "
+              "already exists") % ds_name)
 
 
 def check_data_source_exists(data_source_id):
@@ -63,10 +65,12 @@ def check_data_source_exists(data_source_id):
             _("DataSource with id '%s' doesn't exist") % data_source_id)
 
 
-def check_job_unique_name(name):
-    if name in [j.name for j in conductor.job_get_all(context.ctx())]:
+def check_job_unique_name(job_name):
+    if job_name in [job.name for job in
+                    conductor.job_get_all(context.ctx(),
+                                          name=job_name)]:
         raise ex.NameAlreadyExistsException(_("Job with name '%s' "
-                                            "already exists") % name)
+                                              "already exists") % job_name)
 
 
 def check_job_binary_internal_exists(jbi_id):
