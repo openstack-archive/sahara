@@ -22,7 +22,6 @@ from sahara import conductor
 from sahara import context
 from sahara.i18n import _
 from sahara.i18n import _LI
-from sahara.i18n import _LW
 import sahara.plugins.mapr.abstract.configurer as ac
 from sahara.plugins.mapr.domain import distro as d
 from sahara.plugins.mapr.domain import service as srvc
@@ -279,7 +278,7 @@ class BaseConfigurer(ac.AbstractConfigurer):
                         ('mapr', mapr_user_pass),
                         run_as_root=True)
             else:
-                LOG.warning(_LW('User "mapr" does not exists'))
+                LOG.warning('User "mapr" does not exists')
 
         def create_home_mapr(instance):
             target_path = '/home/mapr'
@@ -293,7 +292,7 @@ class BaseConfigurer(ac.AbstractConfigurer):
                 with instance.remote() as r:
                     r.execute_command(cmd, run_as_root=True)
             else:
-                LOG.warning(_LW('User "mapr" does not exists'))
+                LOG.warning('User "mapr" does not exists')
 
         util.execute_on_instances(instances, set_user_password)
         util.execute_on_instances(instances, create_home_mapr)

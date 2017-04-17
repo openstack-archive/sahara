@@ -20,7 +20,6 @@ from oslo_log import log as logging
 from sahara import conductor as c
 from sahara import context
 from sahara.i18n import _
-from sahara.i18n import _LW
 from sahara.service import engine as e
 from sahara.service.heat import commons as heat_common
 from sahara.service.heat import templates as ht
@@ -110,8 +109,8 @@ class HeatEngine(e.Engine):
 
         if rollback_info.get('shutdown', False):
             self._rollback_cluster_creation(cluster, reason)
-            LOG.warning(_LW("Cluster creation rollback "
-                            "(reason: {reason})").format(reason=reason))
+            LOG.warning("Cluster creation rollback "
+                        "(reason: {reason})".format(reason=reason))
 
             return False
 
@@ -120,8 +119,8 @@ class HeatEngine(e.Engine):
         if rollback_count or target_count:
             self._rollback_cluster_scaling(
                 cluster, rollback_count, target_count, reason)
-            LOG.warning(_LW("Cluster scaling rollback "
-                            "(reason: {reason})").format(reason=reason))
+            LOG.warning("Cluster scaling rollback "
+                        "(reason: {reason})".format(reason=reason))
 
             return True
 
@@ -196,8 +195,8 @@ class HeatEngine(e.Engine):
         try:
             heat.delete_stack(cluster)
         except heat_exc.HTTPNotFound:
-            LOG.warning(_LW('Did not find stack for cluster. Trying to delete '
-                            'cluster manually.'))
+            LOG.warning('Did not find stack for cluster. Trying to delete '
+                        'cluster manually.')
 
             # Stack not found. Trying to delete cluster like direct engine
             #  do it

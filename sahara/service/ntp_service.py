@@ -19,7 +19,6 @@ from oslo_log import log as logging
 from sahara import conductor as cond
 from sahara import context
 from sahara.i18n import _LI
-from sahara.i18n import _LW
 from sahara.plugins import provisioning as common_configs
 from sahara.utils import cluster as c_u
 
@@ -77,7 +76,7 @@ def _configure_ntp_on_instance(instance, url):
         with instance.remote() as r:
             if not _check_ntp_installed(r):
                 # missing ntp service
-                LOG.warning(_LW("Unable to configure NTP service"))
+                LOG.warning("Unable to configure NTP service")
                 return
 
             r.append_to_file(

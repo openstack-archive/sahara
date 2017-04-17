@@ -21,7 +21,6 @@ from oslo_log import log
 import six
 
 from sahara import context
-from sahara.i18n import _LW
 from sahara.utils.openstack import manila
 
 LOG = log.getLogger(__name__)
@@ -176,13 +175,12 @@ class _ShareHandler(object):
         if accesses:
             access = accesses[0]
             if access.access_level not in ('ro', 'rw'):
-                LOG.warning(
-                    _LW("Unknown permission level {access_level} on share "
-                        "id {share_id} for ip {ip}. Leaving pre-existing "
-                        "permissions.").format(
-                            access_level=access.access_level,
-                            share_id=self.share.id,
-                            ip=instance.internal_ip))
+                LOG.warning("Unknown permission level {access_level} on share "
+                            "id {share_id} for ip {ip}. Leaving pre-existing "
+                            "permissions.".format(
+                                access_level=access.access_level,
+                                share_id=self.share.id,
+                                ip=instance.internal_ip))
             elif access.access_level == 'ro' and access_level == 'rw':
                 self.share.deny(access.id)
                 self.share.allow('ip', instance.internal_ip, access_level)
@@ -237,9 +235,8 @@ class _NFSMounter(_ShareHandler):
             command = cls._NFS_CHECKS[distro]
             remote.execute_command(command, run_as_root=True)
         else:
-            LOG.warning(
-                _LW("Cannot verify installation of NFS mount tools for "
-                    "unknown distro {distro}.").format(distro=distro))
+            LOG.warning("Cannot verify installation of NFS mount tools for "
+                        "unknown distro {distro}.".format(distro=distro))
 
     def mount_to_instance(self, remote, share_info):
         """Mounts the share to the instance as configured."""

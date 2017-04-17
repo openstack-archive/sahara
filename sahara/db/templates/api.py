@@ -24,7 +24,6 @@ import six
 from sahara import conductor
 from sahara.db.templates import utils as u
 from sahara.i18n import _LI
-from sahara.i18n import _LW
 from sahara.service.validations import cluster_template_schema as clt
 from sahara.service.validations import node_group_template_schema as ngt
 from sahara.utils import api_validator
@@ -126,17 +125,17 @@ def check_usage_of_existing(ctx, ng_templates, cl_templates):
                 ng["id"], clusters)
 
             if cluster_users:
-                LOG.warning(_LW("Node group template {name} "
-                            "in use by clusters {clusters}").format(
+                LOG.warning("Node group template {name} "
+                            "in use by clusters {clusters}".format(
                                 name=ng["name"], clusters=cluster_users))
             if template_users:
-                LOG.warning(_LW("Node group template {name} "
-                            "in use by cluster templates {templates}").format(
+                LOG.warning("Node group template {name} "
+                            "in use by cluster templates {templates}".format(
                                 name=ng["name"], templates=template_users))
 
             if cluster_users or template_users:
-                LOG.warning(_LW("Update of node group template "
-                            "{name} is not allowed").format(name=ng["name"]))
+                LOG.warning("Update of node group template "
+                            "{name} is not allowed".format(name=ng["name"]))
                 error = True
 
     for cl_info in cl_templates:
@@ -145,12 +144,12 @@ def check_usage_of_existing(ctx, ng_templates, cl_templates):
             cluster_users = u.check_cluster_template_usage(cl["id"], clusters)
 
             if cluster_users:
-                LOG.warning(_LW("Cluster template {name} "
-                            "in use by clusters {clusters}").format(
+                LOG.warning("Cluster template {name} "
+                            "in use by clusters {clusters}".format(
                                 name=cl["name"], clusters=cluster_users))
 
-                LOG.warning(_LW("Update of cluster template "
-                            "{name} is not allowed").format(name=cl["name"]))
+                LOG.warning("Update of cluster template "
+                            "{name} is not allowed".format(name=cl["name"]))
                 error = True
 
     return error
@@ -159,7 +158,7 @@ def check_usage_of_existing(ctx, ng_templates, cl_templates):
 def log_skipping_dir(path, reason=""):
     if reason:
         reason = ", " + reason
-    LOG.warning(_LW("Skipping processing for {dir}{reason}").format(
+    LOG.warning("Skipping processing for {dir}{reason}".format(
         dir=path, reason=reason))
 
 
@@ -180,7 +179,7 @@ def check_cluster_templates_valid(ng_templates, cl_templates):
         try:
             ct_validator.validate(template)
         except jsonschema.ValidationError as e:
-            LOG.warning(_LW("Validation for {path} failed, {reason}").format(
+            LOG.warning("Validation for {path} failed, {reason}".format(
                 path=cl["path"], reason=e))
             return True
     return False
@@ -300,8 +299,8 @@ def process_files(dirname, files):
                         data = fp.read()
                         template = json.loads(data)
                     except ValueError as e:
-                        LOG.warning(_LW("Error processing {path}, "
-                                    "{reason}").format(path=fpath, reason=e))
+                        LOG.warning("Error processing {path}, "
+                                    "{reason}".format(path=fpath, reason=e))
                         raise Handled("error processing files")
 
                     # If this file doesn't contain basic fields, skip it.
@@ -333,9 +332,9 @@ def process_files(dirname, files):
                         try:
                             ng_validator.validate(template)
                         except jsonschema.ValidationError as e:
-                            LOG.warning(_LW("Validation for {path} failed, "
-                                        "{reason}").format(path=fpath,
-                                                           reason=e))
+                            LOG.warning("Validation for {path} failed, "
+                                        "{reason}".format(path=fpath,
+                                                          reason=e))
                             raise Handled(
                                 "node group template validation failed")
                         node_groups.append(file_entry)
@@ -373,27 +372,27 @@ def delete_node_group_template(ctx, template, rollback=False):
             template["id"], clusters, cluster_templates)
 
         if cluster_users:
-            LOG.warning(_LW("Node group template {info} "
-                        "in use by clusters {clusters}").format(
+            LOG.warning("Node group template {info} "
+                        "in use by clusters {clusters}".format(
                             info=u.name_and_id(template),
                             clusters=cluster_users))
         if template_users:
-            LOG.warning(_LW("Node group template {info} "
-                        "in use by cluster templates {templates}").format(
+            LOG.warning("Node group template {info} "
+                        "in use by cluster templates {templates}".format(
                             info=u.name_and_id(template),
                             templates=template_users))
 
         if cluster_users or template_users:
-            LOG.warning(_LW("Deletion of node group template "
-                        "{info} failed").format(info=u.name_and_id(template)))
+            LOG.warning("Deletion of node group template "
+                        "{info} failed".format(info=u.name_and_id(template)))
             return
 
     try:
         conductor.API.node_group_template_destroy(ctx, template["id"],
                                                   ignore_prot_on_def=True)
     except Exception as e:
-        LOG.warning(_LW("Deletion of node group template {info} "
-                    "failed{rollback}, {reason}").format(
+        LOG.warning("Deletion of node group template {info} "
+                    "failed{rollback}, {reason}".format(
                         info=u.name_and_id(template),
                         reason=e,
                         rollback=rollback_msg))
@@ -415,8 +414,8 @@ def reverse_node_group_template_updates(ctx, update_info):
                                                      template["id"], values,
                                                      ignore_prot_on_def=True)
         except Exception as e:
-            LOG.warning(_LW("Rollback of update for node group "
-                        "template {info} failed, {reason}").format(
+            LOG.warning("Rollback of update for node group "
+                        "template {info} failed, {reason}".format(
                             info=u.name_and_id(template),
                             reason=e))
         else:
@@ -459,8 +458,8 @@ def add_node_group_templates(ctx, node_groups):
                     template = conductor.API.node_group_template_update(
                         ctx, current['id'], template, ignore_prot_on_def=True)
                 except Exception as e:
-                    LOG.warning(_LW("Update of node group template {info} "
-                                "failed, {reason}").format(
+                    LOG.warning("Update of node group template {info} "
+                                "failed, {reason}".format(
                                     info=u.name_and_id(current),
                                     reason=e))
                     raise Handled()
@@ -482,8 +481,8 @@ def add_node_group_templates(ctx, node_groups):
                     template = conductor.API.node_group_template_create(
                         ctx, template)
                 except Exception as e:
-                    LOG.warning(_LW("Creation of node group template "
-                                "from {path} failed, {reason}").format(
+                    LOG.warning("Creation of node group template "
+                                "from {path} failed, {reason}".format(
                                     path=ng['path'], reason=e))
                     raise Handled()
 
@@ -499,8 +498,8 @@ def add_node_group_templates(ctx, node_groups):
         ng_info, error = do_reversals(ng_info)
 
     except Exception as e:
-        LOG.warning(_LW("Unhandled exception while processing "
-                    "node group templates, {reason}").format(reason=e))
+        LOG.warning("Unhandled exception while processing "
+                    "node group templates, {reason}".format(reason=e))
         ng_info, error = do_reversals(ng_info)
 
     return ng_info, error
@@ -518,23 +517,23 @@ def delete_cluster_template(ctx, template, rollback=False):
                                                        clusters)
 
         if cluster_users:
-            LOG.warning(_LW("Cluster template {info} "
-                        "in use by clusters {clusters}").format(
+            LOG.warning("Cluster template {info} "
+                        "in use by clusters {clusters}".format(
                             info=u.name_and_id(template),
                             clusters=cluster_users))
 
-            LOG.warning(_LW("Deletion of cluster template "
-                        "{info} failed").format(info=u.name_and_id(template)))
+            LOG.warning("Deletion of cluster template "
+                        "{info} failed".format(info=u.name_and_id(template)))
             return
 
     try:
         conductor.API.cluster_template_destroy(ctx, template["id"],
                                                ignore_prot_on_def=True)
     except Exception as e:
-        LOG.warning(_LW("Deletion of cluster template {info} failed{rollback}"
-                    ", {reason}").format(info=u.name_and_id(template),
-                                         reason=e,
-                                         rollback=rollback_msg))
+        LOG.warning("Deletion of cluster template {info} failed{rollback}"
+                    ", {reason}".format(info=u.name_and_id(template),
+                                        reason=e,
+                                        rollback=rollback_msg))
     else:
         LOG.info(_LI("Deleted cluster template {info}{rollback}").format(
             info=u.name_and_id(template), rollback=rollback_msg))
@@ -553,8 +552,8 @@ def reverse_cluster_template_updates(ctx, update_info):
                                                   template["id"], values,
                                                   ignore_prot_on_def=True)
         except Exception as e:
-            LOG.warning(_LW("Rollback of update for cluster "
-                        "template {info} failed, {reason}").format(
+            LOG.warning("Rollback of update for cluster "
+                        "template {info} failed, {reason}".format(
                             info=u.name_and_id(template),
                             reason=e))
         else:
@@ -622,8 +621,8 @@ def add_cluster_templates(ctx, clusters, ng_dict):
                     template = conductor.API.cluster_template_update(
                         ctx, current['id'], template, ignore_prot_on_def=True)
                 except Exception as e:
-                    LOG.warning(_LW("Update of cluster template {info} "
-                                "failed, {reason}").format(
+                    LOG.warning("Update of cluster template {info} "
+                                "failed, {reason}".format(
                                     info=u.name_and_id(current), reason=e))
                     raise Handled()
 
@@ -643,8 +642,8 @@ def add_cluster_templates(ctx, clusters, ng_dict):
                     template = conductor.API.cluster_template_create(ctx,
                                                                      template)
                 except Exception as e:
-                    LOG.warning(_LW("Creation of cluster template "
-                                "from {path} failed, {reason}").format(
+                    LOG.warning("Creation of cluster template "
+                                "from {path} failed, {reason}".format(
                                     path=cl['path'],
                                     reason=e))
                     raise Handled()
@@ -658,8 +657,8 @@ def add_cluster_templates(ctx, clusters, ng_dict):
         error = do_reversals(created, updated)
 
     except Exception as e:
-        LOG.warning(_LW("Unhandled exception while processing "
-                    "cluster templates, {reason}").format(reason=e))
+        LOG.warning("Unhandled exception while processing "
+                    "cluster templates, {reason}".format(reason=e))
         error = do_reversals(created, updated)
 
     return error
@@ -757,8 +756,8 @@ def do_node_group_template_delete():
     if t:
         delete_node_group_template(ctx, t)
     else:
-        LOG.warning(_LW("Deletion of node group template {name} failed, "
-                    "no such template").format(name=template_name))
+        LOG.warning("Deletion of node group template {name} failed, "
+                    "no such template".format(name=template_name))
 
 
 def do_node_group_template_delete_by_id():
@@ -770,12 +769,12 @@ def do_node_group_template_delete_by_id():
         if t["is_default"]:
             delete_node_group_template(ctx, t)
         else:
-            LOG.warning(_LW("Deletion of node group template {info} skipped, "
-                        "not a default template").format(
+            LOG.warning("Deletion of node group template {info} skipped, "
+                        "not a default template".format(
                             info=u.name_and_id(t)))
     else:
-        LOG.warning(_LW("Deletion of node group template {id} failed, "
-                    "no such template").format(id=CONF.command.id))
+        LOG.warning("Deletion of node group template {id} failed, "
+                    "no such template".format(id=CONF.command.id))
 
 
 def do_cluster_template_delete():
@@ -786,8 +785,8 @@ def do_cluster_template_delete():
     if t:
         delete_cluster_template(ctx, t)
     else:
-        LOG.warning(_LW("Deletion of cluster template {name} failed, "
-                    "no such template").format(name=template_name))
+        LOG.warning("Deletion of cluster template {name} failed, "
+                    "no such template".format(name=template_name))
 
 
 def do_cluster_template_delete_by_id():
@@ -799,9 +798,9 @@ def do_cluster_template_delete_by_id():
         if t["is_default"]:
             delete_cluster_template(ctx, t)
         else:
-            LOG.warning(_LW("Deletion of cluster template {info} skipped, "
-                        "not a default template").format(
+            LOG.warning("Deletion of cluster template {info} skipped, "
+                        "not a default template".format(
                             info=u.name_and_id(t)))
     else:
-        LOG.warning(_LW("Deletion of cluster template {id} failed, "
-                    "no such template").format(id=CONF.command.id))
+        LOG.warning("Deletion of cluster template {id} failed, "
+                    "no such template".format(id=CONF.command.id))

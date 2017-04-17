@@ -32,7 +32,6 @@ from six.moves import urllib
 
 from sahara import context
 from sahara.i18n import _
-from sahara.i18n import _LW
 from sahara.plugins.cdh import exceptions as ex
 
 LOG = logging.getLogger(__name__)
@@ -113,13 +112,13 @@ class Resource(object):
             except (socket.error, urllib.error.URLError) as e:
                 if "timed out" in six.text_type(e).lower():
                     if retry < self.retries:
-                        LOG.warning(_LW("Timeout issuing GET request for "
-                                        "{path}. Will retry").format(
-                                            path=self._join_uri(relpath)))
+                        LOG.warning("Timeout issuing GET request for "
+                                    "{path}. Will retry".format(
+                                        path=self._join_uri(relpath)))
                     else:
-                        LOG.warning(_LW("Timeout issuing GET request for "
-                                        "{path}. No retries left").format(
-                                            path=self._join_uri(relpath)))
+                        LOG.warning("Timeout issuing GET request for "
+                                    "{path}. No retries left".format(
+                                        path=self._join_uri(relpath)))
                 else:
                     raise
         else:

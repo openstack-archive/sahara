@@ -19,7 +19,6 @@ from oslo_log import log as logging
 
 from sahara import conductor as cond
 from sahara import context
-from sahara.i18n import _LW
 from sahara.plugins.vanilla import utils as u
 from sahara.service.castellan import utils as castellan
 
@@ -70,7 +69,7 @@ def delete_oozie_password(cluster):
     if 'oozie_pass_id' in extra:
         castellan.delete_secret(extra['oozie_pass_id'])
     else:
-        LOG.warning(_LW("Cluster hasn't Oozie password"))
+        LOG.warning("Cluster hasn't Oozie password")
 
 
 def get_hive_password(cluster):
@@ -87,4 +86,4 @@ def delete_hive_password(cluster):
     if 'hive_pass_id' in extra:
         castellan.delete_secret(extra['hive_pass_id'])
     else:
-        LOG.warning(_LW("Cluster hasn't hive password"))
+        LOG.warning("Cluster hasn't hive password")

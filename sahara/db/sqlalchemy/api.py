@@ -30,7 +30,6 @@ import sqlalchemy as sa
 from sahara.db.sqlalchemy import models as m
 from sahara import exceptions as ex
 from sahara.i18n import _
-from sahara.i18n import _LW
 from sahara.service.validations import acl as validate
 from sahara.utils import types
 
@@ -263,8 +262,7 @@ def setup_db():
         engine = get_engine()
         m.Cluster.metadata.create_all(engine)
     except sa.exc.OperationalError as e:
-        LOG.warning(_LW("Database registration exception: {exc}")
-                    .format(exc=e))
+        LOG.warning("Database registration exception: {exc}".format(exc=e))
         return False
     return True
 
@@ -274,7 +272,7 @@ def drop_db():
         engine = get_engine()
         m.Cluster.metadata.drop_all(engine)
     except Exception as e:
-        LOG.warning(_LW("Database shutdown exception: {exc}").format(exc=e))
+        LOG.warning("Database shutdown exception: {exc}".format(exc=e))
         return False
     return True
 

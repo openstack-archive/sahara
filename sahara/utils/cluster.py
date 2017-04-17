@@ -24,7 +24,6 @@ from sahara import conductor as c
 from sahara import context
 from sahara import exceptions as e
 from sahara.i18n import _LI
-from sahara.i18n import _LW
 from sahara.utils.notification import sender
 from sahara.utils.openstack import base as auth_base
 
@@ -148,9 +147,8 @@ def etc_hosts_entry_for_service(service):
     try:
         result = "%s %s\n" % (socket.gethostbyname(hostname), hostname)
     except socket.gaierror:
-        LOG.warning(
-            _LW("Failed to resolve hostname of service: '{}'").format(service)
-        )
+        LOG.warning("Failed to resolve hostname of service: '{}'"
+                    .format(service))
         result = "# Failed to resolve {} during deployment\n".format(hostname)
     return result
 

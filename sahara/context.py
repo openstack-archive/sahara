@@ -26,7 +26,6 @@ from oslo_log import log as logging
 
 from sahara import exceptions as ex
 from sahara.i18n import _
-from sahara.i18n import _LW
 from sahara.service import sessions
 
 
@@ -52,8 +51,8 @@ class Context(context.RequestContext):
                  overwrite=True,
                  **kwargs):
         if kwargs:
-            LOG.warning(_LW('Arguments dropped when creating context: '
-                            '{args}').format(args=kwargs))
+            LOG.warning('Arguments dropped when creating context: '
+                        '{args}'.format(args=kwargs))
 
         super(Context, self).__init__(auth_token=auth_token,
                                       user=user_id,
@@ -319,5 +318,5 @@ def get_auth_token():
         try:
             cur.auth_token = sessions.cache().token_for_auth(cur.auth_plugin)
         except Exception as e:
-            LOG.warning(_LW("Cannot update token, reason: %s"), e)
+            LOG.warning("Cannot update token, reason: %s", e)
     return cur.auth_token
