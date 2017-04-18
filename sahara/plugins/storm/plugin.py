@@ -50,7 +50,7 @@ class StormProvider(p.ProvisioningPluginBase):
               "cluster without any management consoles."))
 
     def get_versions(self):
-        return ['0.9.2', '1.0.1']
+        return ['0.9.2', '1.0.1', '1.1.0']
 
     def get_configs(self, storm_version):
         return c_helper.get_plugin_configs()
