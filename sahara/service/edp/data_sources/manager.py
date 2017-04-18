@@ -23,7 +23,6 @@ from stevedore import enabled
 from sahara import conductor as cond
 from sahara import exceptions as ex
 from sahara.i18n import _
-from sahara.i18n import _LI
 
 conductor = cond.API
 
@@ -51,9 +50,8 @@ class DataSourceManager(object):
                     ext.name)
             ext.obj.name = ext.name
             self.data_sources[ext.name] = ext.obj
-            LOG.info(_LI("Data source name {ds_name} loaded {entry_point}")
-                     .format(ds_name=ext.name,
-                             entry_point=ext.entry_point_target))
+            LOG.info("Data source name {ds_name} loaded {entry_point}".format(
+                ds_name=ext.name, entry_point=ext.entry_point_target))
 
         if len(self.data_sources) < len(config_ds):
             loaded_ds = set(six.iterkeys(self.data_sources))

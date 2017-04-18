@@ -21,8 +21,6 @@ from oslo_log import log
 from oslo_utils import uuidutils
 from tooz import coordination
 
-from sahara.i18n import _LI
-
 LOG = log.getLogger(__name__)
 
 coordinator_opts = [
@@ -51,7 +49,7 @@ class Coordinator(object):
                 self.coordinator = coordination.get_coordinator(
                     backend_url, self.member_id)
                 self.coordinator.start()
-                LOG.info(_LI('Coordination backend loaded successfully.'))
+                LOG.info('Coordination backend loaded successfully.')
             except coordination.ToozError:
                 LOG.error('Error connecting to coordination backend.')
                 raise

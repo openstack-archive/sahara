@@ -31,13 +31,4 @@ Formatting Guidelines
 Sahara uses string formatting defined in `PEP 3101`_ for logs.
 
 
-Translation Guidelines
-----------------------
-
-All log levels except Debug require translation. None of the separate
-CLI tools packaged with sahara contain log translations.
-
-* Debug: no translation
-* Info: _LI
-
 .. _PEP 3101: https://www.python.org/dev/peps/pep-3101/

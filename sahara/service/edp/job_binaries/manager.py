@@ -23,7 +23,6 @@ from stevedore import enabled
 from sahara import conductor as cond
 from sahara import exceptions as ex
 from sahara.i18n import _
-from sahara.i18n import _LI
 
 conductor = cond.API
 
@@ -51,9 +50,8 @@ class JobBinaryManager(object):
                     ext.name)
             ext.obj.name = ext.name
             self.job_binaries[ext.name] = ext.obj
-            LOG.info(_LI("Job binary name {jb_name} loaded {entry_point}")
-                     .format(jb_name=ext.name,
-                             entry_point=ext.entry_point_target))
+            LOG.info("Job binary name {jb_name} loaded {entry_point}".format(
+                jb_name=ext.name, entry_point=ext.entry_point_target))
 
         if len(self.job_binaries) < len(config_jb):
             loaded_jb = set(six.iterkeys(self.job_binaries))

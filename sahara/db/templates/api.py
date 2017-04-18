@@ -23,7 +23,6 @@ import six
 
 from sahara import conductor
 from sahara.db.templates import utils as u
-from sahara.i18n import _LI
 from sahara.service.validations import cluster_template_schema as clt
 from sahara.service.validations import node_group_template_schema as ngt
 from sahara.utils import api_validator
@@ -397,7 +396,7 @@ def delete_node_group_template(ctx, template, rollback=False):
                         reason=e,
                         rollback=rollback_msg))
     else:
-        LOG.info(_LI("Deleted node group template {info}{rollback}").format(
+        LOG.info("Deleted node group template {info}{rollback}".format(
             info=u.name_and_id(template), rollback=rollback_msg))
 
 
@@ -419,9 +418,8 @@ def reverse_node_group_template_updates(ctx, update_info):
                             info=u.name_and_id(template),
                             reason=e))
         else:
-            LOG.info(_LI("Rolled back update for "
-                     "node group template {info}").format(
-                         info=u.name_and_id(template)))
+            LOG.info("Rolled back update for node group "
+                     "template {info}".format(info=u.name_and_id(template)))
 
 
 def add_node_group_templates(ctx, node_groups):
@@ -466,10 +464,9 @@ def add_node_group_templates(ctx, node_groups):
 
                 if template['updated_at'] != current['updated_at']:
                     ng_info["updated"].append((template, updated_fields))
-                    LOG.info(_LI("Updated node group template {info} "
-                             "from {path}").format(
-                                 info=u.name_and_id(template),
-                                 path=ng["path"]))
+                    LOG.info("Updated node group template {info} "
+                             "from {path}".format(info=u.name_and_id(template),
+                                                  path=ng["path"]))
                 else:
                     LOG.debug("No change to node group template {info} "
                               "from {path}".format(
@@ -487,9 +484,9 @@ def add_node_group_templates(ctx, node_groups):
                     raise Handled()
 
                 ng_info["created"].append(template)
-                LOG.info(_LI("Created node group template {info} "
-                         "from {path}").format(info=u.name_and_id(template),
-                                               path=ng["path"]))
+                LOG.info("Created node group template {info} "
+                         "from {path}".format(info=u.name_and_id(template),
+                                              path=ng["path"]))
 
             # For the purposes of substitution we need a dict of id by name
             ng_info["ids"][template['name']] = template['id']
@@ -535,7 +532,7 @@ def delete_cluster_template(ctx, template, rollback=False):
                                         reason=e,
                                         rollback=rollback_msg))
     else:
-        LOG.info(_LI("Deleted cluster template {info}{rollback}").format(
+        LOG.info("Deleted cluster template {info}{rollback}".format(
             info=u.name_and_id(template), rollback=rollback_msg))
 
 
@@ -557,9 +554,8 @@ def reverse_cluster_template_updates(ctx, update_info):
                             info=u.name_and_id(template),
                             reason=e))
         else:
-            LOG.info(_LI("Rolled back update for "
-                     "cluster template {info}").format(
-                         info=u.name_and_id(template)))
+            LOG.info("Rolled back update for cluster "
+                     "template {info}".format(info=u.name_and_id(template)))
 
 
 def add_cluster_templates(ctx, clusters, ng_dict):
@@ -628,10 +624,9 @@ def add_cluster_templates(ctx, clusters, ng_dict):
 
                 if template['updated_at'] != current['updated_at']:
                     updated.append((template, updated_fields))
-                    LOG.info(_LI("Updated cluster template {info} "
-                             "from {path}").format(
-                                 info=u.name_and_id(template),
-                                 path=cl['path']))
+                    LOG.info("Updated cluster template {info} "
+                             "from {path}".format(info=u.name_and_id(template),
+                                                  path=cl['path']))
                 else:
                     LOG.debug("No change to cluster template {info} "
                               "from {path}".format(info=u.name_and_id(current),
@@ -649,9 +644,9 @@ def add_cluster_templates(ctx, clusters, ng_dict):
                     raise Handled()
 
                 created.append(template)
-                LOG.info(_LI("Created cluster template {info} "
-                         "from {path}").format(info=u.name_and_id(template),
-                                               path=cl['path']))
+                LOG.info("Created cluster template {info} "
+                         "from {path}".format(info=u.name_and_id(template),
+                                              path=cl['path']))
 
     except Handled:
         error = do_reversals(created, updated)

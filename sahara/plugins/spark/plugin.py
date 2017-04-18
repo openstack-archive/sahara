@@ -22,7 +22,6 @@ from oslo_log import log as logging
 from sahara import conductor
 from sahara import context
 from sahara.i18n import _
-from sahara.i18n import _LI
 from sahara.plugins import exceptions as ex
 from sahara.plugins import provisioning as p
 from sahara.plugins import recommendations_utils as ru
@@ -136,7 +135,7 @@ class SparkProvider(p.ProvisioningPluginBase):
     def _start_spark(self, cluster, sm_instance):
         with remote.get_remote(sm_instance) as r:
             run.start_spark_master(r, self._spark_home(cluster))
-            LOG.info(_LI("Spark service has been started"))
+            LOG.info("Spark service has been started")
 
     def start_cluster(self, cluster):
         nn_instance = utils.get_instance(cluster, "namenode")
@@ -149,7 +148,7 @@ class SparkProvider(p.ProvisioningPluginBase):
         self._start_datanode_processes(dn_instances)
         run.await_datanodes(cluster)
 
-        LOG.info(_LI("Hadoop services have been started"))
+        LOG.info("Hadoop services have been started")
 
         with remote.get_remote(nn_instance) as r:
             r.execute_command("sudo -u hdfs hdfs dfs -mkdir -p /user/$USER/")
@@ -160,7 +159,7 @@ class SparkProvider(p.ProvisioningPluginBase):
         self.start_spark(cluster)
         swift_helper.install_ssl_certs(utils.get_instances(cluster))
 
-        LOG.info(_LI('Cluster has been started successfully'))
+        LOG.info('Cluster has been started successfully')
         self._set_cluster_info(cluster)
 
     def _spark_home(self, cluster):
@@ -456,7 +455,7 @@ class SparkProvider(p.ProvisioningPluginBase):
 
         swift_helper.install_ssl_certs(instances)
         run.start_spark_master(r_master, self._spark_home(cluster))
-        LOG.info(_LI("Spark master service has been restarted"))
+        LOG.info("Spark master service has been restarted")
 
     def _get_scalable_processes(self):
         return ["datanode", "slave"]

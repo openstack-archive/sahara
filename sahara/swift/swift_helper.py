@@ -17,7 +17,6 @@ from oslo_config import cfg
 from oslo_log import log as logging
 
 from sahara import context
-from sahara.i18n import _LI
 from sahara.swift import utils as su
 from sahara.utils import xmlutils as x
 
@@ -63,8 +62,8 @@ def get_swift_configs():
             conf['value'] = CONF.os_region_name
 
     result = [cfg for cfg in configs if cfg['value']]
-    LOG.info(_LI("Swift would be integrated with the following "
-             "params: {result}").format(result=result))
+    LOG.info("Swift would be integrated with the following "
+             "params: {result}".format(result=result))
     return result
 
 

@@ -25,7 +25,6 @@ import six
 from sahara import conductor as c
 from sahara import context
 from sahara.i18n import _
-from sahara.i18n import _LI
 from sahara.service import networks
 from sahara.service import volumes
 from sahara.utils import cluster as cluster_utils
@@ -94,8 +93,7 @@ class Engine(object):
         ips_assigned = set()
         self._ips_assign(ips_assigned, cluster, instances)
 
-        LOG.info(
-            _LI("All instances have IPs assigned"))
+        LOG.info("All instances have IPs assigned")
 
         cluster = conductor.cluster_get(context.ctx(), cluster)
         instances = cluster_utils.get_instances(cluster, ips_assigned)
@@ -109,7 +107,7 @@ class Engine(object):
                     tg.spawn("wait-for-ssh-%s" % instance.instance_name,
                              self._wait_until_accessible, instance)
 
-        LOG.info(_LI("All instances are accessible"))
+        LOG.info("All instances are accessible")
 
     @poll_utils.poll_status(
         'wait_until_accessible', _("Wait for instance accessibility"),

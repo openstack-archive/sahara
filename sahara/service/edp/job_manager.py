@@ -23,7 +23,6 @@ from sahara import conductor as c
 from sahara import context
 from sahara import exceptions as e
 from sahara.i18n import _
-from sahara.i18n import _LI
 from sahara.service.edp import job_utils
 from sahara.service.edp.oozie import engine as oozie_engine
 from sahara.service.edp.spark import engine as spark_engine
@@ -94,8 +93,8 @@ def _run_job(job_execution_id):
     job_execution = conductor.job_execution_get(ctx, job_execution_id)
     cluster = conductor.cluster_get(ctx, job_execution.cluster_id)
     if cluster is None or cluster.status != c_u.CLUSTER_STATUS_ACTIVE:
-        LOG.info(_LI("Can not run this job on a non-existant cluster or a"
-                     " inactive cluster."))
+        LOG.info("Can not run this job on a non-existant cluster or a "
+                 "inactive cluster.")
         return
 
     eng = get_job_engine(cluster, job_execution)
@@ -154,12 +153,11 @@ def cancel_job(job_execution_id):
     ctx = context.ctx()
     job_execution = conductor.job_execution_get(ctx, job_execution_id)
     if job_execution.info['status'] in edp.JOB_STATUSES_TERMINATED:
-        LOG.info(_LI("Job execution is already finished and shouldn't be"
-                     " canceled"))
+        LOG.info("Job execution is already finished and shouldn't be canceled")
         return job_execution
     cluster = conductor.cluster_get(ctx, job_execution.cluster_id)
     if cluster is None:
-        LOG.info(_LI("Can not cancel this job on a non-existant cluster."))
+        LOG.info("Can not cancel this job on a non-existant cluster.")
         return job_execution
     engine = get_job_engine(cluster, job_execution)
     if engine is not None:
@@ -179,18 +177,18 @@ def cancel_job(job_execution_id):
                                 "{error}".format(error=ex))
                 if job_info is not None:
                     job_execution = _write_job_status(job_execution, job_info)
-                    LOG.info(_LI("Job execution was canceled successfully"))
+                    LOG.info("Job execution was canceled successfully")
                     return job_execution
                 context.sleep(3)
                 job_execution = conductor.job_execution_get(
                     ctx, job_execution_id)
                 if not job_execution:
-                    LOG.info(_LI("Job execution was deleted. "
-                                 "Canceling current operation."))
+                    LOG.info("Job execution was deleted. "
+                             "Canceling current operation.")
                     return job_execution
             else:
-                LOG.info(_LI("Job execution status: {status}").format(
-                         status=job_execution.info['status']))
+                LOG.info("Job execution status: {status}").format(
+                    status=job_execution.info['status'])
                 return job_execution
         else:
             raise e.CancelingFailed(_('Job execution %s was not canceled')
@@ -256,7 +254,7 @@ def suspend_job(job_execution_id):
                                    "{error}")).format(error=ex)
     if job_info is not None:
         job_execution = _write_job_status(job_execution, job_info)
-        LOG.info(_LI("Job execution was suspended successfully"))
+        LOG.info("Job execution was suspended successfully")
         return job_execution
 
     conductor.job_execution_update(

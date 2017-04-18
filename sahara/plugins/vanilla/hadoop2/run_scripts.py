@@ -19,7 +19,6 @@ from oslo_log import log as logging
 
 from sahara import context
 from sahara.i18n import _
-from sahara.i18n import _LI
 from sahara.plugins import utils as pu
 from sahara.plugins.vanilla.hadoop2 import config_helper as c_helper
 from sahara.plugins.vanilla.hadoop2 import oozie_helper
@@ -248,5 +247,5 @@ def start_hiveserver_process(pctx, instance):
                 r.write_file_to('/tmp/create_hive_db.sql', sql_script)
                 _hive_create_db(r)
                 _hive_metastore_start(r)
-                LOG.info(_LI("Hive Metastore server at {host} has been "
-                             "started").format(host=instance.hostname()))
+                LOG.info("Hive Metastore server at {host} has been "
+                         "started".format(host=instance.hostname()))

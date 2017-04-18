@@ -21,7 +21,6 @@ import six
 from sahara import conductor
 from sahara import context
 from sahara.i18n import _
-from sahara.i18n import _LI
 import sahara.plugins.mapr.abstract.configurer as ac
 from sahara.plugins.mapr.domain import distro as d
 from sahara.plugins.mapr.domain import service as srvc
@@ -92,7 +91,7 @@ class BaseConfigurer(ac.AbstractConfigurer):
         self._update_services(cluster_context, existing)
         self._restart_services(cluster_context)
         self._update_cluster_info(cluster_context)
-        LOG.info(_LI('Existing instances successfully configured'))
+        LOG.info('Existing instances successfully configured')
 
     def _configure_services(self, cluster_context, instances):
         for service in cluster_context.cluster_services:
@@ -185,7 +184,7 @@ class BaseConfigurer(ac.AbstractConfigurer):
 
         util.execute_on_instances(instances, write_topology_data)
 
-        LOG.info(_LI('Cluster topology successfully configured'))
+        LOG.info('Cluster topology successfully configured')
 
     @el.provision_step(_("Write config files to instances"))
     def _write_config_files(self, cluster_context, instances):
@@ -232,7 +231,7 @@ class BaseConfigurer(ac.AbstractConfigurer):
                                                                  service=s)
             if service_instances:
                 s.post_install(cluster_context, instances)
-        LOG.info(_LI('Post install hooks execution successfully executed'))
+        LOG.info('Post install hooks execution successfully executed')
 
     def _update_cluster_info(self, cluster_context):
         LOG.debug('Updating UI information.')
@@ -356,7 +355,7 @@ class BaseConfigurer(ac.AbstractConfigurer):
             updated = cluster_context.filter_instances(instances,
                                                        service=service)
             service.post_start(cluster_context, updated)
-        LOG.info(_LI('Post start hooks successfully executed'))
+        LOG.info('Post start hooks successfully executed')
 
     @el.provision_step(_("Set cluster mode"))
     def _set_cluster_mode(self, cluster_context, instances):
@@ -399,7 +398,7 @@ class BaseConfigurer(ac.AbstractConfigurer):
         LOG.debug('Executing post configure.sh hooks')
         for service in cluster_context.cluster_services:
             service.post_configure_sh(cluster_context, instances)
-        LOG.info(_LI('Post configure.sh hooks successfully executed'))
+        LOG.info('Post configure.sh hooks successfully executed')
 
     def _post_configure_services(self, cluster_context, instances):
         for service in cluster_context.cluster_services:

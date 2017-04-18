@@ -20,7 +20,6 @@ import yaml
 from sahara import conductor
 from sahara import context
 from sahara.i18n import _
-from sahara.i18n import _LI
 from sahara.plugins import exceptions as ex
 from sahara.plugins import provisioning as p
 from sahara.plugins.storm import config_helper as c_helper
@@ -100,8 +99,8 @@ class StormProvider(p.ProvisioningPluginBase):
         # start storm slaves
         self._start_slave_processes(sl_instances)
 
-        LOG.info(_LI('Cluster {cluster} has been started successfully').format(
-                 cluster=cluster.name))
+        LOG.info("Cluster {cluster} has been started successfully".format(
+            cluster=cluster.name))
         self._set_cluster_info(cluster)
 
     def get_edp_engine(self, cluster, job_type):
@@ -180,8 +179,8 @@ class StormProvider(p.ProvisioningPluginBase):
     def _start_storm_master(self, sm_instance):
         with remote.get_remote(sm_instance) as r:
             run.start_storm_nimbus_and_ui(r)
-            LOG.info(_LI("Storm master at {host} has been started").format(
-                     host=sm_instance.hostname()))
+            LOG.info("Storm master at {host} has been started".format(
+                host=sm_instance.hostname()))
 
     def _start_slave_processes(self, sl_instances):
         if len(sl_instances) == 0:
@@ -370,7 +369,7 @@ class StormProvider(p.ProvisioningPluginBase):
         # start storm slaves
         self._start_slave_processes(instances)
         self.rebalance_topology(cluster)
-        LOG.info(_LI("Storm scaling has been started."))
+        LOG.info("Storm scaling has been started.")
 
     def _get_scalable_processes(self):
         return ["supervisor"]

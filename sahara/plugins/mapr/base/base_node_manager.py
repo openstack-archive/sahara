@@ -21,7 +21,6 @@ from oslo_utils import timeutils
 
 from sahara import context
 from sahara.i18n import _
-from sahara.i18n import _LI
 import sahara.plugins.exceptions as ex
 import sahara.plugins.mapr.abstract.node_manager as s
 import sahara.plugins.mapr.services.management.management as mng
@@ -57,7 +56,7 @@ class BaseNodeManager(s.AbstractNodeManager):
                     ec, out = r.execute_command(command, run_as_root=True)
                     command = MOVE_NODE_CMD % out.strip()
                     cldb_remote.execute_command(command, run_as_root=True)
-        LOG.info(_LI("Nodes successfully moved"))
+        LOG.info("Nodes successfully moved")
 
     def remove_nodes(self, cluster_context, instances):
         LOG.debug("Removing nodes from cluster")
@@ -72,7 +71,7 @@ class BaseNodeManager(s.AbstractNodeManager):
                 }
                 command = REMOVE_NODE_CMD % args
                 cldb_remote.execute_command(command, run_as_root=True)
-        LOG.info(_LI("Nodes successfully removed"))
+        LOG.info("Nodes successfully removed")
 
     def start(self, cluster_context, instances=None):
         instances = instances or cluster_context.get_instances()
@@ -148,17 +147,17 @@ class BaseNodeManager(s.AbstractNodeManager):
     def _start_zk_nodes(self, instances):
         LOG.debug('Starting ZooKeeper nodes')
         self._start_nodes(instances, mng.ZOOKEEPER.ui_name)
-        LOG.info(_LI('ZooKeeper nodes successfully started'))
+        LOG.info('ZooKeeper nodes successfully started')
 
     def _start_cldb_nodes(self, instances):
         LOG.debug('Starting CLDB nodes')
         self._start_nodes(instances, WARDEN_SERVICE)
-        LOG.info(_LI('CLDB nodes successfully started'))
+        LOG.info('CLDB nodes successfully started')
 
     def _start_non_cldb_nodes(self, instances):
         LOG.debug('Starting non-control nodes')
         self._start_nodes(instances, WARDEN_SERVICE)
-        LOG.info(_LI('Non-control nodes successfully started'))
+        LOG.info('Non-control nodes successfully started')
 
     def _stop_zk_nodes(self, instances):
         self._stop_nodes(instances, mng.ZOOKEEPER.ui_name)

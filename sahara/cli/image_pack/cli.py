@@ -20,7 +20,6 @@ import six
 
 from sahara.cli.image_pack import api
 from sahara.i18n import _
-from sahara.i18n import _LI
 
 LOG = log.getLogger(__name__)
 
@@ -108,7 +107,7 @@ def main():
     CONF.reload_config_files()
     log.setup(CONF, "sahara")
 
-    LOG.info(_LI("Command: {command}").format(command=' '.join(sys.argv)))
+    LOG.info("Command: {command}".format(command=' '.join(sys.argv)))
 
     api.set_logger(LOG)
     api.set_conf(CONF)
@@ -121,5 +120,5 @@ def main():
     api.pack_image(CONF.image, plugin, version, image_arguments,
                    CONF.root_fs, CONF.test_only)
 
-    LOG.info(_LI("Finished packing image for {plugin} at version {version}")
-             .format(plugin=plugin, version=version))
+    LOG.info("Finished packing image for {plugin} at version "
+             "{version}".format(plugin=plugin, version=version))

@@ -23,7 +23,6 @@ from stevedore import enabled
 from sahara import conductor as cond
 from sahara import exceptions as ex
 from sahara.i18n import _
-from sahara.i18n import _LI
 from sahara.plugins import labels
 from sahara.utils import resources
 
@@ -99,7 +98,7 @@ class PluginManager(object):
                     _("Plugin with name '%s' already exists.") % ext.name)
             ext.obj.name = ext.name
             self.plugins[ext.name] = ext.obj
-            LOG.info(_LI("Plugin {plugin_name} loaded {entry_point}").format(
+            LOG.info("Plugin {plugin_name} loaded {entry_point}".format(
                      plugin_name=ext.name,
                      entry_point=ext.entry_point_target))
 

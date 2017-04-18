@@ -133,7 +133,6 @@ def factory(register):
     register(import_checks.hacking_import_groups)
     register(import_checks.hacking_import_groups_together)
     register(dict_constructor_with_list_copy)
-    register(logging_checks.validate_log_translations)
     register(logging_checks.no_translate_debug_logs)
     register(logging_checks.accepted_log_levels)
     register(use_jsonutils)
