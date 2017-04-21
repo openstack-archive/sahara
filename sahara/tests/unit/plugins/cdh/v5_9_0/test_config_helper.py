@@ -1,4 +1,4 @@
-# Copyright (c) 2015 Intel Corpration
+# Copyright (c) 2016 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,12 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from sahara.plugins.cdh.v5_5_0 import validation
-from sahara.tests.unit.plugins.cdh import base_validation_tests as bvt
+from sahara.plugins.cdh.v5_9_0 import config_helper
+from sahara.tests.unit.plugins.cdh import base_config_helper_test as bcht
 
 
-class ValidationTestCase(bvt.BaseValidationTestCase):
+class TestConfigHelperV590(bcht.TestConfigHelper):
 
     def setUp(self):
-        super(ValidationTestCase, self).setUp()
-        self.module = validation.ValidatorV550
+        super(TestConfigHelperV590, self).setUp()
+        self.c_h = config_helper.ConfigHelperV590()
+        self.path_to_config = 'plugins/cdh/v5_9_0/resources/'
