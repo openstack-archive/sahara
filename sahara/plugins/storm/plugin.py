@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import copy
+
 from oslo_log import log as logging
 import six
 import yaml
@@ -48,6 +50,18 @@ class StormProvider(p.ProvisioningPluginBase):
         return (
             _("This plugin provides an ability to launch Storm "
               "cluster without any management consoles."))
+
+    def get_labels(self):
+        default = {'enabled': {'status': True}, 'stable': {'status': True}}
+        deprecated = {'enabled': {'status': True},
+                      'deprecated': {'status': True}}
+        result = {'plugin_labels': copy.deepcopy(default)}
+        result['version_labels'] = {
+            '1.1.0': copy.deepcopy(default),
+            '1.0.1': copy.deepcopy(default),
+            '0.9.2': copy.deepcopy(deprecated),
+        }
+        return result
 
     def get_versions(self):
         return ['0.9.2', '1.0.1', '1.1.0']
