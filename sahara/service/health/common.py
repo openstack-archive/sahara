@@ -38,7 +38,9 @@ health_opts = [
                 help="Option to enable verifications for all clusters"),
     cfg.IntOpt('verification_periodic_interval', default=600,
                help="Interval between two consecutive periodic tasks for"
-                    "verifications, in seconds.")
+                    "verifications, in seconds."),
+    cfg.IntOpt('verification_timeout', default=600,
+               help="Time limit for health check function, in seconds.")
 ]
 health_opts_group = cfg.OptGroup(
     'cluster_verifications', title='Options to configure verifications')

@@ -17,13 +17,14 @@ import abc
 import functools
 import threading
 
+from eventlet import timeout as e_timeout
 from oslo_config import cfg
 from oslo_log import log as logging
 import six
 
 from sahara import conductor
 from sahara import context
-from sahara import exceptions
+from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.plugins import base as plugin_base
 from sahara.service.health import common
@@ -35,7 +36,7 @@ CONF = cfg.CONF
 LOG = logging.getLogger(__name__)
 
 
-class BaseHealthError(exceptions.SaharaException):
+class BaseHealthError(ex.SaharaException):
     message_template = _("Cluster health is %(status)s. Reason: %(reason)s")
     code = 'HEALTH_ERROR'
     status = 'UNKNOWN'
@@ -108,18 +109,24 @@ class BasicHealthCheck(object):
         sender.health_notify(self.cluster, self.health_check)
 
     def execute(self):
-        if not self.is_available():
-            return
-        self._indicate_start()
+        timeout = CONF.cluster_verifications.verification_timeout
         try:
-            result = self.check_health()
-            status = common.HEALTH_STATUS_GREEN
-        except Exception as exc:
-            result = six.text_type(exc)
-            if isinstance(exc, BaseHealthError):
-                status = exc.status
-            else:
-                status = common.HEALTH_STATUS_RED
+            with e_timeout.Timeout(timeout, ex.TimeoutException(timeout)):
+                if not self.is_available():
+                    return
+                self._indicate_start()
+                try:
+                    result = self.check_health()
+                    status = common.HEALTH_STATUS_GREEN
+                except Exception as exc:
+                    result = six.text_type(exc)
+                    if isinstance(exc, BaseHealthError):
+                        status = exc.status
+                    else:
+                        status = common.HEALTH_STATUS_RED
+        except ex.TimeoutException:
+            result = _("Health check timed out")
+            status = common.HEALTH_STATUS_YELLOW
         self._write_result(status, result)
 
 
