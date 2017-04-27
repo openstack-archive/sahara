@@ -100,7 +100,7 @@ def check_scheduled_job_execution_info(job_execution_info):
             "Job start time should be later than now"))
 
 
-def check_job_execution(data, job_templates_id):
+def check_job_execution(data, job_templates_id=None):
     ctx = context.ctx()
     job_execution_info = data.get('job_execution_info', {})
 
@@ -110,7 +110,18 @@ def check_job_execution(data, job_templates_id):
             _("Cluster with id '%s' doesn't exist") % data['cluster_id'])
 
     val_base.check_plugin_labels(cluster.plugin_name, cluster.hadoop_version)
-    job = conductor.job_get(ctx, job_templates_id)
+
+    jt_err_msg = _("Job template with id '%s' doesn't exist")
+    if job_templates_id is None:
+        job = conductor.job_get(ctx, data['job_templates_id'])
+        if not job:
+            raise ex.InvalidReferenceException(
+                jt_err_msg % data['job_templates_id'])
+    else:
+        job = conductor.job_get(ctx, job_templates_id)
+        if not job:
+            raise ex.InvalidReferenceException(
+                jt_err_msg % job_templates_id)
 
     plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
     edp_engine = plugin.get_edp_engine(cluster, job.type)

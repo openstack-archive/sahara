@@ -15,11 +15,8 @@
 
 from sahara.api import acl
 from sahara.service.api.v2 import job_templates as api
-from sahara.service.api.v2 import jobs as j_e_api
 from sahara.service import validation as v
 from sahara.service.validations.edp import job as v_j
-from sahara.service.validations.edp import job_execution as v_j_e
-from sahara.service.validations.edp import job_execution_schema as v_j_e_schema
 from sahara.service.validations.edp import job_schema as v_j_schema
 import sahara.utils.api as u
 
@@ -65,15 +62,6 @@ def job_templates_update(job_templates_id, data):
 def job_templates_delete(job_templates_id):
     api.delete_job_template(job_templates_id)
     return u.render()
-
-
-@rest.post('/job-templates/<job_templates_id>/execute')
-@acl.enforce("data-processing:jobs:execute")
-@v.check_exists(api.get_job_templates, id='job_templates_id')
-@v.validate(v_j_e_schema.JOB_EXEC_SCHEMA, v_j_e.check_job_execution)
-def job_templates_execute(job_templates_id, data):
-    return u.render(job_execution=j_e_api.execute_job(
-        job_templates_id, data).to_dict())
 
 
 @rest.get('/job-templates/config-hints/<job_type>')

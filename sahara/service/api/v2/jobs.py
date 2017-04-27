@@ -28,8 +28,9 @@ conductor = c.API
 LOG = logging.getLogger(__name__)
 
 
-def execute_job(job_id, data):
+def execute_job(data):
     # Elements common to all job types
+    job_templates_id = data['job_templates_id']
     cluster_id = data['cluster_id']
     configs = data.get('job_configs', {})
     interface = data.get('interface', {})
@@ -48,7 +49,7 @@ def execute_job(job_id, data):
     configs['job_execution_info'] = job_execution_info
 
     job_ex_dict = {'input_id': input_id, 'output_id': output_id,
-                   'job_id': job_id, 'cluster_id': cluster_id,
+                   'job_id': job_templates_id, 'cluster_id': cluster_id,
                    'info': {'status': edp.JOB_STATUS_PENDING},
                    'job_configs': configs, 'extra': {},
                    'interface': interface}
