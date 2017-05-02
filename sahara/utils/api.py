@@ -330,10 +330,14 @@ def not_found(error):
 
 
 def to_wrapped_dict(func, id, *args, **kwargs):
+    return render(to_wrapped_dict_no_render(func, id, *args, **kwargs))
+
+
+def to_wrapped_dict_no_render(func, id, *args, **kwargs):
     obj = func(id, *args, **kwargs)
     if obj is None:
         e = ex.NotFoundException(
             {'id': id}, _('Object with %s not found'))
 
         return not_found(e)
-    return render(obj.to_wrapped_dict())
+    return obj.to_wrapped_dict()
