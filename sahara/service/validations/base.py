@@ -104,10 +104,14 @@ def check_node_group_configs(plugin_name, hadoop_version, ng_configs,
 
 
 def check_all_configurations(data):
-    pl_confs = _get_plugin_configs(data['plugin_name'], data['hadoop_version'])
+    plugin_version = 'hadoop_version'
+    if data.get('plugin_version'):
+        plugin_version = 'plugin_version'
+
+    pl_confs = _get_plugin_configs(data['plugin_name'], data[plugin_version])
 
     if data.get('cluster_configs'):
-        check_node_group_configs(data['plugin_name'], data['hadoop_version'],
+        check_node_group_configs(data['plugin_name'], data[plugin_version],
                                  data['cluster_configs'],
                                  plugin_configs=pl_confs)
 
@@ -115,7 +119,7 @@ def check_all_configurations(data):
         check_duplicates_node_groups_names(data['node_groups'])
         for ng in data['node_groups']:
             check_node_group_basic_fields(data['plugin_name'],
-                                          data['hadoop_version'],
+                                          data[plugin_version],
                                           ng, pl_confs)
 
 # NodeGroup related checks

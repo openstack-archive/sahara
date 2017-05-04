@@ -36,9 +36,13 @@ def cluster_templates_list():
 
 @rest.post('/cluster-templates')
 @acl.enforce("data-processing:cluster-templates:create")
-@v.validate(ct_schema.CLUSTER_TEMPLATE_SCHEMA,
+@v.validate(ct_schema.CLUSTER_TEMPLATE_SCHEMA_V2,
             v_ct.check_cluster_template_create)
 def cluster_templates_create(data):
+    # renaming hadoop_version -> plugin_version
+    # this can be removed once APIv1 is deprecated
+    data['hadoop_version'] = data['plugin_version']
+    del data['plugin_version']
     return u.render(api.create_cluster_template(data).to_wrapped_dict())
 
 
@@ -52,9 +56,11 @@ def cluster_templates_get(cluster_template_id):
 @rest.patch('/cluster-templates/<cluster_template_id>')
 @acl.enforce("data-processing:cluster-templates:modify")
 @v.check_exists(api.get_cluster_template, 'cluster_template_id')
-@v.validate(ct_schema.CLUSTER_TEMPLATE_UPDATE_SCHEMA,
+@v.validate(ct_schema.CLUSTER_TEMPLATE_UPDATE_SCHEMA_V2,
             v_ct.check_cluster_template_update)
 def cluster_templates_update(cluster_template_id, data):
+    data['hadoop_version'] = data['plugin_version']
+    del data['plugin_version']
     return u.to_wrapped_dict(
         api.update_cluster_template, cluster_template_id, data)
 

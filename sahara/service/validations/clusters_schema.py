@@ -15,6 +15,7 @@
 
 import copy
 
+import sahara.exceptions as ex
 from sahara.service.health import verification_base
 import sahara.service.validations.cluster_template_schema as ct_schema
 from sahara.service.validations import shares
@@ -25,8 +26,14 @@ def _build_node_groups_schema():
     return schema['properties']['node_groups']
 
 
-def _build_cluster_schema():
-    cluster_schema = copy.deepcopy(ct_schema.CLUSTER_TEMPLATE_SCHEMA)
+def _build_cluster_schema(api_version='v1'):
+    if api_version == 'v1':
+        cluster_schema = copy.deepcopy(ct_schema.CLUSTER_TEMPLATE_SCHEMA)
+    elif api_version == 'v2':
+        cluster_schema = copy.deepcopy(ct_schema.CLUSTER_TEMPLATE_SCHEMA_V2)
+    else:
+        raise ex.InvalidDataException('Invalid API version %s' % api_version)
+
     cluster_schema['properties'].update({
         "is_transient": {
             "type": "boolean"
@@ -43,6 +50,7 @@ def _build_cluster_schema():
 
 
 CLUSTER_SCHEMA = _build_cluster_schema()
+CLUSTER_SCHEMA_V2 = _build_cluster_schema('v2')
 
 MULTIPLE_CLUSTER_SCHEMA = copy.deepcopy(CLUSTER_SCHEMA)
 MULTIPLE_CLUSTER_SCHEMA['properties'].update({
@@ -50,6 +58,13 @@ MULTIPLE_CLUSTER_SCHEMA['properties'].update({
         "type": "integer"
     }})
 MULTIPLE_CLUSTER_SCHEMA['required'].append('count')
+
+MULTIPLE_CLUSTER_SCHEMA_V2 = copy.deepcopy(CLUSTER_SCHEMA_V2)
+MULTIPLE_CLUSTER_SCHEMA_V2['properties'].update({
+    "count": {
+        "type": "integer"
+    }})
+MULTIPLE_CLUSTER_SCHEMA_V2['required'].append('count')
 
 CLUSTER_UPDATE_SCHEMA = {
     "type": "object",
@@ -118,5 +133,4 @@ CLUSTER_SCALING_SCHEMA = {
             "required": ["add_node_groups"]
         }
     ]
-
 }
