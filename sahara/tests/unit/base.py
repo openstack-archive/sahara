@@ -41,7 +41,7 @@ class SaharaTestCase(base.BaseTestCase):
             tenant_name=tenant_name, **kwargs))
 
     def override_config(self, name, override, group=None):
-        main.CONF.set_override(name, override, group, enforce_type=True)
+        main.CONF.set_override(name, override, group)
         self.addCleanup(main.CONF.clear_override, name, group)
 
 
