@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import six
 
 from sahara.api import acl
 from sahara.service.api.v2 import jobs as api
@@ -52,17 +53,11 @@ def jobs_execute(data):
 @acl.enforce("data-processing:job-executions:get")
 @v.check_exists(api.get_job_execution, id='job_id')
 def jobs_get(job_id):
-    result = u.to_wrapped_dict_no_render(api.get_job_execution, job_id)
-    result['engine_job_id'] = result['oozie_job_id']
-    del result['oozie_job_id']
-    return u.render(result)
-
-
-@rest.get('/jobs/<job_id>/refresh-status')
-@acl.enforce("data-processing:job-executions:refresh_status")
-@v.check_exists(api.get_job_execution, id='job_id')
-def jobs_status(job_id):
-    result = u.to_wrapped_dict_no_render(api.get_job_execution_status, job_id)
+    data = u.get_request_args()
+    refresh_status = six.text_type(
+        data.get('refresh_status', 'false')).lower() == 'true'
+    result = u.to_wrapped_dict_no_render(
+        api.get_job_execution, job_id, refresh_status)
     result['engine_job_id'] = result['oozie_job_id']
     del result['oozie_job_id']
     return u.render(result)
