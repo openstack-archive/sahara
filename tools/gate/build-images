@@ -1,0 +1,58 @@
+#!/bin/bash -xe
+# The script fails at the first error
+
+PLUGIN=$1
+
+
+function get_cloud_image() {
+    # Download the cloud image for the specified distro and version
+    local required_name="$1"
+    local distro_name="$2"
+    local img_url=""
+    case "${distro_name}" in
+        "centos7")
+            cache_name="CentOS-7-x86_64-GenericCloud.qcow2"
+            img_url="http://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud.qcow2"
+            ;;
+        "ubuntu-trusty")
+            # assume trusty for now
+            cache_name="trusty-server-cloudimg-amd64-disk1.img"
+            img_url="https://cloud-images.ubuntu.com/trusty/current/trusty-server-cloudimg-amd64-disk1.img"
+            ;;
+        *)
+            ;;
+    esac
+
+    # download the image to the cache
+    if [ ! -f "${cache_name}" ]; then
+        curl -o "${cache_name}" "${img_url}"
+    fi
+    cp -f ${cache_name} ${required_name}
+}
+
+
+function build_images() {
+    # build all the images for the specified plugin_name
+    # - plugin_name: name of the plugin as required by sahara-image-pack
+    # - plugin_version: version of the plugin
+    # - distributions: list of distributions for the version of the plugin
+    local plugin_name="$1"
+    local plugin_version="$2"
+    local distributions="$3"
+    local image_name=""
+    for distro in ${distributions}; do
+        image_name="${distro}_${plugin_name}_${plugin_version}.qcow2"
+        get_cloud_image "${image_name}" "${distro}"
+        tox -e venv -- sahara-image-pack --image "${image_name}" "${plugin_name}" "${plugin_version}"
+    done
+}
+
+
+# This define the matrix: for each plugin version, add a line like:
+# build_images "<plugin_name>" "<plugin_version>" "<distribution> <distribution>"
+
+case "$PLUGIN" in
+    *)
+        echo "Invalid version"
+        ;;
+esac

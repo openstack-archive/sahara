@@ -1,0 +1,22 @@
+# This file contains runtime (non-python) dependencies
+# More info at: http://docs.openstack.org/infra/bindep/readme.html
+
+# Define the basic (test) requirements extracted from bindata-fallback.txt
+# - mysqladmin and psql
+mariadb [platform:rpm]
+mariadb-devel [platform:rpm]
+mariadb-server [platform:rpm]
+dev-db/mariadb [platform:gentoo]
+mysql-client [platform:dpkg]
+mysql-server [platform:dpkg]
+postgresql
+postgresql-client [platform:dpkg]
+postgresql-server [platform:rpm]
+
+# The Python binding for libguestfs are used by the sahara-image-pack
+# command.
+python-guestfs [platform:dpkg]
+libguestfs-xfs [platform:dpkg]
+python-libguestfs [platform:rpm]
+libguestfs-xfs [platform:redhat]
+xfsprogs [platform:suse]
