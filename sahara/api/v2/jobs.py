@@ -63,17 +63,6 @@ def jobs_get(job_id):
     return u.render(result)
 
 
-@rest.get('/jobs/<job_id>/cancel')
-@acl.enforce("data-processing:job-executions:cancel")
-@v.check_exists(api.get_job_execution, id='job_id')
-@v.validate(None, v_j_e.check_job_execution_cancel)
-def jobs_cancel(job_id):
-    result = u.to_wrapped_dict_no_render(api.cancel_job_execution, job_id)
-    result['engine_job_id'] = result['oozie_job_id']
-    del result['oozie_job_id']
-    return u.render(result)
-
-
 @rest.patch('/jobs/<job_id>')
 @acl.enforce("data-processing:job-executions:modify")
 @v.check_exists(api.get_job_execution, id='job_id')
