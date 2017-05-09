@@ -51,7 +51,7 @@ them with the following changes to the api-paste.ini file:
     /: sahara_apiv2
 
 There are 2 significant changes occurring here; changing the
-authentication validator in the pipline, and changing the root "/"
+authentication validator in the pipeline, and changing the root "/"
 application to the new v2 handler.
 
 At this point the sahara API server should be configured to accept

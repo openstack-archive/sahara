@@ -129,7 +129,7 @@ setup meets below requirements:
   anti-affinity.
 * Cluster has both ResourceManager and StandByResourceManager.
 
-In this case, the original SecondrayNameNode node will be used as the
+In this case, the original SecondaryNameNode node will be used as the
 Standby NameNode.
 
 
