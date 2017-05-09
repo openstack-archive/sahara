@@ -4,6 +4,16 @@
 PLUGIN=$1
 
 
+function setup_build_env() {
+    source /etc/os-release || source /usr/lib/os-release
+    if [ "${ID}" = "ubuntu" ]; then
+        # The Ubuntu kernel, for mysterious reasons, can be read only by root. Fix it.
+        # See https://bugs.launchpad.net/ubuntu/+source/linux/+bug/759725
+        sudo dpkg-statoverride --add --update root root 0644 /boot/vmlinuz-$(uname -r)
+    fi
+}
+
+
 function get_cloud_image() {
     # Download the cloud image for the specified distro and version
     local required_name="$1"
@@ -43,10 +53,12 @@ function build_images() {
     for distro in ${distributions}; do
         image_name="${distro}_${plugin_name}_${plugin_version}.qcow2"
         get_cloud_image "${image_name}" "${distro}"
-        tox -e venv -- sahara-image-pack --image "${image_name}" "${plugin_name}" "${plugin_version}"
+        tox -e images -- sahara-image-pack --image "${image_name}" "${plugin_name}" "${plugin_version}"
     done
 }
 
+
+setup_build_env
 
 # This define the matrix: for each plugin version, add a line like:
 # build_images "<plugin_name>" "<plugin_version>" "<distribution> <distribution>"
