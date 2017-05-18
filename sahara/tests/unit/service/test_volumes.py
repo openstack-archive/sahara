@@ -15,6 +15,7 @@
 
 from cinderclient.v1 import volumes as vol_v1
 from cinderclient.v2 import volumes as vol_v2
+from cinderclient.v3 import volumes as vol_v3
 import mock
 
 from sahara import exceptions as ex
@@ -71,6 +72,25 @@ class TestAttachVolume(base.SaharaWithDbTestCase):
 
         instance = Instance()
         p_get_volume.return_value = vol_v2.Volume(None, {'id': '123', 'status':
+                                                         'available'})
+        p_detach.return_value = None
+        p_delete.return_value = None
+        self.assertIsNone(
+            volumes.detach_from_instance(instance))
+
+    @mock.patch('sahara.conductor.manager.ConductorManager.cluster_get')
+    @mock.patch('cinderclient.v3.volumes.Volume.delete')
+    @mock.patch('cinderclient.v3.volumes.Volume.detach')
+    @mock.patch('sahara.utils.openstack.cinder.get_volume')
+    def test_detach_volumes_v3(self, p_get_volume, p_detach, p_delete, p_cond):
+        class Instance(object):
+            def __init__(self):
+                self.instance_id = '123454321'
+                self.volumes = [123]
+                self.instance_name = 'spam'
+
+        instance = Instance()
+        p_get_volume.return_value = vol_v3.Volume(None, {'id': '123', 'status':
                                                          'available'})
         p_detach.return_value = None
         p_delete.return_value = None
