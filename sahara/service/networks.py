@@ -18,7 +18,6 @@ import six
 
 from sahara import conductor as c
 from sahara import context
-from sahara.utils.openstack import base as b
 from sahara.utils.openstack import nova
 
 conductor = c.API
@@ -65,16 +64,3 @@ def init_instances_ips(instance):
                                "internal_ip": internal_ip})
 
     return internal_ip and management_ip
-
-
-def assign_floating_ip(instance_id, pool):
-    ip = b.execute_with_retries(nova.client().floating_ips.create, pool)
-    server = b.execute_with_retries(nova.client().servers.get, instance_id)
-    b.execute_with_retries(server.add_floating_ip, ip)
-
-
-def delete_floating_ip(instance_id):
-    fl_ips = b.execute_with_retries(
-        nova.client().floating_ips.findall, instance_id=instance_id)
-    for fl_ip in fl_ips:
-        b.execute_with_retries(nova.client().floating_ips.delete, fl_ip.id)

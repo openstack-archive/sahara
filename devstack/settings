@@ -34,7 +34,7 @@ SAHARA_BIN_DIR=$(get_python_exec_prefix)
 SAHARA_ENABLE_DISTRIBUTED_PERIODICS=${SAHARA_ENABLE_DISTRIBUTED_PERIODICS:-\
 True}
 SAHARA_PERIODIC_COORDINATOR_URL=${SAHARA_PERIODIC_COORDINATOR_URL:-\
-kazoo://127.0.0.1:2181}
+memcached://127.0.0.1:11211}
 
 #Toggle for deploying Sahara API with Apache + mod_wsgi
 SAHARA_USE_MOD_WSGI=${SAHARA_USE_MOD_WSGI:-False}
@@ -44,7 +44,3 @@ TEMPEST_SERVICES+=,sahara
 
 enable_service sahara-api sahara-eng
 enable_service heat h-eng h-api h-api-cfn h-api-cw
-
-if [ "$SAHARA_ENABLE_DISTRIBUTED_PERIODICS" == "True" ]; then
-    enable_service zookeeper
-fi

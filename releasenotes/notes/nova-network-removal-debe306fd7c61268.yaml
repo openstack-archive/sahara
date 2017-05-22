@@ -1,0 +1,8 @@
+---
+issues:
+  - Ironic integration might be broken if floating IPs are used, due to the
+    use of pre-created ports by the Sahara engine. The status of Ironic
+    support was untested for this release.
+deprecations:
+  - Support for nova-network is removed, reflective of its removal from nova
+    itself and from python-novaclient. use_neutron=False is unsupported.

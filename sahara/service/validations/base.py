@@ -28,6 +28,7 @@ from sahara.service.api import v10 as api
 from sahara.utils import general as g
 import sahara.utils.openstack.cinder as cinder
 from sahara.utils.openstack import images as sahara_images
+import sahara.utils.openstack.neutron as neutron
 import sahara.utils.openstack.nova as nova
 
 
@@ -181,11 +182,11 @@ def check_flavor_exists(flavor_id):
 
 
 def check_security_groups_exist(security_groups):
-    security_group_list = nova.client().security_groups.list()
+    security_group_list = neutron.client().list_security_groups()
     allowed_groups = set()
-    for sg in security_group_list:
-        allowed_groups.add(six.text_type(sg.id))
-        allowed_groups.add(sg.name)
+    for sg in security_group_list['security_groups']:
+        allowed_groups.add(sg['name'])
+        allowed_groups.add(sg['id'])
 
     for sg in security_groups:
         if sg not in allowed_groups:
@@ -196,7 +197,7 @@ def check_security_groups_exist(security_groups):
 def check_floatingip_pool_exists(ng_name, pool_id):
     network = None
     if CONF.use_neutron:
-        network = nova.get_network(id=pool_id)
+        network = neutron.get_network(pool_id)
     else:
         # tmckay-fp, whoa, this suggests that we allow floating_ip_pools with
         # nova?  Can that be true? Scour for this
@@ -292,7 +293,7 @@ def check_keypair_exists(keypair):
 
 
 def check_network_exists(net_id):
-    if not nova.get_network(id=net_id):
+    if not neutron.get_network(net_id):
         raise ex.NotFoundException(net_id, _("Network %s not found"))
 
 

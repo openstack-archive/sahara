@@ -454,20 +454,24 @@ class ClusterStack(object):
         properties = {}
 
         inst_name = _get_inst_name(ng)
-
-        if ng.floating_ip_pool:
-            resources.update(self._serialize_nova_floating(ng))
-
-        if CONF.use_neutron:
-            properties["networks"] = [{
-                "network": self.cluster.neutron_management_network}]
+        private_net = self.cluster.neutron_management_network
 
         if ng.security_groups or ng.auto_security_group:
-            properties["security_groups"] = self._get_security_groups(ng)
+            sec_groups = self._get_security_groups(ng)
 
         # Check if cluster contains user key-pair and include it to template.
         if self.cluster.user_keypair_id:
             properties["key_name"] = self.cluster.user_keypair_id
+
+        port_name = _get_port_name(ng)
+
+        resources.update(self._serialize_port(
+            port_name, private_net, sec_groups))
+
+        properties["networks"] = [{"port": {"get_resource": "port"}}]
+
+        if ng.floating_ip_pool:
+            resources.update(self._serialize_neutron_floating(ng))
 
         gen_userdata_func = self.node_groups_extra[ng.id]['gen_userdata_func']
         key_script = gen_userdata_func(ng, inst_name)
@@ -537,20 +541,30 @@ class ClusterStack(object):
             }
         }
 
-    def _serialize_nova_floating(self, ng):
+    def _serialize_neutron_floating(self, ng):
         return {
             "floating_ip": {
-                "type": "OS::Nova::FloatingIP",
+                "type": "OS::Neutron::FloatingIP",
                 "properties": {
-                    "pool": ng.floating_ip_pool
+                    "floating_network_id": ng.floating_ip_pool,
+                    "port_id": {"get_resource": "port"}
                 }
-            },
-            "floating_ip_assoc": {
-                "type": "OS::Nova::FloatingIPAssociation",
-                "properties": {
-                    "floating_ip": {"get_resource": "floating_ip"},
-                    "server_id": {"get_resource": INSTANCE_RESOURCE_NAME}
-                }
+            }
+        }
+
+    def _serialize_port(self, port_name, fixed_net_id, security_groups):
+        properties = {
+            "network_id": fixed_net_id,
+            "replacement_policy": "AUTO",
+            "name": port_name
+        }
+        if security_groups:
+            properties["security_groups"] = security_groups
+
+        return {
+            "port": {
+                "type": "OS::Neutron::Port",
+                "properties": properties,
             }
         }
 

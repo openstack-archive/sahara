@@ -272,15 +272,10 @@ sed '/^Defaults    requiretty*/ s/^/#/' -i /etc/sudoers\n
                                            server_groups_old[0].id)
 
     def _shutdown_instance(self, instance):
-        # tmckay-fp perfect, already testing the right thing
+        # Heat dissociates and deletes upon deletion of resources
+        # See OS::Neutron::FloatingIP and OS::Neutron::FloatingIPAssociation
         if instance.node_group.floating_ip_pool:
-            try:
-                b.execute_with_retries(networks.delete_floating_ip,
-                                       instance.instance_id)
-            except nova_exceptions.NotFound:
-                LOG.warning("Attempted to delete non-existent floating IP "
-                            "in pool {pool} from instance"
-                            .format(pool=instance.node_group.floating_ip_pool))
+            pass
 
         try:
             volumes.detach_from_instance(instance)

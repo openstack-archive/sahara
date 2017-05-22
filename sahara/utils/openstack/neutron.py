@@ -14,6 +14,7 @@
 # limitations under the License.
 
 
+from neutronclient.common import exceptions as n_ex
 from neutronclient.neutron import client as neutron_cli
 from oslo_config import cfg
 from oslo_log import log as logging
@@ -104,3 +105,11 @@ def get_private_network_cidrs(cluster):
         cidrs.append(subnet['subnet']['cidr'])
 
     return cidrs
+
+
+def get_network(id):
+    try:
+        return base.execute_with_retries(
+            client().find_resource_by_id, 'network', id)
+    except n_ex.NotFound:
+        return None

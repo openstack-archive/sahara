@@ -14,7 +14,6 @@
 # limitations under the License.
 
 from novaclient import client as nova_client
-from novaclient import exceptions as nova_ex
 from oslo_config import cfg
 
 from sahara.service import sessions
@@ -57,10 +56,3 @@ def get_flavor(**kwargs):
 def get_instance_info(instance):
     return base.execute_with_retries(
         client().servers.get, instance.instance_id)
-
-
-def get_network(**kwargs):
-    try:
-        return base.execute_with_retries(client().networks.find, **kwargs)
-    except nova_ex.NotFound:
-        return None

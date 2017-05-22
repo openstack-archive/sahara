@@ -185,7 +185,9 @@ function configure_sahara {
         # Enable distributed periodic tasks
         iniset $SAHARA_CONF_FILE DEFAULT periodic_coordinator_backend_url\
             $SAHARA_PERIODIC_COORDINATOR_URL
-        pip_install tooz[zookeeper]
+        pip_install tooz[memcached]
+
+        restart_service memcached
     fi
 
     recreate_database sahara

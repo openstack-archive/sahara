@@ -17,6 +17,7 @@ import ast
 import re
 
 import mock
+from neutronclient.common import exceptions as neutron_ex
 import novaclient.exceptions as nova_ex
 import six
 
@@ -62,10 +63,9 @@ def _get_keypair(name):
         raise nova_ex.NotFound("")
 
 
-def _get_network(**kwargs):
-    if 'id' in kwargs and (
-            kwargs['id'] != "d9a3bebc-f788-4b81-9a93-aa048022c1ca"):
-        raise nova_ex.NotFound("")
+def _get_network(resource, id):
+    if id != "d9a3bebc-f788-4b81-9a93-aa048022c1ca":
+        raise neutron_ex.NotFound("")
     return 'OK'
 
 
@@ -104,20 +104,15 @@ class FakeFlavor(object):
         self.id = id
 
 
-class FakeSecurityGroup(object):
-    def __init__(self, id, name):
-        self.id = id
-        self.name = name
-
-
 def _get_flavors_list():
     return [FakeFlavor("42")]
 
 
 def _get_security_groups_list():
-    return [FakeSecurityGroup("1", "default"),
-            FakeSecurityGroup("2", "group1"),
-            FakeSecurityGroup("3", "group2")]
+    return {'security_groups': [
+            {"id": "1", "name": "default"},
+            {"id": "2", "name": "group1"},
+            {"id": "3", "name": "group2"}]}
 
 
 def start_patch(patch_templates=True):
@@ -158,12 +153,15 @@ def start_patch(patch_templates=True):
         get_cl_templates.return_value = []
 
     nova().flavors.list.side_effect = _get_flavors_list
-    nova().security_groups.list.side_effect = _get_security_groups_list
     nova().keypairs.get.side_effect = _get_keypair
-    nova().networks.find.side_effect = _get_network
-    nova().networks.find.__name__ = 'find'
     nova().floating_ip_pools.list.side_effect = _get_fl_ip_pool_list
     nova().availability_zones.list.side_effect = _get_availability_zone_list
+
+    neutron_p = mock.patch("sahara.utils.openstack.neutron.client")
+    neutron = neutron_p.start()
+    neutron().find_resource_by_id.side_effect = _get_network
+    neutron().find_resource_by_id.__name__ = 'find_resource_by_id'
+    neutron().list_security_groups.side_effect = _get_security_groups_list
 
     heat = heat_p.start()
     heat().stacks.list.side_effect = _get_heat_stack_list
@@ -235,7 +233,7 @@ def start_patch(patch_templates=True):
     # request data to validate
     patchers = [get_clusters_p, get_cluster_p,
                 nova_p, get_image_p, heat_p, image_manager_p, cinder_p,
-                cinder_exists_p]
+                cinder_exists_p, neutron_p]
     if patch_templates:
         patchers.extend([get_ng_template_p, get_ng_templates_p,
                          get_cl_template_p, get_cl_templates_p])
