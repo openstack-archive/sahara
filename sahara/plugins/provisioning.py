@@ -135,24 +135,24 @@ class ProvisioningPluginBase(plugins_base.PluginInterface):
 
     @plugins_base.optional
     def pack_image(self, hadoop_version, remote,
-                   reconcile=True, image_arguments=None):
+                   test_only=False, image_arguments=None):
         """Packs an image for registration in Glance and use by Sahara
 
         :param remote: A remote (usually of type
             sahara.cli.image_pack.api.ImageRemote) that serves as a handle to
             the image to modify. Note that this image will be modified
             in-place, not copied.
-        :param reconcile: If set to False, this method will only test to
+        :param test_only: If set to True, this method will only test to
             ensure that the image already meets the plugin's requirements.
             This can be used to test images without modification. If set to
-            True per the default, this method will modify the image if any
+            False per the default, this method will modify the image if any
             requirements are not met.
         :param image_arguments: A dict of image argument name to argument
             value.
         :raises: sahara.plugins.exceptions.ImageValidationError: If the method
-            fails to modify the image to specification (if reconcile is True),
+            fails to modify the image to specification (if test_only is False),
             or if the method finds that the image does not meet the
-            specification (if reconcile is False).
+            specification (if test_only is True).
         :raises: sahara.plugins.exceptions.ImageValidationSpecificationError:
             If the specification for image generation or validation is itself
             in error and cannot be executed without repair.
@@ -160,22 +160,22 @@ class ProvisioningPluginBase(plugins_base.PluginInterface):
         pass
 
     @plugins_base.optional
-    def validate_images(self, cluster, reconcile=True, image_arguments=None):
+    def validate_images(self, cluster, test_only=False, image_arguments=None):
         """Validates the image to be used by a cluster.
 
         :param cluster: The object handle to a cluster which has active
             instances ready to generate remote handles.
-        :param reconcile: If set to False, this method will only test to
+        :param test_only: If set to True, this method will only test to
             ensure that the image already meets the plugin's requirements.
             This can be used to test images without modification. If set to
-            True per the default, this method will modify the image if any
+            False per the default, this method will modify the image if any
             requirements are not met.
         :param image_arguments: A dict of image argument name to argument
             value.
         :raises: sahara.plugins.exceptions.ImageValidationError: If the method
-            fails to modify the image to specification (if reconcile is True),
+            fails to modify the image to specification (if test_only is False),
             or if the method finds that the image does not meet the
-            specification (if reconcile is False).
+            specification (if test_only is True).
         :raises: sahara.plugins.exceptions.ImageValidationSpecificationError:
             If the specification for image generation or validation is itself
             in error and cannot be executed without repair.

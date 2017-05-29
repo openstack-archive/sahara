@@ -47,14 +47,14 @@ class TestImages(b.SaharaTestCase):
 
         validator = cls.from_spec('test_images.py', {}, resource_roots)
         self.assertIsInstance(validator, cls)
-        self.assertEqual(validator.env_vars, ['reconcile', 'distro'])
+        self.assertEqual(validator.env_vars, ['test_only', 'distro'])
 
         validator = cls.from_spec(
             {'test_images.py': {'env_vars': ['extra-file', 'user']}},
             {}, resource_roots)
         self.assertIsInstance(validator, cls)
         self.assertEqual(validator.env_vars,
-                         ['reconcile', 'distro',
+                         ['test_only', 'distro',
                           'extra-file', 'user'])
 
     def test_all_spec(self):
@@ -181,7 +181,7 @@ class TestImages(b.SaharaTestCase):
         packages = [cls.Package("java", "8")]
         validator = images.SaharaPackageValidator(packages)
         remote = mock.Mock()
-        validator.validate(remote, reconcile=False,
+        validator.validate(remote, test_only=True,
                            image_arguments=image_arguments)
         remote.execute_command.assert_called_with(
             "rpm -q java-8", run_as_root=True)
@@ -193,7 +193,7 @@ class TestImages(b.SaharaTestCase):
         remote.execute_command.side_effect = (
             ex.RemoteCommandException("So bad!"))
         try:
-            validator.validate(remote, reconcile=False,
+            validator.validate(remote, test_only=True,
                                image_arguments=image_arguments)
         except p_ex.ImageValidationError as e:
             self.assertIn("So bad!", e.message)
@@ -212,7 +212,7 @@ class TestImages(b.SaharaTestCase):
 
         remote.execute_command.side_effect = side_effect
         try:
-            validator.validate(remote, reconcile=True,
+            validator.validate(remote, test_only=False,
                                image_arguments=image_arguments)
         except p_ex.ImageValidationError as e:
             self.assertIn("So bad!", e.message)
@@ -229,7 +229,7 @@ class TestImages(b.SaharaTestCase):
         packages = [cls.Package("java", "8")]
         validator = images.SaharaPackageValidator(packages)
         remote = mock.Mock()
-        validator.validate(remote, reconcile=False,
+        validator.validate(remote, test_only=True,
                            image_arguments=image_arguments)
         remote.execute_command.assert_called_with(
             "dpkg -s java-8", run_as_root=True)
@@ -241,7 +241,7 @@ class TestImages(b.SaharaTestCase):
         remote.execute_command.side_effect = (
             ex.RemoteCommandException("So bad!"))
         try:
-            validator.validate(remote, reconcile=False,
+            validator.validate(remote, test_only=True,
                                image_arguments=image_arguments)
         except p_ex.ImageValidationError as e:
             self.assertIn("So bad!", e.message)
@@ -256,7 +256,7 @@ class TestImages(b.SaharaTestCase):
         remote.execute_command.side_effect = (
             ex.RemoteCommandException("So bad!"))
         try:
-            validator.validate(remote, reconcile=True,
+            validator.validate(remote, test_only=False,
                                image_arguments=image_arguments)
         except p_ex.ImageValidationError as e:
             self.assertIn("So bad!", e.message)
@@ -279,7 +279,7 @@ class TestImages(b.SaharaTestCase):
             execute_command=mock.Mock(
                 return_value=(0, 'fedora')))
 
-        validator.validate(remote, reconcile=True,
+        validator.validate(remote, test_only=False,
                            image_arguments=image_arguments)
         call = [mock.call(map_rep + cmd, run_as_root=True)]
         remote.execute_command.assert_has_calls(call)
@@ -293,31 +293,31 @@ class TestImages(b.SaharaTestCase):
             def __init__(self, mock_validate):
                 self.mock_validate = mock_validate
 
-            def validate(self, remote, reconcile=True, **kwargs):
-                self.mock_validate(remote, reconcile=reconcile, **kwargs)
+            def validate(self, remote, test_only=False, **kwargs):
+                self.mock_validate(remote, test_only=test_only, **kwargs)
 
         # One success short circuits validation
         always_tells_the_truth = FakeValidator(mock.Mock())
         validator = cls([always_tells_the_truth, always_tells_the_truth])
-        validator.validate(None, reconcile=True)
+        validator.validate(None, test_only=False)
         self.assertEqual(always_tells_the_truth.mock_validate.call_count, 1)
 
-        # All failures fails, and calls with reconcile=False on all first
+        # All failures fails, and calls with test_only=True on all first
         always_lies = FakeValidator(
             mock.Mock(side_effect=p_ex.ImageValidationError("Oh no!")))
         validator = cls([always_lies, always_lies])
         try:
-            validator.validate(None, reconcile=True)
+            validator.validate(None, test_only=False)
         except p_ex.ImageValidationError:
             pass
         self.assertEqual(always_lies.mock_validate.call_count, 4)
 
-        # But it fails after a first pass if reconcile=False.
+        # But it fails after a first pass if test_only=True.
         always_lies = FakeValidator(
             mock.Mock(side_effect=p_ex.ImageValidationError("Oh no!")))
         validator = cls([always_lies, always_lies])
         try:
-            validator.validate(None, reconcile=False)
+            validator.validate(None, test_only=True)
         except p_ex.ImageValidationError:
             pass
         self.assertEqual(always_lies.mock_validate.call_count, 2)
@@ -327,7 +327,7 @@ class TestImages(b.SaharaTestCase):
         always_lies = FakeValidator(
             mock.Mock(side_effect=p_ex.ImageValidationError("Oh no!")))
         validator = cls([always_lies, always_tells_the_truth])
-        validator.validate(None, reconcile=True)
+        validator.validate(None, test_only=False)
         self.assertEqual(always_lies.mock_validate.call_count, 1)
         self.assertEqual(always_tells_the_truth.mock_validate.call_count, 1)
 
@@ -337,10 +337,10 @@ class TestImages(b.SaharaTestCase):
         # All pass
         always_tells_the_truth = mock.Mock()
         validator = cls([always_tells_the_truth, always_tells_the_truth])
-        validator.validate(None, reconcile=True)
+        validator.validate(None, test_only=False)
         self.assertEqual(always_tells_the_truth.validate.call_count, 2)
         always_tells_the_truth.validate.assert_called_with(
-            None, reconcile=True, image_arguments=None)
+            None, test_only=False, image_arguments=None)
 
         # Second fails
         always_tells_the_truth = mock.Mock()
@@ -348,15 +348,15 @@ class TestImages(b.SaharaTestCase):
             side_effect=p_ex.ImageValidationError("Boom!")))
         validator = cls([always_tells_the_truth, always_lies])
         try:
-            validator.validate(None, reconcile=False)
+            validator.validate(None, test_only=True)
         except p_ex.ImageValidationError:
             pass
         self.assertEqual(always_tells_the_truth.validate.call_count, 1)
         self.assertEqual(always_lies.validate.call_count, 1)
         always_tells_the_truth.validate.assert_called_with(
-            None, reconcile=False, image_arguments=None)
+            None, test_only=True, image_arguments=None)
         always_lies.validate.assert_called_with(
-            None, reconcile=False, image_arguments=None)
+            None, test_only=True, image_arguments=None)
 
         # First fails
         always_tells_the_truth = mock.Mock()
@@ -364,12 +364,12 @@ class TestImages(b.SaharaTestCase):
             side_effect=p_ex.ImageValidationError("Boom!")))
         validator = cls([always_lies, always_tells_the_truth])
         try:
-            validator.validate(None, reconcile=False, image_arguments={})
+            validator.validate(None, test_only=True, image_arguments={})
         except p_ex.ImageValidationError:
             pass
         self.assertEqual(always_lies.validate.call_count, 1)
         always_lies.validate.assert_called_with(
-            None, reconcile=False, image_arguments={})
+            None, test_only=True, image_arguments={})
         self.assertEqual(always_tells_the_truth.validate.call_count, 0)
 
     def test_os_case_validator(self):
@@ -382,12 +382,12 @@ class TestImages(b.SaharaTestCase):
         distros = [centos, redhat]
         image_arguments = {images.SaharaImageValidator.DISTRO_KEY: "centos"}
         validator = cls(distros)
-        validator.validate(None, reconcile=True,
+        validator.validate(None, test_only=False,
                            image_arguments=image_arguments)
         self.assertEqual(centos.validator.validate.call_count, 1)
         self.assertEqual(redhat.validator.validate.call_count, 0)
         centos.validator.validate.assert_called_with(
-            None, reconcile=True, image_arguments=image_arguments)
+            None, test_only=False, image_arguments=image_arguments)
 
         # Families match
         centos = Distro("centos", mock.Mock())
@@ -395,12 +395,12 @@ class TestImages(b.SaharaTestCase):
         distros = [centos, redhat]
         image_arguments = {images.SaharaImageValidator.DISTRO_KEY: "fedora"}
         validator = cls(distros)
-        validator.validate(None, reconcile=True,
+        validator.validate(None, test_only=False,
                            image_arguments=image_arguments)
         self.assertEqual(centos.validator.validate.call_count, 0)
         self.assertEqual(redhat.validator.validate.call_count, 1)
         redhat.validator.validate.assert_called_with(
-            None, reconcile=True, image_arguments=image_arguments)
+            None, test_only=False, image_arguments=image_arguments)
 
         # Non-matches do nothing
         centos = Distro("centos", mock.Mock())
@@ -408,7 +408,7 @@ class TestImages(b.SaharaTestCase):
         distros = [centos, redhat]
         image_arguments = {images.SaharaImageValidator.DISTRO_KEY: "ubuntu"}
         validator = cls(distros)
-        validator.validate(None, reconcile=True,
+        validator.validate(None, test_only=False,
                            image_arguments=image_arguments)
         self.assertEqual(centos.validator.validate.call_count, 0)
         self.assertEqual(redhat.validator.validate.call_count, 0)
@@ -423,12 +423,12 @@ class TestImages(b.SaharaTestCase):
         cases = {"value": match,
                  "another_value": nomatch}
         validator = cls("argument", cases)
-        validator.validate(None, reconcile=True,
+        validator.validate(None, test_only=False,
                            image_arguments=image_arguments)
         self.assertEqual(match.validate.call_count, 1)
         self.assertEqual(nomatch.validate.call_count, 0)
         match.validate.assert_called_with(
-            None, reconcile=True, image_arguments=image_arguments)
+            None, test_only=False, image_arguments=image_arguments)
 
         # Non-matches do nothing
         image_arguments = {"argument": "value"}
@@ -436,7 +436,7 @@ class TestImages(b.SaharaTestCase):
         cases = {"some_value": nomatch,
                  "another_value": nomatch}
         validator = cls("argument", cases)
-        validator.validate(None, reconcile=True,
+        validator.validate(None, test_only=False,
                            image_arguments=image_arguments)
         self.assertEqual(nomatch.validate.call_count, 0)
 
@@ -446,14 +446,14 @@ class TestImages(b.SaharaTestCase):
         # Old variable is overwritten
         image_arguments = {"argument": "value"}
         validator = cls("argument", "new_value")
-        validator.validate(None, reconcile=True,
+        validator.validate(None, test_only=False,
                            image_arguments=image_arguments)
         self.assertEqual(image_arguments["argument"], "new_value")
 
         # New variable is set
         image_arguments = {"argument": "value"}
         validator = cls("another_argument", "value")
-        validator.validate(None, reconcile=True,
+        validator.validate(None, test_only=False,
                            image_arguments=image_arguments)
         self.assertEqual(image_arguments,
                          {"argument": "value", "another_argument": "value"})
@@ -465,11 +465,11 @@ class TestImages(b.SaharaTestCase):
         remote = mock.Mock(get_os_distrib=mock.Mock(
             return_value="centos"))
         validator = cls(sub_validator, {})
-        validator.validate(remote, reconcile=True, image_arguments={})
+        validator.validate(remote, test_only=False, image_arguments={})
         expected_map = {images.SaharaImageValidatorBase.DISTRO_KEY: "centos"}
         sub_validator.validate.assert_called_with(
-            remote, reconcile=True, image_arguments=expected_map)
+            remote, test_only=False, image_arguments=expected_map)
         expected_map = {images.SaharaImageValidatorBase.DISTRO_KEY: "centos"}
-        validator.validate(remote, reconcile=False, image_arguments={})
+        validator.validate(remote, test_only=True, image_arguments={})
         sub_validator.validate.assert_called_with(
-            remote, reconcile=False, image_arguments=expected_map)
+            remote, test_only=True, image_arguments=expected_map)

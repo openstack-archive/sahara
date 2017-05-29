@@ -289,7 +289,7 @@ def _provision_cluster(cluster_id):
         cluster, c_u.CLUSTER_STATUS_CONFIGURING)
     context.set_step_type(_("Plugin: configure cluster"))
     if hasattr(plugin, 'validate_images'):
-        plugin.validate_images(cluster, reconcile=True)
+        plugin.validate_images(cluster, test_only=False)
     shares.mount_shares(cluster)
     plugin.configure_cluster(cluster)
 
