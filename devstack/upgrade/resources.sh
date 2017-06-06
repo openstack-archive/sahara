@@ -48,14 +48,18 @@ function create_tenant {
 }
 
 function create_user {
+    local project_id=$id
     eval $(openstack user create $SAHARA_USER \
-        --project $id \
+        --project $project_id \
         --password $SAHARA_PASS \
         -f shell -c id)
     if [[ -z "$id" ]]; then
         die $LINENO "Didn't create $SAHARA_USER user"
     fi
     resource_save sahara user_id $id
+
+    # Workaround for bug: https://bugs.launchpad.net/keystone/+bug/1662911
+    openstack role add Member --user $id --project $project_id
 }
 
 function create_keypair {
@@ -145,6 +149,16 @@ function wait_active_state {
     done
 }
 
+function check_active {
+    # check that cluster is in Active state
+    eval $(openstack dataprocessing cluster show -f shell \
+            -c Status $CLUSTER_NAME)
+    if [[ "$status" != "Active" ]]; then
+        die $LINENO "Cluster is not in Active state anymore"
+    fi
+    echo "Sahara verification: SUCCESS"
+}
+
 function create {
     create_tenant
 
@@ -166,18 +180,14 @@ function create {
 
     wait_active_state
 
+    # delete cluster
+    check_active
+
+    openstack dataprocessing cluster delete $CLUSTER_NAME --wait
 }
 
 function verify {
-    sahara_set_user
-    # check that cluster is in Active state
-    local cluster_id=$(resource_get sahara cluster_id)
-    eval $(openstack dataprocessing cluster show -f shell \
-            -c Status $CLUSTER_NAME)
-    if [[ "$status" != "Active" ]]; then
-        die $LINENO "Cluster is not in Active state anymore"
-    fi
-    echo "Sahara verification: SUCCESS"
+    :
 }
 
 function verify_noapi {
@@ -189,7 +199,8 @@ function destroy {
     set +o errexit
 
     # delete cluster
-    openstack dataprocessing cluster delete $CLUSTER_NAME --wait
+    # check_active
+    # openstack dataprocessing cluster delete $CLUSTER_NAME --wait
 
     set -o errexit
 
