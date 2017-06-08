@@ -20,9 +20,11 @@ from sahara import conductor as cond
 from sahara import context
 from sahara import exceptions as ex
 from sahara.plugins import base as pb
+from sahara.plugins import exceptions as pe
 from sahara.plugins.spark import plugin as pl
 from sahara.service.edp.spark import engine
 from sahara.tests.unit import base
+from sahara.tests.unit import testutils as tu
 from sahara.utils import edp
 
 
@@ -126,6 +128,55 @@ class SparkPluginTest(base.SaharaWithDbTestCase):
         plugin._push_cleanup_job(remote, cluster, extra_conf, instance)
         remote.execute_command.assert_called_with(
             'sudo rm -f /etc/crond.d/spark-cleanup')
+
+
+class SparkValidationTest(base.SaharaTestCase):
+    def setUp(self):
+        super(SparkValidationTest, self).setUp()
+        pb.setup_plugins()
+        self.plugin = pl.SparkProvider()
+
+    def test_validate(self):
+        self.ng = []
+        self.ng.append(tu.make_ng_dict("nn", "f1", ["namenode"], 0))
+        self.ng.append(tu.make_ng_dict("ma", "f1", ["master"], 0))
+        self.ng.append(tu.make_ng_dict("sl", "f1", ["slave"], 0))
+        self.ng.append(tu.make_ng_dict("dn", "f1", ["datanode"], 0))
+
+        self._validate_case(1, 1, 3, 3)
+        self._validate_case(1, 1, 3, 4)
+        self._validate_case(1, 1, 4, 3)
+
+        with testtools.ExpectedException(pe.InvalidComponentCountException):
+            self._validate_case(2, 1, 3, 3)
+
+        with testtools.ExpectedException(pe.InvalidComponentCountException):
+            self._validate_case(1, 2, 3, 3)
+
+        with testtools.ExpectedException(pe.InvalidComponentCountException):
+            self._validate_case(0, 1, 3, 3)
+
+        with testtools.ExpectedException(pe.RequiredServiceMissingException):
+            self._validate_case(1, 0, 3, 3)
+
+        cl = self._create_cluster(
+            1, 1, 3, 3, cluster_configs={'HDFS': {'dfs.replication': 4}})
+
+        with testtools.ExpectedException(pe.InvalidComponentCountException):
+            self.plugin.validate(cl)
+
+    def _create_cluster(self, *args, **kwargs):
+        lst = []
+        for i in range(0, len(args)):
+            self.ng[i]['count'] = args[i]
+            lst.append(self.ng[i])
+
+        return tu.create_cluster("cluster1", "tenant1", "spark",
+                                 "1.60", lst, **kwargs)
+
+    def _validate_case(self, *args):
+        cl = self._create_cluster(*args)
+        self.plugin.validate(cl)
 
 
 class SparkProviderTest(base.SaharaTestCase):
