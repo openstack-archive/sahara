@@ -54,20 +54,20 @@ def transform_exception(from_type, to_type, transform_func=None):
     return decorator
 
 
-def validate_instance(instance, validators, reconcile=True, **kwargs):
+def validate_instance(instance, validators, test_only=False, **kwargs):
     """Runs all validators against the specified instance.
 
     :param instance: An instance to validate.
     :param validators: A sequence of ImageValidators.
-    :param reconcile: If false, all validators will only verify that a
-        desired state is present, and fail if it is not. If true, all
+    :param test_only: If true, all validators will only verify that a
+        desired state is present, and fail if it is not. If false, all
         validators will attempt to enforce the desired state if possible,
         and succeed if this enforcement succeeds.
     :raises ImageValidationError: If validation fails.
     """
     with instance.remote() as remote:
         for validator in validators:
-            validator.validate(remote, reconcile=reconcile, **kwargs)
+            validator.validate(remote, test_only=test_only, **kwargs)
 
 
 class ImageArgument(object):
@@ -120,7 +120,7 @@ class ImageArgument(object):
                                arg.get('required'),
                                arg.get('choices'))
                      for name, arg in six.iteritems(spec)}
-        reserved_names = ['distro', 'reconcile']
+        reserved_names = ['distro', 'test_only']
         for name, arg in six.iteritems(arguments):
             if name in reserved_names:
                 raise p_ex.ImageValidationSpecificationError(
@@ -150,12 +150,12 @@ class ImageValidator(object):
     """Validates the image spawned to an instance via a set of rules."""
 
     @abc.abstractmethod
-    def validate(self, remote, reconcile=True, **kwargs):
+    def validate(self, remote, test_only=False, **kwargs):
         """Validates the image.
 
         :param remote: A remote socket to the instance.
-        :param reconcile: If false, all validators will only verify that a
-            desired state is present, and fail if it is not. If true, all
+        :param test_only: If true, all validators will only verify that a
+            desired state is present, and fail if it is not. If false, all
             validators will attempt to enforce the desired state if possible,
             and succeed if this enforcement succeeds.
         :raises ImageValidationError: If validation fails.
@@ -168,7 +168,7 @@ class SaharaImageValidatorBase(ImageValidator):
     """Base class for Sahara's native image validation."""
 
     DISTRO_KEY = 'distro'
-    RECONCILE_KEY = 'reconcile'
+    TEST_ONLY_KEY = 'test_only'
 
     ORDERED_VALIDATORS_SCHEMA = {
         "type": "array",
@@ -294,13 +294,13 @@ class SaharaImageValidatorBase(ImageValidator):
         def __nonzero__(self):
             return False
 
-    def try_validate(self, remote, reconcile=True,
+    def try_validate(self, remote, test_only=False,
                      image_arguments=None, **kwargs):
         """Attempts to validate, but returns rather than raising on failure.
 
         :param remote: A remote socket to the instance.
-        :param reconcile: If false, all validators will only verify that a
-            desired state is present, and fail if it is not. If true, all
+        :param test_only: If true, all validators will only verify that a
+            desired state is present, and fail if it is not. If false, all
             validators will attempt to enforce the desired state if possible,
             and succeed if this enforcement succeeds.
         :param image_arguments: A dictionary of image argument values keyed by
@@ -309,7 +309,7 @@ class SaharaImageValidatorBase(ImageValidator):
         """
         try:
             self.validate(
-                remote, reconcile=reconcile,
+                remote, test_only=test_only,
                 image_arguments=image_arguments, **kwargs)
             return True
         except p_ex.ImageValidationError as exc:
@@ -368,7 +368,7 @@ class SaharaImageValidator(SaharaImageValidatorBase):
         self.arguments = arguments
 
     @transform_exception(ex.RemoteCommandException, p_ex.ImageValidationError)
-    def validate(self, remote, reconcile=True,
+    def validate(self, remote, test_only=False,
                  image_arguments=None, **kwargs):
         """Attempts to validate the image.
 
@@ -376,8 +376,8 @@ class SaharaImageValidator(SaharaImageValidatorBase):
         steps such as distro discovery.
 
         :param remote: A remote socket to the instance.
-        :param reconcile: If false, all validators will only verify that a
-            desired state is present, and fail if it is not. If true, all
+        :param test_only: If true, all validators will only verify that a
+            desired state is present, and fail if it is not. If false, all
             validators will attempt to enforce the desired state if possible,
             and succeed if this enforcement succeeds.
         :param image_arguments: A dictionary of image argument values keyed by
@@ -403,7 +403,7 @@ class SaharaImageValidator(SaharaImageValidatorBase):
                 else:
                     argument_values[name] = value
         argument_values[self.DISTRO_KEY] = remote.get_os_distrib()
-        self.validator.validate(remote, reconcile=reconcile,
+        self.validator.validate(remote, test_only=test_only,
                                 image_arguments=argument_values)
 
 
@@ -496,17 +496,17 @@ class SaharaPackageValidator(SaharaImageValidatorBase):
         self.packages = packages
 
     @transform_exception(ex.RemoteCommandException, p_ex.ImageValidationError)
-    def validate(self, remote, reconcile=True,
+    def validate(self, remote, test_only=False,
                  image_arguments=None, **kwargs):
         """Attempts to validate package installation on the image.
 
-        Even if reconcile=True, attempts to verify previous package
+        Even if test_only=False, attempts to verify previous package
         installation offline before using networked tools to validate or
         install new packages.
 
         :param remote: A remote socket to the instance.
-        :param reconcile: If false, all validators will only verify that a
-            desired state is present, and fail if it is not. If true, all
+        :param test_only: If true, all validators will only verify that a
+            desired state is present, and fail if it is not. If false, all
             validators will attempt to enforce the desired state if possible,
             and succeed if this enforcement succeeds.
         :param image_arguments: A dictionary of image argument values keyed by
@@ -523,7 +523,7 @@ class SaharaPackageValidator(SaharaImageValidatorBase):
             check(self, remote)
         except (ex.SubprocessException, ex.RemoteCommandException,
                 RuntimeError):
-            if reconcile:
+            if not test_only:
                 install(self, remote)
                 check(self, remote)
             else:
@@ -560,7 +560,7 @@ class SaharaPackageValidator(SaharaImageValidatorBase):
 class SaharaScriptValidator(SaharaImageValidatorBase):
     """A validator that runs a script on the instance."""
 
-    _DEFAULT_ENV_VARS = [SaharaImageValidatorBase.RECONCILE_KEY,
+    _DEFAULT_ENV_VARS = [SaharaImageValidatorBase.TEST_ONLY_KEY,
                          SaharaImageValidatorBase.DISTRO_KEY]
 
     SPEC_SCHEMA = {
@@ -652,25 +652,25 @@ class SaharaScriptValidator(SaharaImageValidatorBase):
         self.output_var = output_var
 
     @transform_exception(ex.RemoteCommandException, p_ex.ImageValidationError)
-    def validate(self, remote, reconcile=True,
+    def validate(self, remote, test_only=False,
                  image_arguments=None, **kwargs):
         """Attempts to validate by running a script on the image.
 
         :param remote: A remote socket to the instance.
-        :param reconcile: If false, all validators will only verify that a
-            desired state is present, and fail if it is not. If true, all
+        :param test_only: If true, all validators will only verify that a
+            desired state is present, and fail if it is not. If false, all
             validators will attempt to enforce the desired state if possible,
             and succeed if this enforcement succeeds.
         :param image_arguments: A dictionary of image argument values keyed by
             argument name.
-            Note that the key SIV_RECONCILE will be set to 1 if the script
-            should reconcile and 0 otherwise; all scripts should act on this
+            Note that the key SIV_TEST_ONLY will be set to 1 if the script
+            should test_only and 0 otherwise; all scripts should act on this
             input if possible. The key SIV_DISTRO will also contain the
             distro representation, per `lsb_release -is`.
         :raises ImageValidationError: If validation fails.
         """
         arguments = copy.deepcopy(image_arguments)
-        arguments[self.RECONCILE_KEY] = 1 if reconcile else 0
+        arguments[self.TEST_ONLY_KEY] = 1 if test_only else 0
         script = "\n".join(["%(env_vars)s",
                             "%(script)s"])
         env_vars = "\n".join("export %s=%s" % (key, value) for (key, value)
@@ -712,11 +712,11 @@ class SaharaAggregateValidator(SaharaImageValidatorBase):
 class SaharaAnyValidator(SaharaAggregateValidator):
     """A list of validators, only one of which must succeed."""
 
-    def _try_all(self, remote, reconcile=True,
+    def _try_all(self, remote, test_only=False,
                  image_arguments=None, **kwargs):
         results = []
         for validator in self.validators:
-            result = validator.try_validate(remote, reconcile=reconcile,
+            result = validator.try_validate(remote, test_only=test_only,
                                             image_arguments=image_arguments,
                                             **kwargs)
             results.append(result)
@@ -724,28 +724,28 @@ class SaharaAnyValidator(SaharaAggregateValidator):
                 break
         return results
 
-    def validate(self, remote, reconcile=True,
+    def validate(self, remote, test_only=False,
                  image_arguments=None, **kwargs):
         """Attempts to validate any of the contained validators.
 
-        Note that if reconcile=True, this validator will first run all
-        contained validators using reconcile=False, and succeed immediately
+        Note that if test_only=False, this validator will first run all
+        contained validators using test_only=True, and succeed immediately
         should any pass validation. If all fail, it will only then run them
-        using reconcile=True, and again succeed immediately should any pass.
+        using test_only=False, and again succeed immediately should any pass.
 
         :param remote: A remote socket to the instance.
-        :param reconcile: If false, all validators will only verify that a
-            desired state is present, and fail if it is not. If true, all
+        :param test_only: If true, all validators will only verify that a
+            desired state is present, and fail if it is not. If false, all
             validators will attempt to enforce the desired state if possible,
             and succeed if this enforcement succeeds.
         :param image_arguments: A dictionary of image argument values keyed by
             argument name.
         :raises ImageValidationError: If validation fails.
         """
-        results = self._try_all(remote, reconcile=False,
+        results = self._try_all(remote, test_only=True,
                                 image_arguments=image_arguments)
-        if reconcile and not any(results):
-            results = self._try_all(remote, reconcile=True,
+        if not test_only and not any(results):
+            results = self._try_all(remote, test_only=False,
                                     image_arguments=image_arguments)
         if not any(results):
             raise p_ex.AllValidationsFailedError(result.exception for result
@@ -755,12 +755,13 @@ class SaharaAnyValidator(SaharaAggregateValidator):
 class SaharaAllValidator(SaharaAggregateValidator):
     """A list of validators, all of which must succeed."""
 
-    def validate(self, remote, reconcile=True, image_arguments=None, **kwargs):
+    def validate(self, remote, test_only=False, image_arguments=None,
+                 **kwargs):
         """Attempts to validate all of the contained validators.
 
         :param remote: A remote socket to the instance.
-        :param reconcile: If false, all validators will only verify that a
-            desired state is present, and fail if it is not. If true, all
+        :param test_only: If true, all validators will only verify that a
+            desired state is present, and fail if it is not. If false, all
             validators will attempt to enforce the desired state if possible,
             and succeed if this enforcement succeeds.
         :param image_arguments: A dictionary of image argument values keyed by
@@ -768,7 +769,7 @@ class SaharaAllValidator(SaharaAggregateValidator):
         :raises ImageValidationError: If validation fails.
         """
         for validator in self.validators:
-            validator.validate(remote, reconcile=reconcile,
+            validator.validate(remote, test_only=test_only,
                                image_arguments=image_arguments)
 
 
@@ -818,7 +819,7 @@ class SaharaOSCaseValidator(SaharaImageValidatorBase):
         """
         self.distros = distros
 
-    def validate(self, remote, reconcile=True,
+    def validate(self, remote, test_only=False,
                  image_arguments=None, **kwargs):
         """Attempts to validate depending on distro.
 
@@ -828,8 +829,8 @@ class SaharaOSCaseValidator(SaharaImageValidatorBase):
         If no keys match, no validators are run, and validation proceeds.
 
         :param remote: A remote socket to the instance.
-        :param reconcile: If false, all validators will only verify that a
-            desired state is present, and fail if it is not. If true, all
+        :param test_only: If true, all validators will only verify that a
+            desired state is present, and fail if it is not. If false, all
             validators will attempt to enforce the desired state if possible,
             and succeed if this enforcement succeeds.
         :param image_arguments: A dictionary of image argument values keyed by
@@ -842,7 +843,7 @@ class SaharaOSCaseValidator(SaharaImageValidatorBase):
         for distro, validator in self.distros:
             if distro in matches:
                 validator.validate(
-                    remote, reconcile=reconcile,
+                    remote, test_only=test_only,
                     image_arguments=image_arguments)
                 break
 
@@ -901,13 +902,13 @@ class SaharaArgumentCaseValidator(SaharaImageValidatorBase):
         self.argument_name = argument_name
         self.cases = cases
 
-    def validate(self, remote, reconcile=True,
+    def validate(self, remote, test_only=False,
                  image_arguments=None, **kwargs):
         """Attempts to validate depending on argument value.
 
         :param remote: A remote socket to the instance.
-        :param reconcile: If false, all validators will only verify that a
-            desired state is present, and fail if it is not. If true, all
+        :param test_only: If true, all validators will only verify that a
+            desired state is present, and fail if it is not. If false, all
             validators will attempt to enforce the desired state if possible,
             and succeed if this enforcement succeeds.
         :param image_arguments: A dictionary of image argument values keyed by
@@ -921,7 +922,7 @@ class SaharaArgumentCaseValidator(SaharaImageValidatorBase):
         value = image_arguments[arg]
         if value in self.cases:
             self.cases[value].validate(
-                remote, reconcile=reconcile,
+                remote, test_only=test_only,
                 image_arguments=image_arguments)
 
 
@@ -972,13 +973,13 @@ class SaharaArgumentSetterValidator(SaharaImageValidatorBase):
         self.argument_name = argument_name
         self.value = value
 
-    def validate(self, remote, reconcile=True,
+    def validate(self, remote, test_only=False,
                  image_arguments=None, **kwargs):
         """Attempts to validate depending on argument value.
 
         :param remote: A remote socket to the instance.
-        :param reconcile: If false, all validators will only verify that a
-            desired state is present, and fail if it is not. If true, all
+        :param test_only: If true, all validators will only verify that a
+            desired state is present, and fail if it is not. If false, all
             validators will attempt to enforce the desired state if possible,
             and succeed if this enforcement succeeds.
         :param image_arguments: A dictionary of image argument values keyed by

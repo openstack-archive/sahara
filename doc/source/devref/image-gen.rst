@@ -258,9 +258,9 @@ Two variables are always available to scripts run under this framework:
 
 * ``distro``: The distro of the image, in case you want to switch on distro
   within your script (rather than by using the os_case validator).
-* ``reconcile``: If this value equates to boolean true, then the script should
+* ``test_only``: If this value equates to boolean false, then the script should
   attempt to change the image or instance if it does not already meet the
-  specification. If this equates to boolean false, the script should exit with
+  specification. If this equates to boolean true, the script should exit with
   a failure code if the image or instance does not already meet the
   specification.
 
@@ -369,16 +369,16 @@ in the OpenStack context.) We will, of course, focus on that framework here.
         """Gets the argument set taken by the plugin's image generator"""
 
     def pack_image(self, hadoop_version, remote,
-                   reconcile=True, image_arguments=None):
+                   test_only=False, image_arguments=None):
         """Packs an image for registration in Glance and use by Sahara"""
 
-    def validate_images(self, cluster, reconcile=True, image_arguments=None):
+    def validate_images(self, cluster, test_only=False, image_arguments=None):
         """Validates the image to be used by a cluster"""
 
 The validate_images method is called after Heat provisioning of your cluster,
-but before cluster configuration. If the reconcile keyword of this method is
-set to False, the method should only test the instances without modification.
-If it is set to True, the method should make any necessary changes (this can
+but before cluster configuration. If the test_only keyword of this method is
+set to True, the method should only test the instances without modification.
+If it is set to False, the method should make any necessary changes (this can
 be used to allow clusters to be spun up from clean, OS-only images.) This
 method is expected to use an ssh remote to communicate with instances, as
 per normal in Sahara.
