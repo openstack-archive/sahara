@@ -33,7 +33,7 @@ class TestMessagingSetup(base.SaharaTestCase):
         self.get_notify_transport = get_notif_transp_patch.start()
         self.patchers.append(get_notif_transp_patch)
 
-        get_transport_patch = mock.patch('oslo_messaging.get_transport')
+        get_transport_patch = mock.patch('oslo_messaging.get_rpc_transport')
         self.get_transport = get_transport_patch.start()
         self.patchers.append(get_transport_patch)
 

@@ -95,7 +95,7 @@ def setup_service_messaging():
     if MESSAGING_TRANSPORT:
         # Already is up
         return
-    MESSAGING_TRANSPORT = messaging.get_transport(cfg.CONF)
+    MESSAGING_TRANSPORT = messaging.get_rpc_transport(cfg.CONF)
 
 
 def setup_notifications():
