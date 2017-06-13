@@ -1,12 +1,10 @@
 OpenStack Dashboard Configuration Guide
 =======================================
 
-Sahara UI panels are integrated into the OpenStack Dashboard repository. No
-additional steps are required to enable Sahara UI in OpenStack Dashboard.
-However there are a few configurations that should be made to configure
-OpenStack Dashboard.
+After installing the Sahara dashboard, there are a few extra configurations
+that can be made.
 
-Dashboard configurations are applied through the local_settings.py file.
+Dashboard configurations are applied through Horizon's local_settings.py file.
 The sample configuration file is available `here. <https://github.com/openstack/horizon/blob/master/openstack_dashboard/local/local_settings.py.example>`_
 
 1. Networking
@@ -62,3 +60,23 @@ Then the endpoint name should be changed in ``sahara.py`` under the module of
 
     # "type" of Sahara service registered in keystone
     SAHARA_SERVICE = 'data_processing_local'
+
+
+3. Hiding health check info
+---------------------------
+
+Sahara UI panels normally contain some information about cluster health. If
+the relevant functionality has been disabled in the Sahara service, then
+operators may prefer to not have any references to health at all in the UI,
+since there would not be any usable health information in that case.
+
+The visibility of health check info can be toggled via the
+``SAHARA_VERIFICATION_DISABLED`` parameter, whose default value is False,
+meaning that the health check info will be visible.
+
+Example:
+
+.. sourcecode:: python
+
+    SAHARA_VERIFICATION_DISABLED = True
+..
