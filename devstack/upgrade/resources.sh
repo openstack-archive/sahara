@@ -179,11 +179,6 @@ function create {
     create_cluster
 
     wait_active_state
-
-    # delete cluster
-    check_active
-
-    openstack dataprocessing cluster delete $CLUSTER_NAME --wait
 }
 
 function verify {
@@ -199,8 +194,9 @@ function destroy {
     set +o errexit
 
     # delete cluster
-    # check_active
-    # openstack dataprocessing cluster delete $CLUSTER_NAME --wait
+    check_active
+
+    openstack dataprocessing cluster delete $CLUSTER_NAME --wait
 
     set -o errexit
 
