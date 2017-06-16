@@ -17,7 +17,6 @@ import mock
 
 from sahara.plugins import exceptions as ex
 from sahara.plugins.vanilla.hadoop2 import edp_engine
-from sahara.service.edp import job_utils
 from sahara.tests.unit import base as sahara_base
 
 
@@ -28,8 +27,9 @@ class EdpOozieEngineTest(sahara_base.SaharaTestCase):
     def setUp(self):
         super(EdpOozieEngineTest, self).setUp()
         self.cluster = mock.Mock()
-        job_utils.get_plugin = mock.Mock(return_value='test_plugins')
-        self.engine = edp_engine.EdpOozieEngine(self.cluster)
+        with mock.patch('sahara.service.edp.job_utils.get_plugin',
+                        return_value='test_plugins'):
+            self.engine = edp_engine.EdpOozieEngine(self.cluster)
 
     def test_get_hdfs_user(self):
         self.assertEqual(self.engine.get_hdfs_user(), 'hadoop')
