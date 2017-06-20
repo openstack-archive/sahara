@@ -550,7 +550,7 @@ The next two commands will create input and output data sources in swift.
       --url "swift://integration.sahara/input.txt" input
 
    $ openstack dataprocessing data source create --type swift --username admin --password admin \
-      --url "swift://integration.sahara/output.txt" input
+      --url "swift://integration.sahara/output.txt" output
 
 If you want to create data sources in hdfs, use valid hdfs urls:
 
