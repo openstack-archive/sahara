@@ -67,7 +67,7 @@ class SparkProvider(p.ProvisioningPluginBase):
         return result
 
     def get_versions(self):
-        return ['1.6.0', '1.3.1']
+        return ['2.1.0', '1.6.0', '1.3.1']
 
     def get_configs(self, hadoop_version):
         return c_helper.get_plugin_configs()
