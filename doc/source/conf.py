@@ -20,7 +20,7 @@ import subprocess
 import sys
 import warnings
 
-on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+import openstackdocstheme
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -32,6 +32,8 @@ sys.path.append(os.path.abspath('../bin'))
 
 # -- General configuration -----------------------------------------------------
 
+on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+
 # If your documentation needs a minimal Sphinx version, state it here.
 #needs_sphinx = '1.0'
 
@@ -39,10 +41,6 @@ sys.path.append(os.path.abspath('../bin'))
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.todo', 'sphinx.ext.coverage',
               'sphinx.ext.viewcode', 'sphinxcontrib.httpdomain']
-
-if not on_rtd:
-    extensions.append('oslosphinx')
-    extensions.append('oslo_config.sphinxconfiggen')
 
 config_generator_config_file = 'config-generator.conf'
 config_sample_basename = 'sahara'
@@ -117,6 +115,9 @@ if on_rtd:
     html_theme_path = ['.']
     html_theme = '_theme_rtd'
 
+html_theme = 'openstackdocs'
+html_theme_path = [openstackdocstheme.get_html_theme_path()]
+
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
@@ -156,6 +157,14 @@ try:
 except Exception:
     warnings.warn('Cannot get last updated time from git repository. '
                   'Not setting "html_last_updated_fmt".')
+
+giturl = u'http://git.openstack.org/cgit/openstack/sahara/tree/doc/source'
+# html_context allows us to pass arbitrary values into the html template
+html_context = {
+    "bug_tag": "doc",
+    "giturl": giturl,
+    "bug_project": "sahara"
+}
 
 # If true, SmartyPants will be used to convert quotes and dashes to
 # typographically correct entities.
