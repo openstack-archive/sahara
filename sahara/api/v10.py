@@ -191,6 +191,30 @@ def node_group_templates_delete(node_group_template_id):
     return u.render()
 
 
+def _node_group_template_export_helper(template):
+    template.pop('id')
+    template.pop('updated_at')
+    template.pop('created_at')
+    template['flavor_id'] = '{flavor_id}'
+    template['security_groups'] = '{security_groups}'
+    template['image_id'] = '{image_id}'
+    template['tenant_id'] = '{tenant_id}'
+    template['floating_ip_pool'] = '{floating_ip_pool}'
+
+
+@rest.get('/node-group-templates/<node_group_template_id>/export')
+@acl.enforce("data-processing:node-group-templates:get")
+@v.check_exists(api.get_node_group_template, 'node_group_template_id')
+def node_group_template_export(node_group_template_id):
+    content = u.to_wrapped_dict_no_render(
+        api.export_node_group_template, node_group_template_id)
+    _node_group_template_export_helper(content['node_group_template'])
+    res = u.render(content)
+    res.headers.add('Content-Disposition', 'attachment',
+                    filename='node_group_template.json')
+    return res
+
+
 # Plugins ops
 
 @rest.get('/plugins')
