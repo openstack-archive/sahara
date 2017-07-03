@@ -14,12 +14,16 @@
 
 # Sahara Release Notes documentation build configuration file
 
-import openstackdocstheme
-
-
 extensions = [
     'reno.sphinxext',
+    'openstackdocstheme'
 ]
+
+# openstackdocstheme options
+repository_name = 'openstack/sahara'
+bug_project = 'sahara'
+bug_tag = 'releasenotes'
+html_last_updated_fmt = '%Y-%m-%d %H:%M'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -58,7 +62,6 @@ pygments_style = 'sphinx'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 html_theme = 'openstackdocs'
-html_theme_path = [openstackdocstheme.get_html_theme_path()]
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -88,16 +91,6 @@ html_theme_path = [openstackdocstheme.get_html_theme_path()]
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
-
-giturl = (
-    u'http://git.openstack.org/cgit/openstack/sahara/tree/releasenotes/source'
-)
-# html_context allows us to pass arbitrary values into the html template
-html_context = {
-    "bug_tag": "releasenotes",
-    "giturl": giturl,
-    "bug_project": "sahara"
-}
 
 # Add any extra paths that contain custom files (such as robots.txt or
 # .htaccess) here, relative to this directory. These files are copied

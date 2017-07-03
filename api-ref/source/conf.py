@@ -25,19 +25,22 @@
 # serve to show the default.
 
 import os
-import subprocess
 import sys
-import warnings
-
-import openstackdocstheme
 
 extensions = [
     'os_api_ref',
+    'openstackdocstheme'
 ]
 
+# openstackdocstheme options
+repository_name = 'openstack/sahara'
+bug_project = 'sahara'
+bug_tag = 'api-ref'
+html_last_updated_fmt = '%Y-%m-%d %H:%M'
+
 html_theme = 'openstackdocs'
-html_theme_path = [openstackdocstheme.get_html_theme_path()]
 html_theme_options = {
+    "sidebar_dropdown": "api_ref",
     "sidebar_mode": "toc",
 }
 
@@ -64,16 +67,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Compute API Reference'
+project = u'Data Processing API Reference'
 copyright = u'2010-present, OpenStack Foundation'
-
-# Config logABug feature
-giturl = u'http://git.openstack.org/cgit/openstack/sahara/tree/api-ref/source'
-# source tree
-# html_context allows us to pass arbitrary values into the html template
-html_context = {"bug_tag": "api-ref",
-                "giturl": giturl,
-                "bug_project": "sahara"}
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -156,17 +151,6 @@ pygments_style = 'sphinx'
 # so a file named "default.css" will overwrite the builtin "default.css".
 # html_static_path = ['_static']
 
-# If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
-# using the given strftime format.
-# html_last_updated_fmt = '%b %d, %Y'
-git_cmd = ["git", "log", "--pretty=format:'%ad, commit %h'", "--date=local",
-           "-n1"]
-try:
-    html_last_updated_fmt = subprocess.check_output(git_cmd).decode('utf-8')
-except Exception:
-    warnings.warn('Cannot get last updated time from git repository. '
-                  'Not setting "html_last_updated_fmt".')
-
 # If true, SmartyPants will be used to convert quotes and dashes to
 # typographically correct entities.
 # html_use_smartypants = True
@@ -214,7 +198,7 @@ htmlhelp_basename = 'saharaoc'
 # (source start file, target name, title, author, documentclass
 # [howto/manual]).
 latex_documents = [
-    ('index', 'Sahara.tex', u'OpenStack Compute API Documentation',
+    ('index', 'Sahara.tex', u'OpenStack Data Processing API Documentation',
      u'OpenStack Foundation', 'manual'),
 ]
 

@@ -20,8 +20,6 @@ import subprocess
 import sys
 import warnings
 
-import openstackdocstheme
-
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
@@ -40,7 +38,13 @@ on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.todo', 'sphinx.ext.coverage',
-              'sphinx.ext.viewcode', 'sphinxcontrib.httpdomain']
+              'sphinx.ext.viewcode', 'sphinxcontrib.httpdomain', 'openstackdocstheme']
+
+# openstackdocstheme options
+repository_name = 'openstack/sahara'
+bug_project = 'sahara'
+bug_tag = 'doc'
+html_last_updated_fmt = '%Y-%m-%d %H:%M'
 
 config_generator_config_file = 'config-generator.conf'
 config_sample_basename = 'sahara'
@@ -116,7 +120,6 @@ if on_rtd:
     html_theme = '_theme_rtd'
 
 html_theme = 'openstackdocs'
-html_theme_path = [openstackdocstheme.get_html_theme_path()]
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -146,25 +149,6 @@ html_title = 'Sahara'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
-
-# If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
-# using the given strftime format.
-#html_last_updated_fmt = '%b %d, %Y'
-git_cmd = ["git", "log", "--pretty=format:'%ad, commit %h'", "--date=local",
-           "-n1"]
-try:
-    html_last_updated_fmt = subprocess.check_output(git_cmd).decode('utf-8')
-except Exception:
-    warnings.warn('Cannot get last updated time from git repository. '
-                  'Not setting "html_last_updated_fmt".')
-
-giturl = u'http://git.openstack.org/cgit/openstack/sahara/tree/doc/source'
-# html_context allows us to pass arbitrary values into the html template
-html_context = {
-    "bug_tag": "doc",
-    "giturl": giturl,
-    "bug_project": "sahara"
-}
 
 # If true, SmartyPants will be used to convert quotes and dashes to
 # typographically correct entities.
