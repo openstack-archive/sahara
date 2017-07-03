@@ -94,6 +94,12 @@ SSH_TIMEOUTS_MAPPING = {
 _global_remote_semaphore = None
 
 
+def _get_access_ip(instance):
+    if CONF.proxy_command and CONF.proxy_command_use_internal_ip:
+        return instance.internal_ip
+    return instance.management_ip
+
+
 def _default_timeout(func):
     timeout = SSH_TIMEOUTS_MAPPING.get(func.__name__, 'ssh_timeout_files')
     return getattr(CONF, timeout, CONF.ssh_timeout_common)
@@ -639,7 +645,7 @@ class InstanceInteropHelper(remote.Remote):
         ctx = context.current()
         neutron_info['token'] = context.get_auth_token()
         neutron_info['tenant'] = ctx.tenant_name
-        neutron_info['host'] = instance.management_ip
+        neutron_info['host'] = _get_access_ip(instance)
 
         log_info = copy.deepcopy(neutron_info)
         del log_info['token']
@@ -664,7 +670,7 @@ class InstanceInteropHelper(remote.Remote):
                                            info['tenant'], auth=auth)
             keywords['router_id'] = client.get_router()
 
-        keywords['host'] = instance.management_ip
+        keywords['host'] = _get_access_ip(instance)
         keywords['port'] = port
 
         try:
@@ -728,7 +734,9 @@ class InstanceInteropHelper(remote.Remote):
                 proxy_command, instance=access_instance, port=22,
                 info=None, rootwrap_command=rootwrap)
 
-        return (self.instance.management_ip,
+        host_ip = _get_access_ip(self.instance)
+
+        return (host_ip,
                 host_ng.image_username,
                 cluster.management_private_key,
                 proxy_command,
@@ -771,7 +779,7 @@ class InstanceInteropHelper(remote.Remote):
 
     def get_http_client(self, port, info=None):
         self._log_command('Retrieving HTTP session for {0}:{1}'.format(
-            self.instance.management_ip, port))
+            _get_access_ip(self.instance), port))
 
         host_ng = self.instance.node_group
         cluster = host_ng.cluster
@@ -818,7 +826,7 @@ class InstanceInteropHelper(remote.Remote):
                 proxy_command, instance=access_instance, port=access_port,
                 info=info, rootwrap_command=rootwrap)
 
-        return _get_http_client(self.instance.management_ip, port,
+        return _get_http_client(_get_access_ip(self.instance), port,
                                 proxy_command, gateway_host,
                                 gateway_username,
                                 gateway_private_key)
@@ -826,7 +834,7 @@ class InstanceInteropHelper(remote.Remote):
     def close_http_session(self, port):
         global _sessions
 
-        host = self.instance.management_ip
+        host = _get_access_ip(self.instance)
         self._log_command(_("Closing HTTP session for %(host)s:%(port)s") % {
                           'host': host, 'port': port})
 
