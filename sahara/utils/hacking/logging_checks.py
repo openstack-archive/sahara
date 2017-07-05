@@ -13,23 +13,21 @@
 import re
 
 
-# NOTE(Kezar): this checks was copied from cinder/nova and should be one day
-# appear at general hacking checks. So we need to try remember it and remove it
-# when it'll be happened.
-# FIXME(Kezar): may be it will be better to right in the way that introduced in
-# keystone but it will need additional work and total checks refactoring.
+_all_log_levels = "info|exception|warning|critical|error|debug"
+
+_accepted_log_level = re.compile(
+    r"(.)*LOG\.(%(levels)s)\(" % {'levels': _all_log_levels})
+
+# Since _Lx() have been removed, we just need to check _()
+_translated_log = re.compile(
+    r"(.)*LOG\.(%(levels)s)\(\s*_\(" % {'levels': _all_log_levels})
 
 
-accepted_log_level = re.compile(
-    r"^LOG\.(debug|info|exception|warning|error|critical)\(")
+def no_translate_logs(logical_line, filename):
+    """Check for 'LOG.*(_('
 
-
-def no_translate_debug_logs(logical_line, filename):
-    """Check for 'LOG.debug(_('
-
-    As per our translation policy,
-    https://wiki.openstack.org/wiki/LoggingStandards#Log_Translation
-    we shouldn't translate debug level logs.
+    Translators don't provide translations for log messages, and operators
+    asked not to translate them.
 
     * This check assumes that 'LOG' is a logger.
     * Use filename so we can start enforcing this in specific folders instead
@@ -37,9 +35,9 @@ def no_translate_debug_logs(logical_line, filename):
     S373
     """
 
-    msg = "S373 Don't translate debug level logs"
-    if logical_line.startswith("LOG.debug(_("):
-        yield(0, msg)
+    msg = "S373 Don't translate logs"
+    if _translated_log.match(logical_line):
+        yield (0, msg)
 
 
 def accepted_log_levels(logical_line, filename):
@@ -47,7 +45,7 @@ def accepted_log_levels(logical_line, filename):
 
     This check is needed because we don't want new contributors to
     use deprecated log levels.
-    S373
+    S374
     """
 
     # NOTE(Kezar): sahara/tests included because we don't require translations
@@ -59,8 +57,8 @@ def accepted_log_levels(logical_line, filename):
     for directory in ignore_dirs:
         if directory in filename:
             return
-    msg = ("S373 You used deprecated log level. Accepted log levels are "
-           "debug|info|warning|error|critical")
+    msg = ("S374 You used deprecated log level. Accepted log levels are "
+           "%(levels)s" % {'levels': _all_log_levels})
     if logical_line.startswith("LOG."):
-        if not accepted_log_level.search(logical_line):
+        if not _accepted_log_level.search(logical_line):
             yield(0, msg)
