@@ -24,6 +24,12 @@ port. The ``{host}`` and ``{port}`` keywords should be used to describe the
 destination, they will be substituted at runtime.  Other keywords that
 can be used are: ``{tenant_id}``, ``{network_id}`` and ``{router_id}``.
 
+Additionally, if ``proxy_command_use_internal_ip`` is set to ``True``,
+then the internal IP will be subsituted for ``{host}`` in the command.
+Otherwise (if ``False``, by default) the management IP will be used: this
+corresponds to floating IP if present in the relevant node group, else the
+internal IP. The option is ignored if ``proxy_command`` is not also set.
+
 For example, the following parameter in the sahara configuration file
 would be used if instances are accessed through a relay machine:
 

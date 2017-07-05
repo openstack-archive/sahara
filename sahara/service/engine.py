@@ -19,6 +19,7 @@ import datetime
 import string
 
 from novaclient import exceptions as nova_exceptions
+from oslo_config import cfg
 from oslo_log import log as logging
 import six
 
@@ -39,6 +40,7 @@ from sahara.utils import remote
 
 LOG = logging.getLogger(__name__)
 conductor = c.API
+CONF = cfg.CONF
 
 
 @six.add_metaclass(abc.ABCMeta)
@@ -125,9 +127,11 @@ class Engine(object):
                 LOG.debug('Instance is accessible')
                 return True
         except Exception as ex:
-            LOG.debug("Can't login to node, IP: {mgmt_ip}, "
-                      "reason {reason}".format(mgmt_ip=instance.management_ip,
-                                               reason=ex))
+            ip_used = "internal_ip" if CONF.proxy_command and \
+                CONF.proxy_command_use_internal_ip else "management_ip"
+            LOG.debug("Can't login to node, IP: {ip}, reason {reason}"
+                      .format(ip=getattr(instance, ip_used),
+                              reason=ex))
             return False
 
         return False

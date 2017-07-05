@@ -38,6 +38,10 @@ ssh_opts = [
                'SSH and HTTP connections. Use {host} and {port} to describe '
                'the destination. Other available keywords: {tenant_id}, '
                '{network_id}, {router_id}.'),
+    cfg.BoolOpt('proxy_command_use_internal_ip', default=False,
+                help='Force proxy_command usage to be consuming internal IP '
+                'always, instead of management IP. Ignored if proxy_command '
+                'is not set.')
 ]
 
 

@@ -291,6 +291,29 @@ class TestInstanceInteropHelper(base.SaharaTestCase):
         p_simple_exec_func.assert_any_call(
             shlex.split('ssh fakerelay nc 10.0.0.3 8080'))
 
+    @mock.patch('sahara.utils.ssh_remote._simple_exec_func')
+    @mock.patch('sahara.utils.ssh_remote.ProxiedHTTPAdapter')
+    def test_proxy_command_internal_ip(self, p_adapter, p_simple_exec_func):
+        self.override_config('proxy_command', 'ssh fakerelay nc {host} {port}')
+        self.override_config('proxy_command_use_internal_ip', True)
+
+        instance = FakeInstance('inst3', '123', '10.0.0.3', '10.0.0.4',
+                                'user3', 'key3')
+        remote = ssh_remote.InstanceInteropHelper(instance)
+
+        # Test SSH
+        remote.execute_command('/bin/true')
+        self.run_in_subprocess.assert_any_call(
+            42, ssh_remote._connect,
+            ('10.0.0.4', 'user3', 'key3', 'ssh fakerelay nc 10.0.0.4 22',
+             None, None))
+        # Test HTTP
+        remote.get_http_client(8080)
+        p_adapter.assert_called_once_with(
+            p_simple_exec_func(), '10.0.0.4', 8080)
+        p_simple_exec_func.assert_any_call(
+            shlex.split('ssh fakerelay nc 10.0.0.4 8080'))
+
     def test_proxy_command_bad(self):
         self.override_config('proxy_command', '{bad_kw} nc {host} {port}')
 
