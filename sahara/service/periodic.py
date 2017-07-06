@@ -240,7 +240,7 @@ def _make_periodic_tasks():
                     api.update_cluster(cluster.id, start_dict)
                 except vb.CannotVerifyError:
                     LOG.debug("Skipping running verification "
-                              "on the cluster %s" % cluster.name)
+                              "on the cluster %s", cluster.name)
 
     return SaharaPeriodicTasks()
 

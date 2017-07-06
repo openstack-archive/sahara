@@ -349,9 +349,11 @@ class AmbariClient(object):
         context.sleep(20)
         while True:
             status = self.check_request_status(cluster_name, request_id)
-            LOG.debug("Task %s in %s state. Completed %.1f%%" % (
-                status["request_context"], status["request_status"],
-                status["progress_percent"]))
+            LOG.debug("Task %(context)s in %(status)s state. "
+                      "Completed %(percent).1f%%",
+                      {'context': status["request_context"],
+                       'status': status["request_status"],
+                       'percent': status["progress_percent"]})
             if status["request_status"] == "COMPLETED":
                 return
             if status["request_status"] in ["IN_PROGRESS", "PENDING"]:

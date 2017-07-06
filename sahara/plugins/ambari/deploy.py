@@ -577,9 +577,9 @@ def restart_service(cluster, service_name):
 @cpo.event_wrapper(True, step=_("Remove hosts"), param=('cluster', 0))
 def remove_services_from_hosts(cluster, instances):
     for inst in instances:
-        LOG.debug("Stopping and removing processes from host %s" % inst.fqdn())
+        LOG.debug("Stopping and removing processes from host %s", inst.fqdn())
         _remove_services_from_host(cluster, inst)
-        LOG.debug("Removing the host %s" % inst.fqdn())
+        LOG.debug("Removing the host %s", inst.fqdn())
         _remove_host(cluster, inst)
 
 
@@ -587,12 +587,12 @@ def _remove_services_from_host(cluster, instance):
     with _get_ambari_client(cluster) as client:
         hdp_processes = client.list_host_processes(cluster.name, instance)
         for proc in hdp_processes:
-            LOG.debug("Stopping process %s on host %s " %
-                      (proc, instance.fqdn()))
+            LOG.debug("Stopping process %(proc)s on host %(fqdn)s ",
+                      {'proc': proc, 'fqdn': instance.fqdn()})
             client.stop_process_on_host(cluster.name, instance, proc)
 
-            LOG.debug("Removing process %s from host %s " %
-                      (proc, instance.fqdn()))
+            LOG.debug("Removing process %(proc)s from host %(fqdn)s ",
+                      {'proc': proc, 'fqdn': instance.fqdn()})
             client.remove_process_from_host(cluster.name, instance, proc)
 
     _wait_all_processes_removed(cluster, instance)

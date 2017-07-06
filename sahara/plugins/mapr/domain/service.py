@@ -118,7 +118,7 @@ class Service(object):
     def _set_service_dir_owner(self, cluster_context, instances):
         service_instances = cluster_context.filter_instances(instances,
                                                              service=self)
-        LOG.debug("Changing %s service dir owner" % self.ui_name)
+        LOG.debug("Changing %s service dir owner", self.ui_name)
         for instance in service_instances:
             cmd.chown(instance, 'mapr:mapr', self.service_dir(cluster_context))
 

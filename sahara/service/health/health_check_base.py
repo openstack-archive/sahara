@@ -147,7 +147,7 @@ class AllInstancesAccessible(BasicHealthCheck):
         if inst_ips_or_names:
             insts = ', '.join(inst_ips_or_names)
             LOG.exception(
-                "Instances (%s) are not available in the cluster" % insts)
+                "Instances (%s) are not available in the cluster", insts)
             raise RedHealthError(
                 _("Instances (%s) are not available in the cluster.") % insts)
         return _("All instances are available")
