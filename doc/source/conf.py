@@ -38,7 +38,8 @@ on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.todo', 'sphinx.ext.coverage',
-              'sphinx.ext.viewcode', 'sphinxcontrib.httpdomain', 'openstackdocstheme']
+              'sphinx.ext.viewcode', 'sphinxcontrib.httpdomain', 'oslo_config.sphinxconfiggen',
+              'openstackdocstheme']
 
 # openstackdocstheme options
 repository_name = 'openstack/sahara'
