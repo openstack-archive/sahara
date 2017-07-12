@@ -13,14 +13,14 @@
 import re
 
 
-_all_log_levels = "info|exception|warning|critical|error|debug"
+ALL_LOG_LEVELS = "info|exception|warning|critical|error|debug"
 
-_accepted_log_level = re.compile(
-    r"(.)*LOG\.(%(levels)s)\(" % {'levels': _all_log_levels})
+RE_ACCEPTED_LOG_LEVELS = re.compile(
+    r"(.)*LOG\.(%(levels)s)\(" % {'levels': ALL_LOG_LEVELS})
 
 # Since _Lx() have been removed, we just need to check _()
-_translated_log = re.compile(
-    r"(.)*LOG\.(%(levels)s)\(\s*_\(" % {'levels': _all_log_levels})
+RE_TRANSLATED_LOG = re.compile(
+    r"(.)*LOG\.(%(levels)s)\(\s*_\(" % {'levels': ALL_LOG_LEVELS})
 
 
 def no_translate_logs(logical_line, filename):
@@ -36,7 +36,7 @@ def no_translate_logs(logical_line, filename):
     """
 
     msg = "S373 Don't translate logs"
-    if _translated_log.match(logical_line):
+    if RE_TRANSLATED_LOG.match(logical_line):
         yield (0, msg)
 
 
@@ -58,7 +58,7 @@ def accepted_log_levels(logical_line, filename):
         if directory in filename:
             return
     msg = ("S374 You used deprecated log level. Accepted log levels are "
-           "%(levels)s" % {'levels': _all_log_levels})
+           "%(levels)s" % {'levels': ALL_LOG_LEVELS})
     if logical_line.startswith("LOG."):
-        if not _accepted_log_level.search(logical_line):
+        if not RE_ACCEPTED_LOG_LEVELS.search(logical_line):
             yield(0, msg)
