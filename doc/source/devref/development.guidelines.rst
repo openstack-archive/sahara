@@ -79,7 +79,7 @@ Documentation Guidelines
 
 All Sahara docs are written using Sphinx / RST and located in the main repo
 in the ``doc`` directory. You can add or edit pages here to update the
-http://docs.openstack.org/developer/sahara site.
+https://docs.openstack.org/sahara/latest/ site.
 
 The documentation in docstrings should follow the `PEP 257`_ conventions
 (as mentioned in the `PEP 8`_ guidelines).

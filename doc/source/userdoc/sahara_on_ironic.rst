@@ -15,7 +15,7 @@ from the bare metal performance with self-service resource provisioning.
    <http://docs.openstack.org/developer/ironic/deploy/install-guide.html>`_
 
 3. Install Sahara as described in the `Sahara Installation Guide
-   <http://docs.openstack.org/developer/sahara/userdoc/installation.guide.html>`_
+   <https://docs.openstack.org/sahara/latest/userdoc/installation.guide.html>`_
 
 4. Build the Sahara image and prepare it for uploading to Glance:
 

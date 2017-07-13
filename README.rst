@@ -14,13 +14,13 @@ Sahara at wiki.openstack.org: https://wiki.openstack.org/wiki/Sahara
 
 Launchpad project: https://launchpad.net/sahara
 
-Sahara docs site: http://docs.openstack.org/developer/sahara
+Sahara docs site: https://docs.openstack.org/sahara/latest/
 
 Roadmap: https://wiki.openstack.org/wiki/Sahara/Roadmap
 
-Quickstart guide: http://docs.openstack.org/developer/sahara/devref/quickstart.html
+Quickstart guide: https://docs.openstack.org/sahara/latest/devref/quickstart.html
 
-How to participate: http://docs.openstack.org/developer/sahara/devref/how_to_participate.html
+How to participate: https://docs.openstack.org/sahara/latest/devref/how_to_participate.html
 
 Source: http://git.openstack.org/cgit/openstack/sahara
 

@@ -5,7 +5,7 @@ you must follow the steps in this page:
 
 You can find more Sahara-specific info in our How To Participate guide:
 
-   http://docs.openstack.org/developer/sahara/devref/how_to_participate.html
+   https://docs.openstack.org/sahara/latest/devref/how_to_participate.html
 
 Once those steps have been completed, changes to OpenStack
 should be submitted for review via the Gerrit tool, following

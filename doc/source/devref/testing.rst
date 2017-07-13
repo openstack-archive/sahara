@@ -33,4 +33,4 @@ Additional tests reside in the sahara-tests repository (as above):
 * CLI tests check read-only operations using the Sahara CLI.
 
 For more information about these tests, please read
-http://docs.openstack.org/developer/sahara-tests/tempest-plugin.html
+`Tempest Integration of Sahara <https://docs.openstack.org/sahara-tests/latest/tempest-plugin.html>`_.
