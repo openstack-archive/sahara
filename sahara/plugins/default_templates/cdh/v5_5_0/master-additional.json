@@ -1,0 +1,20 @@
+{
+    "plugin_name": "cdh",
+    "hadoop_version": "5.5.0",
+    "node_processes": [
+        "OOZIE_SERVER",
+        "YARN_JOBHISTORY",
+        "YARN_NODEMANAGER",
+        "HDFS_SECONDARYNAMENODE",
+        "HIVE_METASTORE",
+        "HIVE_SERVER2",
+        "SPARK_YARN_HISTORY_SERVER"
+    ],
+    "name": "cdh-550-default-master-additional",
+    "floating_ip_pool": "{floating_ip_pool}",
+    "flavor_id": "{flavor_id}",
+    "auto_security_group": "{auto_security_group}",
+    "security_groups": "{security_groups}",
+    "is_protected": true
+}
+

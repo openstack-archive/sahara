@@ -1,0 +1,28 @@
+{
+    "plugin_name": "mapr",
+    "hadoop_version": "5.1.0.mrv2",
+    "node_processes": [
+        "Metrics",
+        "Webserver",
+        "ZooKeeper",
+        "HTTPFS",
+        "Oozie",
+        "FileServer",
+        "CLDB",
+        "Flume",
+        "Hue",
+        "NodeManager",
+        "HistoryServer",
+        "ResourceManager",
+        "HiveServer2",
+        "HiveMetastore",
+        "Sqoop2-Client",
+        "Sqoop2-Server"
+    ],
+    "name": "mapr-510mr2-default-master",
+    "floating_ip_pool": "{floating_ip_pool}",
+    "flavor_id": "{flavor_id}",
+    "auto_security_group": "{auto_security_group}",
+    "security_groups": "{security_groups}",
+    "is_protected": true
+}

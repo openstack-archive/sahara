@@ -1,0 +1,21 @@
+{
+    "plugin_name": "storm",
+    "hadoop_version": "1.0.1",
+    "node_groups": [
+        {
+            "name": "slave",
+            "count": 3,
+            "node_group_template_id": "{storm-101-default-slave}"
+        },
+        {
+            "name": "master-zk",
+            "count": 1,
+            "node_group_template_id": "{storm-101-default-master}"
+        }
+    ],
+    "name": "storm-101-default-cluster",
+    "neutron_management_network": "{neutron_management_network}",
+    "cluster_configs": {},
+    "is_protected": true
+}
+

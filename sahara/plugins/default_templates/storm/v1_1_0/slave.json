@@ -1,16 +1,15 @@
 {
-    "plugin_name": "vanilla",
-    "hadoop_version": "2.7.1",
+    "plugin_name": "storm",
+    "hadoop_version": "1.1.0",
     "node_processes": [
-        "datanode",
-        "nodemanager"
+        "supervisor"
     ],
-    "name": "vanilla-271-default-worker",
+    "name": "storm-110-default-slave",
     "floating_ip_pool": "{floating_ip_pool}",
     "flavor_id": "{flavor_id}",
     "auto_security_group": "{auto_security_group}",
     "security_groups": "{security_groups}",
-    "volume_size": 2,
-    "volumes_per_node": 2,
     "is_protected": true
 }
+
+

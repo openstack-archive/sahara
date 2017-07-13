@@ -1,11 +1,11 @@
 {
-    "plugin_name": "vanilla",
-    "hadoop_version": "2.7.1",
+    "plugin_name": "ambari",
+    "hadoop_version": "2.3",
     "node_processes": [
-        "datanode",
-        "nodemanager"
+        "DataNode",
+        "NodeManager"
     ],
-    "name": "vanilla-271-default-worker",
+    "name": "hdp-23-default-worker",
     "floating_ip_pool": "{floating_ip_pool}",
     "flavor_id": "{flavor_id}",
     "auto_security_group": "{auto_security_group}",
@@ -14,3 +14,5 @@
     "volumes_per_node": 2,
     "is_protected": true
 }
+
+

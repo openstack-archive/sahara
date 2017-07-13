@@ -1,0 +1,20 @@
+{
+    "plugin_name": "spark",
+    "hadoop_version": "2.1.0",
+    "node_groups": [
+        {
+            "name": "slave",
+            "count": 3,
+            "node_group_template_id": "{spark-210-default-slave}"
+        },
+        {
+            "name": "master",
+            "count": 1,
+            "node_group_template_id": "{spark-210-default-master}"
+        }
+    ],
+    "name": "spark-210-default-cluster",
+    "neutron_management_network": "{neutron_management_network}",
+    "cluster_configs": {},
+    "is_protected": true
+}

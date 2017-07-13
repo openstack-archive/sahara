@@ -1,0 +1,23 @@
+{
+    "plugin_name": "ambari",
+    "hadoop_version": "2.4",
+    "node_processes": [
+        "Ambari",
+        "MapReduce History Server",
+        "Spark History Server",
+        "NameNode",
+        "ResourceManager",
+        "SecondaryNameNode",
+        "YARN Timeline Server",
+        "ZooKeeper",
+        "Kafka Broker"
+    ],
+    "name": "hdp-24-default-master",
+    "floating_ip_pool": "{floating_ip_pool}",
+    "flavor_id": "{flavor_id}",
+    "auto_security_group": "{auto_security_group}",
+    "security_groups": "{security_groups}",
+    "is_protected": true
+}
+
+

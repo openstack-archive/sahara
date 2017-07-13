@@ -1,0 +1,21 @@
+{
+    "plugin_name": "mapr",
+    "hadoop_version": "5.1.0.mrv2",
+    "node_groups": [
+        {
+            "name": "master",
+            "count": 1,
+            "node_group_template_id": "{mapr-510mr2-default-master}"
+        },
+        {
+            "name": "worker",
+            "count": 3,
+            "node_group_template_id": "{mapr-510mr2-default-worker}"
+        }
+    ],
+    "name": "mapr-510mr2-default-cluster",
+    "neutron_management_network": "{neutron_management_network}",
+    "cluster_configs": {},
+    "is_protected": true
+}
+

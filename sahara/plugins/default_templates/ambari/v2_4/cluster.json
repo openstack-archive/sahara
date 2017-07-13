@@ -1,0 +1,26 @@
+{
+    "plugin_name": "ambari",
+    "hadoop_version": "2.4",
+    "node_groups": [
+        {
+            "name": "worker",
+            "count": 3,
+            "node_group_template_id": "{hdp-24-default-worker}"
+        },
+        {
+            "name": "master-edp",
+            "count": 1,
+            "node_group_template_id": "{hdp-24-default-master-edp}"
+        },
+        {
+            "name": "master",
+            "count": 1,
+            "node_group_template_id": "{hdp-24-default-master}"
+        }
+    ],
+    "name": "hdp-24-default-cluster",
+    "neutron_management_network": "{neutron_management_network}",
+    "cluster_configs": {},
+    "is_protected": true
+}
+
