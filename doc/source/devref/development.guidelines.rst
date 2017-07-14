@@ -143,7 +143,7 @@ for identifying the error. Additionally, each exception in sahara contains a
 unique identifier that allows the user to find extra information about that
 error in the sahara logs. You can see an example of provisioning progress
 information here:
-http://developer.openstack.org/api-ref/data-processing/#event-log
+https://developer.openstack.org/api-ref/data-processing/#event-log
 
 This means that if you add some important phase for cluster provisioning to
 the sahara code, it's recommended to add a new provisioning step for this
@@ -178,7 +178,7 @@ keystone ``Session`` and auth plugin objects (for example, ``Token`` and
 ``Password``). Sahara is migrating all clients to use this authentication
 methodology, where available. For more information on using sessions with
 keystone, please see
-http://docs.openstack.org/developer/keystoneauth/using-sessions.html
+https://docs.openstack.org/keystoneauth/latest/using-sessions.html
 
 Storing sensitive information
 -----------------------------
@@ -188,8 +188,8 @@ information (for example, login credentials) in the records for a cluster,
 job, or some other record. Storing secret information this way is **not**
 safe. To mitigate the risk of storing this information, sahara provides
 access to the OpenStack Key Manager service (implemented by the
-`barbican project <http://docs.openstack.org/developer/barbican/>`_) through
-the `castellan library <http://docs.openstack.org/developer/castellan/>`_.
+`barbican project <https://docs.openstack.org/barbican/latest/>`_) through
+the `castellan library <https://docs.openstack.org/castellan/latest/>`_.
 
 To utilize the external key manager, the functions in
 ``sahara.service.castellan.utils`` are provided as wrappers around the

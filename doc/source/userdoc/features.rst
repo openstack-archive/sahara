@@ -29,7 +29,7 @@ work.
 This feature is supported by all plugins out of the box, and can be enabled
 during the cluster template creation.
 
-.. _Nova documentation: http://docs.openstack.org/developer/nova
+.. _Nova documentation: https://docs.openstack.org/nova/latest/
 
 Block Storage support
 ---------------------

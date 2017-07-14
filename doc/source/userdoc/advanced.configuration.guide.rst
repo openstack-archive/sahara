@@ -95,9 +95,9 @@ change your ``/etc/resolv.conf`` file by adding appropriate ip addresses of
 DNS servers (e.g. 1.1.1.1 and 2.2.2.2). Also the VMs with DNS servers should
 be available from your local machine.
 
-.. _Designate manual installation: http://docs.openstack.org/developer/designate/install/ubuntu-liberty.html
-.. _Configuring OpenStack Networking with Designate: http://docs.openstack.org/mitaka/networking-guide/adv-config-dns.html#configuring-openstack-networking-for-integration-with-an-external-dns-service
-.. _Designate devstack: http://docs.openstack.org/developer/designate/devstack.html
+.. _Designate manual installation: https://docs.openstack.org/project-install-guide/dns/ocata/
+.. _Configuring OpenStack Networking with Designate: https://docs.openstack.org/neutron/latest/admin/config-dns-int.html#configuring-openstack-networking-for-integration-with-an-external-dns-service
+.. _Designate devstack: https://docs.openstack.org/designate/latest/contributor/devstack.html
 
 .. _data_locality_configuration:
 
@@ -266,8 +266,7 @@ Distributed periodic tasks are based on Hash Ring implementation and the Tooz
 library that provides group membership support for a set of backends. In order
 to use periodic tasks distribution, the following steps are required:
 
- * One of the `supported backends <http://docs.openstack.org/developer/tooz/
-   compatibility.html#driver-support>`_ should be configured and started.
+ * One of the `supported backends <https://docs.openstack.org/tooz/latest/user/compatibility.html#driver-support>`_ should be configured and started.
  * Backend URL should be set in the sahara configuration file with the
    ``periodic_coordinator_backend_url`` parameter. For example, if the
    ZooKeeper backend is being used:
@@ -326,7 +325,7 @@ within the stack.
 
 With a Key Manager service deployed on the stack, sahara must be configured
 to enable the external storage of secrets. Sahara uses the
-`castellan <http://docs.openstack.org/developer/castellan/>`_ library
+`castellan <https://docs.openstack.org/castellan/latest/>`_ library
 to interface with the OpenStack Key Manager service. This library provides
 configurable access to a key manager. To configure sahara to use barbican as
 the key manager, edit the sahara configuration file as follows:
@@ -489,7 +488,7 @@ sufficient but if your keystone identity is backed by LDAP or similar
 then domain specific configurations should be used to ensure sahara's
 access. Please see the `Keystone documentation`_ for more information.
 
-.. _Keystone documentation: http://docs.openstack.org/developer/keystone/configuration.html#domain-specific-drivers
+.. _Keystone documentation: https://docs.openstack.org/keystone/latest/configuration.html#domain-specific-drivers
 
 With the domain created, sahara's configuration file should be updated to
 include the new domain name and any potential roles that will be needed. For
@@ -641,7 +640,7 @@ access.
 For more information on Cross Origin Resource Sharing, please review the `W3C
 CORS specification`_.
 
-.. _Administrator Guide: http://docs.openstack.org/admin-guide/cross_project_cors.html
+.. _Administrator Guide: https://docs.openstack.org/oslo.middleware/latest/admin/cross-project-cors.html
 .. _W3C CORS specification: http://www.w3.org/TR/cors/
 
 Cleanup time for incomplete clusters
