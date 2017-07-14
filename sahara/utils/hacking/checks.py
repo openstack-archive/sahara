@@ -23,6 +23,14 @@ from sahara.utils.hacking import import_checks
 from sahara.utils.hacking import logging_checks
 
 
+RE_OSLO_IMPORTS = (re.compile(r"(((from)|(import))\s+oslo\.)"),
+                   re.compile(r"(from\s+oslo\s+import)"))
+RE_DICT_CONSTRUCTOR_WITH_LIST_COPY = re.compile(r".*\bdict\((\[)?(\(|\[)")
+RE_USE_JSONUTILS_INVALID_LINE = re.compile(r"(import\s+json)")
+RE_USE_JSONUTILS_VALID_LINE = re.compile(r"(import\s+jsonschema)")
+RE_MUTABLE_DEFAULT_ARGS = re.compile(r"^\s*def .+\((.+=\{\}|.+=\[\])")
+
+
 def _starts_with_any(line, *prefixes):
     for prefix in prefixes:
         if line.startswith(prefix):
@@ -72,15 +80,12 @@ def check_oslo_namespace_imports(logical_line):
 
     S363
     """
-    oslo_imports = (re.compile(r"(((from)|(import))\s+oslo\.)"),
-                    re.compile(r"(from\s+oslo\s+import)"))
-
-    if re.match(oslo_imports[0], logical_line):
+    if re.match(RE_OSLO_IMPORTS[0], logical_line):
         yield(0, "S363: '%s' must be used instead of '%s'." % (
             logical_line.replace('oslo.', 'oslo_'),
             logical_line))
 
-    if re.match(oslo_imports[1], logical_line):
+    if re.match(RE_OSLO_IMPORTS[1], logical_line):
         yield(0, "S363: '%s' must be used instead of '%s'" % (
               'import oslo_%s' % logical_line.split()[-1],
               logical_line))
@@ -91,11 +96,9 @@ def dict_constructor_with_list_copy(logical_line):
 
     S368
     """
-    dict_constructor_with_list_copy_re = re.compile(r".*\bdict\((\[)?(\(|\[)")
-
-    if dict_constructor_with_list_copy_re.match(logical_line):
+    if RE_DICT_CONSTRUCTOR_WITH_LIST_COPY.match(logical_line):
         yield (0, 'S368: Must use a dict comprehension instead of a dict '
-               'constructor with a sequence of key-value pairs.')
+                  'constructor with a sequence of key-value pairs.')
 
 
 def use_jsonutils(logical_line, filename):
@@ -105,10 +108,8 @@ def use_jsonutils(logical_line, filename):
     """
     if pep8.noqa(logical_line):
         return
-    invalid_line = re.compile(r"(import\s+json)")
-    valid_line = re.compile(r"(import\s+jsonschema)")
-    if (re.match(invalid_line, logical_line) and
-            not re.match(valid_line, logical_line)):
+    if (RE_USE_JSONUTILS_INVALID_LINE.match(logical_line) and
+            not RE_USE_JSONUTILS_VALID_LINE.match(logical_line)):
         yield(0, "S375: Use jsonutils from oslo_serialization instead"
                  " of json")
 
@@ -119,8 +120,7 @@ def no_mutable_default_args(logical_line):
     S360
     """
     msg = "S360: Method's default argument shouldn't be mutable!"
-    mutable_default_args = re.compile(r"^\s*def .+\((.+=\{\}|.+=\[\])")
-    if mutable_default_args.match(logical_line):
+    if RE_MUTABLE_DEFAULT_ARGS.match(logical_line):
         yield (0, msg)
 
 
