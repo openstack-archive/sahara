@@ -43,7 +43,7 @@ should point to the admin Identity API endpoint. For example:
     auth_uri=http://127.0.0.1:5000/v2.0/
     identity_uri=http://127.0.0.1:35357/
 
-Specify the ``admin_user``, ``admin_password`` and ``admin_tenant_name``.
+Specify the ``username``, ``password`` and ``project_name``.
 These parameters must specify an Identity user who has the ``admin`` role
 in the given project. These credentials allow sahara to authenticate and
 authorize its users.
