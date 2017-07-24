@@ -218,7 +218,8 @@ def render(res=None, resp_type=None, status=None, name=None, **kwargs):
         resp_type = RT_JSON
         serializer = wsgi.JSONDictSerializer()
     else:
-        abort_and_log(400, _("Content type '%s' isn't supported") % resp_type)
+        raise ex.InvalidDataException(
+            _("Content type '%s' isn't supported") % resp_type)
 
     body = serializer.serialize(res)
     resp_type = str(resp_type)
@@ -243,8 +244,8 @@ def request_data():
     if not content_type or content_type in RT_JSON:
         deserializer = wsgi.JSONDeserializer()
     else:
-        abort_and_log(400,
-                      _("Content type '%s' isn't supported") % content_type)
+        raise ex.InvalidDataException(
+            _("Content type '%s' isn't supported") % content_type)
 
     # parsed request data to avoid unwanted re-parsings
     parsed_data = deserializer.deserialize(flask.request.data)['body']
