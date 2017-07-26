@@ -195,10 +195,11 @@ def _node_group_template_export_helper(template):
     template.pop('id')
     template.pop('updated_at')
     template.pop('created_at')
+    template.pop('tenant_id')
+    template.pop('is_default')
     template['flavor_id'] = '{flavor_id}'
     template['security_groups'] = '{security_groups}'
     template['image_id'] = '{image_id}'
-    template['tenant_id'] = '{tenant_id}'
     template['floating_ip_pool'] = '{floating_ip_pool}'
 
 
