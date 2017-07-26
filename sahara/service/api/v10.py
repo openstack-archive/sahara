@@ -213,6 +213,10 @@ def update_node_group_template(id, values):
     return conductor.node_group_template_update(context.ctx(), id, values)
 
 
+def export_node_group_template(id):
+    return conductor.node_group_template_get(context.ctx(), id)
+
+
 # Plugins ops
 
 def get_plugins():
