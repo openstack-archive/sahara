@@ -189,7 +189,7 @@ class VersionHandlerTest(base.SaharaTestCase):
     def test_get_edp_engine(self, join, get_instance, get_plugin):
         job_type = ''
         ret = self.vh.get_edp_engine(self.cluster, job_type)
-        self.assertEqual(ret, None)
+        self.assertIsNone(ret)
 
         job_type = 'Java'
         ret = self.vh.get_edp_engine(self.cluster, job_type)
