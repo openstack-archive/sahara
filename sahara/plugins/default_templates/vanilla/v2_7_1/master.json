@@ -4,7 +4,10 @@
     "node_processes": [
         "namenode",
         "resourcemanager",
-        "hiveserver"
+        "historyserver",
+        "oozie",
+        "hive server",
+        "spark history server"
     ],
     "name": "vanilla-271-default-master",
     "floating_ip_pool": "{floating_ip_pool}",

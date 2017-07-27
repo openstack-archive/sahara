@@ -1,16 +1,15 @@
 {
-    "plugin_name": "vanilla",
-    "hadoop_version": "2.7.1",
+    "plugin_name": "cdh",
+    "hadoop_version": "5.9.0",
     "node_processes": [
-        "datanode",
-        "nodemanager"
+        "CLOUDERA_MANAGER",
+        "KMS"
     ],
-    "name": "vanilla-271-default-worker",
+    "name": "cdh-590-default-manager",
     "floating_ip_pool": "{floating_ip_pool}",
     "flavor_id": "{flavor_id}",
     "auto_security_group": "{auto_security_group}",
     "security_groups": "{security_groups}",
-    "volume_size": 2,
-    "volumes_per_node": 2,
     "is_protected": true
 }
+

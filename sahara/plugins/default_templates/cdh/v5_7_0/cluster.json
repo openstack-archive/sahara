@@ -1,0 +1,30 @@
+{
+    "plugin_name": "cdh",
+    "hadoop_version": "5.7.0",
+    "node_groups": [
+        {
+            "name": "worker-nodemanager-datanode",
+            "count": 3,
+            "node_group_template_id": "{cdh-570-default-worker-nodemanager-datanode}"
+        },
+        {
+            "name": "manager",
+            "count": 1,
+            "node_group_template_id": "{cdh-570-default-manager}"
+        },
+        {
+            "name": "master-core",
+            "count": 1,
+            "node_group_template_id": "{cdh-570-default-master-core}"
+        },
+        {
+            "name": "master-additional",
+            "count": 1,
+            "node_group_template_id": "{cdh-570-default-master-additional}"
+        }
+    ],
+    "name": "cdh-570-default-cluster",
+    "neutron_management_network": "{neutron_management_network}",
+    "cluster_configs": {},
+    "is_protected": true
+}
