@@ -1,0 +1,668 @@
+[
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Short-Circuit Read Enabled Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Short-Circuit Read Enabled Validator",
+        "name": "service_config_suppression_short_circuit_read_validator",
+        "value": "false"
+    },
+    {
+        "desc": "The user that this service's processes should run as.",
+        "display_name": "System User",
+        "name": "process_username",
+        "value": "hbase"
+    },
+    {
+        "desc": "Enables the canary that checks HBase region availability by scanning a row from every region.",
+        "display_name": "HBase Region Health Canary",
+        "name": "hbase_region_health_canary_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Name of the HDFS service that this HBase service instance depends on",
+        "display_name": "HDFS Service",
+        "name": "hdfs_service",
+        "value": null
+    },
+    {
+        "desc": "Period of time, in milliseconds, to pause between connection retries to ZooKeeper. Used together with ${zookeeper.retries} in an exponential backoff fashion when making queries to ZooKeeper.",
+        "display_name": "ZooKeeper Connection Retry Pause Duration",
+        "name": "zookeeper_pause",
+        "value": null
+    },
+    {
+        "desc": "Allow HBase tables to be replicated.",
+        "display_name": "Enable Replication",
+        "name": "hbase_enable_replication",
+        "value": "false"
+    },
+    {
+        "desc": "When computing the overall HBase cluster health, consider the active HBase Master's health.",
+        "display_name": "Active Master Health Test",
+        "name": "hbase_master_health_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Size of the threadpool used for hedged reads in hdfs clients. If a read from a block is slow, a parallel 'hedged' read will be started against a different block replica. The first one to return with a result is used while the other one is cancelled. This 'hedged' read feature helps rein in the outliers. A value of zero disables the feature.",
+        "display_name": "HDFS Hedged Read Threadpool Size",
+        "name": "hbase_server_dfs_client_hedged_read_threadpool_size",
+        "value": "0"
+    },
+    {
+        "desc": "Use this to enable Http server usage on thrift, which is mainly needed for \"doAs\" functionality.",
+        "display_name": "Enable HBase Thrift Http Server",
+        "name": "hbase_thriftserver_http",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Hadoop TLS/SSL Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Hadoop TLS/SSL Validator",
+        "name": "service_config_suppression_hadoop_ssl_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HBase User to Impersonate parameter.",
+        "display_name": "Suppress Parameter Validation: HBase User to Impersonate",
+        "name": "service_config_suppression_hbase_user_to_impersonate",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the AWS S3 Secret Access Key for Remote Snapshots parameter.",
+        "display_name": "Suppress Parameter Validation: AWS S3 Secret Access Key for Remote Snapshots",
+        "name": "service_config_suppression_hbase_snapshot_s3_secret_access_key",
+        "value": "false"
+    },
+    {
+        "desc": "When set, Cloudera Manager will send alerts when this entity's configuration changes.",
+        "display_name": "Enable Configuration Change Alerts",
+        "name": "enable_config_alerts",
+        "value": "false"
+    },
+    {
+        "desc": "Timeout for all HBase RPCs in milliseconds.",
+        "display_name": "RPC Timeout",
+        "name": "hbase_rpc_timeout",
+        "value": "60000"
+    },
+    {
+        "desc": "The path to the TLS/SSL keystore file containing the server certificate and private key used for TLS/SSL. Used when HBase is acting as a TLS/SSL server. The keystore must be in JKS format.",
+        "display_name": "HBase TLS/SSL Server JKS Keystore File Location",
+        "name": "ssl_server_keystore_location",
+        "value": null
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>ssl-server.xml</strong>. Applies to configurations of all roles in this service except client configuration.",
+        "display_name": "HBase Service Advanced Configuration Snippet (Safety Valve) for ssl-server.xml",
+        "name": "hbase_ssl_server_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HBase Service Environment Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: HBase Service Environment Advanced Configuration Snippet (Safety Valve)",
+        "name": "service_config_suppression_hbase_service_env_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HBase Service Advanced Configuration Snippet (Safety Valve) for hbase-site.xml parameter.",
+        "display_name": "Suppress Parameter Validation: HBase Service Advanced Configuration Snippet (Safety Valve) for hbase-site.xml",
+        "name": "service_config_suppression_hbase_service_config_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "When set, each role identifies important log events and forwards them to Cloudera Manager.",
+        "display_name": "Enable Log Event Capture",
+        "name": "catch_events",
+        "value": "true"
+    },
+    {
+        "desc": "The number of times to retry connections to ZooKeeper. Used for reading and writing root region location. Used together with ${zookeeper.pause} in an exponential backoff fashion when making queries to ZooKeeper.",
+        "display_name": "ZooKeeper Connection Retries",
+        "name": "zookeeper_retries",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Kerberos Principal parameter.",
+        "display_name": "Suppress Parameter Validation: Kerberos Principal",
+        "name": "service_config_suppression_kerberos_princ_name",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Gateway Count Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Gateway Count Validator",
+        "name": "service_config_suppression_gateway_count_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Timeout for graceful shutdown of this HBase service. Once this timeout is reached, any remaining running roles are abruptly shutdown. A value of 0 means no timeout.",
+        "display_name": "Graceful Shutdown Timeout",
+        "name": "hbase_graceful_stop_timeout",
+        "value": "180"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HBase Service Advanced Configuration Snippet (Safety Valve) for ssl-server.xml parameter.",
+        "display_name": "Suppress Parameter Validation: HBase Service Advanced Configuration Snippet (Safety Valve) for ssl-server.xml",
+        "name": "service_config_suppression_hbase_ssl_server_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the System Group parameter.",
+        "display_name": "Suppress Parameter Validation: System Group",
+        "name": "service_config_suppression_process_groupname",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds of the overall RegionServer health. The check returns \"Concerning\" health if the percentage of \"Healthy\" RegionServers falls below the warning threshold. The check is unhealthy if the total percentage of \"Healthy\" and \"Concerning\" RegionServers falls below the critical threshold.",
+        "display_name": "Healthy RegionServer Monitoring Thresholds",
+        "name": "hbase_regionservers_healthy_thresholds",
+        "value": "{\"critical\":\"90.0\",\"warning\":\"95.0\"}"
+    },
+    {
+        "desc": "Whether to suppress the results of the RegionServer Health heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: RegionServer Health",
+        "name": "service_health_suppression_hbase_region_servers_healthy",
+        "value": "false"
+    },
+    {
+        "desc": "An alert is published if the HBase region health canary detects at least this many unhealthy regions. This setting takes precedence over the hbase_canary_alert_unhealthy_region_percent_threshold config.",
+        "display_name": "HBase Canary Unhealthy Region Count Alert Threshold",
+        "name": "hbase_canary_alert_unhealthy_region_count_threshold",
+        "value": null
+    },
+    {
+        "desc": "Set to true to cause the hosting server (Master or RegionServer) to abort if a coprocessor throws a Throwable object that is not IOException or a subclass of IOException. Setting it to true might be useful in development environments where one wants to terminate the server as soon as possible to simplify coprocessor failure analysis.",
+        "display_name": "HBase Coprocessor Abort on Error",
+        "name": "hbase_coprocessor_abort_on_error",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only, a list of derived configuration properties that will be used by the Service Monitor instead of the default ones.",
+        "display_name": "Service Monitor Derived Configs Advanced Configuration Snippet (Safety Valve)",
+        "name": "smon_derived_configs_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HBase Service Advanced Configuration Snippet (Safety Valve) for core-site.xml parameter.",
+        "display_name": "Suppress Parameter Validation: HBase Service Advanced Configuration Snippet (Safety Valve) for core-site.xml",
+        "name": "service_config_suppression_hbase_core_site_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "The user the management services impersonate when connecting to HBase. If no value is specified, the HBase superuser is used.",
+        "display_name": "HBase User to Impersonate",
+        "name": "hbase_user_to_impersonate",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HBase TLS/SSL Server JKS Keystore File Location parameter.",
+        "display_name": "Suppress Parameter Validation: HBase TLS/SSL Server JKS Keystore File Location",
+        "name": "service_config_suppression_ssl_server_keystore_location",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Amazon S3 Path for Remote Snapshots parameter.",
+        "display_name": "Suppress Parameter Validation: Amazon S3 Path for Remote Snapshots",
+        "name": "service_config_suppression_hbase_snapshot_s3_path",
+        "value": "false"
+    },
+    {
+        "desc": "Timeout (in ms) for the distributed log splitting manager to receive response from a worker.",
+        "display_name": "SplitLog Manager Timeout",
+        "name": "hbase_service_splitlog_manager_timeout",
+        "value": "120000"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Scheduler Pool for Remote Snapshots in AWS S3 parameter.",
+        "display_name": "Suppress Parameter Validation: Scheduler Pool for Remote Snapshots in AWS S3",
+        "name": "service_config_suppression_hbase_snapshot_s3_scheduler_pool",
+        "value": "false"
+    },
+    {
+        "desc": "Allow indexing of tables in HBase by Lily HBase Indexer. <strong>Note:</strong> Replication must be enabled for indexing to work.",
+        "display_name": "Enable Indexing",
+        "name": "hbase_enable_indexing",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HBase Superusers parameter.",
+        "display_name": "Suppress Parameter Validation: HBase Superusers",
+        "name": "service_config_suppression_hbase_superuser",
+        "value": "false"
+    },
+    {
+        "desc": "The password for the HBase JKS keystore file.",
+        "display_name": "HBase TLS/SSL Server JKS Keystore File Password",
+        "name": "ssl_server_keystore_password",
+        "value": null
+    },
+    {
+        "desc": "Ratio of Lily HBase Indexers used by each HBase RegionServer while doing replication.",
+        "display_name": "Replication Source Ratio",
+        "name": "hbase_replication_source_ratio",
+        "value": "1.0"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>core-site.xml</strong>. Applies to configurations of all roles in this service except client configuration.",
+        "display_name": "HBase Service Advanced Configuration Snippet (Safety Valve) for core-site.xml",
+        "name": "hbase_core_site_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "The timeout before injecting a snapshot timeout error when waiting for a snapshot completion.",
+        "display_name": "HBase Master Snapshot Waiting Timeout",
+        "name": "hbase_snapshot_master_timeoutMillis",
+        "value": "60000"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the HBase Authentication And Authorization Validation configuration validator.",
+        "display_name": "Suppress Configuration Validator: HBase Authentication And Authorization Validation",
+        "name": "service_config_suppression_hbase_authentication_and_authorization_validator",
+        "value": "false"
+    },
+    {
+        "desc": "The maximum amount of time the Hbase RegionServer waits for a snapshot to complete.",
+        "display_name": "HBase RegionServer Snapshot Timeout",
+        "name": "hbase_snapshot_region_timeout",
+        "value": "60000"
+    },
+    {
+        "desc": "If this is set to \"kerberos\", HBase REST Server will authenticate its clients. HBase Proxy User Hosts and Groups should be configured to allow specific users to access HBase through REST Server.",
+        "display_name": "HBase REST Authentication",
+        "name": "hbase_restserver_security_authentication",
+        "value": "simple"
+    },
+    {
+        "desc": "Specifies the combined maximum allowed size of a KeyValue instance. This option configures an upper boundary for a single entry saved in a storage file. This option prevents a region from splitting if the data is too large. Set this option to a fraction of the maximum region size. To disable this check, use a value of zero or less.",
+        "display_name": "Maximum Size of HBase Client KeyValue",
+        "name": "hbase_client_keyvalue_maxsize",
+        "value": "10485760"
+    },
+    {
+        "desc": "Enable snapshots. Disabling snapshots requires deletion of all snapshots before restarting the HBase master; the HBase master will not start if snapshots are disabled and snapshots exist.",
+        "display_name": "Enable Snapshots",
+        "name": "hbase_snapshot_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Maximum number of client retries. Used as a maximum for all operations such as fetching of the root region from the root RegionServer, getting a cell's value, and starting a row update.",
+        "display_name": "Maximum HBase Client Retries",
+        "name": "hbase_client_retries_number",
+        "value": "35"
+    },
+    {
+        "desc": "For advanced use only, a list of configuration properties that will be used by the Service Monitor instead of the current client configuration for the service.",
+        "display_name": "Service Monitor Client Config Overrides",
+        "name": "smon_client_config_overrides",
+        "value": "<property><name>zookeeper.recovery.retry</name><value>0</value></property><property><name>zookeeper.recovery.retry.intervalmill</name><value>3000</value></property><property><name>hbase.zookeeper.recoverable.waittime</name><value>1000</value></property><property><name>zookeeper.session.timeout</name><value>30000</value></property><property><name>hbase.rpc.timeout</name><value>10000</value></property><property><name>hbase.client.retries.number</name><value>1</value></property><property><name>hbase.client.rpc.maxattempts</name><value>1</value></property><property><name>hbase.client.operation.timeout</name><value>10000</value></property>"
+    },
+    {
+        "desc": "Access key ID required to access Amazon S3 to store remote snapshots.",
+        "display_name": "Amazon S3 Access Key ID for Remote Snapshots",
+        "name": "hbase_snapshot_s3_access_key_id",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the System User parameter.",
+        "display_name": "Suppress Parameter Validation: System User",
+        "name": "service_config_suppression_process_username",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Amazon S3 Access Key ID for Remote Snapshots parameter.",
+        "display_name": "Suppress Parameter Validation: Amazon S3 Access Key ID for Remote Snapshots",
+        "name": "service_config_suppression_hbase_snapshot_s3_access_key_id",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the HBase Master Health heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: HBase Master Health",
+        "name": "service_health_suppression_hbase_master_health",
+        "value": "false"
+    },
+    {
+        "desc": "Enable HBase authorization.",
+        "display_name": "HBase Secure Authorization",
+        "name": "hbase_security_authorization",
+        "value": "false"
+    },
+    {
+        "desc": "Period of time, in milliseconds, to pause between searches for work. Used as a sleep interval by service threads such as a META scanner and log roller.",
+        "display_name": "HBase Server Thread Wake Frequency",
+        "name": "hbase_server_thread_wakefrequency",
+        "value": "10000"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the HBase Thrift Server Count Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: HBase Thrift Server Count Validator",
+        "name": "service_config_suppression_hbasethriftserver_count_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HDFS Root Directory parameter.",
+        "display_name": "Suppress Parameter Validation: HDFS Root Directory",
+        "name": "service_config_suppression_hdfs_rootdir",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the RegionServer Count Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: RegionServer Count Validator",
+        "name": "service_config_suppression_regionserver_count_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the ZooKeeper Max Session Timeout Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: ZooKeeper Max Session Timeout Validator",
+        "name": "service_config_suppression_zookeeper_max_session_timeout_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the ZooKeeper Znode Rootserver parameter.",
+        "display_name": "Suppress Parameter Validation: ZooKeeper Znode Rootserver",
+        "name": "service_config_suppression_zookeeper_znode_rootserver",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the ZooKeeper Znode Parent parameter.",
+        "display_name": "Suppress Parameter Validation: ZooKeeper Znode Parent",
+        "name": "service_config_suppression_zookeeper_znode_parent",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HBase Region Health Canary Exclude Tables parameter.",
+        "display_name": "Suppress Parameter Validation: HBase Region Health Canary Exclude Tables",
+        "name": "service_config_suppression_hbase_region_health_canary_exclude_tables",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HBase Proxy User Groups parameter.",
+        "display_name": "Suppress Parameter Validation: HBase Proxy User Groups",
+        "name": "service_config_suppression_hbase_proxy_user_groups_list",
+        "value": "false"
+    },
+    {
+        "desc": "The root znode for HBase in ZooKeeper. All of HBase's ZooKeeper files that are configured with a relative path will go under this node. By default, all of HBase's ZooKeeper file paths are configured with a relative path, so they will all go under this directory unless changed.",
+        "display_name": "ZooKeeper Znode Parent",
+        "name": "zookeeper_znode_parent",
+        "value": "/hbase"
+    },
+    {
+        "desc": "<p>The configured triggers for this service. This is a JSON-formatted list of triggers. These triggers are evaluated as part as the health system. Every trigger expression is parsed, and if the trigger condition is met, the list of actions provided in the trigger expression is executed.</p><p>Each trigger has the following fields:</p><ul><li><code>triggerName</code> <b>(mandatory)</b> - The name of the trigger. This value must be unique for the specific service. </li><li><code>triggerExpression</code> <b>(mandatory)</b> - A tsquery expression representing the trigger. </li><li><code>streamThreshold</code> <b>(optional)</b> - The maximum number of streams that can satisfy a condition of a trigger before the condition fires. By default set to 0, and any stream returned causes the condition to fire. </li><li><code>enabled</code> <b> (optional)</b> - By default set to 'true'. If set to 'false', the trigger is not evaluated.</li><li><code>expressionEditorConfig</code> <b> (optional)</b> - Metadata for the trigger editor. If present, the trigger should only be edited from the Edit Trigger page; editing the trigger here can lead to inconsistencies.</li></ul><p>For example, the followig JSON formatted trigger fires if there are more than 10 DataNodes with more than 500 file descriptors opened:</p><p><pre>[{\"triggerName\": \"sample-trigger\",\n  \"triggerExpression\": \"IF (SELECT fd_open WHERE roleType = DataNode and last(fd_open) > 500) DO health:bad\",\n  \"streamThreshold\": 10, \"enabled\": \"true\"}]</pre></p><p>See the trigger rules documentation for more details on how to write triggers using tsquery.</p><p>The JSON format is evolving and may change and, as a result, backward compatibility is not guaranteed between releases.</p>",
+        "display_name": "Service Triggers",
+        "name": "service_triggers",
+        "value": "[]"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Service Monitor Client Config Overrides parameter.",
+        "display_name": "Suppress Parameter Validation: Service Monitor Client Config Overrides",
+        "name": "service_config_suppression_smon_client_config_overrides",
+        "value": "false"
+    },
+    {
+        "desc": "AWS secret access key required to access S3 to store remote snapshots.",
+        "display_name": "AWS S3 Secret Access Key for Remote Snapshots",
+        "name": "hbase_snapshot_s3_secret_access_key",
+        "value": null
+    },
+    {
+        "desc": "Number of rows to fetch when calling next on a scanner if it is not served from memory. Higher caching values enable faster scanners but require more memory and some calls of next may take longer when the cache is empty.",
+        "display_name": "HBase Client Scanner Caching",
+        "name": "hbase_client_scanner_caching",
+        "value": "100"
+    },
+    {
+        "desc": "Tables to exclude in the HBase Region Health Canary which will scan a row from every region.",
+        "display_name": "HBase Region Health Canary Exclude Tables",
+        "name": "hbase_region_health_canary_exclude_tables",
+        "value": ""
+    },
+    {
+        "desc": "The maximum amount of time the HBase master waits for a snapshot to complete.",
+        "display_name": "HBase Master Snapshot Timeout",
+        "name": "hbase_snapshot_master_timeout_millis",
+        "value": "60000"
+    },
+    {
+        "desc": "Amazon S3 path where remote snapshots should be stored.",
+        "display_name": "Amazon S3 Path for Remote Snapshots",
+        "name": "hbase_snapshot_s3_path",
+        "value": null
+    },
+    {
+        "desc": "Start a process to periodically check that RegionServer is alive when RegionServer is started. <b>Note</b>: This canary is different from the Cloudera Service Monitoring canary and is provided by the HBase service itself.",
+        "display_name": "Enable HBase Canary",
+        "name": "hbase_regionserver_enable_canary",
+        "value": "false"
+    },
+    {
+        "desc": "Enable HDFS short-circuit read. This allows a client colocated with the DataNode to read HDFS file blocks directly. This gives a performance boost to distributed clients that are aware of locality.",
+        "display_name": "Enable HDFS Short-Circuit Read",
+        "name": "dfs_client_read_shortcircuit",
+        "value": "true"
+    },
+    {
+        "desc": "The password that protects the private key contained in the JKS keystore used when HBase is acting as a TLS/SSL server.",
+        "display_name": "HBase TLS/SSL Server JKS Keystore Key Password",
+        "name": "ssl_server_keystore_keypassword",
+        "value": null
+    },
+    {
+        "desc": "Path to ZooKeeper Node holding root region location. This is written by the HBase Master and read by clients and RegionServers. If a relative path is given, the parent folder will be ${zookeeper.znode.parent}. By default, the root location is stored at /hbase/root-region-server.",
+        "display_name": "ZooKeeper Znode Rootserver",
+        "name": "zookeeper_znode_rootserver",
+        "value": "root-region-server"
+    },
+    {
+        "desc": "When computing the overall HBase cluster health, consider the health of the backup HBase Masters.",
+        "display_name": "Backup Masters Health Test",
+        "name": "hbase_backup_masters_health_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HBase TLS/SSL Server JKS Keystore File Password parameter.",
+        "display_name": "Suppress Parameter Validation: HBase TLS/SSL Server JKS Keystore File Password",
+        "name": "service_config_suppression_ssl_server_keystore_password",
+        "value": "false"
+    },
+    {
+        "desc": "An alert is published if the HBase region health canary runs slowly.",
+        "display_name": "HBase Region Health Canary Slow Run Alert Enabled",
+        "name": "hbase_region_health_canary_slow_run_alert_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Name of the scheduler pool to use for MR jobs created during export/import of remote snapshots in AWS S3.",
+        "display_name": "Scheduler Pool for Remote Snapshots in AWS S3",
+        "name": "hbase_snapshot_s3_scheduler_pool",
+        "value": null
+    },
+    {
+        "desc": "Configure the type of encrypted communication to be used with RPC.",
+        "display_name": "HBase Transport Security",
+        "name": "hbase_rpc_protection",
+        "value": "authentication"
+    },
+    {
+        "desc": "An alert is published if the HBase region health canary detects at least this percentage of total regions are unhealthy. This threshold is used if the explicit count is not set via the hbase_canary_alert_unhealthy_region_count_threshold config.",
+        "display_name": "HBase Canary Unhealthy Region Percentage Alert Threshold",
+        "name": "hbase_canary_alert_unhealthy_region_percent_threshold",
+        "value": "0.1"
+    },
+    {
+        "desc": "Duration to wait before starting up a 'hedged' read.",
+        "display_name": "HDFS Hedged Read Delay Threshold",
+        "name": "hbase_server_dfs_client_hedged_read_threshold_millis",
+        "value": "500"
+    },
+    {
+        "desc": "Enable TLS/SSL encryption for HBase web UIs.",
+        "display_name": "Web UI TLS/SSL Encryption Enabled",
+        "name": "hbase_hadoop_ssl_enabled",
+        "value": "false"
+    },
+    {
+        "desc": "List of users or groups, who are allowed full privileges, regardless of stored ACLs, across the cluster. Only used when HBase security is enabled.",
+        "display_name": "HBase Superusers",
+        "name": "hbase_superuser",
+        "value": ""
+    },
+    {
+        "desc": "Use this to allow proxy users on thrift gateway, which is mainly needed for \"doAs\" functionality.",
+        "display_name": "Enable HBase Thrift Proxy Users",
+        "name": "hbase_thriftserver_support_proxyuser",
+        "value": "false"
+    },
+    {
+        "desc": "Maximum number of hlog entries to replicate in one go. If this is large, and a consumer takes a while to process the events, the HBase RPC call will time out.",
+        "display_name": "Replication Batch Size",
+        "name": "hbase_replication_source_nb_capacity",
+        "value": "1000"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Master Count Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Master Count Validator",
+        "name": "service_config_suppression_master_count_validator",
+        "value": "false"
+    },
+    {
+        "desc": "ZooKeeper session timeout in milliseconds. HBase passes this to the ZooKeeper quorum as the suggested maximum time for a session. See http://hadoop.apache.org/zookeeper/docs/current/zookeeperProgrammers.html#ch_zkSessions The client sends a requested timeout, the server responds with the timeout that it can give the client.",
+        "display_name": "ZooKeeper Session Timeout",
+        "name": "zookeeper_session_timeout",
+        "value": "60000"
+    },
+    {
+        "desc": "Enable HBase row-level authorization.",
+        "display_name": "HBase Row-Level Authorization",
+        "name": "hbase_row_level_authorization",
+        "value": "false"
+    },
+    {
+        "desc": "Comma-delimited list of hosts where you want to allow the HBase user to impersonate other users. The default '*' allows all hosts. To disable entirely, use a string that does not correspond to a host name, such as '_no_host'. <b>Note:</b> This property is used only if HBase REST/Thrift Server Authentication is enabled.",
+        "display_name": "HBase Proxy User Hosts",
+        "name": "hbase_proxy_user_hosts_list",
+        "value": "*"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HBase Proxy User Hosts parameter.",
+        "display_name": "Suppress Parameter Validation: HBase Proxy User Hosts",
+        "name": "service_config_suppression_hbase_proxy_user_hosts_list",
+        "value": "false"
+    },
+    {
+        "desc": "Comma-delimited list of groups that you want to allow the HBase user to impersonate. The default '*' allows all groups. To disable entirely, use a string that does not correspond to a group name, such as '_no_group_'. <b>Note:</b> This property is used only if HBase REST/Thrift Server Authentication is enabled.",
+        "display_name": "HBase Proxy User Groups",
+        "name": "hbase_proxy_user_groups_list",
+        "value": "*"
+    },
+    {
+        "desc": "The tolerance window that will be used in HBase service tests that depend on detection of the active HBase Master.",
+        "display_name": "HBase Active Master Detection Window",
+        "name": "hbase_active_master_detecton_window",
+        "value": "3"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>hbase-site.xml</strong>. Applies to configurations of all roles in this service except client configuration.",
+        "display_name": "HBase Service Advanced Configuration Snippet (Safety Valve) for hbase-site.xml",
+        "name": "hbase_service_config_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Choose the authentication mechanism used by HBase.",
+        "display_name": "HBase Secure Authentication",
+        "name": "hbase_security_authentication",
+        "value": "simple"
+    },
+    {
+        "desc": "A general client pause time value. Used mostly as a time period to wait before retrying operations such as a failed get or region lookup.",
+        "display_name": "HBase Client Pause",
+        "name": "hbase_client_pause",
+        "value": "100"
+    },
+    {
+        "desc": "Name of the ZooKeeper service that this HBase service instance depends on.",
+        "display_name": "ZooKeeper Service",
+        "name": "zookeeper_service",
+        "value": null
+    },
+    {
+        "desc": "Write buffer size in bytes. A larger buffer requires more memory on both the client and the server because the server instantiates the passed write buffer to process it but reduces the number of remote procedure calls (RPC). To estimate the amount of server memory used, multiply the value of 'hbase.client.write.buffer' by the value of 'hbase.regionserver.handler.count'.",
+        "display_name": "HBase Client Write Buffer",
+        "name": "hbase_client_write_buffer",
+        "value": "2097152"
+    },
+    {
+        "desc": "If this is set, HBase Thrift Server authenticates its clients. HBase Proxy User Hosts and Groups should be configured to allow specific users to access HBase through Thrift Server.",
+        "display_name": "HBase Thrift Authentication",
+        "name": "hbase_thriftserver_security_authentication",
+        "value": "none"
+    },
+    {
+        "desc": "Kerberos principal short name used by all roles of this service.",
+        "display_name": "Kerberos Principal",
+        "name": "kerberos_princ_name",
+        "value": "hbase"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the HBase REST Server Count Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: HBase REST Server Count Validator",
+        "name": "service_config_suppression_hbaserestserver_count_validator",
+        "value": "false"
+    },
+    {
+        "desc": "The group that this service's processes should run as.",
+        "display_name": "System Group",
+        "name": "process_groupname",
+        "value": "hbase"
+    },
+    {
+        "desc": "The HDFS directory shared by HBase RegionServers.",
+        "display_name": "HDFS Root Directory",
+        "name": "hdfs_rootdir",
+        "value": "/hbase"
+    },
+    {
+        "desc": "The frequency in which the log4j event publication appender will retry sending undelivered log events to the Event server, in seconds",
+        "display_name": "Log Event Retry Frequency",
+        "name": "log_event_retry_frequency",
+        "value": "30"
+    },
+    {
+        "desc": "When set, Cloudera Manager will send alerts when the health of this service reaches the threshold specified by the EventServer setting eventserver_health_events_alert_threshold",
+        "display_name": "Enable Service Level Health Alerts",
+        "name": "enable_alerts",
+        "value": "true"
+    },
+    {
+        "desc": "For advanced use only, key-value pairs (one on each line) to be inserted into a role's environment. Applies to configurations of all roles in this service except client configuration.",
+        "display_name": "HBase Service Environment Advanced Configuration Snippet (Safety Valve)",
+        "name": "hbase_service_env_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether the step to reload regions back onto the original RegionServers should be skipped during rolling restart. This can be used to increase the speed of rolling restart or upgrade operations, but can result in regions being moved multiple times, decreasing performance for clients during rolling restart.",
+        "display_name": "Skip Region Reload During Rolling Restart",
+        "name": "hbase_skip_reload_during_rr",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the HBase DSSD Short-Circuit Read with Kerberos Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: HBase DSSD Short-Circuit Read with Kerberos Validator",
+        "name": "service_config_suppression_hbase_dssd_kerberos_scr_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Service Monitor Derived Configs Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: Service Monitor Derived Configs Advanced Configuration Snippet (Safety Valve)",
+        "name": "service_config_suppression_smon_derived_configs_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HBase TLS/SSL Server JKS Keystore Key Password parameter.",
+        "display_name": "Suppress Parameter Validation: HBase TLS/SSL Server JKS Keystore Key Password",
+        "name": "service_config_suppression_ssl_server_keystore_keypassword",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Service Triggers parameter.",
+        "display_name": "Suppress Parameter Validation: Service Triggers",
+        "name": "service_config_suppression_service_triggers",
+        "value": "false"
+    }
+]

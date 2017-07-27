@@ -1,0 +1,506 @@
+[
+    {
+        "desc": "For MapReduce job outputs that are compressed, specify the compression codec to use. Will be part of generated client configuration.",
+        "display_name": "Compression Codec of MapReduce Job Output",
+        "name": "mapred_output_compression_codec",
+        "value": "org.apache.hadoop.io.compress.DefaultCodec"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into the client configuration for <strong>mapred-site.xml</strong>.",
+        "display_name": "MapReduce Client Advanced Configuration Snippet (Safety Valve) for mapred-site.xml",
+        "name": "mapreduce_client_config_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Reduce Task Java Opts Base parameter.",
+        "display_name": "Suppress Parameter Validation: Reduce Task Java Opts Base",
+        "name": "role_config_suppression_mapreduce_reduce_java_opts",
+        "value": "false"
+    },
+    {
+        "desc": "Whether map tasks should attempt to use the optimized native implementation of the map-side output collector. This can improve performance of many jobs that are shuffle-intensive. Experimental in CDH 5.2.",
+        "display_name": "Enable Optimized Map-side Output Collector",
+        "name": "mapreduce_enable_native_map_output_collector",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Map Task Maximum Heap Size Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Map Task Maximum Heap Size Validator",
+        "name": "role_config_suppression_mapreduce_map_java_opts_max_heap_mapreduce_map_memory_mb_validator",
+        "value": "false"
+    },
+    {
+        "desc": "The directory where the client configs will be deployed",
+        "display_name": "Deploy Directory",
+        "name": "client_config_root_dir",
+        "value": "/etc/hadoop"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the ApplicationMaster Java Maximum Heap Size Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: ApplicationMaster Java Maximum Heap Size Validator",
+        "name": "role_config_suppression_yarn_app_mapreduce_am_max_heap_yarn_app_mapreduce_am_resource_mb_validator",
+        "value": "false"
+    },
+    {
+        "desc": "The number of streams to merge at the same time while sorting files. That is, the number of sort heads to use during the merge sort on the reducer side. This determines the number of open file handles. Merging more files in parallel reduces merge sort iterations and improves run time by eliminating disk I/O. Note that merging more files in parallel uses more memory. If 'io.sort.factor' is set too high or the maximum JVM heap is set too low, excessive garbage collection will occur. The Hadoop default is 10, but Cloudera recommends a higher value. Will be part of generated client configuration.",
+        "display_name": "I/O Sort Factor",
+        "name": "io_sort_factor",
+        "value": "64"
+    },
+    {
+        "desc": "The priority level that the client configuration will have in the Alternatives system on the hosts. Higher priority levels will cause Alternatives to prefer this configuration over any others.",
+        "display_name": "Alternatives Priority",
+        "name": "client_config_priority",
+        "value": "92"
+    },
+    {
+        "desc": "Location to store the job history files of running jobs. This is a path on the host where the JobTracker is running.",
+        "display_name": "Running Job History Location",
+        "name": "hadoop_job_history_dir",
+        "value": "/var/log/hadoop-mapreduce/history"
+    },
+    {
+        "desc": "For advanced use only, key-value pairs (one on each line) to be inserted into the client configuration for <strong>hadoop-env.sh</strong>",
+        "display_name": "Gateway Client Environment Advanced Configuration Snippet (Safety Valve) for hadoop-env.sh",
+        "name": "mapreduce_client_env_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Compression Codec of MapReduce Job Output parameter.",
+        "display_name": "Suppress Parameter Validation: Compression Codec of MapReduce Job Output",
+        "name": "role_config_suppression_mapred_output_compression_codec",
+        "value": "false"
+    },
+    {
+        "desc": "If enabled, multiple instances of some reduce tasks may be executed in parallel.",
+        "display_name": "Reduce Tasks Speculative Execution",
+        "name": "mapred_reduce_tasks_speculative_execution",
+        "value": "false"
+    },
+    {
+        "desc": "The application framework to run jobs with. If not set, jobs will be run with the local job runner.",
+        "display_name": "Application Framework",
+        "name": "mapreduce_framework_name",
+        "value": "yarn"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Job Submit Replication Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Job Submit Replication Validator",
+        "name": "role_config_suppression_mapreduce_replication_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Redacted MapReduce Job Properties parameter.",
+        "display_name": "Suppress Parameter Validation: Redacted MapReduce Job Properties",
+        "name": "role_config_suppression_mapreduce_job_redacted_properties",
+        "value": "false"
+    },
+    {
+        "desc": "Base sleep time between failover attempts. Used only if RM HA is enabled.",
+        "display_name": "Client Failover Sleep Base Time",
+        "name": "client_failover_sleep_base",
+        "value": "100"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Running Job History Location parameter.",
+        "display_name": "Suppress Parameter Validation: Running Job History Location",
+        "name": "role_config_suppression_hadoop_job_history_dir",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into the client configuration for <strong>yarn-site.xml</strong>.",
+        "display_name": "YARN Client Advanced Configuration Snippet (Safety Valve) for yarn-site.xml",
+        "name": "yarn_client_config_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the MapReduce Client Advanced Configuration Snippet (Safety Valve) for mapred-site.xml parameter.",
+        "display_name": "Suppress Parameter Validation: MapReduce Client Advanced Configuration Snippet (Safety Valve) for mapred-site.xml",
+        "name": "role_config_suppression_mapreduce_client_config_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Gateway Logging Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: Gateway Logging Advanced Configuration Snippet (Safety Valve)",
+        "name": "role_config_suppression_log4j_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Compression level for the codec used to compress MapReduce outputs. Default compression is a balance between speed and compression ratio.",
+        "display_name": "Compression Level of Codecs",
+        "name": "zlib_compress_level",
+        "value": "DEFAULT_COMPRESSION"
+    },
+    {
+        "desc": "The maximum Java heap size, in bytes, of the map processes. This number will be formatted and concatenated with 'Map Task Java Opts Base' to pass to Hadoop.",
+        "display_name": "Map Task Maximum Heap Size",
+        "name": "mapreduce_map_java_opts_max_heap",
+        "value": "0"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Reduce Task Maximum Heap Size Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Reduce Task Maximum Heap Size Validator",
+        "name": "role_config_suppression_mapreduce_reduce_java_opts_max_heap_mapreduce_reduce_memory_mb_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Maximum Number of Attempts for MapReduce Jobs parameter.",
+        "display_name": "Suppress Parameter Validation: Maximum Number of Attempts for MapReduce Jobs",
+        "name": "role_config_suppression_mapreduce_am_max_attempts",
+        "value": "false"
+    },
+    {
+        "desc": "The default number of parallel transfers run by reduce during the copy (shuffle) phase. This number is calculated by the following formula: min(number_of_nodes, n * min(number_of_cores_per_node, number_of_spindles_per_node)) where the n represents how many streams you want to run per core/spindle. A value of 10 for n is appropriate in most cases. Will be part of generated client configuration.",
+        "display_name": "Default Number of Parallel Transfers During Shuffle",
+        "name": "mapred_reduce_parallel_copies",
+        "value": "10"
+    },
+    {
+        "desc": "The maximum heap size, in bytes, of the Java MapReduce ApplicationMaster. This number will be formatted and concatenated with 'ApplicationMaster Java Opts Base' to pass to Hadoop.",
+        "display_name": "ApplicationMaster Java Maximum Heap Size",
+        "name": "yarn_app_mapreduce_am_max_heap",
+        "value": "825955249"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Compression Codec of MapReduce Map Output parameter.",
+        "display_name": "Suppress Parameter Validation: Compression Codec of MapReduce Map Output",
+        "name": "role_config_suppression_mapred_map_output_compression_codec",
+        "value": "false"
+    },
+    {
+        "desc": "The replication level for submitted job files.",
+        "display_name": "Mapreduce Submit Replication",
+        "name": "mapred_submit_replication",
+        "value": "10"
+    },
+    {
+        "desc": "The total amount of memory buffer, in megabytes, to use while sorting files. Note that this memory comes out of the user JVM heap size (meaning total user JVM heap - this amount of memory = total user usable heap space.  Note that Cloudera's default differs from Hadoop's default; Cloudera uses a bigger buffer by default because modern machines often have more RAM. The smallest value across all TaskTrackers will be part of generated client configuration.",
+        "display_name": "I/O Sort Memory Buffer (MiB)",
+        "name": "io_sort_mb",
+        "value": "256"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the YARN Client Advanced Configuration Snippet (Safety Valve) for yarn-site.xml parameter.",
+        "display_name": "Suppress Parameter Validation: YARN Client Advanced Configuration Snippet (Safety Valve) for yarn-site.xml",
+        "name": "role_config_suppression_yarn_client_config_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to enable ubertask optimization, which runs \"sufficiently small\" jobs sequentially within a single JVM. \"Small\" is defined by the mapreduce.job.ubertask.maxmaps, mapreduce.job.ubertask.maxreduces, and mapreduce.job.ubertask.maxbytes settings.",
+        "display_name": "Enable Ubertask Optimization",
+        "name": "mapreduce_job_ubertask_enabled",
+        "value": "false"
+    },
+    {
+        "desc": "The ratio of heap size to container size for both map and reduce tasks. The heap should be smaller than the container size to allow for some overhead of the JVM.",
+        "display_name": "Heap to Container Size Ratio",
+        "name": "mapreduce_job_heap_memory_mb_ratio",
+        "value": "0.8"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Client Java Configuration Options parameter.",
+        "display_name": "Suppress Parameter Validation: Client Java Configuration Options",
+        "name": "role_config_suppression_mapreduce_client_java_opts",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the CDH Version Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: CDH Version Validator",
+        "name": "role_config_suppression_cdh_version_validator",
+        "value": "false"
+    },
+    {
+        "desc": "The amount of physical memory, in MiB, allocated for each reduce task of a job. For versions before CDH 5.5, if not specified, by default it is set to 1024. For CDH 5.5 and higher, a value less than 128 is not supported but if it is specified as 0, the amount of physical memory to request is inferred from Reduce Task Maximum Heap Size and Heap to Container Size Ratio. If Reduce Task Maximum Heap Size is not specified, by default the amount of physical memory to request is set to 1024. This parameter has no effect prior to CDH 4.4.",
+        "display_name": "Reduce Task Memory",
+        "name": "mapreduce_reduce_memory_mb",
+        "value": "0"
+    },
+    {
+        "desc": "The maximum permissible size of the split metainfo file. The JobTracker won't attempt to read split metainfo files bigger than the configured value. No limits if set to -1.",
+        "display_name": "JobTracker MetaInfo Maxsize",
+        "name": "mapreduce_jobtracker_split_metainfo_maxsize",
+        "value": "10000000"
+    },
+    {
+        "desc": "Fraction of the number of map tasks in the job which should be completed before reduce tasks are scheduled for the job.",
+        "display_name": "Number of Map Tasks to Complete Before Reduce Tasks",
+        "name": "mapred_reduce_slowstart_completed_maps",
+        "value": "0.8"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the MR Application Classpath parameter.",
+        "display_name": "Suppress Parameter Validation: MR Application Classpath",
+        "name": "role_config_suppression_mapreduce_application_classpath",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>log4j.properties</strong> for this role only.",
+        "display_name": "Gateway Logging Advanced Configuration Snippet (Safety Valve)",
+        "name": "log4j_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the MR Application Environment parameter.",
+        "display_name": "Suppress Parameter Validation: MR Application Environment",
+        "name": "role_config_suppression_mapreduce_admin_user_env",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the ApplicationMaster Environment parameter.",
+        "display_name": "Suppress Parameter Validation: ApplicationMaster Environment",
+        "name": "role_config_suppression_yarn_app_mapreduce_am_admin_user_env",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the MR Application Framework Path parameter.",
+        "display_name": "Suppress Parameter Validation: MR Application Framework Path",
+        "name": "role_config_suppression_mapreduce_application_framework_path",
+        "value": "false"
+    },
+    {
+        "desc": "These are Java command-line arguments. Commonly, garbage collection flags, PermGen, or extra debugging flags would be passed here.",
+        "display_name": "Client Java Configuration Options",
+        "name": "mapreduce_client_java_opts",
+        "value": "-Djava.net.preferIPv4Stack=true"
+    },
+    {
+        "desc": "The maximum Java heap size, in bytes, of the reduce processes. This number will be formatted and concatenated with 'Reduce Task Java Opts Base' to pass to Hadoop.",
+        "display_name": "Reduce Task Maximum Heap Size",
+        "name": "mapreduce_reduce_java_opts_max_heap",
+        "value": "0"
+    },
+    {
+        "desc": "The physical memory requirement, in MiB, for the ApplicationMaster.",
+        "display_name": "ApplicationMaster Memory",
+        "name": "yarn_app_mapreduce_am_resource_mb",
+        "value": "1024"
+    },
+    {
+        "desc": "A comma-separated list of job properties to redact in MapReduce.",
+        "display_name": "Redacted MapReduce Job Properties",
+        "name": "mapreduce_job_redacted_properties",
+        "value": "fs.s3a.access.key,fs.s3a.secret.key"
+    },
+    {
+        "desc": "Maximum size in bytes for the Java process heap memory.  Passed to Java -Xmx.",
+        "display_name": "Client Java Heap Size in Bytes",
+        "name": "mapreduce_client_java_heapsize",
+        "value": "825955249"
+    },
+    {
+        "desc": "The number of milliseconds before a task will be terminated if it neither reads an input, writes an output, nor updates its status string.",
+        "display_name": "Mapreduce Task Timeout",
+        "name": "mapred_task_timeout",
+        "value": "600000"
+    },
+    {
+        "desc": "When set, Cloudera Manager will send alerts when this entity's configuration changes.",
+        "display_name": "Enable Configuration Change Alerts",
+        "name": "enable_config_alerts",
+        "value": "false"
+    },
+    {
+        "desc": "Environment variables for the MapReduce ApplicationMaster. These settings can be overridden in the ApplicationMaster User Environment (<strong>yarn.app.mapreduce.am.env</strong>).",
+        "display_name": "ApplicationMaster Environment",
+        "name": "yarn_app_mapreduce_am_admin_user_env",
+        "value": "LD_LIBRARY_PATH=$HADOOP_COMMON_HOME/lib/native:$JAVA_LIBRARY_PATH"
+    },
+    {
+        "desc": "Limit on the number of counter groups allowed per job.",
+        "display_name": "Job Counter Groups Limit",
+        "name": "mapreduce_job_counter_groups_limit",
+        "value": "50"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Map Task Java Opts Base parameter.",
+        "display_name": "Suppress Parameter Validation: Map Task Java Opts Base",
+        "name": "role_config_suppression_mapreduce_map_java_opts",
+        "value": "false"
+    },
+    {
+        "desc": "The amount of physical memory, in MiB, allocated for each map task of a job. For versions before CDH 5.5, if not specified, by default it is set to 1024. For CDH 5.5 and higher, a value less than 128 is not supported but if it is specified as 0, the amount of physical memory to request is inferred from Map Task Maximum Heap Size and Heap to Container Size Ratio. If Map Task Maximum Heap Size is not specified, by default the amount of physical memory to request is set to 1024.",
+        "display_name": "Map Task Memory",
+        "name": "mapreduce_map_memory_mb",
+        "value": "0"
+    },
+    {
+        "desc": "Threshold for number of reduces, beyond which a job is considered too big for ubertask optimization. <strong>Note: As of CDH 5, MR2 does not support more than one reduce in an ubertask.</strong> (Zero is valid.)",
+        "display_name": "Ubertask Maximum Reduces",
+        "name": "mapreduce_job_ubertask_maxreduces",
+        "value": "1"
+    },
+    {
+        "desc": "The number of virtual CPU cores for each reduce task of a job.",
+        "display_name": "Reduce Task CPU Virtual Cores",
+        "name": "mapreduce_reduce_cpu_vcores",
+        "value": "1"
+    },
+    {
+        "desc": "For MapReduce map outputs that are compressed, specify the compression codec to use. Will be part of generated client configuration.",
+        "display_name": "Compression Codec of MapReduce Map Output",
+        "name": "mapred_map_output_compression_codec",
+        "value": "org.apache.hadoop.io.compress.SnappyCodec"
+    },
+    {
+        "desc": "Classpaths to include for MapReduce applications. During evaluation, the string '{version}' in the value of this parameter will be replaced by the actual MapReduce version.",
+        "display_name": "MR Application Classpath",
+        "name": "mapreduce_application_classpath",
+        "value": "$HADOOP_MAPRED_HOME/*,$HADOOP_MAPRED_HOME/lib/*,$MR2_CLASSPATH"
+    },
+    {
+        "desc": "Java command line arguments passed to the MapReduce ApplicationMaster.",
+        "display_name": "ApplicationMaster Java Opts Base",
+        "name": "yarn_app_mapreduce_am_command_opts",
+        "value": "-Djava.net.preferIPv4Stack=true"
+    },
+    {
+        "desc": "When set, each role identifies important log events and forwards them to Cloudera Manager.",
+        "display_name": "Enable Log Event Capture",
+        "name": "catch_events",
+        "value": "true"
+    },
+    {
+        "desc": "Maximum sleep time between failover attempts. Used only if RM HA is enabled.",
+        "display_name": "Client Failover Sleep Max Time",
+        "name": "client_failover_sleep_max",
+        "value": "2000"
+    },
+    {
+        "desc": "Path for MapReduce application framework. During evaluation, the string '{version}' in the value of this parameter will be replaced by the actual MapReduce version.",
+        "display_name": "MR Application Framework Path",
+        "name": "mapreduce_application_framework_path",
+        "value": "/user/yarn/mapreduce/mr-framework/{version}-mr-framework.tar.gz#mr-framework"
+    },
+    {
+        "desc": "Compress the output of MapReduce jobs. Will be part of generated client configuration.",
+        "display_name": "Compress MapReduce Job Output",
+        "name": "mapred_output_compress",
+        "value": "false"
+    },
+    {
+        "desc": "For MapReduce job outputs that are compressed as SequenceFiles, you can select one of these compression type options: NONE, RECORD or BLOCK. Cloudera recommends BLOCK. Will be part of generated client configuration.",
+        "display_name": "Compression Type of MapReduce Job Output",
+        "name": "mapred_output_compression_type",
+        "value": "BLOCK"
+    },
+    {
+        "desc": "Java opts for the map processes. The following symbol, if present, will be interpolated: @taskid@ is replaced by current TaskID. Any other occurrences of '@' will go unchanged. For example, to enable verbose gc logging to a file named for the taskid in /tmp pass a value of: \"-verbose:gc -Xloggc:/tmp/@taskid@.gc\". The configuration variable 'Map Task Memory' can be used to control the maximum memory of the map processes.",
+        "display_name": "Map Task Java Opts Base",
+        "name": "mapreduce_map_java_opts",
+        "value": "-Djava.net.preferIPv4Stack=true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the ApplicationMaster Java Opts Base parameter.",
+        "display_name": "Suppress Parameter Validation: ApplicationMaster Java Opts Base",
+        "name": "role_config_suppression_yarn_app_mapreduce_am_command_opts",
+        "value": "false"
+    },
+    {
+        "desc": "Additional execution environment entries for map and reduce task processes.",
+        "display_name": "MR Application Environment",
+        "name": "mapreduce_admin_user_env",
+        "value": "LD_LIBRARY_PATH=$HADOOP_COMMON_HOME/lib/native:$JAVA_LIBRARY_PATH"
+    },
+    {
+        "desc": "The soft limit in either the buffer or record collection buffers. When this limit is reached, a thread will begin to spill the contents to disk in the background. Note that this does not imply any chunking of data to the spill. A value less than 0.5 is not recommended. The syntax is in decimal units; the default is 80% and is formatted 0.8. Will be part of generated client configuration.",
+        "display_name": "I/O Sort Spill Percent",
+        "name": "io_sort_spill_percent",
+        "value": "0.8"
+    },
+    {
+        "desc": "The default number of reduce tasks per job. Will be part of generated client configuration.",
+        "display_name": "Default Number of Reduce Tasks per Job",
+        "name": "mapred_reduce_tasks",
+        "value": "1"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Deploy Directory parameter.",
+        "display_name": "Suppress Parameter Validation: Deploy Directory",
+        "name": "role_config_suppression_client_config_root_dir",
+        "value": "false"
+    },
+    {
+        "desc": "Limit on the number of counters allowed per job.",
+        "display_name": "Job Counters Limit",
+        "name": "mapreduce_job_counters_limit",
+        "value": "120"
+    },
+    {
+        "desc": "The virtual CPU cores requirement, for the ApplicationMaster. This parameter has no effect prior to CDH 4.4.",
+        "display_name": "ApplicationMaster Virtual CPU Cores",
+        "name": "yarn_app_mapreduce_am_resource_cpu_vcores",
+        "value": "1"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the I/O Sort Factor parameter.",
+        "display_name": "Suppress Parameter Validation: I/O Sort Factor",
+        "name": "role_config_suppression_io_sort_factor",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Gateway Client Environment Advanced Configuration Snippet (Safety Valve) for hadoop-env.sh parameter.",
+        "display_name": "Suppress Parameter Validation: Gateway Client Environment Advanced Configuration Snippet (Safety Valve) for hadoop-env.sh",
+        "name": "role_config_suppression_mapreduce_client_env_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Size of buffer for read and write operations of SequenceFiles.",
+        "display_name": "SequenceFile I/O Buffer Size",
+        "name": "io_file_buffer_size",
+        "value": "65536"
+    },
+    {
+        "desc": "If enabled, multiple instances of some map tasks may be executed in parallel.",
+        "display_name": "Map Tasks Speculative Execution",
+        "name": "mapred_map_tasks_speculative_execution",
+        "value": "false"
+    },
+    {
+        "desc": "The number of virtual CPU cores allocated for each map task of a job. This parameter has no effect prior to CDH 4.4.",
+        "display_name": "Map Task CPU Virtual Cores",
+        "name": "mapreduce_map_cpu_vcores",
+        "value": "1"
+    },
+    {
+        "desc": "Java opts for the reduce processes. The following symbol, if present, will be interpolated: @taskid@ is replaced by current TaskID. Any other occurrences of '@' will go unchanged. For example, to enable verbose gc logging to a file named for the taskid in /tmp pass a value of: \"-verbose:gc -Xloggc:/tmp/@taskid@.gc\". The configuration variable 'Reduce Task Memory' can be used to control the maximum memory of the reduce processes.",
+        "display_name": "Reduce Task Java Opts Base",
+        "name": "mapreduce_reduce_java_opts",
+        "value": "-Djava.net.preferIPv4Stack=true"
+    },
+    {
+        "desc": "If enabled, uses compression on the map outputs before they are sent across the network. Will be part of generated client configuration.",
+        "display_name": "Use Compression on Map Outputs",
+        "name": "mapred_compress_map_output",
+        "value": "true"
+    },
+    {
+        "desc": "The maximum number of application attempts for MapReduce jobs. The value of this parameter overrides ApplicationMaster Maximum Attempts for MapReduce jobs.",
+        "display_name": "Maximum Number of Attempts for MapReduce Jobs",
+        "name": "mapreduce_am_max_attempts",
+        "value": "2"
+    },
+    {
+        "desc": "The minimum log level for Gateway logs",
+        "display_name": "Gateway Logging Threshold",
+        "name": "log_threshold",
+        "value": "INFO"
+    },
+    {
+        "desc": "Threshold for number of maps, beyond which a job is considered too big for ubertask optimization.",
+        "display_name": "Ubertask Maximum Maps",
+        "name": "mapreduce_job_ubertask_maxmaps",
+        "value": "9"
+    },
+    {
+        "desc": "File format the AM will use when generating the .jhist file. Valid values are \"json\" for text output and \"binary\" for faster parsing.",
+        "display_name": "JHist File Format",
+        "name": "mapred_jobhistory_jhist_format",
+        "value": "binary"
+    },
+    {
+        "desc": "Threshold for number of input bytes, beyond which a job is considered too big for ubertask optimization. If no value is specified, dfs.block.size is used as a default.",
+        "display_name": "Ubertask Maximum Job Size",
+        "name": "mapreduce_job_ubertask_maxbytes",
+        "value": null
+    }
+]

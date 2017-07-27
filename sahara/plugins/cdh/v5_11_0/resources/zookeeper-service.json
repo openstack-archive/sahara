@@ -1,0 +1,236 @@
+[
+    {
+        "desc": "Configures the path of the root znode under which all canary updates are performed",
+        "display_name": "ZooKeeper Canary Root Znode Path",
+        "name": "zookeeper_canary_root_path",
+        "value": "/cloudera_manager_zookeeper_canary"
+    },
+    {
+        "desc": "The user that this service's processes should run as.",
+        "display_name": "System User",
+        "name": "process_username",
+        "value": "zookeeper"
+    },
+    {
+        "desc": "Enables SASL authentication between ZooKeeper servers. Only applies when ZooKeeper Kerberos Authentication is enabled.",
+        "display_name": "Enable Server to Server SASL Authentication",
+        "name": "quorum_auth_enable_sasl",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Server Count Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Server Count Validator",
+        "name": "service_config_suppression_server_count_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Size of the thread pool quorum connection manager uses to manage connections between quorum servers. Only applies when ZooKeeper Server to Server SASL Authentication is enabled.",
+        "display_name": "Quorum Connection Manager Thread Pool Size",
+        "name": "quorum_cnxn_threads_size",
+        "value": "20"
+    },
+    {
+        "desc": "When enabled, ZooKeeper auto purge feature retains this many most recent snapshots and the corresponding transaction logs in the dataDir and dataLogDir respectively and deletes the rest. Defaults to 5. Minimum value is 3.",
+        "display_name": "Auto Purge Snapshots Retain Count",
+        "name": "autopurgeSnapRetainCount",
+        "value": "5"
+    },
+    {
+        "desc": "The time interval in hours for which the purge task has to be triggered. Set to a positive integer (1 and above) to enable the auto purging. Defaults to 24.",
+        "display_name": "Auto Purge Time Interval",
+        "name": "autopurgeInterval",
+        "value": "24"
+    },
+    {
+        "desc": "Enable Kerberos authentication for ZooKeeper.",
+        "display_name": "Enable Kerberos Authentication",
+        "name": "enableSecurity",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the ZooKeeper Canary heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: ZooKeeper Canary",
+        "name": "service_health_suppression_zookeeper_canary_health",
+        "value": "false"
+    },
+    {
+        "desc": "The number of snapshot files and corresponding transaction logs to keep when running the Cleanup command.",
+        "display_name": "Cleanup Retain Count",
+        "name": "cleanupRetainCount",
+        "value": "5"
+    },
+    {
+        "desc": "Enables the health check that a client can connect to ZooKeeper and perform basic operations",
+        "display_name": "ZooKeeper Canary Health Check",
+        "name": "zookeeper_canary_health_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "For advanced use only, key-value pairs (one on each line) to be inserted into a role's environment. Applies to configurations of all roles in this service except client configuration.",
+        "display_name": "ZooKeeper Service Environment Advanced Configuration Snippet (Safety Valve)",
+        "name": "zookeeper_env_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the ZooKeeper Canary Root Znode Path parameter.",
+        "display_name": "Suppress Parameter Validation: ZooKeeper Canary Root Znode Path",
+        "name": "service_config_suppression_zookeeper_canary_root_path",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the ZooKeeper Service Environment Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: ZooKeeper Service Environment Advanced Configuration Snippet (Safety Valve)",
+        "name": "service_config_suppression_zookeeper_env_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Kerberos principal short name used by all roles of this service.",
+        "display_name": "Kerberos Principal",
+        "name": "kerberos_princ_name",
+        "value": "zookeeper"
+    },
+    {
+        "desc": "Configures the timeout used by the canary sessions with ZooKeeper servers",
+        "display_name": "ZooKeeper Canary Session Timeout",
+        "name": "zookeeper_canary_session_timeout",
+        "value": "30000"
+    },
+    {
+        "desc": "Amount of time, in ticks, to allow followers to sync with ZooKeeper. If followers fall too far behind a leader, they are dropped.",
+        "display_name": "Synchronization Limit",
+        "name": "syncLimit",
+        "value": "5"
+    },
+    {
+        "desc": "The maximum size of the data that can be stored in a znode in bytes.",
+        "display_name": "Jute Max Buffer",
+        "name": "jute_maxbuffer",
+        "value": "4194304"
+    },
+    {
+        "desc": "The group that this service's processes should run as.",
+        "display_name": "System Group",
+        "name": "process_groupname",
+        "value": "zookeeper"
+    },
+    {
+        "desc": "Whether to suppress the results of the Server Health heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Server Health",
+        "name": "service_health_suppression_zookeeper_servers_healthy",
+        "value": "false"
+    },
+    {
+        "desc": "When set, Cloudera Manager will send alerts when this entity's configuration changes.",
+        "display_name": "Enable Configuration Change Alerts",
+        "name": "enable_config_alerts",
+        "value": "false"
+    },
+    {
+        "desc": "Amount of time, in ticks, to allow followers to connect and sync to a leader. Increase this value as needed, if the amount of data managed by ZooKeeper is large.",
+        "display_name": "Initialization Limit",
+        "name": "initLimit",
+        "value": "10"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Service Triggers parameter.",
+        "display_name": "Suppress Parameter Validation: Service Triggers",
+        "name": "service_config_suppression_service_triggers",
+        "value": "false"
+    },
+    {
+        "desc": "The frequency in which the log4j event publication appender will retry sending undelivered log events to the Event server, in seconds",
+        "display_name": "Log Event Retry Frequency",
+        "name": "log_event_retry_frequency",
+        "value": "30"
+    },
+    {
+        "desc": "Configures the timeout used by the canary for connection establishment with ZooKeeper servers",
+        "display_name": "ZooKeeper Canary Connection Timeout",
+        "name": "zookeeper_canary_connection_timeout",
+        "value": "10000"
+    },
+    {
+        "desc": "Configures the timeout used by the canary for ZooKeeper operations",
+        "display_name": "ZooKeeper Canary Operation Timeout",
+        "name": "zookeeper_canary_operation_timeout",
+        "value": "30000"
+    },
+    {
+        "desc": "<p>The configured triggers for this service. This is a JSON-formatted list of triggers. These triggers are evaluated as part as the health system. Every trigger expression is parsed, and if the trigger condition is met, the list of actions provided in the trigger expression is executed.</p><p>Each trigger has the following fields:</p><ul><li><code>triggerName</code> <b>(mandatory)</b> - The name of the trigger. This value must be unique for the specific service. </li><li><code>triggerExpression</code> <b>(mandatory)</b> - A tsquery expression representing the trigger. </li><li><code>streamThreshold</code> <b>(optional)</b> - The maximum number of streams that can satisfy a condition of a trigger before the condition fires. By default set to 0, and any stream returned causes the condition to fire. </li><li><code>enabled</code> <b> (optional)</b> - By default set to 'true'. If set to 'false', the trigger is not evaluated.</li><li><code>expressionEditorConfig</code> <b> (optional)</b> - Metadata for the trigger editor. If present, the trigger should only be edited from the Edit Trigger page; editing the trigger here can lead to inconsistencies.</li></ul><p>For example, the followig JSON formatted trigger fires if there are more than 10 DataNodes with more than 500 file descriptors opened:</p><p><pre>[{\"triggerName\": \"sample-trigger\",\n  \"triggerExpression\": \"IF (SELECT fd_open WHERE roleType = DataNode and last(fd_open) > 500) DO health:bad\",\n  \"streamThreshold\": 10, \"enabled\": \"true\"}]</pre></p><p>See the trigger rules documentation for more details on how to write triggers using tsquery.</p><p>The JSON format is evolving and may change and, as a result, backward compatibility is not guaranteed between releases.</p>",
+        "display_name": "Service Triggers",
+        "name": "service_triggers",
+        "value": "[]"
+    },
+    {
+        "desc": "The length of time, in milliseconds, of a single tick, which is the basic time unit used by ZooKeeper. A tick is used to regulate heartbeats and timeouts.",
+        "display_name": "Tick Time",
+        "name": "tickTime",
+        "value": "2000"
+    },
+    {
+        "desc": "When set, each role identifies important log events and forwards them to Cloudera Manager.",
+        "display_name": "Enable Log Event Capture",
+        "name": "catch_events",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the System User parameter.",
+        "display_name": "Suppress Parameter Validation: System User",
+        "name": "service_config_suppression_process_username",
+        "value": "false"
+    },
+    {
+        "desc": "When set, Cloudera Manager will send alerts when the health of this service reaches the threshold specified by the EventServer setting eventserver_health_events_alert_threshold",
+        "display_name": "Enable Service Level Health Alerts",
+        "name": "enable_alerts",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Kerberos Principal parameter.",
+        "display_name": "Suppress Parameter Validation: Kerberos Principal",
+        "name": "service_config_suppression_kerberos_princ_name",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds of the overall Server health. The check returns \"Concerning\" health if the percentage of \"Healthy\" Servers falls below the warning threshold. The check is unhealthy if the total percentage of \"Healthy\" and \"Concerning\" Servers falls below the critical threshold.",
+        "display_name": "Healthy Server Monitoring Thresholds",
+        "name": "zookeeper_servers_healthy_thresholds",
+        "value": "{\"critical\":\"51.0\",\"warning\":\"99.0\"}"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the System Group parameter.",
+        "display_name": "Suppress Parameter Validation: System Group",
+        "name": "service_config_suppression_process_groupname",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the ZooKeeper Server Count Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: ZooKeeper Server Count Validator",
+        "name": "service_config_suppression_zookeeper_odd_number_of_servers_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Automatically create data directories at startup, if they do not exist. Enabling this configuration should be used with care as it will suppress any errors in setup of data directories.",
+        "display_name": "Enable auto-creation of data directories",
+        "name": "zookeeper_datadir_autocreate",
+        "value": "false"
+    },
+    {
+        "desc": "Whether the leader accepts client connections.",
+        "display_name": "Leader Serves",
+        "name": "leaderServes",
+        "value": "yes"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Service Monitor Derived Configs Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: Service Monitor Derived Configs Advanced Configuration Snippet (Safety Valve)",
+        "name": "service_config_suppression_smon_derived_configs_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only, a list of derived configuration properties that will be used by the Service Monitor instead of the default ones.",
+        "display_name": "Service Monitor Derived Configs Advanced Configuration Snippet (Safety Valve)",
+        "name": "smon_derived_configs_safety_valve",
+        "value": null
+    }
+]
