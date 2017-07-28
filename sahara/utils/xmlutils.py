@@ -151,7 +151,11 @@ def add_text_element_to_tag(doc, parent_tag, element, value):
 
 def add_text_element_to_element(doc, parent, element, value):
     parent.appendChild(doc.createElement(element))
-    parent.lastChild.appendChild(doc.createTextNode(str(value)))
+    try:
+        parent.lastChild.appendChild(doc.createTextNode(str(value)))
+    except UnicodeEncodeError:
+        parent.lastChild.appendChild(doc.createTextNode(
+            str(value.encode('utf8'))))
 
 
 def add_equal_separated_dict(doc, parent_tag, each_elem_tag, value):
