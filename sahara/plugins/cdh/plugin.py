@@ -110,3 +110,16 @@ class CDHPluginProvider(p.ProvisioningPluginBase):
     def get_health_checks(self, cluster):
         return self._get_version_handler(
             cluster.hadoop_version).get_health_checks(cluster)
+
+    def get_image_arguments(self, hadoop_version):
+        return self._get_version_handler(hadoop_version).get_image_arguments()
+
+    def pack_image(self, hadoop_version, remote,
+                   test_only=False, image_arguments=None):
+        version = self._get_version_handler(hadoop_version)
+        version.pack_image(hadoop_version, remote, test_only=test_only,
+                           image_arguments=image_arguments)
+
+    def validate_images(self, cluster, test_only=False, image_arguments=None):
+        self._get_version_handler(cluster.hadoop_version).validate_images(
+            cluster, test_only=test_only, image_arguments=image_arguments)

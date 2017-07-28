@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import mock
+from oslo_utils import uuidutils
 import yaml
 
 from sahara import exceptions as ex
@@ -267,10 +268,12 @@ class TestImages(b.SaharaTestCase):
                            run_as_root=True)]
         remote.execute_command.assert_has_calls(calls)
 
-    def test_script_validator(self):
+    @mock.patch('oslo_utils.uuidutils.generate_uuid')
+    def test_script_validator(self, uuid):
+        hash_value = '00000000-0000-0000-0000-000000000000'
+        uuidutils.generate_uuid.return_value = hash_value
         cls = images.SaharaScriptValidator
         image_arguments = {"distro": 'centos'}
-        map_rep = "export distro=centos\n"
         cmd = "It's dangerous to go alone. Run this."
         validator = cls(cmd, env_vars=image_arguments.keys(),
                         output_var="distro")
@@ -281,7 +284,10 @@ class TestImages(b.SaharaTestCase):
 
         validator.validate(remote, test_only=False,
                            image_arguments=image_arguments)
-        call = [mock.call(map_rep + cmd, run_as_root=True)]
+        call = [mock.call('chmod +x /tmp/%(hash_value)s.sh' %
+                          {'hash_value': hash_value}, run_as_root=True),
+                mock.call('/tmp/%(hash_value)s.sh' %
+                          {'hash_value': hash_value}, run_as_root=True)]
         remote.execute_command.assert_has_calls(call)
         self.assertEqual(image_arguments['distro'], 'fedora')
 

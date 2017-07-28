@@ -64,6 +64,9 @@ setup_build_env
 # build_images "<plugin_name>" "<plugin_version>" "<distribution> <distribution>"
 
 case "$PLUGIN" in
+    "cloudera")
+        build_images "cdh" "5.7.0" "centos7"
+        ;;
     *)
         echo "Invalid version"
         ;;

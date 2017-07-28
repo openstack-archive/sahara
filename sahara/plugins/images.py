@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from oslo_utils import uuidutils
+
 import abc
 import collections
 import copy
@@ -669,16 +671,20 @@ class SaharaScriptValidator(SaharaImageValidatorBase):
             distro representation, per `lsb_release -is`.
         :raises ImageValidationError: If validation fails.
         """
+
         arguments = copy.deepcopy(image_arguments)
         arguments[self.TEST_ONLY_KEY] = 1 if test_only else 0
         script = "\n".join(["%(env_vars)s",
                             "%(script)s"])
         env_vars = "\n".join("export %s=%s" % (key, value) for (key, value)
-                             in six.iteritems(image_arguments)
+                             in six.iteritems(arguments)
                              if key in self.env_vars)
         script = script % {"env_vars": env_vars,
                            "script": self.script_contents}
-        code, stdout = _sudo(remote, script)
+        path = '/tmp/%s.sh' % uuidutils.generate_uuid()
+        remote.write_file_to(path, script, run_as_root=True)
+        _sudo(remote, 'chmod +x %s' % path)
+        code, stdout = _sudo(remote, '%s' % path)
         if self.output_var:
             image_arguments[self.output_var] = stdout
 
