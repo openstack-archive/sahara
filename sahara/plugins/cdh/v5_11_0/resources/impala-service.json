@@ -1,0 +1,572 @@
+[
+    {
+        "desc": "Whether to suppress the results of the Impala Llama ApplicationMaster Health heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Impala Llama ApplicationMaster Health",
+        "name": "service_health_suppression_impala_llamas_healthy",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Bypass Hive Metastore Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Bypass Hive Metastore Validator",
+        "name": "service_config_suppression_impala_bypass_hms_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Short-Circuit Read Enabled Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Short-Circuit Read Enabled Validator",
+        "name": "service_config_suppression_short_circuit_read_validator",
+        "value": "false"
+    },
+    {
+        "desc": "The user that this Impala's processes should run as (except Llama, which has its own user).",
+        "display_name": "Impala System User (except Llama)",
+        "name": "process_username",
+        "value": "impala"
+    },
+    {
+        "desc": "A list specifying the rules to run to determine which Fair Scheduler configuration to use. Typically edited using the Rules configuration UI. This configuration only has effect on Impala versions 1.3 or greater.",
+        "display_name": "Fair Scheduler Configuration Rules (Staged)",
+        "name": "impala_schedule_rules_draft",
+        "value": null
+    },
+    {
+        "desc": "Name of the HDFS service that this Impala service instance depends on",
+        "display_name": "HDFS Service",
+        "name": "hdfs_service",
+        "value": null
+    },
+    {
+        "desc": "Maximum amount of time (in milliseconds) that a request waits to be admitted before timing out. Must be a positive integer.",
+        "display_name": "Admission Control Queue Timeout",
+        "name": "admission_control_queue_timeout",
+        "value": "60000"
+    },
+    {
+        "desc": "Use Dynamic Resource Pools to configure Impala admission control or RM for this Impala service. These features are only supported in Impala 1.3 or higher deployments.",
+        "display_name": "Enable Dynamic Resource Pools",
+        "name": "admission_control_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the HDFS Local Path Access User Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: HDFS Local Path Access User Validator",
+        "name": "service_config_suppression_local_path_access_user_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Impala Short-Circuit Read Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Impala Short-Circuit Read Validator",
+        "name": "service_config_suppression_impala_dfs_client_read_shortcircuit_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Use Sentry to enable role-based, fine-grained authorization. This configuration enables Sentry using policy files. To enable Sentry using Sentry service instead, add Sentry service as a dependency to Impala service. <strong>Sentry service provides concurrent and secure access to authorization policy metadata and is the recommended option for enabling Sentry. </strong> Sentry is supported only on Impala 1.1 or later deployments.",
+        "display_name": "Enable Sentry Authorization using Policy Files",
+        "name": "sentry_enabled",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Impala Service Advanced Configuration Snippet (Safety Valve) for sentry-site.xml parameter.",
+        "display_name": "Suppress Parameter Validation: Impala Service Advanced Configuration Snippet (Safety Valve) for sentry-site.xml",
+        "name": "service_config_suppression_impalad_sentry_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "When set, Cloudera Manager will send alerts when this entity's configuration changes.",
+        "display_name": "Enable Configuration Change Alerts",
+        "name": "enable_config_alerts",
+        "value": "false"
+    },
+    {
+        "desc": "The time period over which to compute the assignment locality ratio. Specified in minutes.",
+        "display_name": "Assignment Locality Monitoring Period",
+        "name": "impala_assignment_locality_window",
+        "value": "15"
+    },
+    {
+        "desc": "Timeout in milliseconds for all HBase RPCs made by Impala. Overrides configuration in HBase service.",
+        "display_name": "HBase RPC Timeout",
+        "name": "hbase_rpc_timeout",
+        "value": "3000"
+    },
+    {
+        "desc": "Use debug build of Impala binaries when starting roles. Useful when performing diagnostic activities to get more information in the stacktrace or core dump.",
+        "display_name": "Use Debug Build",
+        "name": "use_debug_build",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Service Triggers parameter.",
+        "display_name": "Suppress Parameter Validation: Service Triggers",
+        "name": "service_config_suppression_service_triggers",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the LDAP Pattern parameter.",
+        "display_name": "Suppress Parameter Validation: LDAP Pattern",
+        "name": "service_config_suppression_ldap_bind_pattern",
+        "value": "false"
+    },
+    {
+        "desc": "The path to the TLS/SSL file containing the private key used for TLS/SSL. Used when Impala is acting as a TLS/SSL server. The certificate file must be in PEM format.",
+        "display_name": "Impala TLS/SSL Server Private Key File (PEM Format)",
+        "name": "ssl_private_key",
+        "value": null
+    },
+    {
+        "desc": "The minimum number of assignments that must occur during the test time period before the threshold values will be checked. Until this number of assignments have been observed in the test time period the health test will be disabled.",
+        "display_name": "Assignment Locality Minimum Assignments",
+        "name": "impala_assignment_locality_minimum",
+        "value": "10"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the LDAP Configuration Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: LDAP Configuration Validator",
+        "name": "service_config_suppression_impala_ldap_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Kerberos Principal parameter.",
+        "display_name": "Suppress Parameter Validation: Kerberos Principal",
+        "name": "service_config_suppression_kerberos_princ_name",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Impala System Group (except Llama) parameter.",
+        "display_name": "Suppress Parameter Validation: Impala System Group (except Llama)",
+        "name": "service_config_suppression_process_groupname",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the Assignment Locality heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Assignment Locality",
+        "name": "service_health_suppression_impala_assignment_locality",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Impala Daemon Count Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Impala Daemon Count Validator",
+        "name": "service_config_suppression_impalad_count_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Specifies the set of authorized proxy users (users who can impersonate other users during authorization) and whom they are allowed to impersonate. Input is a semicolon-separated list of key=value pairs of authorized proxy users to the user(s) they can impersonate. These users are specified as a comma separated list of short usernames, or '*' to indicate all users. For example: joe=alice,bob;hue=*;admin=*. Only valid when Sentry is enabled.",
+        "display_name": "Proxy User Configuration",
+        "name": "impala_authorized_proxy_user_config",
+        "value": "hue=*"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Impala Catalog Server Count Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Impala Catalog Server Count Validator",
+        "name": "service_config_suppression_catalogserver_count_validator",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only, a list of derived configuration properties that will be used by the Service Monitor instead of the default ones.",
+        "display_name": "Service Monitor Derived Configs Advanced Configuration Snippet (Safety Valve)",
+        "name": "smon_derived_configs_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Configures the maximum number of concurrently running queries for admission control when using a single pool. -1 indicates no limit and 0 indicates all incoming requests will be rejected. Ignored when Dynamic Resource Pools for Admission Control is enabled.",
+        "display_name": "Single Pool Max Running Queries",
+        "name": "admission_control_single_pool_max_requests",
+        "value": "200"
+    },
+    {
+        "desc": "This parameter is useful when authenticating against an Active Directory server. This value is appended to all usernames before authenticating against AD. For example, if this parameter is set to \"my.domain.com\", and the user authenticating is \"mike\", then \"mike@my.domain.com\" is passed to AD. If this field is unset, the username remains unaltered before being passed to AD.",
+        "display_name": "Active Directory Domain",
+        "name": "ldap_domain",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Impala Service Environment Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: Impala Service Environment Advanced Configuration Snippet (Safety Valve)",
+        "name": "service_config_suppression_impala_service_env_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Impala Llama Supported Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Impala Llama Supported Validator",
+        "name": "service_config_suppression_impala_llama_supported_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Name of YARN service to use for resource management integration between Impala and YARN. This service dependency and the existence of a Llama role is required for using said integration.",
+        "display_name": "YARN Service for Resource Management",
+        "name": "yarn_service",
+        "value": null
+    },
+    {
+        "desc": "Name of the Sentry service that this Impala service instance depends on. If selected, Impala uses this Sentry service to look up authorization privileges. Before enabling Sentry, read the requirements and configuration steps in <a class=\"bold\" href=\"http://tiny.cloudera.com/sentry-service-cm5\" target=\"_blank\">Setting Up The Sentry Service<i class=\"externalLink\"></i></a>.",
+        "display_name": "Sentry Service",
+        "name": "sentry_service",
+        "value": null
+    },
+    {
+        "desc": "Time in seconds before Impala Daemon or Catalog Server times out with the StateStore.",
+        "display_name": "StateStoreSubscriber Timeout",
+        "name": "statestore_subscriber_timeout",
+        "value": "30"
+    },
+    {
+        "desc": "Configures the max memory of running queries for admission control when using a single pool. -1 or 0 indicates no limit. Ignored when Dynamic Resource Pools for Admission Control is enabled.",
+        "display_name": "Single Pool Mem Limit",
+        "name": "admission_control_single_pool_mem_limit",
+        "value": "-1"
+    },
+    {
+        "desc": "Maximum number of HBase client retries for Impala. Used as a maximum for all operations such as fetching of the root region from the root RegionServer, getting a cell's value, and starting a row update. Overrides configuration in the HBase service.",
+        "display_name": "Maximum HBase Client Retries",
+        "name": "hbase_client_retries_number",
+        "value": "3"
+    },
+    {
+        "desc": "The health test thresholds of the overall Impala Llama ApplicationMaster health. The check returns \"Concerning\" health if the percentage of \"Healthy\" Impala Llama ApplicationMasters falls below the warning threshold. The check is unhealthy if the total percentage of \"Healthy\" and \"Concerning\" Impala Llama ApplicationMasters falls below the critical threshold.",
+        "display_name": "Healthy Impala Llama ApplicationMaster Monitoring Thresholds",
+        "name": "impala_llamas_healthy_thresholds",
+        "value": "{\"critical\":\"51.0\",\"warning\":\"99.0\"}"
+    },
+    {
+        "desc": "<p>The configured triggers for this service. This is a JSON-formatted list of triggers. These triggers are evaluated as part as the health system. Every trigger expression is parsed, and if the trigger condition is met, the list of actions provided in the trigger expression is executed.</p><p>Each trigger has the following fields:</p><ul><li><code>triggerName</code> <b>(mandatory)</b> - The name of the trigger. This value must be unique for the specific service. </li><li><code>triggerExpression</code> <b>(mandatory)</b> - A tsquery expression representing the trigger. </li><li><code>streamThreshold</code> <b>(optional)</b> - The maximum number of streams that can satisfy a condition of a trigger before the condition fires. By default set to 0, and any stream returned causes the condition to fire. </li><li><code>enabled</code> <b> (optional)</b> - By default set to 'true'. If set to 'false', the trigger is not evaluated.</li><li><code>expressionEditorConfig</code> <b> (optional)</b> - Metadata for the trigger editor. If present, the trigger should only be edited from the Edit Trigger page; editing the trigger here can lead to inconsistencies.</li></ul><p>For example, the followig JSON formatted trigger fires if there are more than 10 DataNodes with more than 500 file descriptors opened:</p><p><pre>[{\"triggerName\": \"sample-trigger\",\n  \"triggerExpression\": \"IF (SELECT fd_open WHERE roleType = DataNode and last(fd_open) > 500) DO health:bad\",\n  \"streamThreshold\": 10, \"enabled\": \"true\"}]</pre></p><p>See the trigger rules documentation for more details on how to write triggers using tsquery.</p><p>The JSON format is evolving and may change and, as a result, backward compatibility is not guaranteed between releases.</p>",
+        "display_name": "Service Triggers",
+        "name": "service_triggers",
+        "value": "[]"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Impala System User (except Llama) parameter.",
+        "display_name": "Suppress Parameter Validation: Impala System User (except Llama)",
+        "name": "service_config_suppression_process_username",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Proxy User Configuration parameter.",
+        "display_name": "Suppress Parameter Validation: Proxy User Configuration",
+        "name": "service_config_suppression_impala_authorized_proxy_user_config",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the Impala Daemon Health heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Impala Daemon Health",
+        "name": "service_health_suppression_impala_impalads_healthy",
+        "value": "false"
+    },
+    {
+        "desc": "The path to the TLS/SSL file containing the server certificate key used for TLS/SSL. Used when Impala is acting as a TLS/SSL server. The certificate file must be in PEM format.",
+        "display_name": "Impala TLS/SSL Server Certificate File (PEM Format)",
+        "name": "ssl_server_certificate",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Impala TLS/SSL CA Certificate parameter.",
+        "display_name": "Suppress Parameter Validation: Impala TLS/SSL CA Certificate",
+        "name": "service_config_suppression_ssl_client_ca_certificate",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Short-Circuit Read Permissions Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Short-Circuit Read Permissions Validator",
+        "name": "service_config_suppression_short_circuit_reads_data_directory_permissions_validator",
+        "value": "false"
+    },
+    {
+        "desc": "A list specifying the rules to run to determine which Fair Scheduler configuration to use. The value specified here is deployed to all hosts. This configuration has effect only on Impala versions 1.3 or greater.",
+        "display_name": "Fair Scheduler Configuration Rules (Deployed)",
+        "name": "impala_schedule_rules",
+        "value": "[]"
+    },
+    {
+        "desc": "When checked, LDAP-based authentication for users is enabled.",
+        "display_name": "Enable LDAP Authentication",
+        "name": "enable_ldap_auth",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Impala StateStore Count Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Impala StateStore Count Validator",
+        "name": "service_config_suppression_statestore_count_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Use Impala Admission Control to throttle Impala requests. Unless 'Enable Dynamic Resource Pools' is enabled, Impala uses a single, default pool that is configured using the Single Pool configurations below. These features are only supported in Impala 1.3 or higher deployments.",
+        "display_name": "Enable Impala Admission Control",
+        "name": "all_admission_control_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Active Directory Domain parameter.",
+        "display_name": "Suppress Parameter Validation: Active Directory Domain",
+        "name": "service_config_suppression_ldap_domain",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the LDAP BaseDN parameter.",
+        "display_name": "Suppress Parameter Validation: LDAP BaseDN",
+        "name": "service_config_suppression_ldap_basedn",
+        "value": "false"
+    },
+    {
+        "desc": "Name of the Kudu service that this Impala service instance depends on",
+        "display_name": "Kudu Service",
+        "name": "kudu_service",
+        "value": null
+    },
+    {
+        "desc": "JSON representation of all the configurations that the Fair Scheduler can take across all schedules. Typically edited using the Pools configuration UI. This configuration only has effect on Impala versions 1.3 or greater.",
+        "display_name": "Fair Scheduler Allocations (Staged)",
+        "name": "impala_scheduled_allocations_draft",
+        "value": null
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>sentry-site.xml</strong>. Applies to configurations of all roles in this service except client configuration.",
+        "display_name": "Impala Service Advanced Configuration Snippet (Safety Valve) for sentry-site.xml",
+        "name": "impalad_sentry_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Configures the maximum number of queued queries for admission control when using a single pool. -1 or 0 disables queuing, i.e. incoming requests are rejected if they can not be executed immediately. Ignored when Dynamic Resource Pools for Admission Control is enabled.",
+        "display_name": "Single Pool Max Queued Queries",
+        "name": "admission_control_single_pool_max_queued",
+        "value": "200"
+    },
+    {
+        "desc": "The health test thresholds of the overall Impala Daemon health. The check returns \"Concerning\" health if the percentage of \"Healthy\" Impala Daemons falls below the warning threshold. The check is unhealthy if the total percentage of \"Healthy\" and \"Concerning\" Impala Daemons falls below the critical threshold.",
+        "display_name": "Healthy Impala Daemon Monitoring Thresholds",
+        "name": "impala_impalads_healthy_thresholds",
+        "value": "{\"critical\":\"90.0\",\"warning\":\"95.0\"}"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Enable HDFS Block Metadata API Configuration Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Enable HDFS Block Metadata API Configuration Validator",
+        "name": "service_config_suppression_impala_hdfs_dfs_datanode_hdfs_blocks_metadata_enabled_set_validator",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only, key-value pairs (one on each line) to be inserted into a role's environment. Applies to configurations of all roles in this service except client configuration.",
+        "display_name": "Impala Service Environment Advanced Configuration Snippet (Safety Valve)",
+        "name": "impala_service_env_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "If checked and Impala is using Kerberos, Impala will use the hadoop.security.auth_to_local rules from HDFS configuration. The relevant HDFS configuration is derived from Additional Rules to Map Kerberos Principals to Short Names.",
+        "display_name": "Use HDFS Rules to Map Kerberos Principals to Short Names",
+        "name": "load_hdfs_auth_to_local_rules",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Impala Command Line Argument Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: Impala Command Line Argument Advanced Configuration Snippet (Safety Valve)",
+        "name": "service_config_suppression_impala_cmd_args_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Number of minutes between reestablishing our ticket with the Kerberos server.",
+        "display_name": "Kerberos Re-init Interval",
+        "name": "kerberos_reinit_interval",
+        "value": "60"
+    },
+    {
+        "desc": "If true, attempts to establish a TLS (Transport Layer Security) connection with an LDAP server that was specified with ldap://. Not required when using an LDAP URL with prefix ldaps://, because that already specifies TLS.  This option is also known as \"Use StartTLS\".",
+        "display_name": "Enable LDAP TLS",
+        "name": "enable_ldap_tls",
+        "value": "false"
+    },
+    {
+        "desc": "When set, this parameter allows arbitrary mapping from usernames into a Distinguished Name (DN). The string specified must have a placeholder named \"#UID\" inside it, and that #UID is replaced with the username. For example, you could mimic the behavior of LDAP BaseDN by specifying \"uid=#UID,ou=People,dc=cloudera,dc=com\". When the username of \"mike\" comes in, it replaces the #UID and the result is \"uid=mike,ou=People,dc=cloudera,dc=com\". This option should be used when more control over the DN is needed. This parameter is mutually exclusive with LDAP Domain and LDAP BaseDN.",
+        "display_name": "LDAP Pattern",
+        "name": "ldap_bind_pattern",
+        "value": null
+    },
+    {
+        "desc": "<p>The URL of the LDAP server. The URL must be prefixed with ldap:// or ldaps://. The URL can optionally specify a custom port, for example: ldaps://ldap_server.example.com:1636. Note that usernames and passwords will be transmitted in the clear unless either an ldaps:// URL is used, or \"Enable LDAP TLS\" is turned on (where available). Also note that encryption must be in use between the client and this service for the same reason.</p><p>For more detail on the LDAP URL format, see <a target=\"_blank\" href=\"http://www.ietf.org/rfc/rfc2255.txt\">RFC 2255 <i class=\"externalLink\"></i></a>. A space-separated list of URLs can be entered; in this case the URLs will each be tried in turn until one replies.</p>",
+        "display_name": "LDAP URL",
+        "name": "impala_ldap_uri",
+        "value": null
+    },
+    {
+        "desc": "Controls which queries a non-admin user can see in the queries list view",
+        "display_name": "Non-Admin Users Query List Visibility Settings",
+        "name": "user_query_list_settings",
+        "value": "ALL"
+    },
+    {
+        "desc": "The location on disk of the certificate, in PEM format, used to confirm the authenticity of SSL/TLS servers that the Impala daemons might connect to. Because the Impala daemons connect to each other, this should also include the CA certificate used to sign all the SSL/TLS Certificates. Without this parameter, SSL/TLS between Impala daemons will not be enabled.",
+        "display_name": "Impala TLS/SSL CA Certificate",
+        "name": "ssl_client_ca_certificate",
+        "value": null
+    },
+    {
+        "desc": "Used to generate a core dump to get more information about an Impala crash. Unless otherwise configured systemwide using /proc/sys/kernel/core_pattern, the dump is generated in the 'current directory' of the Impala process (usually a subdirectory of the /var/run/cloudera-scm-agent/process directory). The core file can be very large.",
+        "display_name": "Enable Core Dump",
+        "name": "enable_core_dump",
+        "value": "false"
+    },
+    {
+        "desc": "Enable HDFS short-circuit read. This allows a client colocated with the DataNode to read HDFS file blocks directly. This gives a performance boost to distributed clients that are aware of locality.",
+        "display_name": "Enable HDFS Short-Circuit Read",
+        "name": "dfs_client_read_shortcircuit",
+        "value": "true"
+    },
+    {
+        "desc": "The password for the private key in the Impala TLS/SSL Server Certificate and Private Key file.  If left blank, the private key is not protected by a password.",
+        "display_name": "Impala TLS/SSL Private Key Password",
+        "name": "ssl_private_key_password",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress the results of the Impala Catalog Server Health heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Impala Catalog Server Health",
+        "name": "service_health_suppression_impala_catalogserver_health",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Impala DSSD Short-Circuit Read with Kerberos Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Impala DSSD Short-Circuit Read with Kerberos Validator",
+        "name": "service_config_suppression_impala_dssd_kerberos_scr_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the Impala StateStore Health heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Impala StateStore Health",
+        "name": "service_health_suppression_impala_statestore_health",
+        "value": "false"
+    },
+    {
+        "desc": "JSON representation of all the configurations that the Fair Scheduler can take across all schedules. This configuration has effect only on Impala versions 1.3 or greater.",
+        "display_name": "Fair Scheduler Allocations (Deployed)",
+        "name": "impala_scheduled_allocations",
+        "value": "{\"defaultFairSharePreemptionThreshold\":null,\"defaultFairSharePreemptionTimeout\":null,\"defaultMinSharePreemptionTimeout\":null,\"defaultQueueSchedulingPolicy\":null,\"queueMaxAMShareDefault\":null,\"queueMaxAppsDefault\":null,\"queuePlacementRules\":null,\"queues\":[{\"aclAdministerApps\":null,\"aclSubmitApps\":null,\"allowPreemptionFrom\":null,\"fairSharePreemptionThreshold\":null,\"fairSharePreemptionTimeout\":null,\"minSharePreemptionTimeout\":null,\"name\":\"root\",\"queues\":[{\"aclAdministerApps\":null,\"aclSubmitApps\":null,\"allowPreemptionFrom\":null,\"fairSharePreemptionThreshold\":null,\"fairSharePreemptionTimeout\":null,\"minSharePreemptionTimeout\":null,\"name\":\"default\",\"queues\":[],\"schedulablePropertiesList\":[{\"impalaDefaultQueryMemLimit\":null,\"impalaDefaultQueryOptions\":null,\"impalaMaxMemory\":null,\"impalaMaxQueuedQueries\":null,\"impalaMaxRunningQueries\":null,\"impalaQueueTimeout\":null,\"maxAMShare\":null,\"maxChildResources\":null,\"maxResources\":null,\"maxRunningApps\":null,\"minResources\":null,\"scheduleName\":\"default\",\"weight\":null}],\"schedulingPolicy\":null,\"type\":null}],\"schedulablePropertiesList\":[{\"impalaDefaultQueryMemLimit\":null,\"impalaDefaultQueryOptions\":null,\"impalaMaxMemory\":null,\"impalaMaxQueuedQueries\":null,\"impalaMaxRunningQueries\":null,\"impalaQueueTimeout\":null,\"maxAMShare\":null,\"maxChildResources\":null,\"maxResources\":null,\"maxRunningApps\":null,\"minResources\":null,\"scheduleName\":\"default\",\"weight\":null}],\"schedulingPolicy\":null,\"type\":null}],\"userMaxAppsDefault\":null,\"users\":[]}"
+    },
+    {
+        "desc": "When computing the overall IMPALA health, consider Impala Catalog Server's health",
+        "display_name": "Impala Catalog Server Role Health Test",
+        "name": "impala_catalogserver_health_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Name of the HBase service that this Impala service instance depends on",
+        "display_name": "HBase Service",
+        "name": "hbase_service",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Impala TLS/SSL Server Private Key File (PEM Format) parameter.",
+        "display_name": "Suppress Parameter Validation: Impala TLS/SSL Server Private Key File (PEM Format)",
+        "name": "service_config_suppression_ssl_private_key",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the CA Certificate File Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: CA Certificate File Validator",
+        "name": "service_config_suppression_pem_ca_cert_recommended_for_ssl",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Impala Llama ApplicationMaster Count Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Impala Llama ApplicationMaster Count Validator",
+        "name": "service_config_suppression_llama_count_validator",
+        "value": "false"
+    },
+    {
+        "desc": "This parameter is useful when authenticating against a non-Active Directory server, such as OpenLDAP. When set, this parameter is used to convert the username into the LDAP Distinguished Name (DN), so that the resulting DN looks like uid=username,&lt;this parameter&gt;. For example, if this parameter is set to \"ou=People,dc=cloudera,dc=com\", and the username passed in is \"mike\", the resulting authentication passed to the LDAP server look like \"uid=mike,ou=People,dc=cloudera,dc=com\". This parameter is mutually exclusive with Active Directory Domain.",
+        "display_name": "LDAP BaseDN",
+        "name": "ldap_baseDN",
+        "value": null
+    },
+    {
+        "desc": "Name of the ZooKeeper service to use for leader election and fencing when Llama is configured for high availability. This service dependency is required when more than one Llama role is present.",
+        "display_name": "ZooKeeper Service for Llama HA",
+        "name": "zookeeper_service",
+        "value": null
+    },
+    {
+        "desc": "The health test thresholds for the assignment locality health test. Specified as a percentage of total assignments.",
+        "display_name": "Assignment Locality Ratio Thresholds",
+        "name": "impala_assignment_locality_thresholds",
+        "value": "{\"critical\":\"5.0\",\"warning\":\"80.0\"}"
+    },
+    {
+        "desc": "Kerberos principal short name used by all roles of this service.",
+        "display_name": "Kerberos Principal",
+        "name": "kerberos_princ_name",
+        "value": "impala"
+    },
+    {
+        "desc": "The group that this Impala's processes should run as (except Llama, which has its own group).",
+        "display_name": "Impala System Group (except Llama)",
+        "name": "process_groupname",
+        "value": "impala"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Impala TLS/SSL Server Certificate File (PEM Format) parameter.",
+        "display_name": "Suppress Parameter Validation: Impala TLS/SSL Server Certificate File (PEM Format)",
+        "name": "service_config_suppression_ssl_server_certificate",
+        "value": "false"
+    },
+    {
+        "desc": "Controls which queries admin users can see in the queries list view",
+        "display_name": "Admin Users Query List Visibility Settings",
+        "name": "admin_query_list_settings",
+        "value": "ALL"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Impala Short-Circuit Read Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Impala Short-Circuit Read Validator",
+        "name": "service_config_suppression_impala_dssd_shortcircuit_read_enable_validator",
+        "value": "false"
+    },
+    {
+        "desc": "When set, Cloudera Manager will send alerts when the health of this service reaches the threshold specified by the EventServer setting eventserver_health_events_alert_threshold",
+        "display_name": "Enable Service Level Health Alerts",
+        "name": "enable_alerts",
+        "value": "true"
+    },
+    {
+        "desc": "Encrypt communication between clients and Impala using Transport Layer Security (TLS) (formerly known as Secure Socket Layer (SSL)).",
+        "display_name": "Enable TLS/SSL for Impala",
+        "name": "client_services_ssl_enabled",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Impala TLS/SSL Private Key Password parameter.",
+        "display_name": "Suppress Parameter Validation: Impala TLS/SSL Private Key Password",
+        "name": "service_config_suppression_ssl_private_key_password",
+        "value": "false"
+    },
+    {
+        "desc": "When computing the overall IMPALA health, consider Impala StateStore's health",
+        "display_name": "Impala StateStore Role Health Test",
+        "name": "impala_statestore_health_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "For advanced use only, key-value pairs (one on each line) to be added (verbatim) to Impala Daemon command-line flags. Applies to all roles in this service. Key names should begin with a hyphen(-). <b>For example</b>: <code>-log_filename=foo.log</code>",
+        "display_name": "Impala Command Line Argument Advanced Configuration Snippet (Safety Valve)",
+        "name": "impala_cmd_args_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the LDAP URL parameter.",
+        "display_name": "Suppress Parameter Validation: LDAP URL",
+        "name": "service_config_suppression_impala_ldap_uri",
+        "value": "false"
+    },
+    {
+        "desc": "Name of the Hive service that this Impala service instance depends on",
+        "display_name": "Hive Service",
+        "name": "hive_service",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Service Monitor Derived Configs Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: Service Monitor Derived Configs Advanced Configuration Snippet (Safety Valve)",
+        "name": "service_config_suppression_smon_derived_configs_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Impala Sentry Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Impala Sentry Validator",
+        "name": "service_config_suppression_impala_sentry_validator",
+        "value": "false"
+    }
+]

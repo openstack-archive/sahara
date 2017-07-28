@@ -1,0 +1,458 @@
+[
+    {
+        "desc": "The health test thresholds for monitoring of free space on the filesystem that contains this role's log directory. Specified as a percentage of the capacity on that filesystem. This setting is not used if a Log Directory Free Space Monitoring Absolute Thresholds setting is configured.",
+        "display_name": "Log Directory Free Space Monitoring Percentage Thresholds",
+        "name": "log_directory_free_space_percentage_thresholds",
+        "value": "{\"critical\":\"never\",\"warning\":\"never\"}"
+    },
+    {
+        "desc": "<p>This file contains the rules that govern how log messages are turned into events by the custom log4j appender that this role loads. It is in JSON format, and is composed of a list of rules. Every log message is evaluated against each of these rules in turn to decide whether or not to send an event for that message. If a log message matches multiple rules, the first matching rule is used. </p><p>Each rule has some or all of the following fields:</p><ul><li><code>alert</code> - whether or not events generated from this rule should be promoted to alerts. A value of \"true\" will cause alerts to be generated. If not specified, the default is \"false\".</li><li><code>rate</code> <b>(mandatory)</b> - the maximum number of log messages matching this rule that can be sent as events every minute. If more than <code>rate</code> matching log messages are received in a single minute, the extra messages are ignored. If rate is less than 0, the number of messages per minute is unlimited.</li><li><code>periodminutes</code>  - the number of minutes during which the publisher will only publish <code>rate</code> events or fewer. If not specified, the default is <b>one minute</b></li><li><code>threshold</code> - apply this rule only to messages with this log4j severity level or above. An example is \"WARN\" for warning level messages or higher.</li><li><code>content</code> - match only those messages for which contents match this regular expression.</li><li><code>exceptiontype</code> - match only those messages that are part of an exception message. The exception type must match this regular expression.</li></ul><p>Example:</p><ul><li><pre>{\"alert\": false, \"rate\": 10, \"exceptiontype\": \"java.lang.StringIndexOutOfBoundsException\"}</pre>This rule sends events to Cloudera Manager for every <code>StringIndexOutOfBoundsException</code>, up to a maximum of 10 every minute.</li><li><pre>{\"alert\": false, \"rate\": 1, \"periodminutes\": 1, \"exceptiontype\": \".*\"}, {\"alert\": true, \"rate\": 1, \"periodminutes\": 1, \"threshold\":\"ERROR\"}</pre>In this example, an event generated may not be promoted to alert if an exception is in the ERROR log message, because the first rule with alert = false will match.</li></ul>",
+        "display_name": "Rules to Extract Events from Log Files",
+        "name": "log_event_whitelist",
+        "value": "{\n  \"version\": \"0\",\n  \"rules\": [\n    {\"alert\": false, \"rate\": 1, \"periodminutes\": 1, \"threshold\":\"FATAL\"},\n    {\"alert\": false, \"rate\": 1, \"periodminutes\": 2, \"exceptiontype\": \".*\"},\n    {\"alert\": false, \"rate\": 1, \"periodminutes\": 1, \"threshold\":\"WARN\"}\n  ]\n}"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HBase Thrift Server Environment Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: HBase Thrift Server Environment Advanced Configuration Snippet (Safety Valve)",
+        "name": "role_config_suppression_hbasethriftserver_role_env_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Java Configuration Options for HBase Thrift Server parameter.",
+        "display_name": "Suppress Parameter Validation: Java Configuration Options for HBase Thrift Server",
+        "name": "role_config_suppression_hbase_thriftserver_java_opts",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the Unexpected Exits heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Unexpected Exits",
+        "name": "role_health_suppression_hbase_thrift_server_unexpected_exits",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HBase Thrift Server DNS Network Interface parameter.",
+        "display_name": "Suppress Parameter Validation: HBase Thrift Server DNS Network Interface",
+        "name": "role_config_suppression_hbase_thriftserver_dns_interface",
+        "value": "false"
+    },
+    {
+        "desc": "The \"core size\" of the thread pool. New threads are created on every connection until this many threads are created.",
+        "display_name": "HBase Thrift Server Min Worker Threads",
+        "name": "hbase_thriftserver_min_worker_threads",
+        "value": "200"
+    },
+    {
+        "desc": "The period to review when computing unexpected exits.",
+        "display_name": "Unexpected Exits Monitoring Period",
+        "name": "unexpected_exits_window",
+        "value": "5"
+    },
+    {
+        "desc": "Whether to suppress the results of the Host Health heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Host Health",
+        "name": "role_health_suppression_hbase_thrift_server_host_health",
+        "value": "false"
+    },
+    {
+        "desc": "The port that HBase Thrift Server binds to.",
+        "display_name": "HBase Thrift Server Port",
+        "name": "hbase_thriftserver_port",
+        "value": "9090"
+    },
+    {
+        "desc": "The health test thresholds for monitoring of free space on the filesystem that contains this role's heap dump directory. Specified as a percentage of the capacity on that filesystem. This setting is not used if a Heap Dump Directory Free Space Monitoring Absolute Thresholds setting is configured.",
+        "display_name": "Heap Dump Directory Free Space Monitoring Percentage Thresholds",
+        "name": "heap_dump_directory_free_space_percentage_thresholds",
+        "value": "{\"critical\":\"never\",\"warning\":\"never\"}"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HBase Thrift Server Bind Address parameter.",
+        "display_name": "Suppress Parameter Validation: HBase Thrift Server Bind Address",
+        "name": "role_config_suppression_hbase_thriftserver_bindaddress",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the File Descriptors heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: File Descriptors",
+        "name": "role_health_suppression_hbase_thrift_server_file_descriptor",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HBase Thrift Server DNS Name Server parameter.",
+        "display_name": "Suppress Parameter Validation: HBase Thrift Server DNS Name Server",
+        "name": "role_config_suppression_hbase_thriftserver_dns_nameserver",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds for monitoring of free space on the filesystem that contains this role's heap dump directory.",
+        "display_name": "Heap Dump Directory Free Space Monitoring Absolute Thresholds",
+        "name": "heap_dump_directory_free_space_absolute_thresholds",
+        "value": "{\"critical\":\"5.36870912E9\",\"warning\":\"1.073741824E10\"}"
+    },
+    {
+        "desc": "The health test thresholds on the swap memory usage of the process.",
+        "display_name": "Process Swap Memory Thresholds",
+        "name": "process_swap_memory_thresholds",
+        "value": "{\"critical\":\"never\",\"warning\":\"any\"}"
+    },
+    {
+        "desc": "The method used to collect stacks. The jstack option involves periodically running the jstack command against the role's daemon process. The servlet method is available for those roles that have an HTTP server endpoint exposing the current stacks traces of all threads. When the servlet method is selected, that HTTP endpoint is periodically scraped.",
+        "display_name": "Stacks Collection Method",
+        "name": "stacks_collection_method",
+        "value": "jstack"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HBase Thrift Server Log Directory parameter.",
+        "display_name": "Suppress Parameter Validation: HBase Thrift Server Log Directory",
+        "name": "role_config_suppression_hbase_thriftserver_log_dir",
+        "value": "false"
+    },
+    {
+        "desc": "Whether or not periodic stacks collection is enabled.",
+        "display_name": "Stacks Collection Enabled",
+        "name": "stacks_collection_enabled",
+        "value": "false"
+    },
+    {
+        "desc": "The maximum number of rolled log files to keep for HBase Thrift Server logs.  Typically used by log4j or logback.",
+        "display_name": "HBase Thrift Server Maximum Log File Backups",
+        "name": "max_log_backup_index",
+        "value": "10"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HBase Thrift Server Logging Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: HBase Thrift Server Logging Advanced Configuration Snippet (Safety Valve)",
+        "name": "role_config_suppression_log4j_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the Log Directory Free Space heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Log Directory Free Space",
+        "name": "role_health_suppression_hbase_thrift_server_log_directory_free_space",
+        "value": "false"
+    },
+    {
+        "desc": "The path to the TLS/SSL keystore file containing the server certificate and private key used for TLS/SSL. Used when HBase Thrift Server over HTTP is acting as a TLS/SSL server. The keystore must be in JKS format.",
+        "display_name": "HBase Thrift Server over HTTP TLS/SSL Server JKS Keystore File Location",
+        "name": "hbase_thriftserver_http_keystore_file",
+        "value": null
+    },
+    {
+        "desc": "Maximum size in bytes for the Java Process heap memory.  Passed to Java -Xmx.",
+        "display_name": "Java Heap Size of HBase Thrift Server in Bytes",
+        "name": "hbase_thriftserver_java_heapsize",
+        "value": "1073741824"
+    },
+    {
+        "desc": "Soft memory limit to assign to this role, enforced by the Linux kernel. When the limit is reached, the kernel will reclaim pages charged to the process if and only if the host is facing memory pressure. If reclaiming fails, the kernel may kill the process. Both anonymous as well as page cache pages contribute to the limit. Use a value of -1 B to specify no limit. By default processes not managed by Cloudera Manager will have no limit.",
+        "display_name": "Cgroup Memory Soft Limit",
+        "name": "rm_memory_soft_limit",
+        "value": "-1"
+    },
+    {
+        "desc": "The health test thresholds for monitoring of free space on the filesystem that contains this role's log directory.",
+        "display_name": "Log Directory Free Space Monitoring Absolute Thresholds",
+        "name": "log_directory_free_space_absolute_thresholds",
+        "value": "{\"critical\":\"5.36870912E9\",\"warning\":\"1.073741824E10\"}"
+    },
+    {
+        "desc": "The password for the HBase Thrift Server over HTTP JKS keystore file.",
+        "display_name": "HBase Thrift Server over HTTP TLS/SSL Server JKS Keystore File Password",
+        "name": "hbase_thriftserver_http_keystore_password",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Rules to Extract Events from Log Files parameter.",
+        "display_name": "Suppress Parameter Validation: Rules to Extract Events from Log Files",
+        "name": "role_config_suppression_log_event_whitelist",
+        "value": "false"
+    },
+    {
+        "desc": "If true, HBase Thrift Server Web UI will bind to a wildcard address (0.0.0.0). Otherwise it will bind to a host name. Only available in CDH 4.3 and later.",
+        "display_name": "HBase Thrift Server Web UI Bind to Wildcard Address",
+        "name": "hbase_thriftserver_info_bind_to_wildcard",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HBase Thrift Server over HTTP TLS/SSL Server JKS Keystore File Location parameter.",
+        "display_name": "Suppress Parameter Validation: HBase Thrift Server over HTTP TLS/SSL Server JKS Keystore File Location",
+        "name": "role_config_suppression_hbase_thriftserver_http_keystore_file",
+        "value": "false"
+    },
+    {
+        "desc": "Address to bind the HBase Thrift Server to. When using the THsHaServer or the TNonblockingServer, always binds to 0.0.0.0 irrespective of this configuration value.",
+        "display_name": "HBase Thrift Server Bind Address",
+        "name": "hbase_thriftserver_bindaddress",
+        "value": "0.0.0.0"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the CDH Version Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: CDH Version Validator",
+        "name": "role_config_suppression_cdh_version_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Hard memory limit to assign to this role, enforced by the Linux kernel. When the limit is reached, the kernel will reclaim pages charged to the process. If reclaiming fails, the kernel may kill the process. Both anonymous as well as page cache pages contribute to the limit. Use a value of -1 B to specify no limit. By default processes not managed by Cloudera Manager will have no limit.",
+        "display_name": "Cgroup Memory Hard Limit",
+        "name": "rm_memory_hard_limit",
+        "value": "-1"
+    },
+    {
+        "desc": "Type of HBase Thrift Server.",
+        "display_name": "HBase Thrift Server Type",
+        "name": "hbase_thriftserver_type",
+        "value": "threadpool"
+    },
+    {
+        "desc": "When set, this role's process is automatically (and transparently) restarted in the event of an unexpected failure.",
+        "display_name": "Automatically Restart Process",
+        "name": "process_auto_restart",
+        "value": "false"
+    },
+    {
+        "desc": "Cloudera Manager agent monitors each service and each of its role by publishing metrics to the Cloudera Manager Service Monitor. Setting it to false will stop Cloudera Manager agent from publishing any metric for corresponding service/roles. This is usually helpful for services that generate large amount of metrics which Service Monitor is not able to process.",
+        "display_name": "Enable Metric Collection",
+        "name": "process_should_monitor",
+        "value": "true"
+    },
+    {
+        "desc": "Weight for the read I/O requests issued by this role. The greater the weight, the higher the priority of the requests when the host experiences I/O contention. Must be between 100 and 1000. Defaults to 1000 for processes not managed by Cloudera Manager.",
+        "display_name": "Cgroup I/O Weight",
+        "name": "rm_io_weight",
+        "value": "500"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HBase Thrift Server over HTTP TLS/SSL Server JKS Keystore File Password parameter.",
+        "display_name": "Suppress Parameter Validation: HBase Thrift Server over HTTP TLS/SSL Server JKS Keystore File Password",
+        "name": "role_config_suppression_hbase_thriftserver_http_keystore_password",
+        "value": "false"
+    },
+    {
+        "desc": "The amount of stacks data that is retained. After the retention limit is reached, the oldest data is deleted.",
+        "display_name": "Stacks Collection Data Retention",
+        "name": "stacks_collection_data_retention",
+        "value": "104857600"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Heap Dump Directory parameter.",
+        "display_name": "Suppress Parameter Validation: Heap Dump Directory",
+        "name": "role_config_suppression_oom_heap_dump_dir",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only, key-value pairs (one on each line) to be inserted into a role's environment. Applies to configurations of this role except client configuration.",
+        "display_name": "HBase Thrift Server Environment Advanced Configuration Snippet (Safety Valve)",
+        "name": "HBASETHRIFTSERVER_role_env_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>log4j.properties</strong> for this role only.",
+        "display_name": "HBase Thrift Server Logging Advanced Configuration Snippet (Safety Valve)",
+        "name": "log4j_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Role Triggers parameter.",
+        "display_name": "Suppress Parameter Validation: Role Triggers",
+        "name": "role_config_suppression_role_triggers",
+        "value": "false"
+    },
+    {
+        "desc": "When computing the overall HBase Thrift Server health, consider the host's health.",
+        "display_name": "HBase Thrift Server Host Health Test",
+        "name": "hbasethriftserver_host_health_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "The password that protects the private key contained in the JKS keystore used when HBase Thrift Server over HTTP is acting as a TLS/SSL server.",
+        "display_name": "HBase Thrift Server over HTTP TLS/SSL Server JKS Keystore Key Password",
+        "name": "hbase_thriftserver_http_keystore_keypassword",
+        "value": null
+    },
+    {
+        "desc": "Enables the health test that the HBase Thrift Server's process state is consistent with the role configuration",
+        "display_name": "HBase Thrift Server Process Health Test",
+        "name": "hbasethriftserver_scm_health_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "These arguments will be passed as part of the Java command line. Commonly, garbage collection flags, PermGen, or extra debugging flags would be passed here.",
+        "display_name": "Java Configuration Options for HBase Thrift Server",
+        "name": "hbase_thriftserver_java_opts",
+        "value": "-XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:CMSInitiatingOccupancyFraction=70 -XX:+CMSParallelRemarkEnabled"
+    },
+    {
+        "desc": "Use framed transport. When using the THsHaServer or TNonblockingServer, framed transport is always used irrespective of this configuration value.",
+        "display_name": "Enable HBase Thrift Server Framed Transport",
+        "name": "hbase_thriftserver_framed",
+        "value": "false"
+    },
+    {
+        "desc": "If configured, overrides the process soft and hard rlimits (also called ulimits) for file descriptors to the configured value.",
+        "display_name": "Maximum Process File Descriptors",
+        "name": "rlimit_fds",
+        "value": null
+    },
+    {
+        "desc": "When set, Cloudera Manager will send alerts when this entity's configuration changes.",
+        "display_name": "Enable Configuration Change Alerts",
+        "name": "enable_config_alerts",
+        "value": "false"
+    },
+    {
+        "desc": "The maximum size, in megabytes, per log file for HBase Thrift Server logs.  Typically used by log4j or logback.",
+        "display_name": "HBase Thrift Server Max Log Size",
+        "name": "max_log_size",
+        "value": "200"
+    },
+    {
+        "desc": "When set, a SIGKILL signal is sent to the role process when java.lang.OutOfMemoryError is thrown.",
+        "display_name": "Kill When Out of Memory",
+        "name": "oom_sigkill_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "The port that HBase Thrift Server Web UI binds to.",
+        "display_name": "HBase Thrift Server Web UI Port",
+        "name": "hbase_thriftserver_info_port",
+        "value": "9095"
+    },
+    {
+        "desc": "When set, generates heap dump file when java.lang.OutOfMemoryError is thrown.",
+        "display_name": "Dump Heap When Out of Memory",
+        "name": "oom_heap_dump_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HBase Thrift Server over HTTP TLS/SSL Server JKS Keystore Key Password parameter.",
+        "display_name": "Suppress Parameter Validation: HBase Thrift Server over HTTP TLS/SSL Server JKS Keystore Key Password",
+        "name": "role_config_suppression_hbase_thriftserver_http_keystore_keypassword",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the Audit Pipeline Test heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Audit Pipeline Test",
+        "name": "role_health_suppression_hbase_thrift_server_audit_health",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds for unexpected exits encountered within a recent period specified by the unexpected_exits_window configuration for the role.",
+        "display_name": "Unexpected Exits Thresholds",
+        "name": "unexpected_exits_thresholds",
+        "value": "{\"critical\":\"any\",\"warning\":\"never\"}"
+    },
+    {
+        "desc": "Whether to suppress the results of the Swap Memory Usage heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Swap Memory Usage",
+        "name": "role_health_suppression_hbase_thrift_server_swap_memory_usage",
+        "value": "false"
+    },
+    {
+        "desc": "<p>The configured triggers for this role. This is a JSON-formatted list of triggers. These triggers are evaluated as part as the health system. Every trigger expression is parsed, and if the trigger condition is met, the list of actions provided in the trigger expression is executed.</p><p>Each trigger has the following fields:</p><ul><li><code>triggerName</code> <b>(mandatory)</b> - The name of the trigger. This value must be unique for the specific role. </li><li><code>triggerExpression</code> <b>(mandatory)</b> - A tsquery expression representing the trigger. </li><li><code>streamThreshold</code> <b>(optional)</b> - The maximum number of streams that can satisfy a condition of a trigger before the condition fires. By default set to 0, and any stream returned causes the condition to fire. </li><li><code>enabled</code> <b> (optional)</b> - By default set to 'true'. If set to 'false', the trigger is not evaluated.</li><li><code>expressionEditorConfig</code> <b> (optional)</b> - Metadata for the trigger editor. If present, the trigger should only be edited from the Edit Trigger page; editing the trigger here can lead to inconsistencies.</li></ul><p>For example, the following JSON formatted trigger configured for a DataNode fires if the DataNode has more than 1500 file descriptors opened:</p><p><pre>[{\"triggerName\": \"sample-trigger\",\n  \"triggerExpression\": \"IF (SELECT fd_open WHERE roleName=$ROLENAME and last(fd_open) > 1500) DO health:bad\",\n  \"streamThreshold\": 0, \"enabled\": \"true\"}]</pre></p><p>See the trigger rules documentation for more details on how to write triggers using tsquery.</p><p>The JSON format is evolving and may change and, as a result, backward compatibility is not guaranteed between releases.</p>",
+        "display_name": "Role Triggers",
+        "name": "role_triggers",
+        "value": "[]"
+    },
+    {
+        "desc": "The host name or IP address of the DNS name server which an HBase Thrift Server should use to determine the host name used for communication and display purposes.",
+        "display_name": "HBase Thrift Server DNS Name Server",
+        "name": "hbase_thriftserver_dns_nameserver",
+        "value": null
+    },
+    {
+        "desc": "When set, Cloudera Manager will send alerts when the health of this role reaches the threshold specified by the EventServer setting eventserver_health_events_alert_threshold",
+        "display_name": "Enable Health Alerts for this Role",
+        "name": "enable_alerts",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress the results of the Process Status heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Process Status",
+        "name": "role_health_suppression_hbase_thrift_server_scm_health",
+        "value": "false"
+    },
+    {
+        "desc": "Use the TCompactProtocol instead of the default TBinaryProtocol. TCompactProtocol is a binary protocol that is more compact than the default and typically more efficient.",
+        "display_name": "Enable HBase Thrift Server Compact Protocol",
+        "name": "hbase_thriftserver_compact",
+        "value": "false"
+    },
+    {
+        "desc": "The name of the DNS network interface from which an HBase Thrift Server should report its IP address.",
+        "display_name": "HBase Thrift Server DNS Network Interface",
+        "name": "hbase_thriftserver_dns_interface",
+        "value": null
+    },
+    {
+        "desc": "The directory in which stacks logs are placed. If not set, stacks are logged into a <code>stacks</code> subdirectory of the role's log directory.",
+        "display_name": "Stacks Collection Directory",
+        "name": "stacks_collection_directory",
+        "value": null
+    },
+    {
+        "desc": "Directory where HBase Thrift Server will place its log files.",
+        "display_name": "HBase Thrift Server Log Directory",
+        "name": "hbase_thriftserver_log_dir",
+        "value": "/var/log/hbase"
+    },
+    {
+        "desc": "For advanced use only. A string to be inserted into <strong>hbase-site.xml</strong> for this role only.",
+        "display_name": "HBase Thrift Server Advanced Configuration Snippet (Safety Valve) for hbase-site.xml",
+        "name": "hbase_thriftserver_config_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress the results of the Heap Dump Directory Free Space heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Heap Dump Directory Free Space",
+        "name": "role_health_suppression_hbase_thrift_server_heap_dump_directory_free_space",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds of the number of file descriptors used. Specified as a percentage of file descriptor limit.",
+        "display_name": "File Descriptor Monitoring Thresholds",
+        "name": "hbasethriftserver_fd_thresholds",
+        "value": "{\"critical\":\"70.0\",\"warning\":\"50.0\"}"
+    },
+    {
+        "desc": "Number of CPU shares to assign to this role. The greater the number of shares, the larger the share of the host's CPUs that will be given to this role when the host experiences CPU contention. Must be between 2 and 262144. Defaults to 1024 for processes not managed by Cloudera Manager.",
+        "display_name": "Cgroup CPU Shares",
+        "name": "rm_cpu_shares",
+        "value": "1024"
+    },
+    {
+        "desc": "Path to directory where heap dumps are generated when java.lang.OutOfMemoryError error is thrown. This directory is automatically created if it does not exist. If this directory already exists, role user must have write access to this directory. If this directory is shared among multiple roles, it should have 1777 permissions. The heap dump files are created with 600 permissions and are owned by the role user. The amount of free space in this directory should be greater than the maximum Java Process heap size configured for this role.",
+        "display_name": "Heap Dump Directory",
+        "name": "oom_heap_dump_dir",
+        "value": "/tmp"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HBase Thrift Server Advanced Configuration Snippet (Safety Valve) for hbase-site.xml parameter.",
+        "display_name": "Suppress Parameter Validation: HBase Thrift Server Advanced Configuration Snippet (Safety Valve) for hbase-site.xml",
+        "name": "role_config_suppression_hbase_thriftserver_config_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "The frequency with which stacks are collected.",
+        "display_name": "Stacks Collection Frequency",
+        "name": "stacks_collection_frequency",
+        "value": "5.0"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Stacks Collection Directory parameter.",
+        "display_name": "Suppress Parameter Validation: Stacks Collection Directory",
+        "name": "role_config_suppression_stacks_collection_directory",
+        "value": "false"
+    },
+    {
+        "desc": "The minimum log level for HBase Thrift Server logs",
+        "display_name": "HBase Thrift Server Logging Threshold",
+        "name": "log_threshold",
+        "value": "INFO"
+    },
+    {
+        "desc": "Encrypt communication between clients and HBase Thrift Server over HTTP using Transport Layer Security (TLS) (formerly known as Secure Socket Layer (SSL)).",
+        "display_name": "Enable TLS/SSL for HBase Thrift Server over HTTP",
+        "name": "hbase_thriftserver_http_use_ssl",
+        "value": "false"
+    }
+]

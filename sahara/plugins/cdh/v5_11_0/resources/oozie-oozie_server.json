@@ -1,0 +1,674 @@
+[
+    {
+        "desc": "The period over which to compute the moving average of the callable queue size.",
+        "display_name": "Oozie Server Callable Queue Monitoring Period",
+        "name": "oozie_server_callable_queue_window",
+        "value": "5"
+    },
+    {
+        "desc": "Whether or not periodic stacks collection is enabled.",
+        "display_name": "Stacks Collection Enabled",
+        "name": "stacks_collection_enabled",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds for the weighted average extra time the pause monitor spent paused. Specified as a percentage of elapsed wall clock time.",
+        "display_name": "Pause Duration Thresholds",
+        "name": "oozie_server_pause_duration_thresholds",
+        "value": "{\"critical\":\"60.0\",\"warning\":\"30.0\"}"
+    },
+    {
+        "desc": "Comma-separated list of ActionService executor extension classes. Only action types with associated executors can be used in workflows. For CDH 5.4 and higher, this parameter is used only to specify additional classes for workflows. All executor extension classes included in that release will be added automatically and do not need to be specified.",
+        "display_name": "Oozie ActionService Executor Extension Classes",
+        "name": "oozie_executor_extension_classes",
+        "value": ""
+    },
+    {
+        "desc": "Comma-separated list of Oozie plug-ins to be activated. If one plugin cannot be loaded, all the plugins are ignored.",
+        "display_name": "Oozie Server Plugins",
+        "name": "oozie_plugins_list",
+        "value": ""
+    },
+    {
+        "desc": "Enables the health test that the Oozie Server's process state is consistent with the role configuration",
+        "display_name": "Oozie Server Process Health Test",
+        "name": "oozie_server_scm_health_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Oozie Server Database Password parameter.",
+        "display_name": "Suppress Parameter Validation: Oozie Server Database Password",
+        "name": "role_config_suppression_oozie_database_password",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Oozie Server Plugins parameter.",
+        "display_name": "Suppress Parameter Validation: Oozie Server Plugins",
+        "name": "role_config_suppression_oozie_plugins_list",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>log4j.properties</strong> for this role only.",
+        "display_name": "Oozie Server Logging Advanced Configuration Snippet (Safety Valve)",
+        "name": "log4j_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress the results of the Host Health heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Host Health",
+        "name": "role_health_suppression_oozie_server_host_health",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Oozie TLS/SSL Server JKS Keystore File Password parameter.",
+        "display_name": "Suppress Parameter Validation: Oozie TLS/SSL Server JKS Keystore File Password",
+        "name": "role_config_suppression_oozie_https_keystore_password",
+        "value": "false"
+    },
+    {
+        "desc": "Enables the health test that the Cloudera Manager Agent can successfully contact and gather metrics from the web server.",
+        "display_name": "Web Metric Collection",
+        "name": "oozie_server_web_metric_collection_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "These arguments will be passed as part of the Java command line. Commonly, garbage collection flags, PermGen, or extra debugging flags would be passed here.",
+        "display_name": "Java Configuration Options for Oozie Server",
+        "name": "oozie_java_opts",
+        "value": ""
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Oozie Email Action SMTP Host parameter.",
+        "display_name": "Suppress Parameter Validation: Oozie Email Action SMTP Host",
+        "name": "role_config_suppression_oozie_email_smtp_host",
+        "value": "false"
+    },
+    {
+        "desc": "Completed workflow jobs older than this value, in days, will be purged by the PurgeService.",
+        "display_name": "Days to Keep Completed Workflow Jobs",
+        "name": "purgeservice_older_than",
+        "value": "30"
+    },
+    {
+        "desc": "Whether to suppress the results of the Heap Dump Directory Free Space heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Heap Dump Directory Free Space",
+        "name": "role_health_suppression_oozie_server_heap_dump_directory_free_space",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Heap Dump Directory parameter.",
+        "display_name": "Suppress Parameter Validation: Heap Dump Directory",
+        "name": "role_config_suppression_oom_heap_dump_dir",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Oozie SchemaService Workflow Extension Schemas parameter.",
+        "display_name": "Suppress Parameter Validation: Oozie SchemaService Workflow Extension Schemas",
+        "name": "role_config_suppression_oozie_workflow_extension_schemas",
+        "value": "false"
+    },
+    {
+        "desc": "When set, Cloudera Manager will send alerts when this entity's configuration changes.",
+        "display_name": "Enable Configuration Change Alerts",
+        "name": "enable_config_alerts",
+        "value": "false"
+    },
+    {
+        "desc": "The SMTP server port to use for Oozie email action",
+        "display_name": "Oozie Email Action SMTP Port",
+        "name": "oozie_email_smtp_prt",
+        "value": "25"
+    },
+    {
+        "desc": "Whether to suppress the results of the Callable Queue Size heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Callable Queue Size",
+        "name": "role_health_suppression_oozie_server_callablequeue_size_health",
+        "value": "false"
+    },
+    {
+        "desc": "When set, generates heap dump file when java.lang.OutOfMemoryError is thrown.",
+        "display_name": "Dump Heap When Out of Memory",
+        "name": "oom_heap_dump_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Oozie Server Data Directory parameter.",
+        "display_name": "Suppress Parameter Validation: Oozie Server Data Directory",
+        "name": "role_config_suppression_oozie_data_dir",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the Unexpected Exits heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Unexpected Exits",
+        "name": "role_health_suppression_oozie_server_unexpected_exits",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the Process Status heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Process Status",
+        "name": "role_health_suppression_oozie_server_scm_health",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Oozie Email Action From Address parameter.",
+        "display_name": "Suppress Parameter Validation: Oozie Email Action From Address",
+        "name": "role_config_suppression_oozie_email_from_address",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Stacks Collection Directory parameter.",
+        "display_name": "Suppress Parameter Validation: Stacks Collection Directory",
+        "name": "role_config_suppression_stacks_collection_directory",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Oozie Server Log Directory parameter.",
+        "display_name": "Suppress Parameter Validation: Oozie Server Log Directory",
+        "name": "role_config_suppression_oozie_log_dir",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds for monitoring of free space on the filesystem that contains this role's log directory. Specified as a percentage of the capacity on that filesystem. This setting is not used if a Log Directory Free Space Monitoring Absolute Thresholds setting is configured.",
+        "display_name": "Log Directory Free Space Monitoring Percentage Thresholds",
+        "name": "log_directory_free_space_percentage_thresholds",
+        "value": "{\"critical\":\"never\",\"warning\":\"never\"}"
+    },
+    {
+        "desc": "Enable SMTP authentication for Oozie email action",
+        "display_name": "Oozie Email Action SMTP Authentication Enabled",
+        "name": "oozie_email_smtp_auth",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Oozie Server Advanced Configuration Snippet (Safety Valve) for oozie-site.xml parameter.",
+        "display_name": "Suppress Parameter Validation: Oozie Server Advanced Configuration Snippet (Safety Valve) for oozie-site.xml",
+        "name": "role_config_suppression_oozie_config_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds for monitoring of free space on the filesystem that contains this role's heap dump directory.",
+        "display_name": "Heap Dump Directory Free Space Monitoring Absolute Thresholds",
+        "name": "heap_dump_directory_free_space_absolute_thresholds",
+        "value": "{\"critical\":\"5.36870912E9\",\"warning\":\"1.073741824E10\"}"
+    },
+    {
+        "desc": "The directory in which stacks logs are placed. If not set, stacks are logged into a <code>stacks</code> subdirectory of the role's log directory.",
+        "display_name": "Stacks Collection Directory",
+        "name": "stacks_collection_directory",
+        "value": null
+    },
+    {
+        "desc": "The method used to collect stacks. The jstack option involves periodically running the jstack command against the role's daemon process. The servlet method is available for those roles that have an HTTP server endpoint exposing the current stacks traces of all threads. When the servlet method is selected, that HTTP endpoint is periodically scraped.",
+        "display_name": "Stacks Collection Method",
+        "name": "stacks_collection_method",
+        "value": "jstack"
+    },
+    {
+        "desc": "SMTP password for Oozie email action",
+        "display_name": "Oozie Email Action SMTP Authentication Password",
+        "name": "oozie_email_smtp_password",
+        "value": null
+    },
+    {
+        "desc": "Maximum concurrency for a given callable type. Each command is a callable type: submit, start, run, etc. Each action type is a callable type: MapReduce, SSH, sub-workflow, etc. All commands that use action executors (action-start, action-end. etc.) use the action type as the callable type.",
+        "display_name": "Maximum concurrency for a given callable type",
+        "name": "oozie_service_callablequeueservice_callable_concurrency",
+        "value": "10"
+    },
+    {
+        "desc": "<p>The configured triggers for this role. This is a JSON-formatted list of triggers. These triggers are evaluated as part as the health system. Every trigger expression is parsed, and if the trigger condition is met, the list of actions provided in the trigger expression is executed.</p><p>Each trigger has the following fields:</p><ul><li><code>triggerName</code> <b>(mandatory)</b> - The name of the trigger. This value must be unique for the specific role. </li><li><code>triggerExpression</code> <b>(mandatory)</b> - A tsquery expression representing the trigger. </li><li><code>streamThreshold</code> <b>(optional)</b> - The maximum number of streams that can satisfy a condition of a trigger before the condition fires. By default set to 0, and any stream returned causes the condition to fire. </li><li><code>enabled</code> <b> (optional)</b> - By default set to 'true'. If set to 'false', the trigger is not evaluated.</li><li><code>expressionEditorConfig</code> <b> (optional)</b> - Metadata for the trigger editor. If present, the trigger should only be edited from the Edit Trigger page; editing the trigger here can lead to inconsistencies.</li></ul><p>For example, the following JSON formatted trigger configured for a DataNode fires if the DataNode has more than 1500 file descriptors opened:</p><p><pre>[{\"triggerName\": \"sample-trigger\",\n  \"triggerExpression\": \"IF (SELECT fd_open WHERE roleName=$ROLENAME and last(fd_open) > 1500) DO health:bad\",\n  \"streamThreshold\": 0, \"enabled\": \"true\"}]</pre></p><p>See the trigger rules documentation for more details on how to write triggers using tsquery.</p><p>The JSON format is evolving and may change and, as a result, backward compatibility is not guaranteed between releases.</p>",
+        "display_name": "Role Triggers",
+        "name": "role_triggers",
+        "value": "[]"
+    },
+    {
+        "desc": "If true, enables the Oozie Server web console. ExtJS 2.2 zip archive must be extracted to /var/lib/oozie on the same host as the Oozie Server.",
+        "display_name": "Enable Oozie Server Web Console",
+        "name": "oozie_web_console",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds on the duration of the metrics request to the web server.",
+        "display_name": "Web Metric Collection Duration",
+        "name": "oozie_server_web_metric_collection_thresholds",
+        "value": "{\"critical\":\"never\",\"warning\":\"10000.0\"}"
+    },
+    {
+        "desc": "Username for connecting to the database used by Oozie Server. Does not apply if you are using Derby as the database type.",
+        "display_name": "Oozie Server Database User",
+        "name": "oozie_database_user",
+        "value": "sa"
+    },
+    {
+        "desc": "Whether to suppress the results of the Audit Pipeline Test heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Audit Pipeline Test",
+        "name": "role_health_suppression_oozie_server_audit_health",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the Pause Duration heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Pause Duration",
+        "name": "role_health_suppression_oozie_server_pause_duration",
+        "value": "false"
+    },
+    {
+        "desc": "The amount of stacks data that is retained. After the retention limit is reached, the oldest data is deleted.",
+        "display_name": "Stacks Collection Data Retention",
+        "name": "stacks_collection_data_retention",
+        "value": "104857600"
+    },
+    {
+        "desc": "Whether to suppress the results of the File Descriptors heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: File Descriptors",
+        "name": "role_health_suppression_oozie_server_file_descriptor",
+        "value": "false"
+    },
+    {
+        "desc": "The period to review when computing the moving average of extra time the pause monitor spent paused.",
+        "display_name": "Pause Duration Monitoring Period",
+        "name": "oozie_server_pause_duration_window",
+        "value": "5"
+    },
+    {
+        "desc": "The from address to be used for mailing all emails for Oozie email action",
+        "display_name": "Oozie Email Action From Address",
+        "name": "oozie_email_from_address",
+        "value": "oozie@localhost"
+    },
+    {
+        "desc": "Port of Oozie Server",
+        "display_name": "Oozie HTTP Port",
+        "name": "oozie_http_port",
+        "value": "11000"
+    },
+    {
+        "desc": "Whether to suppress the results of the Oozie Server Shared Library Check heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Oozie Server Shared Library Check",
+        "name": "role_health_suppression_oozie_server_shared_lib_version_health",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds for unexpected exits encountered within a recent period specified by the unexpected_exits_window configuration for the role.",
+        "display_name": "Unexpected Exits Thresholds",
+        "name": "unexpected_exits_thresholds",
+        "value": "{\"critical\":\"any\",\"warning\":\"never\"}"
+    },
+    {
+        "desc": "Directory where Oozie Server will place its log files.",
+        "display_name": "Oozie Server Log Directory",
+        "name": "oozie_log_dir",
+        "value": "/var/log/oozie"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Java Configuration Options for Oozie Server parameter.",
+        "display_name": "Suppress Parameter Validation: Java Configuration Options for Oozie Server",
+        "name": "role_config_suppression_oozie_java_opts",
+        "value": "false"
+    },
+    {
+        "desc": "Completed bundle jobs older than this value, in days, will be purged by the PurgeService.",
+        "display_name": "Days to Keep Completed Bundle Jobs",
+        "name": "purgeservice_bundle_older_than",
+        "value": "7"
+    },
+    {
+        "desc": "Maximum callable queue size",
+        "display_name": "Maximum Callable Queue Size",
+        "name": "oozie_service_callablequeueservice_queue_size",
+        "value": "10000"
+    },
+    {
+        "desc": "The health test thresholds for monitoring of free space on the filesystem that contains this role's heap dump directory. Specified as a percentage of the capacity on that filesystem. This setting is not used if a Heap Dump Directory Free Space Monitoring Absolute Thresholds setting is configured.",
+        "display_name": "Heap Dump Directory Free Space Monitoring Percentage Thresholds",
+        "name": "heap_dump_directory_free_space_percentage_thresholds",
+        "value": "{\"critical\":\"never\",\"warning\":\"never\"}"
+    },
+    {
+        "desc": "Number of CPU shares to assign to this role. The greater the number of shares, the larger the share of the host's CPUs that will be given to this role when the host experiences CPU contention. Must be between 2 and 262144. Defaults to 1024 for processes not managed by Cloudera Manager.",
+        "display_name": "Cgroup CPU Shares",
+        "name": "rm_cpu_shares",
+        "value": "1024"
+    },
+    {
+        "desc": "The password for the Oozie JKS keystore file.",
+        "display_name": "Oozie TLS/SSL Server JKS Keystore File Password",
+        "name": "oozie_https_keystore_password",
+        "value": null
+    },
+    {
+        "desc": "Completed coordinator jobs older than this value, in days, will be purged by the PurgeService.",
+        "display_name": "Days to Keep Completed Coordinator Jobs",
+        "name": "purgeservice_coord_older_than",
+        "value": "7"
+    },
+    {
+        "desc": "Workflow Status metrics collection interval.",
+        "display_name": "Workflow Status Metrics Collection Interval",
+        "name": "oozie_job_metric_collection_interval",
+        "value": "1"
+    },
+    {
+        "desc": "The minimum log level for Oozie Server logs",
+        "display_name": "Oozie Server Logging Threshold",
+        "name": "log_threshold",
+        "value": "INFO"
+    },
+    {
+        "desc": "Whether to suppress the results of the Swap Memory Usage heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Swap Memory Usage",
+        "name": "role_health_suppression_oozie_server_swap_memory_usage",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the Web Server Status heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Web Server Status",
+        "name": "role_health_suppression_oozie_server_web_metric_collection",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Oozie Server Database Name parameter.",
+        "display_name": "Suppress Parameter Validation: Oozie Server Database Name",
+        "name": "role_config_suppression_oozie_database_name",
+        "value": "false"
+    },
+    {
+        "desc": "When computing the overall Oozie Server health, consider the host's health.",
+        "display_name": "Oozie Server Host Health Test",
+        "name": "oozie_server_host_health_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Password for connecting to the database used by Oozie Server. Does not apply if you are using Derby as the database type.",
+        "display_name": "Oozie Server Database Password",
+        "name": "oozie_database_password",
+        "value": ""
+    },
+    {
+        "desc": "When set, this role's process is automatically (and transparently) restarted in the event of an unexpected failure.",
+        "display_name": "Automatically Restart Process",
+        "name": "process_auto_restart",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Oozie Server Logging Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: Oozie Server Logging Advanced Configuration Snippet (Safety Valve)",
+        "name": "role_config_suppression_log4j_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Oozie ActionService Executor Extension Classes parameter.",
+        "display_name": "Suppress Parameter Validation: Oozie ActionService Executor Extension Classes",
+        "name": "role_config_suppression_oozie_executor_extension_classes",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the CDH Version Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: CDH Version Validator",
+        "name": "role_config_suppression_cdh_version_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Hard memory limit to assign to this role, enforced by the Linux kernel. When the limit is reached, the kernel will reclaim pages charged to the process. If reclaiming fails, the kernel may kill the process. Both anonymous as well as page cache pages contribute to the limit. Use a value of -1 B to specify no limit. By default processes not managed by Cloudera Manager will have no limit.",
+        "display_name": "Cgroup Memory Hard Limit",
+        "name": "rm_memory_hard_limit",
+        "value": "-1"
+    },
+    {
+        "desc": "The health test thresholds of the weighted average size of the Oozie Server callable queue over a recent period. See also Oozie Server Callable Queue Monitoring Period.",
+        "display_name": "Oozie Server Callable Queue Monitoring Threshold",
+        "name": "oozie_server_callable_queue_threshold",
+        "value": "{\"critical\":\"95.0\",\"warning\":\"80.0\"}"
+    },
+    {
+        "desc": "Directory where the Oozie Server places its data. Only applicable when using Derby as the database type.",
+        "display_name": "Oozie Server Data Directory",
+        "name": "oozie_data_dir",
+        "value": "/var/lib/oozie/data"
+    },
+    {
+        "desc": "Whether to suppress the results of the Log Directory Free Space heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Log Directory Free Space",
+        "name": "role_health_suppression_oozie_server_log_directory_free_space",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds on the swap memory usage of the process.",
+        "display_name": "Process Swap Memory Thresholds",
+        "name": "process_swap_memory_thresholds",
+        "value": "{\"critical\":\"never\",\"warning\":\"any\"}"
+    },
+    {
+        "desc": "The health test thresholds for monitoring of free space on the filesystem that contains this role's log directory.",
+        "display_name": "Log Directory Free Space Monitoring Absolute Thresholds",
+        "name": "log_directory_free_space_absolute_thresholds",
+        "value": "{\"critical\":\"5.36870912E9\",\"warning\":\"1.073741824E10\"}"
+    },
+    {
+        "desc": "The path to the TLS/SSL keystore file containing the server certificate and private key used for TLS/SSL. Used when Oozie is acting as a TLS/SSL server. The keystore must be in JKS format.",
+        "display_name": "Oozie TLS/SSL Server JKS Keystore File Location",
+        "name": "oozie_https_keystore_file",
+        "value": "/var/lib/oozie/.keystore"
+    },
+    {
+        "desc": "Comma-separated list of SchemaService workflow extension schemas for additional action types. From CDH 5.4 and higher, this parameter is used only to specify additional schemas for workflows. All schemas included in that release will be added automatically and do not need to be specified.",
+        "display_name": "Oozie SchemaService Workflow Extension Schemas",
+        "name": "oozie_workflow_extension_schemas",
+        "value": ""
+    },
+    {
+        "desc": "Port of the Oozie Server when using TLS/SSL.",
+        "display_name": "Oozie HTTPS Port",
+        "name": "oozie_https_port",
+        "value": "11443"
+    },
+    {
+        "desc": "The period to review when computing unexpected exits.",
+        "display_name": "Unexpected Exits Monitoring Period",
+        "name": "unexpected_exits_window",
+        "value": "5"
+    },
+    {
+        "desc": "Whether to use the Codehale-based metrics for instrumentation. Enabling this disables the 'instrumentation' REST endpoint and enables the 'metrics' REST endpoint (&lt;hostname:port&gt;/v2/admin/metrics).",
+        "display_name": "Enable The Metrics Instrumentation Service",
+        "name": "oozie_use_metric_instrumentation",
+        "value": "true"
+    },
+    {
+        "desc": "Type of the database used by Oozie Server.",
+        "display_name": "Oozie Server Database Type",
+        "name": "oozie_database_type",
+        "value": "derby"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Oozie Server Database Host parameter.",
+        "display_name": "Suppress Parameter Validation: Oozie Server Database Host",
+        "name": "role_config_suppression_oozie_database_host",
+        "value": "false"
+    },
+    {
+        "desc": "Path to directory where heap dumps are generated when java.lang.OutOfMemoryError error is thrown. This directory is automatically created if it does not exist. If this directory already exists, role user must have write access to this directory. If this directory is shared among multiple roles, it should have 1777 permissions. The heap dump files are created with 600 permissions and are owned by the role user. The amount of free space in this directory should be greater than the maximum Java Process heap size configured for this role.",
+        "display_name": "Heap Dump Directory",
+        "name": "oom_heap_dump_dir",
+        "value": "/tmp"
+    },
+    {
+        "desc": "The frequency with which stacks are collected.",
+        "display_name": "Stacks Collection Frequency",
+        "name": "stacks_collection_frequency",
+        "value": "5.0"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Oozie TLS/SSL Server JKS Keystore File Location parameter.",
+        "display_name": "Suppress Parameter Validation: Oozie TLS/SSL Server JKS Keystore File Location",
+        "name": "role_config_suppression_oozie_https_keystore_file",
+        "value": "false"
+    },
+    {
+        "desc": "The SMTP server host to use for Oozie email action",
+        "display_name": "Oozie Email Action SMTP Host",
+        "name": "oozie_email_smtp_host",
+        "value": "localhost"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Oozie Server Environment Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: Oozie Server Environment Advanced Configuration Snippet (Safety Valve)",
+        "name": "role_config_suppression_oozie_server_role_env_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Oozie TLS/SSL Certificate Trust Store File parameter.",
+        "display_name": "Suppress Parameter Validation: Oozie TLS/SSL Certificate Trust Store File",
+        "name": "role_config_suppression_oozie_https_truststore_file",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Oozie Email Action SMTP Authentication Password parameter.",
+        "display_name": "Suppress Parameter Validation: Oozie Email Action SMTP Authentication Password",
+        "name": "role_config_suppression_oozie_email_smtp_password",
+        "value": "false"
+    },
+    {
+        "desc": "SMTP username for Oozie email action",
+        "display_name": "Oozie Email Action SMTP Authentication Username",
+        "name": "oozie_email_smtp_username",
+        "value": null
+    },
+    {
+        "desc": "The password for the Oozie TLS/SSL Certificate Trust Store File. This password is not required to access the trust store; this field can be left blank. This password provides optional integrity checking of the file. The contents of trust stores are certificates, and certificates are public information.",
+        "display_name": "Oozie TLS/SSL Certificate Trust Store Password",
+        "name": "oozie_https_truststore_password",
+        "value": null
+    },
+    {
+        "desc": "Number of threads used for executing callables",
+        "display_name": "Number Threads For Executing Callables",
+        "name": "oozie_service_callablequeueservice_threads",
+        "value": "50"
+    },
+    {
+        "desc": "The maximum number of rolled log files to keep for Oozie Server logs.  Typically used by log4j or logback.",
+        "display_name": "Oozie Server Maximum Log File Backups",
+        "name": "max_log_backup_index",
+        "value": "720"
+    },
+    {
+        "desc": "The admin port Oozie server runs.",
+        "display_name": "Oozie Admin Port",
+        "name": "oozie_admin_port",
+        "value": "11001"
+    },
+    {
+        "desc": "Soft memory limit to assign to this role, enforced by the Linux kernel. When the limit is reached, the kernel will reclaim pages charged to the process if and only if the host is facing memory pressure. If reclaiming fails, the kernel may kill the process. Both anonymous as well as page cache pages contribute to the limit. Use a value of -1 B to specify no limit. By default processes not managed by Cloudera Manager will have no limit.",
+        "display_name": "Cgroup Memory Soft Limit",
+        "name": "rm_memory_soft_limit",
+        "value": "-1"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Oozie Server Database User parameter.",
+        "display_name": "Suppress Parameter Validation: Oozie Server Database User",
+        "name": "role_config_suppression_oozie_database_user",
+        "value": "false"
+    },
+    {
+        "desc": "The location on disk of the trust store, in .jks format, used to confirm the authenticity of TLS/SSL servers that Oozie might connect to. This is used when Oozie is the client in a TLS/SSL connection. This trust store must contain the certificate(s) used to sign the service(s) connected to. If this parameter is not provided, the default list of well-known certificate authorities is used instead.",
+        "display_name": "Oozie TLS/SSL Certificate Trust Store File",
+        "name": "oozie_https_truststore_file",
+        "value": null
+    },
+    {
+        "desc": "Cloudera Manager agent monitors each service and each of its role by publishing metrics to the Cloudera Manager Service Monitor. Setting it to false will stop Cloudera Manager agent from publishing any metric for corresponding service/roles. This is usually helpful for services that generate large amount of metrics which Service Monitor is not able to process.",
+        "display_name": "Enable Metric Collection",
+        "name": "process_should_monitor",
+        "value": "true"
+    },
+    {
+        "desc": "If true, enables version check for Oozie Server and installed shared libraries.",
+        "display_name": "Enable Oozie Server Shared Libraries Version Check",
+        "name": "oozie_server_shared_lib_version_check_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "The health test thresholds of the number of file descriptors used. Specified as a percentage of file descriptor limit.",
+        "display_name": "File Descriptor Monitoring Thresholds",
+        "name": "oozie_server_fd_thresholds",
+        "value": "{\"critical\":\"70.0\",\"warning\":\"50.0\"}"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Role Triggers parameter.",
+        "display_name": "Suppress Parameter Validation: Role Triggers",
+        "name": "role_config_suppression_role_triggers",
+        "value": "false"
+    },
+    {
+        "desc": "If configured, overrides the process soft and hard rlimits (also called ulimits) for file descriptors to the configured value.",
+        "display_name": "Maximum Process File Descriptors",
+        "name": "rlimit_fds",
+        "value": null
+    },
+    {
+        "desc": "When set, a SIGKILL signal is sent to the role process when java.lang.OutOfMemoryError is thrown.",
+        "display_name": "Kill When Out of Memory",
+        "name": "oom_sigkill_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Name of the database used by Oozie Server.",
+        "display_name": "Oozie Server Database Name",
+        "name": "oozie_database_name",
+        "value": "oozie"
+    },
+    {
+        "desc": "When set, Cloudera Manager will send alerts when the health of this role reaches the threshold specified by the EventServer setting eventserver_health_events_alert_threshold",
+        "display_name": "Enable Health Alerts for this Role",
+        "name": "enable_alerts",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to purge completed workflows and their corresponding coordinator actions of long-running coordinator jobs if the completed workflow jobs are older than the value specified in oozie.service.PurgeService.older.than.",
+        "display_name": "Enable Purge for Long-Running Coordinator Jobs",
+        "name": "purgeservice_purge_old_coord_action",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Oozie TLS/SSL Certificate Trust Store Password parameter.",
+        "display_name": "Suppress Parameter Validation: Oozie TLS/SSL Certificate Trust Store Password",
+        "name": "role_config_suppression_oozie_https_truststore_password",
+        "value": "false"
+    },
+    {
+        "desc": "Weight for the read I/O requests issued by this role. The greater the weight, the higher the priority of the requests when the host experiences I/O contention. Must be between 100 and 1000. Defaults to 1000 for processes not managed by Cloudera Manager.",
+        "display_name": "Cgroup I/O Weight",
+        "name": "rm_io_weight",
+        "value": "500"
+    },
+    {
+        "desc": "For advanced use only. A string to be inserted into <strong>oozie-site.xml</strong> for this role only.",
+        "display_name": "Oozie Server Advanced Configuration Snippet (Safety Valve) for oozie-site.xml",
+        "name": "oozie_config_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Oozie Email Action SMTP Authentication Username parameter.",
+        "display_name": "Suppress Parameter Validation: Oozie Email Action SMTP Authentication Username",
+        "name": "role_config_suppression_oozie_email_smtp_username",
+        "value": "false"
+    },
+    {
+        "desc": "Maximum size in bytes for the Java Process heap memory.  Passed to Java -Xmx.",
+        "display_name": "Java Heap Size of Oozie Server in Bytes",
+        "name": "oozie_java_heapsize",
+        "value": "1073741824"
+    },
+    {
+        "desc": "Hostname of the database used by Oozie Server. If the port is non-default for your database type, use host:port notation. Does not apply if you are using Derby as the database type.",
+        "display_name": "Oozie Server Database Host",
+        "name": "oozie_database_host",
+        "value": "localhost"
+    },
+    {
+        "desc": "For advanced use only, key-value pairs (one on each line) to be inserted into a role's environment. Applies to configurations of this role except client configuration.",
+        "display_name": "Oozie Server Environment Advanced Configuration Snippet (Safety Valve)",
+        "name": "OOZIE_SERVER_role_env_safety_valve",
+        "value": null
+    }
+]

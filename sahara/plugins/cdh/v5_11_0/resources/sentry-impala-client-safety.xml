@@ -1,0 +1,16 @@
+<property>
+   <name>sentry.service.client.server.rpc-port</name>
+   <value>3893</value>
+</property>
+<property>
+   <name>sentry.service.client.server.rpc-address</name>
+   <value>hostname</value>
+</property>
+<property>
+   <name>sentry.service.client.server.rpc-connection-timeout</name>
+   <value>200000</value>
+</property>
+<property>
+   <name>sentry.service.security.mode</name>
+   <value>none</value>
+</property>

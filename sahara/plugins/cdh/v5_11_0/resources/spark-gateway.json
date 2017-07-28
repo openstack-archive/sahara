@@ -1,0 +1,242 @@
+[
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Spark Data Serializer parameter.",
+        "display_name": "Suppress Parameter Validation: Spark Data Serializer",
+        "name": "role_config_suppression_spark_data_serializer",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Spark Extra Listeners parameter.",
+        "display_name": "Suppress Parameter Validation: Spark Extra Listeners",
+        "name": "role_config_suppression_spark_extralisteners",
+        "value": "false"
+    },
+    {
+        "desc": "When dynamic allocation is enabled, time after which idle executors will be stopped.",
+        "display_name": "Executor Idle Timeout",
+        "name": "spark_dynamic_allocation_idle_timeout",
+        "value": "60"
+    },
+    {
+        "desc": "Whether to encrypt temporary shuffle and cache files stored by Spark on the local disks.",
+        "display_name": "Enable I/O Encryption",
+        "name": "spark_io_encryption_enabled",
+        "value": "false"
+    },
+    {
+        "desc": "Enables the external shuffle service. The external shuffle service preserves shuffle files written by executors so that the executors can be deallocated without losing work. Must be enabled if Enable Dynamic Allocation is enabled.  Recommended and enabled by default for CDH 5.5 and higher.",
+        "display_name": "Enable Shuffle Service",
+        "name": "spark_shuffle_service_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "The directory where the client configs will be deployed",
+        "display_name": "Deploy Directory",
+        "name": "client_config_root_dir",
+        "value": "/etc/spark"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Gateway Advanced Configuration Snippet (Safety Valve) for navigator.lineage.client.properties parameter.",
+        "display_name": "Suppress Parameter Validation: Gateway Advanced Configuration Snippet (Safety Valve) for navigator.lineage.client.properties",
+        "name": "role_config_suppression_navigator_lineage_client_config_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "The priority level that the client configuration will have in the Alternatives system on the hosts. Higher priority levels will cause Alternatives to prefer this configuration over any others.",
+        "display_name": "Alternatives Priority",
+        "name": "client_config_priority",
+        "value": "51"
+    },
+    {
+        "desc": "The minimum log level for the Spark shell.",
+        "display_name": "Shell Logging Threshold",
+        "name": "spark_gateway_shell_logging_threshold",
+        "value": "WARN"
+    },
+    {
+        "desc": "Whether to enable the Spark Web UI on individual applications. It's recommended that the UI be disabled in secure clusters.",
+        "display_name": "Enable Spark Web UI",
+        "name": "spark_ui_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Enable dynamic allocation of executors in Spark applications.",
+        "display_name": "Enable Dynamic Allocation",
+        "name": "spark_dynamic_allocation_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Which deploy mode to use by default. Can be overridden by users when launching applications.",
+        "display_name": "Default Application Deploy Mode",
+        "name": "spark_deploy_mode",
+        "value": "client"
+    },
+    {
+        "desc": "Spark SQL QueryExecutionListener that will listen to query executions and write out the lineage info to the lineage directory if lineage is enabled.",
+        "display_name": "Spark SQL Query Execution Listeners",
+        "name": "spark_sql_queryexecutionlisteners",
+        "value": "com.cloudera.spark.lineage.ClouderaNavigatorListener"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into the client configuration for <strong>spark-conf/spark-env.sh</strong>.",
+        "display_name": "Spark Client Advanced Configuration Snippet (Safety Valve) for spark-conf/spark-env.sh",
+        "name": "spark-conf/spark-env.sh_client_config_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Gateway Logging Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: Gateway Logging Advanced Configuration Snippet (Safety Valve)",
+        "name": "role_config_suppression_log4j_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Deploy Directory parameter.",
+        "display_name": "Suppress Parameter Validation: Deploy Directory",
+        "name": "role_config_suppression_client_config_root_dir",
+        "value": "false"
+    },
+    {
+        "desc": "When dynamic allocation is enabled, maximum number of executors to allocate. By default, Spark relies on YARN to control the maximum number of executors for the application.",
+        "display_name": "Maximum Executor Count",
+        "name": "spark_dynamic_allocation_max_executors",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the CDH Version Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: CDH Version Validator",
+        "name": "role_config_suppression_cdh_version_validator",
+        "value": "false"
+    },
+    {
+        "desc": "When dynamic allocation is enabled, timeout before requesting new executors when there are backlogged tasks.",
+        "display_name": "Scheduler Backlog Timeout",
+        "name": "spark_dynamic_allocation_scheduler_backlog_timeout",
+        "value": "1"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Extra Python Path parameter.",
+        "display_name": "Suppress Parameter Validation: Extra Python Path",
+        "name": "role_config_suppression_spark_python_path",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into the client configuration for <strong>spark-conf/spark-defaults.conf</strong>.",
+        "display_name": "Spark Client Advanced Configuration Snippet (Safety Valve) for spark-conf/spark-defaults.conf",
+        "name": "spark-conf/spark-defaults.conf_client_config_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to encrypt communication between Spark processes belonging to the same application. Requires authentication (spark.authenticate) to be enabled.",
+        "display_name": "Enable Network Encryption",
+        "name": "spark_network_encryption_enabled",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>log4j.properties</strong> for this role only.",
+        "display_name": "Gateway Logging Advanced Configuration Snippet (Safety Valve)",
+        "name": "log4j_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "When dynamic allocation is enabled, timeout before requesting new executors after the initial backlog timeout has already expired. By default this is the same value as the initial backlog timeout.",
+        "display_name": "Sustained Scheduler Backlog Timeout",
+        "name": "spark_dynamic_allocation_sustained_scheduler_backlog_timeout",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the GATEWAY Lineage Log Directory parameter.",
+        "display_name": "Suppress Parameter Validation: GATEWAY Lineage Log Directory",
+        "name": "role_config_suppression_lineage_event_log_dir",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Spark SQL Query Execution Listeners parameter.",
+        "display_name": "Suppress Parameter Validation: Spark SQL Query Execution Listeners",
+        "name": "role_config_suppression_spark_sql_queryexecutionlisteners",
+        "value": "false"
+    },
+    {
+        "desc": "When dynamic allocation is enabled, time after which idle executors with cached RDDs blocks will be stopped. By default, they're never stopped. This configuration is only available starting in CDH 5.5.",
+        "display_name": "Caching Executor Idle Timeout",
+        "name": "spark_dynamic_allocation_cached_idle_timeout",
+        "value": null
+    },
+    {
+        "desc": "Write Spark application history logs to HDFS.",
+        "display_name": "Enable History",
+        "name": "spark_history_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "When dynamic allocation is enabled, minimum number of executors to keep alive while the application is running.",
+        "display_name": "Minimum Executor Count",
+        "name": "spark_dynamic_allocation_min_executors",
+        "value": "0"
+    },
+    {
+        "desc": "Name of class implementing org.apache.spark.serializer.Serializer to use in Spark applications.",
+        "display_name": "Spark Data Serializer",
+        "name": "spark_data_serializer",
+        "value": "org.apache.spark.serializer.KryoSerializer"
+    },
+    {
+        "desc": "Python library paths to add to PySpark applications.",
+        "display_name": "Extra Python Path",
+        "name": "spark_python_path",
+        "value": ""
+    },
+    {
+        "desc": "Whether to allow users to kill running stages from the Spark Web UI.",
+        "display_name": "Enable Kill From UI",
+        "name": "spark_gateway_ui_kill_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Spark Client Advanced Configuration Snippet (Safety Valve) for spark-conf/spark-defaults.conf parameter.",
+        "display_name": "Suppress Parameter Validation: Spark Client Advanced Configuration Snippet (Safety Valve) for spark-conf/spark-defaults.conf",
+        "name": "role_config_suppression_spark-conf/spark-defaults.conf_client_config_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "When set, Cloudera Manager will send alerts when this entity's configuration changes.",
+        "display_name": "Enable Configuration Change Alerts",
+        "name": "enable_config_alerts",
+        "value": "false"
+    },
+    {
+        "desc": "Spark listener that will write out the end of application marker when the application ends.",
+        "display_name": "Spark Extra Listeners",
+        "name": "spark_extralisteners",
+        "value": "com.cloudera.spark.lineage.ClouderaNavigatorListener"
+    },
+    {
+        "desc": "When dynamic allocation is enabled, number of executors to allocate when the application starts. By default, this is the same value as the minimum number of executors.",
+        "display_name": "Initial Executor Count",
+        "name": "spark_dynamic_allocation_initial_executors",
+        "value": null
+    },
+    {
+        "desc": "The directory in which GATEWAY lineage log files are written. If changed from the default, Cloudera Manager will not be able to provide lineage information without restarting the Cloudera Manager Agent(s).",
+        "display_name": "GATEWAY Lineage Log Directory",
+        "name": "lineage_event_log_dir",
+        "value": "/var/log/spark/lineage"
+    },
+    {
+        "desc": "The minimum log level for Gateway logs",
+        "display_name": "Gateway Logging Threshold",
+        "name": "log_threshold",
+        "value": "INFO"
+    },
+    {
+        "desc": "For advanced use only. A string to be inserted into <strong>navigator.lineage.client.properties</strong> for this role only.",
+        "display_name": "Gateway Advanced Configuration Snippet (Safety Valve) for navigator.lineage.client.properties",
+        "name": "navigator_lineage_client_config_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Spark Client Advanced Configuration Snippet (Safety Valve) for spark-conf/spark-env.sh parameter.",
+        "display_name": "Suppress Parameter Validation: Spark Client Advanced Configuration Snippet (Safety Valve) for spark-conf/spark-env.sh",
+        "name": "role_config_suppression_spark-conf/spark-env.sh_client_config_safety_valve",
+        "value": "false"
+    }
+]
