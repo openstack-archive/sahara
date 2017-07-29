@@ -160,7 +160,7 @@ def check_node_group_basic_fields(plugin_name, hadoop_version, ng,
                 _("You must specify a volumes_size parameter"))
 
     if ng.get('floating_ip_pool'):
-        check_floatingip_pool_exists(ng['name'], ng['floating_ip_pool'])
+        check_floatingip_pool_exists(ng['floating_ip_pool'])
 
     if ng.get('security_groups'):
         check_security_groups_exist(ng['security_groups'])
@@ -189,7 +189,7 @@ def check_security_groups_exist(security_groups):
                 sg, _("Security group '%s' not found"))
 
 
-def check_floatingip_pool_exists(ng_name, pool_id):
+def check_floatingip_pool_exists(pool_id):
     network = None
     if CONF.use_neutron:
         network = nova.get_network(id=pool_id)
