@@ -82,6 +82,8 @@ def _get_prev_and_next_objects(objects, limit, marker, order=None):
             if obj.id == marker.id:
                 position = pos
                 break
+        else:
+            return None, None
         if position - limit >= 0:
             prev_marker = objects[position - limit].id
         else:

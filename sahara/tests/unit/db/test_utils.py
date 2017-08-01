@@ -40,6 +40,9 @@ class TestPaginationUtils(testtools.TestCase):
         res = api._get_prev_and_next_objects(query, 5, mock.MagicMock(id=4))
         self.assertEqual((None, 9), res)
 
+        res = api._get_prev_and_next_objects(query, 5, mock.MagicMock(id=100))
+        self.assertEqual((None, None), res)
+
     def test_parse_sorting_args(self):
         self.assertEqual(("name", "desc"), api._parse_sorting_args("-name"))
         self.assertEqual(("name", "asc"), api._parse_sorting_args("name"))
