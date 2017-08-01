@@ -130,7 +130,7 @@ class TestConfigHelper(base.SaharaTestCase):
         }
         opt_name = 'tt'
         default = c_helper._get_spark_opt_default(opt_name)
-        self.assertEqual(default, None)
+        self.assertIsNone(default)
 
         opt_name = 'test_name'
         default = c_helper._get_spark_opt_default(opt_name)
