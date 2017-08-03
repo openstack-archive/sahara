@@ -60,9 +60,14 @@ class SparkProvider(p.ProvisioningPluginBase):
 
     def get_labels(self):
         default = {'enabled': {'status': True}, 'stable': {'status': True}}
+        deprecated = {'enabled': {'status': True},
+                      'deprecated': {'status': True}}
         result = {'plugin_labels': copy.deepcopy(default)}
+        stable_versions = ['2.1.0', '1.6.0']
         result['version_labels'] = {
-            version: copy.deepcopy(default) for version in self.get_versions()
+            version: copy.deepcopy(
+                default if version in stable_versions else deprecated
+                ) for version in self.get_versions()
         }
         return result
 
