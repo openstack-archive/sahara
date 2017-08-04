@@ -4,7 +4,7 @@ Sahara (Data Processing) UI User Guide
 This guide assumes that you already have the sahara service and Horizon
 dashboard up and running. Don't forget to make sure that sahara is
 registered in Keystone. If you require assistance with that, please see the
-`installation guide <../userdoc/installation.guide.html>`_.
+`installation guide <../install/installation-guide-html>`_.
 
 The sections below give a panel by panel overview of setting up clusters
 and running jobs.  For a description of using the guided cluster and job tools,
@@ -379,7 +379,7 @@ Additional Notes
    swift Data Sources. It should be noted that it is possible to configure
    sahara such that the username/password credentials are *not* required. For
    more information on that, please refer to: :doc:`Sahara Advanced
-   Configuration Guide <../userdoc/advanced.configuration.guide>`
+   Configuration Guide <../admin/advanced-configuration-guide>`
 
 Launching a cluster via the Cluster Creation Guide
 --------------------------------------------------

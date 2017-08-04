@@ -35,7 +35,7 @@ To support EDP, the following components must also be installed on the guest:
 * mysql
 * hive
 
-See :doc:`vanilla_imagebuilder` for instructions on building images for this
+See :doc:`vanilla-imagebuilder` for instructions on building images for this
 plugin.
 
 Hortonworks Plugin Requirements
@@ -53,5 +53,5 @@ Cloudera Plugin Requirements
 Cloudera Plugin does not have any additional requirements, just build a CDH
 image to deploy the cluster.
 
-See :doc:`cdh_imagebuilder` for instructions on building images for this
+See :doc:`cdh-imagebuilder` for instructions on building images for this
 plugin.

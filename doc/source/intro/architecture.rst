@@ -1,7 +1,7 @@
 Architecture
 ============
 
-.. image:: images/sahara-architecture.svg
+.. image:: ../images/sahara-architecture.svg
     :width: 800 px
     :scale: 100 %
     :align: left
@@ -26,7 +26,7 @@ The Sahara architecture consists of several components:
   management solutions like Apache Ambari and Cloudera Management Console
   could be utilized for that purpose as well.
 
-* EDP - :doc:`../userdoc/edp` responsible for scheduling and managing
+* EDP - :doc:`../user/edp` responsible for scheduling and managing
   data processing jobs on clusters provisioned by sahara.
 
 * REST API - exposes sahara functionality via REST HTTP interface.

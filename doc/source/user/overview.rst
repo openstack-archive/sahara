@@ -61,7 +61,7 @@ framework on the VMs from scratch. Some plugins might require images with
 pre-installed frameworks or Hadoop distributions.
 
 The Sahara Image Registry is a feature which helps filter out images during
-cluster creation. See :doc:`registering_image` for details on how to work
+cluster creation. See :doc:`registering-image` for details on how to work
 with Image Registry.
 
 Features

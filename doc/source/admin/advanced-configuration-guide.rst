@@ -196,7 +196,7 @@ To run sahara in distributed mode pick several hosts on which
 you want to run sahara services and follow these steps:
 
  * On each host install and configure sahara using the
-   `installation guide <../installation.guide.html>`_
+   `installation guide <../install/installation-guide.html>`_
    except:
 
     * Do not run ``sahara-db-manage`` or launch sahara with ``sahara-all``
@@ -250,7 +250,7 @@ respective source trees:
 
 These options will also be present in the generated sample configuration
 file. For instructions on creating the configuration file please see the
-:doc:`configuration.guide`.
+:doc:`configuration-guide`.
 
 .. _distributed-periodic-tasks:
 
@@ -565,7 +565,7 @@ creation, the created volume will have an ``Error`` state and can not be used.
 Autoconfiguration for templates
 -------------------------------
 
-:doc:`../userdoc/configs_recommendations`
+:doc:`configs-recommendations`
 
 
 NTP service configuration

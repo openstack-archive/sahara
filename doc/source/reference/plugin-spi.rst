@@ -112,7 +112,7 @@ get_edp_engine( cluster, job_type )
 
 Returns an EDP job engine object that supports the specified job_type on the
 given cluster, or None if there is no support. The EDP job engine object
-returned must implement the interface described in :doc:`edp.spi`.  The
+returned must implement the interface described in :doc:`edp-spi`.  The
 job_type is a String matching one of the job types listed in
 :ref:`edp_spi_job_types`.
 
@@ -166,7 +166,7 @@ get_image_arguments( self, hadoop_version ):
 
 Optional method, which gets the argument set taken by the plugin's image
 generator, or NotImplemented if the plugin does not provide image generation
-support. See :doc:`image-gen`.
+support. See :doc:`../contributor/image-gen`.
 
 *Returns*: A sequence with items of type sahara.plugins.images.ImageArgument.
 
@@ -175,7 +175,7 @@ pack_image( self, hadoop_version, remote, test_only=False, ... ):
 
 Optional method which packs an image for registration in Glance and use by
 Sahara. This method is called from the image generation CLI rather than from
-the Sahara api or engine service. See :doc:`image-gen`.
+the Sahara api or engine service. See :doc:`../contributor/image-gen`.
 
 *Returns*: None (modifies the image pointed to by the remote in-place.)
 
@@ -183,7 +183,7 @@ validate_images( self, cluster, test_only=False, image_arguments=None ):
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Validates the image to be used to create a cluster, to ensure that it meets
-the specifications of the plugin. See :doc:`image-gen`.
+the specifications of the plugin. See :doc:`../contributor/image-gen`.
 
 *Returns*: None; may raise a sahara.plugins.exceptions.ImageValidationError
 

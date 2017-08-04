@@ -39,7 +39,7 @@ and ``identity_uri`` parameters. These new parameters should be
 full URIs to the keystone public and admin endpoints, respectively.
 
 For more information about these configuration parameters please see
-the :doc:`configuration.guide`.
+the :doc:`../admin/configuration-guide`.
 
 Database package changes
 ++++++++++++++++++++++++
@@ -78,7 +78,7 @@ The HEAT infrastructure engine has been updated to use the same rules for
 instance user names as the direct engine. In previous releases the user
 name for instances created by sahara using HEAT was always 'ec2-user'. As
 of Juno, the user name is taken from the image registry as described in
-the :doc:`registering_image` document.
+the :doc:`../user/registering-image` document.
 
 This change breaks backward compatibility for clusters created using the HEAT
 infrastructure engine prior to the Juno release. Clusters will continue to

@@ -63,7 +63,7 @@ How to post your first patch for review
 * Apply and commit your changes
 
 * Make sure that your code passes ``PEP8`` checks and unit-tests.
-  See :doc:`development.guidelines`
+  See :doc:`development-guidelines`
 
 * Post your patch for review
 
