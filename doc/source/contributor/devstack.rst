@@ -102,6 +102,9 @@ and may cause hard to debug problems.
     # Enable sahara
     enable_plugin sahara git://git.openstack.org/openstack/sahara
 
+    # Enable heat
+    enable_plugin heat git://git.openstack.org/openstack/heat
+
 In cases where you need to specify a git refspec (branch, tag, or commit hash)
 for the sahara in-tree devstack plugin (or sahara repo), it should be
 appended to the git repo URL as follows:
