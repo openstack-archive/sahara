@@ -10,6 +10,7 @@
 
      [[local|localrc]]
      enable_plugin sahara git://git.openstack.org/openstack/sahara
+     enable_plugin heat git://git.openstack.org/openstack/heat
 
 Optionally, a git refspec may be provided as follows:
 
