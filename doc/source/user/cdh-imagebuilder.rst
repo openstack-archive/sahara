@@ -1,4 +1,4 @@
-.. _cdh_diskimage-builder-label:
+.. _cdh-diskimage-builder-label:
 
 Building Images for Cloudera Plugin
 ===================================

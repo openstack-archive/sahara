@@ -8,7 +8,7 @@ isolated environment and running from the command line.
 Install as a part of DevStack
 -----------------------------
 
-See the `DevStack guide <../devref/devstack.html>`_ for more information
+See the `DevStack guide <devstack.html>`_ for more information
 on installing and configuring DevStack with Sahara.
 
 Sahara UI can be installed as a DevStack plugin by adding the following line

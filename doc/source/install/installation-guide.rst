@@ -39,7 +39,7 @@ To install with RDO
 
 3. Configure sahara as needed. The configuration file is located in
    ``/etc/sahara/sahara.conf``. For details see
-   :doc:`Sahara Configuration Guide <configuration.guide>`
+   :doc:`Sahara Configuration Guide <../admin/configuration-guide>`
 
 4. Create the database schema:
 
@@ -143,7 +143,8 @@ To install into a virtual environment
 ..
 
     Make any necessary changes to ``sahara-venv/etc/sahara.conf``.
-    For details see :doc:`Sahara Configuration Guide <configuration.guide>`
+    For details see
+    :doc:`Sahara Configuration Guide <../admin/configuration-guide>`
 
 .. _common_installation_steps:
 
@@ -209,7 +210,7 @@ installations of sahara.
 ..
 
 5. For more information on configuring sahara with the OpenStack Dashboard
-   please see :doc:`dashboard.guide`.
+   please see :doc:`dashboard-guide`.
 
 Optional installation of default templates
 ------------------------------------------
@@ -276,5 +277,6 @@ To get the list of all possible options run:
     $ sahara-venv/bin/python sahara-venv/bin/sahara-engine --help
 ..
 
-Further, consider reading :doc:`overview` for general sahara concepts and
-:doc:`plugins` for specific plugin features/requirements.
+Further, consider reading :doc:`../intro/overview` for general sahara
+concepts and :doc:`../user/plugins` for specific plugin
+features/requirements.

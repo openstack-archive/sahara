@@ -13,7 +13,7 @@ a plugin can deploy management and monitoring tools for the cluster. Sahara
 provides plugins with utility methods to work with provisioned instances.
 
 A plugin must extend the `sahara.plugins.provisioning:ProvisioningPluginBase`
-class and implement all the required methods. Read :doc:`plugin.spi` for
+class and implement all the required methods. Read :doc:`plugin-spi` for
 details.
 
 The `instance` objects provided by Sahara have a `remote` property which

@@ -27,7 +27,7 @@ Interfaces
 ----------
 
 The EDP features can be used from the sahara web UI which is described in the
-:doc:`../horizon/dashboard.user.guide`.
+:doc:`dashboard-user-guide`.
 
 The EDP features also can be used directly by a client through the
 `REST api <http://developer.openstack.org/api-ref/data-processing/>`_
@@ -63,7 +63,7 @@ stored internally.
 
 Sahara requires credentials (username and password) to access files stored in
 swift unless swift proxy users are configured as described in
-:doc:`../userdoc/advanced.configuration.guide`. The swift service must be
+:doc:`../admin/advanced-configuration-guide`. The swift service must be
 running in the same OpenStack installation referenced by sahara.
 
 To reference a binary file stored in manila, create the job binary with the
@@ -383,7 +383,7 @@ Generation of Swift Properties for Data Sources
 +++++++++++++++++++++++++++++++++++++++++++++++
 
 If swift proxy users are not configured (see
-:doc:`../userdoc/advanced.configuration.guide`) and a job is run with data
+:doc:`../admin/advanced-configuration-guide`) and a job is run with data
 source objects containing swift paths, sahara will automatically generate
 swift username and password configuration values based on the credentials
 in the data sources. If the input and output data sources are both in swift,

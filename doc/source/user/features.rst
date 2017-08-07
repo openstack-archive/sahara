@@ -4,8 +4,8 @@ Features Overview
 This page highlights some of the most prominent features available in
 sahara. The guidance provided here is primarily focused on the
 runtime aspects of sahara. For discussions about configuring the sahara
-server processes please see the :doc:`configuration.guide` and
-:doc:`advanced.configuration.guide`.
+server processes please see the :doc:`../admin/configuration-guide` and
+:doc:`../admin/advanced-configuration-guide`.
 
 Anti-affinity
 -------------
@@ -92,9 +92,10 @@ documentation.
 Distributed Mode
 ----------------
 
-The :doc:`installation.guide` suggests launching sahara in distributed mode
-with ``sahara-api`` and ``sahara-engine`` processes potentially running on
-several machines simultaneously. Running in distributed mode allows sahara to
+The :doc:`../install/installation-guide` suggests launching sahara in
+distributed mode with ``sahara-api`` and ``sahara-engine`` processes
+potentially running on several machines simultaneously.
+Running in distributed mode allows sahara to
 offload intensive tasks to the engine processes while keeping the API
 process free to handle requests.
 
@@ -172,7 +173,8 @@ DNS support
 -----------
 
 Sahara can resolve hostnames of cluster instances by using DNS. For this Sahara
-uses designate. For additional details see :doc:`advanced.configuration.guide`.
+uses designate. For additional details see
+:doc:`../admin/advanced-configuration-guide`.
 
 Kerberos support
 ----------------

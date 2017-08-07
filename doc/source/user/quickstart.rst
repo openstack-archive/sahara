@@ -5,18 +5,19 @@ Quickstart guide
 Launching a cluster via Sahara CLI commands
 ===========================================
 This guide will help you setup a vanilla Hadoop cluster using a combination
-of OpenStack command line tools and the sahara :doc:`REST API <../restapi>`.
+of OpenStack command line tools and the sahara
+:doc:`REST API <../reference/restapi>`.
 
 1. Install sahara
 -----------------
 
 * If you want to hack the code follow
-  :doc:`development.environment`.
+  :doc:`../contributor/development-environment`.
 
 OR
 
 * If you just want to install and use sahara follow
-  :doc:`../userdoc/installation.guide`.
+  :doc:`../install/installation-guide`.
 
 2. Identity service configuration
 ---------------------------------
@@ -121,7 +122,7 @@ Register the image with the username ``ubuntu``.
     a base OS wherever possible; it is better supported throughout OpenStack
     image maintenance infrastructure and its more modern filesystem is much
     more appropriate for large-scale data processing. For more please see
-    :doc:`../userdoc/vanilla_plugin`
+    :doc:`../user/vanilla-plugin`
 
 .. sourcecode:: console
 

@@ -72,7 +72,7 @@ The sahara product communicates with the following OpenStack services:
 * Key manager (barbican & castellan) - persists the authentication data
   like passwords and private keys in a secure storage.
 
-.. image:: images/openstack-interop.png
+.. image:: ../images/openstack-interop.png
     :width: 800 px
     :scale: 99 %
     :align: left
@@ -176,7 +176,7 @@ This makes it possible to integrate swift with software that relies on data
 locality information to avoid network overhead.
 
 To get more information on how to enable swift support see
-:doc:`userdoc/hadoop-swift`.
+:doc:`../user/hadoop-swift`.
 
 Pluggable Deployment and Monitoring
 -----------------------------------

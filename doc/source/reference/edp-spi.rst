@@ -4,7 +4,7 @@ Elastic Data Processing (EDP) SPI
 The EDP job engine objects provide methods for creating, monitoring, and
 terminating jobs on Sahara clusters. Provisioning plugins that support EDP
 must return an EDP job engine object from the :ref:`get_edp_engine` method
-described in :doc:`plugin.spi`.
+described in :doc:`plugin-spi`.
 
 Sahara provides subclasses of the base job engine interface that support EDP
 on clusters running Oozie, Spark, and/or Storm. These are described below.
@@ -104,7 +104,7 @@ get_possible_job_config(job_type)
 Returns hints used by the Sahara UI to prompt users for values when
 configuring and launching a job. Note that no hints are required.
 
-See :doc:`/userdoc/edp` for more information on how configuration values,
+See :doc:`../user/edp` for more information on how configuration values,
 parameters, and arguments are used by different job types.
 
 *Returns*: a dictionary of the following form, containing hints for configs,

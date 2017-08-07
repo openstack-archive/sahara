@@ -8,7 +8,7 @@ The Cloudera plugin is enabled in Sahara by default. You can manually
 modify the Sahara configuration file (default /etc/sahara/sahara.conf) to
 explicitly enable or disable it in "plugins" line.
 
-You need to build images using :doc:`cdh_imagebuilder` to produce images used
+You need to build images using :doc:`cdh-imagebuilder` to produce images used
 to provision cluster or you could download prepared images from
 http://sahara-files.mirantis.com/images/upstream/
 They already have Cloudera Express installed (version 5.0.0, 5.3.0, 5.4.0,

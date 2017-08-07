@@ -10,110 +10,60 @@ Overview
 --------
 
 .. toctree::
-    :maxdepth: 1
+   :maxdepth: 2
 
-    overview
-    architecture
-    Roadmap <https://wiki.openstack.org/wiki/Sahara/Roadmap>
+   intro/index
 
 
-User guide
-----------
-
-**Installation**
-
-.. toctree::
-   :maxdepth: 1
-
-   userdoc/installation.guide
-   userdoc/configuration.guide
-   userdoc/dashboard.guide
-   userdoc/advanced.configuration.guide
-   userdoc/upgrade.guide
-   userdoc/sampleconfig
-
-**How To**
-
-.. toctree::
-   :maxdepth: 1
-
-   userdoc/overview
-   horizon/dashboard.user.guide
-   userdoc/features
-   userdoc/registering_image
-
-**Plugins**
-
-.. toctree::
-   :maxdepth: 1
-
-   userdoc/plugins
-   userdoc/vanilla_plugin
-   userdoc/ambari_plugin
-   userdoc/spark_plugin
-   userdoc/cdh_plugin
-   userdoc/mapr_plugin
-
-**Elastic Data Processing**
-
-.. toctree::
-   :maxdepth: 1
-
-   userdoc/edp
-
-**API**
+Installation
+------------
 
 .. toctree::
    :maxdepth: 2
 
-   restapi
+   install/index
 
-**Miscellaneous**
 
-.. toctree::
-   :maxdepth: 1
-
-   userdoc/guest-requirements
-   userdoc/hadoop-swift
-   userdoc/vanilla_imagebuilder
-   userdoc/cdh_imagebuilder
-
-Developer Guide
----------------
-**Programming HowTos and Tutorials**
+Configuration
+-------------
 
 .. toctree::
-    :maxdepth: 1
+   :maxdepth: 2
 
-    devref/development.guidelines
-    devref/development.environment
-    devref/devstack
-    horizon/dev.environment.guide
-    devref/quickstart
-    devref/how_to_participate
-    devref/how_to_build_oozie
-    devref/adding_database_migrations
-    devref/testing
-    devref/log.guidelines
-    devref/apiv2
-    devref/image-gen
+   configuration/index
 
-**Background Concepts for Sahara**
+
+User Guide
+----------
 
 .. toctree::
-    :maxdepth: 1
+   :maxdepth: 2
 
-    devref/plugins
-    devref/plugin.spi
-    devref/edp.spi
-    userdoc/statuses
-    userdoc/sahara_on_ironic
+   user/index
 
-**Other Resources**
+
+Operator Documentation
+----------------------
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
-   devref/launchpad
-   devref/gerrit
-   devref/jenkins
+   admin/index
+
+
+Contributor Documentation
+-------------------------
+
+.. toctree::
+   :maxdepth: 2
+
+   contributor/index
+
+
+Programming Reference
+---------------------
+
+.. toctree::
+   :maxdepth: 2
+
+   reference/index

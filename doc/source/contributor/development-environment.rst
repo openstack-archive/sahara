@@ -69,7 +69,7 @@ On openSUSE-based distributions (SLES 12, openSUSE, Factory or Tumbleweed):
 
 5. Look through the sahara.conf and modify parameter values as needed
    For details see
-   :doc:`Sahara Configuration Guide </userdoc/configuration.guide>`
+   :doc:`Sahara Configuration Guide <../admin/configuration-guide>`
 
 6. Create database schema
 
@@ -92,7 +92,7 @@ Setup local OpenStack dashboard with Sahara plugin
     :maxdepth: 1
 
 
-    ../horizon/dev.environment.guide
+    dashboard-dev-environment-guide
 
 Tips and tricks for dev environment
 -----------------------------------
