@@ -74,3 +74,10 @@ class SaharaKeyManager(km.KeyManager):
         perform any external actions. therefore, it won't change anything.
         """
         pass
+
+    def list(self, *args, **kwargs):
+        """list all managed keys
+
+        current implementation of the key manager does not utilize this
+        """
+        pass
