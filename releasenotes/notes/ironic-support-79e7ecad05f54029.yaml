@@ -1,0 +1,4 @@
+---
+other:
+  - We are assuring that ironic support was tested after latest updates to
+    nova and sahara and it is fully functional.
