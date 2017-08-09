@@ -18,9 +18,9 @@ Sahara docs site: https://docs.openstack.org/sahara/latest/
 
 Roadmap: https://wiki.openstack.org/wiki/Sahara/Roadmap
 
-Quickstart guide: https://docs.openstack.org/sahara/latest/devref/quickstart.html
+Quickstart guide: https://docs.openstack.org/sahara/latest/user/quickstart.html
 
-How to participate: https://docs.openstack.org/sahara/latest/devref/how_to_participate.html
+How to participate: https://docs.openstack.org/sahara/latest/contributor/how-to-participate.html
 
 Source: http://git.openstack.org/cgit/openstack/sahara
 
