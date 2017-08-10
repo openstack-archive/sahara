@@ -23,6 +23,19 @@ from sahara.service import sessions
 from sahara.utils.openstack import base
 
 
+def get_keystoneauth_cfg(conf, name):
+    """get the keystone auth cfg
+
+    Fetch value of keystone_authtoken group from config file when not
+    available as part of GroupAttr.
+    :rtype: String
+    :param conf: oslo config cfg.CONF
+    :param name: property name to be retrieved
+    """
+    value_list = conf._namespace._get_file_value([('keystone_authtoken',
+                                                   name)])
+    return value_list[0]
+
 opts = [
     # TODO(alazarev) Move to [keystone] section
     cfg.BoolOpt('use_identity_api_v3',
@@ -30,17 +43,7 @@ opts = [
                 help='Enables Sahara to use Keystone API v3. '
                      'If that flag is disabled, '
                      'per-job clusters will not be terminated '
-                     'automatically.'),
-    # TODO(mimccune) The following should be integrated into a custom
-    # auth section
-    cfg.StrOpt('admin_user_domain_name',
-               default='default',
-               help='The name of the domain to which the admin user '
-                    'belongs.'),
-    cfg.StrOpt('admin_project_domain_name',
-               default='default',
-               help='The name of the domain for the service '
-                    'project(ex. tenant).')
+                     'automatically.')
 ]
 
 ssl_opts = [
@@ -84,11 +87,11 @@ def auth_for_admin(project_name=None, trust_id=None):
     # into federated authentication. it will need to match the domain that
     # the project_name exists in.
     auth = _password_auth(
-        username=CONF.keystone_authtoken.admin_user,
-        password=CONF.keystone_authtoken.admin_password,
+        username=get_keystoneauth_cfg(CONF, 'username'),
+        password=get_keystoneauth_cfg(CONF, 'password'),
         project_name=project_name,
-        user_domain_name=CONF.admin_user_domain_name,
-        project_domain_name=CONF.admin_project_domain_name,
+        user_domain_name=get_keystoneauth_cfg(CONF, 'user_domain_name'),
+        project_domain_name=get_keystoneauth_cfg(CONF, 'project_domain_name'),
         trust_id=trust_id)
     return auth
 
@@ -120,7 +123,7 @@ def client():
 def client_for_admin():
     '''Return the Sahara admin user client.'''
     auth = auth_for_admin(
-        project_name=CONF.keystone_authtoken.admin_tenant_name)
+        project_name=get_keystoneauth_cfg(CONF, 'project_name'))
     return client_from_auth(auth)
 
 

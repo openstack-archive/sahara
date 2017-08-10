@@ -1,0 +1,6 @@
+---
+deprecations:
+  - The custom admin_user_domain_name and admin_project_domain_name
+    configuration options have been removed; they are provided
+    by keystone_authtoken as user_domain_name and
+    project_domain_name respectively.

@@ -70,15 +70,16 @@ class TestTrusts(base.SaharaTestCase):
                                                 allow_redelegation=False)
         self.assertEqual("trust_id", trust_id)
 
+    @mock.patch('sahara.utils.openstack.keystone.get_keystoneauth_cfg')
     @mock.patch('sahara.conductor.API.cluster_get')
     @mock.patch('sahara.conductor.API.cluster_update')
     @mock.patch('sahara.service.trusts.create_trust')
     @mock.patch('sahara.utils.openstack.keystone.auth_for_admin')
     @mock.patch('sahara.context.current')
     def test_create_trust_for_cluster(self, context_current, auth_for_admin,
-                                      create_trust, cluster_update, cl_get):
-        self.override_config('admin_tenant_name', 'admin_project',
-                             group='keystone_authtoken')
+                                      create_trust, cluster_update, cl_get,
+                                      config_get):
+        config_get.return_value = "admin_project"
         trustor_auth = mock.Mock()
         fake_cluster = mock.Mock(trust_id=None)
         cl_get.return_value = fake_cluster
