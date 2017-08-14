@@ -33,7 +33,8 @@ notifier_opts = [
                help='Notification level for outgoing notifications'),
     cfg.StrOpt('publisher_id',
                deprecated_name='notification_publisher_id',
-               deprecated_group='DEFAULT')
+               deprecated_group='DEFAULT',
+               help='Identifier of the publisher')
 ]
 
 notifier_opts_group = 'oslo_messaging_notifications'
