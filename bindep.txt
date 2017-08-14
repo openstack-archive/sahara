@@ -4,6 +4,9 @@
 libssl-dev [platform:dpkg]
 openssl-devel [platform:rpm]
 
+# updates of the localized release notes require msgmerge
+gettext
+
 # Define the basic (test) requirements extracted from bindata-fallback.txt
 # - mysqladmin and psql
 mariadb [platform:rpm]
