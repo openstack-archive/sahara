@@ -444,6 +444,10 @@ class AbstractPluginUtils(object):
             conf = cluster.cluster_configs
             if service in conf and name in conf[service]:
                 return types.transform_to_num(conf[service][name])
+            for node_group in cluster.node_groups:
+                conf = node_group.node_configs
+                if service in conf and name in conf[service]:
+                    return types.transform_to_num(conf[service][name])
         for config in configs:
             if config.applicable_target == service and config.name == name:
                 return types.transform_to_num(config.default_value)
