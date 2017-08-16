@@ -178,3 +178,18 @@ class AllValidationsFailedError(ImageValidationError):
         message = self.sub_message % data
 
         super(AllValidationsFailedError, self).__init__(message)
+
+
+class InvalidVolumeSizeException(e.SaharaException):
+    """Exception indicating invalid configuration of components in a cluster.
+
+    """
+
+    def __init__(self, volume_size, reserved):
+        message = _("Volume size: %(volume_size)s GB should be greater than "
+                    "value of \"dfs_datanode_du_reserved\": %(reserved)s GB")
+        self.message = message % {"volume_size": volume_size,
+                                  "reserved": reserved}
+        self.code = "INVALID_CONFIGURATION"
+
+        super(InvalidVolumeSizeException, self).__init__()

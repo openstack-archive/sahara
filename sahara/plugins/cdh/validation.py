@@ -66,6 +66,14 @@ class Validator(object):
                 _('Number of datanodes must be not'
                   ' less than dfs_replication.'))
 
+        du_reserved = cls.PU.get_config_value(
+            'DATANODE', 'dfs_datanode_du_reserved', cluster)
+        du_reserved = du_reserved/1073741824.
+        for node_group in cluster.node_groups:
+            volume_size = node_group.volumes_size
+            if volume_size and volume_size < du_reserved:
+                raise ex.InvalidVolumeSizeException(volume_size, du_reserved)
+
         rm_count = cls.get_inst_count(cluster, 'YARN_RESOURCEMANAGER')
         if rm_count > 1:
             raise ex.InvalidComponentCountException('YARN_RESOURCEMANAGER',
