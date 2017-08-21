@@ -31,7 +31,7 @@ put a burden on the network as packages for all nodes need to be downloaded
 from the package repository.
 
 For more information about MapR images, refer to
-https://github.com/openstack/sahara-image-elements.
+`<https://git.openstack.org/cgit/openstack/sahara-image-elements>`_.
 
 There are VM images provided for use with the MapR Plugin, that can also be
 built using the tools available in sahara-image-elements:

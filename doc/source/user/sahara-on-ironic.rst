@@ -20,7 +20,7 @@ from the bare metal performance with self-service resource provisioning.
 4. Build the Sahara image and prepare it for uploading to Glance:
 
    - Build an image for Sahara plugin with the ``-b`` flag. Use sahara image elements
-     when building the image. See `<https://github.com/openstack/sahara-image-elements>`_
+     when building the image. See `<https://git.openstack.org/cgit/openstack/sahara-image-elements>`_
 
    - Convert the qcow2 image format to the raw format. For example:
 

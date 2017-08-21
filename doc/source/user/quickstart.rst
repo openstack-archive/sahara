@@ -89,7 +89,7 @@ Upload the image downloaded above into the OpenStack Image service:
 
 OR
 
-* Build the image using: `diskimage-builder script <https://github.com/openstack/sahara-image-elements/blob/master/diskimage-create/README.rst>`_
+* Build the image using: `diskimage-builder script <https://git.openstack.org/cgit/openstack/sahara-image-elements/tree/diskimage-create/README.rst>`_
 
 Remember the image name or save the image ID. This will be used during the
 image registration with sahara. You can get the image ID using the
@@ -259,7 +259,7 @@ the template below.
 
 Sample templates can be found here:
 
-`Sample Templates <https://github.com/openstack/sahara/tree/master/sahara/plugins/default_templates/>`_
+`Sample Templates <https://git.openstack.org/cgit/openstack/sahara/tree/sahara/plugins/default_templates/>`_
 
 Create a file named ``my_master_template_create.json`` with the following
 content:
