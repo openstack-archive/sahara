@@ -482,7 +482,7 @@ If configuration values are specified, they must be added to the job's
 Hadoop configuration at runtime. There are two methods of doing this. The
 simplest way is to use the **edp.java.adapt_for_oozie** option described
 below. The other method is to use the code from
-`this example <https://github.com/openstack/sahara/blob/master/etc/edp-examples/edp-java/README.rst>`_
+`this example <https://git.openstack.org/cgit/openstack/sahara-tests/tree/sahara_tests/scenario/defaults/edp-examples/edp-java/README.rst>`_
 to explicitly load the values.
 
 The following special configuration values are read by sahara and affect how
