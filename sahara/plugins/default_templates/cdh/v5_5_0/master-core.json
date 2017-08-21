@@ -2,7 +2,7 @@
     "plugin_name": "cdh",
     "hadoop_version": "5.5.0",
     "node_processes": [
-        "HDFS_DATANODE",
+        "HDFS_NAMENODE",
         "YARN_RESOURCEMANAGER",
         "SENTRY_SERVER",
         "YARN_NODEMANAGER",
