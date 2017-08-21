@@ -21,6 +21,7 @@ from sahara.plugins import exceptions as ex
 from sahara.tests.unit import base
 from sahara.tests.unit import testutils as tu
 
+ivse = ex.InvalidVolumeSizeException
 icce = ex.InvalidComponentCountException
 rsme = ex.RequiredServiceMissingException
 icte = ex.InvalidClusterTopology
@@ -28,9 +29,9 @@ nnce = ex.NameNodeHAConfigurationError
 rmce = ex.ResourceManagerHAConfigurationError
 
 
-def make_ng_dict_with_inst(counter, name, flavor,
-                           processes, count, instances=None,
-                           **kwargs):
+def make_ng_dict_with_inst(counter, name, flavor, processes, count,
+                           instances=None, volumes_size=None,
+                           node_configs=None, **kwargs):
     if not instances:
         instances = []
         for i in range(count):
@@ -39,8 +40,8 @@ def make_ng_dict_with_inst(counter, name, flavor,
                                          "fake_inst{0}".format(n),
                                          management_ip='1.2.3.{0}'.format(n))
             instances.append(instance)
-    return tu.make_ng_dict(name, flavor, processes,
-                           count, instances, **kwargs)
+    return tu.make_ng_dict(name, flavor, processes, count, instances,
+                           volumes_size, node_configs, **kwargs)
 
 
 def get_fake_cluster_with_process(processes=None,
@@ -139,6 +140,14 @@ class BaseValidationTestCase(base.SaharaTestCase):
                 {'cluster_configs': {'HDFS': {'dfs_replication': 3}}}],
             [icce, {}, [],
                 {'cluster_configs': {'HDFS': {'dfs_replication': 4}}}],
+            [ivse, {}, [(
+                'worker_ng_vol', 1, ['HDFS_DATANODE', 'YARN_NODEMANAGER'],
+                3, None, 20,
+                {'DATANODE': {'dfs_datanode_du_reserved': 22548578304}})]],
+            [None, {}, [(
+                'worker_ng_vol', 1, ['HDFS_DATANODE', 'YARN_NODEMANAGER'],
+                3, None, 22,
+                {'DATANODE': {'dfs_datanode_du_reserved': 22548578304}})]],
             [None, {'YARN_RESOURCEMANAGER': 1}],
             [icce, {'YARN_RESOURCEMANAGER': 2}],
             [None, {'YARN_JOBHISTORY': 1}],
