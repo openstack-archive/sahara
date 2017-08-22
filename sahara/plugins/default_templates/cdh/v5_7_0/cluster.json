@@ -5,7 +5,7 @@
         {
             "name": "worker-nodemanager-datanode",
             "count": 3,
-            "node_group_template_id": "{cdh-570-default-worker-nodemanager-datanode}"
+            "node_group_template_id": "{cdh-570-default-nodemanager-datanode}"
         },
         {
             "name": "manager",
