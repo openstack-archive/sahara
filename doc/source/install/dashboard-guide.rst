@@ -5,7 +5,7 @@ After installing the Sahara dashboard, there are a few extra configurations
 that can be made.
 
 Dashboard configurations are applied through Horizon's local_settings.py file.
-The sample configuration file is available `here. <https://github.com/openstack/horizon/blob/master/openstack_dashboard/local/local_settings.py.example>`_
+The sample configuration file is available `from the Horizon repository. <https://git.openstack.org/cgit/openstack/horizon/tree/openstack_dashboard/local/local_settings.py.example>`_
 
 1. Networking
 -------------
@@ -54,7 +54,7 @@ Local endpoint example:
 ..
 
 Then the endpoint name should be changed in ``sahara.py`` under the module of
-`sahara-dashboard/sahara_dashboard/api/sahara.py. <https://github.com/openstack/sahara-dashboard/blob/master/sahara_dashboard/api/sahara.py>`_
+`sahara-dashboard/sahara_dashboard/api/sahara.py. <https://git.openstack.org/cgit/openstack/sahara-dashboard/tree/sahara_dashboard/api/sahara.py>`_
 
 .. sourcecode:: python
 

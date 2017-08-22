@@ -8,14 +8,14 @@ images with Cloudera Express (now only versions {5.0.0, 5.3.0 5.4.0, 5.5.0,
 5.7.x, 5.9.x} are supported).
 
 To simplify the task of building such images we use
-`Disk Image Builder <https://github.com/openstack/diskimage-builder>`_.
+`Disk Image Builder <https://git.openstack.org/cgit/openstack/diskimage-builder>`_.
 
 `Disk Image Builder` builds disk images using elements. An element is a
 particular set of code that alters how the image is built, or runs within the
 chroot to prepare the image.
 
 Elements for building Cloudera images are stored in
-`Sahara extra repository <https://github.com/openstack/sahara-image-elements>`_
+`Sahara extra repository <https://git.openstack.org/cgit/openstack/sahara-image-elements>`_
 
 .. note::
 
@@ -27,7 +27,7 @@ Elements for building Cloudera images are stored in
 
 To create cloudera images follow these steps:
 
-1. Clone repository "https://github.com/openstack/sahara-image-elements" locally.
+1. Clone repository "https://git.openstack.org/cgit/openstack/sahara-image-elements" locally.
 
 2. Use tox to build images.
 
@@ -86,4 +86,4 @@ To create cloudera images follow these steps:
 
 
 For finer control of diskimage-create.sh see the `official documentation
-<https://github.com/openstack/sahara-image-elements/blob/master/diskimage-create/README.rst>`_
+<https://git.openstack.org/cgit/openstack/sahara-image-elements/tree/diskimage-create/README.rst>`_

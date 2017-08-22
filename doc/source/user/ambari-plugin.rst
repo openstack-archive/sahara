@@ -26,7 +26,7 @@ Images
 The sahara Ambari plugin is using minimal (operating system only) images.
 
 For more information about Ambari images, refer to
-https://github.com/openstack/sahara-image-elements.
+`<https://git.openstack.org/cgi/openstack/sahara-image-elements>`_.
 
 You could download well tested and up-to-date prepared images from
 http://sahara-files.mirantis.com/images/upstream/

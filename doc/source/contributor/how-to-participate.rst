@@ -4,11 +4,8 @@ How to Participate
 Getting started
 ---------------
 
-* Create an account on `Github <https://github.com/openstack/sahara>`_
-  (if you don't have one)
-
-  * Make sure that your local git is properly configured by executing
-    ``git config --list``. If not, configure ``user.name``, ``user.email``
+* Make sure that your local git is properly configured by executing
+  ``git config --list``. If not, configure ``user.name``, ``user.email``
 
 * Create account on `Launchpad <https://launchpad.net/sahara>`_
   (if you don't have one)
@@ -54,7 +51,7 @@ How to stay in touch with the community
 How to post your first patch for review
 ---------------------------------------
 
-* Checkout Sahara code from `Github <https://github.com/openstack/sahara>`_
+* Checkout Sahara code from `its repository <https://git.openstack.org/cgit/openstack/sahara>`_
 
 * Carefully read http://docs.openstack.org/infra/manual/developers.html#development-workflow
 

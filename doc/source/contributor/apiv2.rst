@@ -79,7 +79,7 @@ project identifier in a header named ``OpenStack-Project-ID``::
     X-Auth-Token: {valid auth token}
     OpenStack-Project-ID: 12345678-1234-1234-1234-123456789ABC
 
-Using a tool like `HTTPie <https://github.com/jkbrzt/httpie>`_, the
+Using a tool like `HTTPie <https://httpie.org/>`_, the
 same request could be made like this::
 
     $ httpie http://{sahara service ip:port}/v2/clusters \
