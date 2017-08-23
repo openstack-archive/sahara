@@ -8,14 +8,14 @@ CentOS images with Apache Hadoop version 2.x.x.
 
 As of now the vanilla plugin works with images with pre-installed versions of
 Apache Hadoop. To simplify the task of building such images we use
-`Disk Image Builder <https://github.com/openstack/diskimage-builder>`_.
+`Disk Image Builder <https://git.openstack.org/cgit/openstack/diskimage-builder>`_.
 
 `Disk Image Builder` builds disk images using elements. An element is a
 particular set of code that alters how the image is built, or runs within the
 chroot to prepare the image.
 
 Elements for building vanilla images are stored in the
-`Sahara image elements repository <https://github.com/openstack/sahara-image-elements>`_
+`Sahara image elements repository <https://git.openstack.org/cgit/openstack/sahara-image-elements>`_
 
 .. note::
 
@@ -28,7 +28,7 @@ Elements for building vanilla images are stored in the
 
 To create vanilla images follow these steps:
 
-1. Clone repository "https://github.com/openstack/sahara-image-elements"
+1. Clone repository "https://git.openstack.org/cgit/openstack/sahara-image-elements"
    locally.
 
 2. Use tox to build images.
@@ -49,8 +49,8 @@ To create vanilla images follow these steps:
       tox -e venv -- sahara-image-create -p vanilla -v 2.7.1 -i centos7
 
    Tox will create a virtualenv and install required python packages in it,
-   clone the repositories "https://github.com/openstack/diskimage-builder" and
-   "https://github.com/openstack/sahara-image-elements" and export necessary
+   clone the repositories "https://git.openstack.org/cgit/openstack/diskimage-builder" and
+   "https://git.openstack.org/cgit/openstack/sahara-image-elements" and export necessary
    parameters.
 
         * ``DIB_HADOOP_VERSION`` - version of Hadoop to install
@@ -92,4 +92,4 @@ To create vanilla images follow these steps:
 
 
 For finer control of diskimage-create.sh see the `official documentation
-<https://github.com/openstack/sahara-image-elements/blob/master/diskimage-create/README.rst>`_
+<https://git.openstack.org/cgit/openstack/sahara-image-elements/tree/diskimage-create/README.rst>`_

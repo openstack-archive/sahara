@@ -52,7 +52,7 @@ On openSUSE-based distributions (SLES 12, openSUSE, Factory or Tumbleweed):
 
 .. sourcecode:: console
 
-    $ git clone git://github.com/openstack/sahara.git
+    $ git clone git://git.openstack.org/openstack/sahara.git
     $ cd sahara
 
 3. Generate Sahara sample using tox
