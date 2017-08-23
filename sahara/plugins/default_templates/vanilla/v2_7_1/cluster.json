@@ -11,7 +11,7 @@
             "name": "master",
             "count": 1,
             "node_group_template_id": "{vanilla-271-default-master}"
-        },
+        }
     ],
     "name": "vanilla-271-default-cluster",
     "neutron_management_network": "{neutron_management_network}",
