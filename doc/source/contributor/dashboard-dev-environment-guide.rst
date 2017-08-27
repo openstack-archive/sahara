@@ -121,7 +121,7 @@ Sahara service should be present in keystone service list with service type
 
    .. sourcecode:: console
 
-      $ source {HORIZON_DIR}/.venv/bin/activate
+      $ . {HORIZON_DIR}/.venv/bin/activate
       $ pip install -e {SAHARA_DASHBOARD_DIR}
    ..
 
@@ -129,7 +129,7 @@ Sahara service should be present in keystone service list with service type
 
   .. sourcecode:: console
 
-      $ source {HORIZON_DIR}/.venv/bin/activate
+      $ . {HORIZON_DIR}/.venv/bin/activate
       $ python {HORIZON_DIR}/manage.py runserver 0.0.0.0:8080
   ..
 
@@ -143,7 +143,7 @@ Sahara service should be present in keystone service list with service type
 
   .. sourcecode:: console
 
-      $ source {HORIZON_DIR}/.venv/bin/activate
+      $ . {HORIZON_DIR}/.venv/bin/activate
       $ python {HORIZON_DIR}/manage.py runserver --insecure 0.0.0.0:8080
   ..
 
