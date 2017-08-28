@@ -116,4 +116,4 @@ error description.
 2 API
 =====
 
-- `Sahara REST API Reference (OpenStack API Complete Reference - DataProcessing) <http://developer.openstack.org/api-ref/data-processing/>`_
+- `Sahara REST API Reference (OpenStack API Complete Reference - DataProcessing) <https://developer.openstack.org/api-ref/data-processing/>`_

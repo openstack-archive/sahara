@@ -152,4 +152,4 @@ Sahara CLI command is deprecated, please use OpenStack Client.
 .. note::
 
     Since Mitaka release sahara actively uses release notes so you can see all
-    required upgrade actions here: http://docs.openstack.org/releasenotes/sahara/
+    required upgrade actions here: https://docs.openstack.org/releasenotes/sahara/
