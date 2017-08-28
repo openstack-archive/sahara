@@ -70,15 +70,15 @@ class Cluster(mb.SaharaBase):
     provision_progress = relationship('ClusterProvisionStep',
                                       cascade="all,delete",
                                       backref='cluster',
-                                      lazy='joined')
+                                      lazy='subquery')
     verification = relationship('ClusterVerification', cascade="all,delete",
                                 backref="cluster", lazy='joined')
     node_groups = relationship('NodeGroup', cascade="all,delete",
-                               backref='cluster', lazy='joined')
+                               backref='cluster', lazy='subquery')
     cluster_template_id = sa.Column(sa.String(36),
                                     sa.ForeignKey('cluster_templates.id'))
     cluster_template = relationship('ClusterTemplate',
-                                    backref="clusters", lazy='joined')
+                                    backref="clusters")
     shares = sa.Column(st.JsonListType())
     is_public = sa.Column(sa.Boolean())
     is_protected = sa.Column(sa.Boolean())
@@ -121,13 +121,14 @@ class NodeGroup(mb.SaharaBase):
 
     instances = relationship('Instance', cascade="all,delete",
                              backref='node_group',
-                             order_by="Instance.instance_name", lazy='joined')
+                             order_by="Instance.instance_name",
+                             lazy='subquery')
     cluster_id = sa.Column(sa.String(36), sa.ForeignKey('clusters.id'))
     node_group_template_id = sa.Column(sa.String(36),
                                        sa.ForeignKey(
                                            'node_group_templates.id'))
     node_group_template = relationship('NodeGroupTemplate',
-                                       backref="node_groups", lazy='joined')
+                                       backref="node_groups")
     floating_ip_pool = sa.Column(sa.String(36))
     security_groups = sa.Column(st.JsonListType())
     auto_security_group = sa.Column(sa.Boolean())
@@ -187,7 +188,7 @@ class ClusterTemplate(mb.SaharaBase):
     plugin_name = sa.Column(sa.String(80), nullable=False)
     hadoop_version = sa.Column(sa.String(80), nullable=False)
     node_groups = relationship('TemplatesRelation', cascade="all,delete",
-                               backref='cluster_template', lazy='joined')
+                               backref='cluster_template', lazy='subquery')
     is_default = sa.Column(sa.Boolean(), default=False)
     use_autoconfig = sa.Column(sa.Boolean(), default=True)
     shares = sa.Column(st.JsonListType())
@@ -267,8 +268,7 @@ class TemplatesRelation(mb.SaharaBase):
                                        sa.ForeignKey(
                                            'node_group_templates.id'))
     node_group_template = relationship('NodeGroupTemplate',
-                                       backref="templates_relations",
-                                       lazy='joined')
+                                       backref="templates_relations")
     floating_ip_pool = sa.Column(sa.String(36))
     security_groups = sa.Column(st.JsonListType())
     auto_security_group = sa.Column(sa.Boolean())
@@ -380,16 +380,16 @@ class Job(mb.SaharaBase):
     is_protected = sa.Column(sa.Boolean())
 
     mains = relationship("JobBinary",
-                         secondary=mains_association, lazy="joined")
+                         secondary=mains_association, lazy="subquery")
 
     libs = relationship("JobBinary",
-                        secondary=libs_association, lazy="joined")
+                        secondary=libs_association, lazy="subquery")
 
     interface = relationship('JobInterfaceArgument',
                              cascade="all,delete",
                              order_by="JobInterfaceArgument.order",
                              backref='job',
-                             lazy='joined')
+                             lazy='subquery')
 
     def to_dict(self):
         d = super(Job, self).to_dict()
@@ -497,7 +497,7 @@ class ClusterProvisionStep(mb.SaharaBase):
     successful = sa.Column(sa.Boolean, nullable=True)
     events = relationship('ClusterEvent', cascade="all,delete",
                           backref='ClusterProvisionStep',
-                          lazy='joined')
+                          lazy='subquery')
 
     def to_dict(self, show_progress):
         d = super(ClusterProvisionStep, self).to_dict()
@@ -519,7 +519,7 @@ class ClusterVerification(mb.SaharaBase):
     status = sa.Column(sa.String(15))
     checks = relationship(
         'ClusterHealthCheck', cascade="all,delete",
-        backref='ClusterVerification', lazy='joined')
+        backref='ClusterVerification', lazy='subquery')
 
     def to_dict(self):
         base = super(ClusterVerification, self).to_dict()
