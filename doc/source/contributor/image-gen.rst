@@ -81,9 +81,9 @@ run whichever of the following is appropriate to your OS:
 
 ::
 
-    sudo yum install -y libguestfs python-libguestfs libguestfs-tools
-    sudo dnf install -y libguestfs python-libguestfs libguestfs-tools
-    sudo apt-get install -y libguestfs python-libguestfs libguestfs-tools
+    sudo yum install libguestfs python-libguestfs libguestfs-tools
+    sudo dnf install libguestfs python-libguestfs libguestfs-tools
+    sudo apt-get install libguestfs python-libguestfs libguestfs-tools
 
 If you are using tox to create virtual environments for your Sahara work,
 please use the ``images`` environment to run sahara-image-pack. This
