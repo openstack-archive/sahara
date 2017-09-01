@@ -36,6 +36,11 @@ specify node-scoped parameters here, they will work as defaults for node
 groups. Also with the REST interface, during cluster creation a user can
 override template parameters for both cluster and node groups.
 
+Templates are portable - they can be exported to JSON files and imported
+later either on the same deployment or on another one. To import an exported
+template, replace the placeholder values with appropriate ones. This can be
+accomplished easily through the CLI or UI, or be done manually.
+
 Provisioning Plugins
 --------------------
 
