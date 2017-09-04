@@ -77,7 +77,7 @@ function create_flavor {
 }
 
 function register_image {
-    eval $(openstack --os-image-api-version 1 image show \
+    eval $(openstack image show \
             -f shell -c id $SAHARA_IMAGE_NAME)
     resource_save sahara image_id $id
     openstack dataprocessing image register $id --username $SAHARA_IMAGE_USER
