@@ -23,7 +23,7 @@ from sahara.service import sessions
 from sahara.utils.openstack import base
 
 
-def get_keystoneauth_cfg(conf, name):
+def get_keystoneauth_cfg(conf, name, default=None):
     """get the keystone auth cfg
 
     Fetch value of keystone_authtoken group from config file when not
@@ -31,10 +31,14 @@ def get_keystoneauth_cfg(conf, name):
     :rtype: String
     :param conf: oslo config cfg.CONF
     :param name: property name to be retrieved
+    :param default: the default value if the key is not found
     """
-    value_list = conf._namespace._get_file_value([('keystone_authtoken',
-                                                   name)])
-    return value_list[0]
+    try:
+        value_list = conf._namespace._get_file_value([('keystone_authtoken',
+                                                       name)])
+        return value_list[0]
+    except KeyError:
+        return default
 
 opts = [
     # TODO(alazarev) Move to [keystone] section
@@ -90,8 +94,10 @@ def auth_for_admin(project_name=None, trust_id=None):
         username=get_keystoneauth_cfg(CONF, 'username'),
         password=get_keystoneauth_cfg(CONF, 'password'),
         project_name=project_name,
-        user_domain_name=get_keystoneauth_cfg(CONF, 'user_domain_name'),
-        project_domain_name=get_keystoneauth_cfg(CONF, 'project_domain_name'),
+        user_domain_name=get_keystoneauth_cfg(CONF, 'user_domain_name',
+                                              'Default'),
+        project_domain_name=get_keystoneauth_cfg(CONF, 'project_domain_name',
+                                                 'Default'),
         trust_id=trust_id)
     return auth
 
