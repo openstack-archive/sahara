@@ -341,7 +341,7 @@ def _provision_scaled_cluster(cluster_id, node_group_id_map):
 
     # Setting up new nodes with the plugin
     if instance_ids:
-        ntp_service.configure_ntp(cluster_id)
+        ntp_service.configure_ntp(cluster_id, instance_ids)
         cluster = c_u.change_cluster_status(
             cluster, c_u.CLUSTER_STATUS_CONFIGURING)
         instances = c_u.get_instances(cluster, instance_ids)

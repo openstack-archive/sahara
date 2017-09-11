@@ -107,12 +107,12 @@ def retrieve_ntp_server_url(cluster):
     return cl_configs[target][name]
 
 
-def configure_ntp(cluster_id):
+def configure_ntp(cluster_id, instance_ids=None):
     cluster = conductor.cluster_get(context.ctx(), cluster_id)
     if not is_ntp_enabled(cluster):
         LOG.debug("Don't configure NTP on cluster")
         return
-    instances = c_u.get_instances(cluster)
+    instances = c_u.get_instances(cluster, instance_ids)
     url = retrieve_ntp_server_url(cluster)
     with context.ThreadGroup() as tg:
         for instance in instances:
