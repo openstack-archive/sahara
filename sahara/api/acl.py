@@ -20,6 +20,7 @@ import functools
 from oslo_config import cfg
 from oslo_policy import policy
 
+from sahara.common import policies
 from sahara import context
 from sahara import exceptions
 
@@ -30,6 +31,7 @@ def setup_policy():
     global ENFORCER
 
     ENFORCER = policy.Enforcer(cfg.CONF)
+    ENFORCER.register_defaults(policies.list_rules())
 
 
 def enforce(rule):

@@ -83,10 +83,6 @@ function configure_sahara_apache_wsgi {
 function configure_sahara {
     sudo install -d -o $STACK_USER $SAHARA_CONF_DIR
 
-    if [[ -f $SAHARA_DIR/etc/sahara/policy.json ]]; then
-        cp -p $SAHARA_DIR/etc/sahara/policy.json $SAHARA_CONF_DIR
-    fi
-
     cp -p $SAHARA_DIR/etc/sahara/api-paste.ini $SAHARA_CONF_DIR
 
     # Create auth cache dir
