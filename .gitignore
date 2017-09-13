@@ -5,6 +5,7 @@
 .coverage
 .testrepository
 .tox
+.stestr
 .venv
 .idea
 AUTHORS
