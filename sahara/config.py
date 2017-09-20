@@ -154,7 +154,9 @@ def list_opts():
     from sahara.swift import swift_helper
     from sahara.utils import cluster_progress_ops as cpo
     from sahara.utils.openstack import base
+    from sahara.utils.openstack import glance
     from sahara.utils.openstack import heat
+    from sahara.utils.openstack import manila
     from sahara.utils.openstack import neutron
     from sahara.utils.openstack import nova
     from sahara.utils.openstack import swift
@@ -192,8 +194,12 @@ def list_opts():
          itertools.chain(api.conductor_opts)),
         (cinder.cinder_group.name,
          itertools.chain(cinder.opts)),
+        (glance.glance_group.name,
+         itertools.chain(glance.opts)),
         (heat.heat_group.name,
          itertools.chain(heat.opts)),
+        (manila.manila_group.name,
+         itertools.chain(manila.opts)),
         (neutron.neutron_group.name,
          itertools.chain(neutron.opts)),
         (nova.nova_group.name,
