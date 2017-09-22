@@ -109,6 +109,17 @@ class TestClusterTemplate(BaseTestClusterTemplate):
         actual = heat_template._get_security_groups(ng2)
         self.assertEqual(expected, actual)
 
+    def test_get_security_groups_empty(self):
+        ng1, _ = self._make_node_groups()
+        ng1['security_groups'] = None
+        ng1['auto_security_group'] = False
+        cluster = self._make_cluster('private_net', ng1, ng1)
+        heat_template = self._make_heat_template(cluster, ng1, ng1)
+
+        ng1 = [ng for ng in cluster.node_groups if ng.name == "master"][0]
+        actual = heat_template._get_security_groups(ng1)
+        self.assertEqual([], actual)
+
     def _generate_auto_security_group_template(self, use_neutron):
         self.override_config('use_neutron', use_neutron)
         ng1, ng2 = self._make_node_groups('floating')
