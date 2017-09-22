@@ -456,8 +456,7 @@ class ClusterStack(object):
         inst_name = _get_inst_name(ng)
         private_net = self.cluster.neutron_management_network
 
-        if ng.security_groups or ng.auto_security_group:
-            sec_groups = self._get_security_groups(ng)
+        sec_groups = self._get_security_groups(ng)
 
         # Check if cluster contains user key-pair and include it to template.
         if self.cluster.user_keypair_id:
