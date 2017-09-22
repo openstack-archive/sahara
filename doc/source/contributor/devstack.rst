@@ -91,9 +91,6 @@ and may cause hard to debug problems.
     # using a /27 and starting at the 224 octet.
     FLOATING_RANGE=192.168.55.224/27
 
-    # Enable logging
-    SCREEN_LOGDIR=$DEST/logs/screen
-
     # Set ``OFFLINE`` to ``True`` to configure ``stack.sh`` to run cleanly
     # without Internet access. ``stack.sh`` must have been previously run
     # with Internet access to install prerequisites and fetch repositories.
