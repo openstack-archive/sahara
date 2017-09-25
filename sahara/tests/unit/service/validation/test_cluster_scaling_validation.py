@@ -417,3 +417,38 @@ class TestScalingValidation(u.ValidationTestCase):
             data={}, cluster=cluster,
             expected_message="Cluster created before Juno release can't be "
                              "scaled with heat.1.1 engine")
+
+    @mock.patch('sahara.utils.openstack.images.image_manager')
+    @mock.patch('sahara.utils.openstack.nova.client')
+    @mock.patch("sahara.service.api.OPS")
+    def test_check_cluster_scaling_missing_resource(self, ops,
+                                                    m_nova, m_image):
+        ops.get_engine_type_and_version.return_value = "heat.1.1"
+        ng1 = tu.make_ng_dict('ng', '42', ['namenode'], 1)
+
+        nova = mock.Mock()
+        m_nova.return_value = nova
+        nova.keypairs.get.side_effect = u._get_keypair
+        cluster = tu.create_cluster(
+            "cluster1", "tenant1", "fake", "0.1", [ng1],
+            status=c_u.CLUSTER_STATUS_ACTIVE,
+            sahara_info={"infrastructure_engine": "heat.1.1"},
+            id='12321', user_keypair_id='keypair')
+        self._assert_check_scaling(
+            data={}, cluster=cluster,
+            expected_exception=ex.NotFoundException,
+            expected_message="Requested keypair 'keypair' not found")
+
+        image = mock.Mock()
+        m_image.return_value = image
+        image.list_registered.return_value = [mock.Mock(id='image1'),
+                                              mock.Mock(id='image2')]
+        cluster = tu.create_cluster(
+            "cluster1", "tenant1", "fake", "0.1", [ng1],
+            status=c_u.CLUSTER_STATUS_ACTIVE,
+            sahara_info={"infrastructure_engine": "heat.1.1"},
+            id='12321', default_image_id='image_id',
+            user_keypair_id='test_keypair')
+        self._assert_check_scaling(
+            data={}, cluster=cluster,
+            expected_message="Requested image 'image_id' is not registered")

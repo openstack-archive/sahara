@@ -23,7 +23,9 @@ def create_cluster(name, tenant, plugin, version, node_groups, **kwargs):
     dct = {'id': uuidutils.generate_uuid(), 'name': name,
            'tenant_id': tenant, 'plugin_name': plugin,
            'hadoop_version': version, 'node_groups': node_groups,
-           'cluster_configs': {}, "sahara_info": {}, 'is_protected': False}
+           'cluster_configs': {}, "sahara_info": {},
+           'user_keypair_id': None, 'default_image_id': None,
+           'is_protected': False}
     dct.update(kwargs)
     return r.ClusterResource(dct)
 

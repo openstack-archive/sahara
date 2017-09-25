@@ -71,6 +71,12 @@ def check_cluster_scaling(data, cluster_id, **kwargs):
             _("Cluster cannot be scaled not in 'Active' status. "
               "Cluster status: %s") % cluster.status)
 
+    if cluster.user_keypair_id:
+        b.check_keypair_exists(cluster.user_keypair_id)
+
+    if cluster.default_image_id:
+        b.check_image_registered(cluster.default_image_id)
+
     if data.get("resize_node_groups"):
         b.check_resize(cluster, data['resize_node_groups'])
 
