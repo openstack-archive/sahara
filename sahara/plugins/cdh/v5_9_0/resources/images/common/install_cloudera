@@ -1,0 +1,17 @@
+#!/bin/bash
+
+HADOOP_OPENSTACK_5_9_x_URL="https://repository.cloudera.com/artifactory/repo/org/apache/hadoop/hadoop-openstack/2.6.0-cdh$plugin_version/hadoop-openstack-2.6.0-cdh$plugin_version.jar"
+
+dest=/usr/lib/hadoop-mapreduce/hadoop-openstack.jar
+
+if [ ! -L "/usr/lib/oozie/oozie-sharelib-yarn.tar.gz" ]; then
+    if [ $test_only -eq 0 ]; then
+        wget -O $dest $HADOOP_OPENSTACK_5_9_x_URL
+
+        ln -s /usr/lib/oozie/oozie-sharelib-yarn /usr/lib/oozie/oozie-sharelib-yarn.tar.gz
+        ln -s /usr/lib/oozie/oozie-sharelib-mr1 /usr/lib/oozie/oozie-sharelib-mr1.tar.gz
+        ln -s /usr/lib/oozie/oozie-sharelib-yarn.tar.gz /usr/lib/oozie/oozie-sharelib.tar.gz
+    else
+        exit 0
+    fi
+fi

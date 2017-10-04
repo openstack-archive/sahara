@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [ ! -n /tmp/UnlimitedPolicy/ ]; then
+    if [ $test_only -eq 0 ]; then
+        mkdir /tmp/UnlimitedPolicy/
+        wget $unlimited_security_location/local_policy.jar -O /tmp/UnlimitedPolicy/local_policy.jar
+        wget $unlimited_security_location/US_export_policy.jar -O /tmp/UnlimitedPolicy/US_export_policy.jar
+    else
+        exit 0
+    fi
+fi

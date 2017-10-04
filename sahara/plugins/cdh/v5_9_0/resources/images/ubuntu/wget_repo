@@ -1,0 +1,36 @@
+#!/bin/bash
+
+if [ ! -f /etc/apt/sources.list.d/cdh5.list ]; then
+    if [ $test_only -eq 0 ]; then
+        # Add repository with postgresql package (it's dependency of cloudera packages)
+        # Base image doesn't contain this repo
+        echo "deb http://nova.clouds.archive.ubuntu.com/ubuntu/ trusty universe multiverse main" >> /etc/apt/sources.list
+
+        # Cloudera repositories
+        echo "deb [arch=amd64] http://archive.cloudera.com/cdh5/ubuntu/trusty/amd64/cdh trusty-cdh$plugin_version contrib" > /etc/apt/sources.list.d/cdh5.list
+        echo "deb-src http://archive.cloudera.com/cdh5/ubuntu/trusty/amd64/cdh trusty-cdh$plugin_version contrib" >> /etc/apt/sources.list.d/cdh5.list
+
+        wget -qO - http://archive-primary.cloudera.com/cdh5/ubuntu/trusty/amd64/cdh/archive.key | apt-key add -
+
+        echo "deb [arch=amd64] http://archive.cloudera.com/cm5/ubuntu/trusty/amd64/cm trusty-cm$plugin_version contrib" > /etc/apt/sources.list.d/cm5.list
+        echo "deb-src http://archive.cloudera.com/cm5/ubuntu/trusty/amd64/cm trusty-cm$plugin_version contrib" >> /etc/apt/sources.list.d/cm5.list
+
+        wget -qO - http://archive-primary.cloudera.com/cm5/ubuntu/trusty/amd64/cm/archive.key | apt-key add -
+
+        wget -O /etc/apt/sources.list.d/kms.list http://archive.cloudera.com/navigator-keytrustee5/ubuntu/trusty/amd64/navigator-keytrustee/cloudera.list
+        wget -qO - http://archive.cloudera.com/navigator-keytrustee5/ubuntu/trusty/amd64/navigator-keytrustee/archive.key | apt-key add -
+
+        # add Kafka repository
+        echo 'deb http://archive.cloudera.com/kafka/ubuntu/trusty/amd64/kafka/ trusty-kafka2.0.2 contrib' >> /etc/apt/sources.list
+        wget -qO - https://archive.cloudera.com/kafka/ubuntu/trusty/amd64/kafka/archive.key | apt-key add -
+
+        #change repository priority
+        echo 'Package: zookeeper' >> /etc/apt/preferences.d/cloudera-pin
+        echo 'Pin: origin "archive.cloudera.com"' >> /etc/apt/preferences.d/cloudera-pin
+        echo 'Pin-Priority: 1001' >> /etc/apt/preferences.d/cloudera-pin
+
+        apt-get update
+    else
+        exit 0
+    fi
+fi
