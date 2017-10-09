@@ -42,7 +42,7 @@ def get_plugin_configs():
 
 def generate_storm_config(master_hostname, zk_hostnames, version):
 
-    if version == '1.0.1':
+    if version in ['1.0.1', '1.1.0']:
         host_cfg = 'nimbus.seeds'
         master_value = [master_hostname.encode('ascii', 'ignore')]
 
@@ -64,7 +64,7 @@ def generate_storm_config(master_hostname, zk_hostnames, version):
     # Since pyleus is built using previous versions os Storm we need this
     # option to allow the cluster to be compatible with pyleus topologies as
     #  well as with topologies built using older versions of Storm
-    if version == '1.0.1':
+    if version in ['1.0.1', '1.1.0']:
         cfg['client.jartransformer.class'] = (
             "org.apache.storm.hack.StormShadeTransformer")
 
