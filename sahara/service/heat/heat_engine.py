@@ -255,5 +255,10 @@ class HeatEngine(e.Engine):
 
             # if number of instances decreases, we need to drop
             # the excessive ones
+            # instances list doesn't order by creating date, so we should
+            # sort it to make sure deleted instances same as heat deleted.
+            insts = sorted(
+                node_group.instances,
+                key=lambda x: int(x['instance_name'].split('-')[-1]))
             for i in range(count, node_group.count):
-                conductor.instance_remove(ctx, node_group.instances[i])
+                conductor.instance_remove(ctx, insts[i])
