@@ -102,6 +102,10 @@ function configure_sahara {
     iniset $SAHARA_CONF_FILE keystone_authtoken username sahara
     iniset $SAHARA_CONF_FILE \
         keystone_authtoken password $SERVICE_PASSWORD
+    iniset $SAHARA_CONF_FILE \
+        keystone_authtoken user_domain_name "$SERVICE_DOMAIN_NAME"
+    iniset $SAHARA_CONF_FILE \
+        keystone_authtoken project_domain_name "$SERVICE_DOMAIN_NAME"
 
     iniset_rpc_backend sahara $SAHARA_CONF_FILE DEFAULT
 
