@@ -63,8 +63,9 @@ class TestScalingValidation(u.ValidationTestCase):
                 self.assertEqual(expected_message, message)
                 raise e
 
+    @mock.patch('sahara.utils.openstack.nova.client')
     @mock.patch("sahara.service.api.OPS")
-    def test_check_cluster_scaling_resize_ng(self, ops):
+    def test_check_cluster_scaling_resize_ng(self, ops, nova_client):
         ops.get_engine_type_and_version.return_value = "direct.1.1"
         ng1 = tu.make_ng_dict('ng', '42', ['namenode'], 1)
         cluster = tu.create_cluster("cluster1", "tenant1", "fake", "0.1",
@@ -86,8 +87,7 @@ class TestScalingValidation(u.ValidationTestCase):
             'resize_node_groups': [
                 {
                     'name': 'a',
-                    'flavor_id': '42',
-                    'node_processes': ['namenode']
+                    'count': 2
                 }
             ],
         }
@@ -98,19 +98,35 @@ class TestScalingValidation(u.ValidationTestCase):
         data.update({'resize_node_groups': [
             {
                 'name': 'a',
-                'flavor_id': '42',
-                'node_processes': ['namenode']
+                'count': 2
             },
             {
                 'name': 'a',
-                'flavor_id': '42',
-                'node_processes': ['namenode']
+                'count': 2
             }
         ]})
         self._assert_check_scaling(
             data=data, cluster=cluster,
             expected_message=self.duplicates_detected,
             expected_exception=ex.InvalidDataException)
+
+        data = {
+            'resize_node_groups': [
+                {
+                    'name': 'ng',
+                    'count': 2
+                }
+            ],
+        }
+
+        client = mock.Mock()
+        nova_client.return_value = client
+        client.flavors.list.return_value = []
+
+        self._assert_check_scaling(
+            data=data, cluster=cluster,
+            expected_message="Requested flavor '42' not found",
+            expected_exception=ex.NotFoundException)
 
     @mock.patch("sahara.service.api.OPS")
     def test_check_cluster_scaling_add_ng(self, ops):
@@ -221,6 +237,21 @@ class TestScalingValidation(u.ValidationTestCase):
             bad_req_i=(1, 'VALIDATION_ERROR',
                        u"resize_node_groups[0]: 'count' is a required "
                        u"property")
+        )
+        data = {
+            'resize_node_groups': [
+                {
+                    'name': 'a',
+                    'flavor_id': '42',
+                    'count': 2
+                }
+            ]
+        }
+        self._assert_cluster_scaling_validation(
+            data=data,
+            bad_req_i=(1, 'VALIDATION_ERROR',
+                       u"resize_node_groups[0]: Additional properties are not "
+                       u"allowed ('flavor_id' was unexpected)")
         )
 
     @mock.patch("sahara.service.api.OPS")

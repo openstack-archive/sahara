@@ -361,15 +361,20 @@ def _get_floating_ip_pool(node_group):
 # Cluster scaling
 
 def check_resize(cluster, r_node_groups):
-    cluster_ng_names = [ng.name for ng in cluster.node_groups]
+    ng_map = {}
+    for ng in cluster.node_groups:
+        ng_map[ng.name] = ng
 
     check_duplicates_node_groups_names(r_node_groups)
 
     for ng in r_node_groups:
-        if ng['name'] not in cluster_ng_names:
+        if ng['name'] not in ng_map.keys():
             raise ex.InvalidReferenceException(
                 _("Cluster doesn't contain node group with name '%s'")
                 % ng['name'])
+        check_node_group_basic_fields(cluster.plugin_name,
+                                      cluster.hadoop_version,
+                                      ng_map[ng['name']])
 
 
 def check_add_node_groups(cluster, add_node_groups):
