@@ -19,6 +19,7 @@ from sahara.plugins.cdh.v5_11_0 import cloudera_utils
 from sahara.plugins.cdh.v5_11_0 import config_helper
 from sahara.plugins.cdh.v5_11_0 import deploy
 from sahara.plugins.cdh.v5_11_0 import edp_engine
+from sahara.plugins.cdh.v5_11_0 import images
 from sahara.plugins.cdh.v5_11_0 import plugin_utils
 from sahara.plugins.cdh.v5_11_0 import validation
 
@@ -32,4 +33,5 @@ class VersionHandler(avm.BaseVersionHandler):
         self.plugin_utils = plugin_utils.PluginUtilsV5110()
         self.deploy = deploy
         self.edp_engine = edp_engine
+        self.images = images
         self.validation = validation.ValidatorV5110()

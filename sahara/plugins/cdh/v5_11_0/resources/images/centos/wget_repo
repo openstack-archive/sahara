@@ -1,0 +1,33 @@
+#!/bin/bash
+
+if [ ! -f /etc/yum.repos.d/cloudera-cdh5.repo ]; then
+    if [ $test_only -eq 0 ]; then
+        echo '[cloudera-cdh5]' > /etc/yum.repos.d/cloudera-cdh5.repo
+        echo "name=Cloudera's Distribution for Hadoop, Version 5" >> /etc/yum.repos.d/cloudera-cdh5.repo
+        echo "baseurl=http://archive.cloudera.com/cdh5/redhat/7/x86_64/cdh/$plugin_version/" >> /etc/yum.repos.d/cloudera-cdh5.repo
+        echo "gpgkey = http://archive.cloudera.com/cdh5/redhat/7/x86_64/cdh/RPM-GPG-KEY-cloudera" >> /etc/yum.repos.d/cloudera-cdh5.repo
+        echo 'gpgcheck = 1' >> /etc/yum.repos.d/cloudera-cdh5.repo
+
+        echo '[cloudera-manager]' > /etc/yum.repos.d/cloudera-manager.repo
+        echo 'name=Cloudera Manager' >> /etc/yum.repos.d/cloudera-manager.repo
+        echo "baseurl=http://archive.cloudera.com/cm5/redhat/7/x86_64/cm/$plugin_version/" >> /etc/yum.repos.d/cloudera-manager.repo
+        echo "gpgkey = http://archive.cloudera.com/cm5/redhat/7/x86_64/cm/RPM-GPG-KEY-cloudera" >> /etc/yum.repos.d/cloudera-manager.repo
+        echo 'gpgcheck = 1' >> /etc/yum.repos.d/cloudera-manager.repo
+
+        echo '[navigator-keytrustee]' > /etc/yum.repos.d/kms.repo
+        echo "name=Cloudera's Distribution for navigator-Keytrustee, Version 5" >> /etc/yum.repos.d/kms.repo
+        echo "baseurl=http://archive.cloudera.com/navigator-keytrustee5/redhat/7/x86_64/navigator-keytrustee/$plugin_version/" >> /etc/yum.repos.d/kms.repo
+        echo "gpgkey = http://archive.cloudera.com/navigator-keytrustee5/redhat/7/x86_64/navigator-keytrustee/RPM-GPG-KEY-cloudera" >> /etc/yum.repos.d/kms.repo
+        echo 'gpgcheck = 1' >> /etc/yum.repos.d/kms.repo
+
+        echo "[cloudera-kafka]" > /etc/yum.repos.d/cloudera-kafka.repo
+        echo "name=Cloudera's Distribution for kafka, Version 2.0.2" >> /etc/yum.repos.d/cloudera-kafka.repo
+        echo "baseurl=http://archive.cloudera.com/kafka/redhat/7/x86_64/kafka/2.0.2/" >> /etc/yum.repos.d/cloudera-kafka.repo
+        echo "gpgkey = http://archive.cloudera.com/kafka/redhat/7/x86_64/kafka/RPM-GPG-KEY-cloudera" >> /etc/yum.repos.d/cloudera-kafka.repo
+        echo "gpgcheck = 1" >> /etc/yum.repos.d/cloudera-kafka.repo
+
+        yum clean all
+    else
+        exit 0
+    fi
+fi

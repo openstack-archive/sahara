@@ -1,0 +1,4 @@
+---
+features:
+  - Enables the creation and validation of CDH 5.11.0 images using the
+    new image generation process where libguestfs replaces the use of DIB.
