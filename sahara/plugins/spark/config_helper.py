@@ -23,7 +23,7 @@ from sahara.plugins import utils
 from sahara.swift import swift_helper as swift
 from sahara.topology import topology_helper as topology
 from sahara.utils import files as f
-from sahara.utils import types as types
+from sahara.utils import types
 from sahara.utils import xmlutils as x
 
 

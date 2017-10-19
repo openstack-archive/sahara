@@ -15,7 +15,7 @@
 
 import mock
 
-from sahara.plugins.spark import shell_engine as shell_engine
+from sahara.plugins.spark import shell_engine
 from sahara.service.edp.job_utils import ds_manager
 from sahara.tests.unit import base
 from sahara.utils import edp

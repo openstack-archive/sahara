@@ -25,7 +25,7 @@ from sahara.plugins.mapr.util import event_log as el
 from sahara.plugins.mapr.util import general as g
 from sahara.plugins.mapr.util import service_utils as su
 import sahara.plugins.provisioning as p
-from sahara.utils import files as files
+from sahara.utils import files
 
 LOG = logging.getLogger(__name__)
 

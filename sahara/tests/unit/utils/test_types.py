@@ -15,7 +15,7 @@
 
 import testtools
 
-from sahara.utils import types as types
+from sahara.utils import types
 
 
 class TypesTestCase(testtools.TestCase):

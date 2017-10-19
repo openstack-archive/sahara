@@ -12,7 +12,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from sahara.plugins.mapr.domain import distro as distro
+from sahara.plugins.mapr.domain import distro
 import sahara.tests.unit.base as b
 
 
