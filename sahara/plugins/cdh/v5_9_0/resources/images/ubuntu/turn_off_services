@@ -1,0 +1,33 @@
+#!/bin/bash
+
+check=$(systemctl --no-pager list-unit-files oozie.service | grep 'enabled' | wc -l)
+
+if [ "$check" != "on" ]; then
+    if [ $test_only -eq 0 ]; then
+        for i in cloudera-scm-agent \
+        cloudera-scm-server \
+        cloudera-scm-server-db \
+        hadoop-hdfs-datanode \
+        hadoop-hdfs-namenode \
+        hadoop-hdfs-secondarynamenode \
+        hadoop-mapreduce-historyserver \
+        hadoop-yarn-nodemanager \
+        hadoop-yarn-resourcemanager \
+        hive-metastore \
+        hive-server2 \
+        hive-webhcat-server \
+        hue \
+        oozie \
+        postgresql \
+        impala-catalog \
+        impala-server \
+        impala-state-store \
+        solr-server \
+        spark-history-server
+        do
+            update-rc.d -f $i remove
+        done
+    else
+        exit 0
+    fi
+fi

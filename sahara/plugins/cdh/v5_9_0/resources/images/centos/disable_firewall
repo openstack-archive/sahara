@@ -1,0 +1,20 @@
+#!/bin/bash
+
+check=$(systemctl --no-pager list-unit-files iptables.service | grep 'enabled' | wc -l)
+
+if [ $check -eq 1 ]; then
+    if [ $test_only -eq 0 ]; then
+        if type -p systemctl && [[ "$(systemctl --no-pager list-unit-files firewalld)" =~ 'enabled' ]]; then
+            systemctl disable firewalld
+        fi
+
+        if type -p service; then
+            service ip6tables save
+            service iptables save
+            chkconfig ip6tables off
+            chkconfig iptables off
+        fi
+    else
+        exit 0
+    fi
+fi
