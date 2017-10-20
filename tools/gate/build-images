@@ -67,6 +67,9 @@ case "$PLUGIN" in
     "cloudera")
         build_images "cdh" "5.7.0" "centos7"
         ;;
+    "ambari")
+        build_images "ambari" "2.4" "centos7"
+        ;;
     *)
         echo "Invalid version"
         ;;
