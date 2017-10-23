@@ -104,7 +104,7 @@ class ConductorManager(db_base.Base):
     """This class aimed to conduct things.
 
     The methods in the base API for sahara-conductor are various proxy
-    operations that allows other services to get specific work done without
+    operations that allow other services to get specific work done without
     locally accessing the database.
 
     Additionally it performs some template-to-object copying magic.

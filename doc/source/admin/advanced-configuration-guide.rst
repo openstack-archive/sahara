@@ -85,7 +85,7 @@ DHCP and specify DNS server ip addresses (e.g. 1.1.1.1 and 2.2.2.2) in
 ``DNS Name Servers`` field in the ``Subnet Details``. If the subnet already
 exists and changing it or creating new one is impossible then Sahara will
 manually change ``/etc/resolv.conf`` file on every instance of the cluster (if
-``nameservers`` list have been specified in ``sahara.conf``). In this case,
+``nameservers`` list has been specified in ``sahara.conf``). In this case,
 though, Sahara cannot guarantee that these changes will not be overwritten by
 DHCP or other services of the existing network. Sahara has a health check for
 track this situation (and if it occurs the health status will be red).
