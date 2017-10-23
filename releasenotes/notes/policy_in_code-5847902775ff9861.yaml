@@ -1,0 +1,8 @@
+---
+features:
+  - This feature allows the policy enforcement to be done in code thus
+    facilitating better maintenance of the policy file. In code the default
+    policies are set and the operator only needs to change the policy file
+    if they wish to override the rule or role for a specific policy or
+    operation. Also, a complete policy file can be generated using genconfig
+    tool.
