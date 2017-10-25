@@ -120,7 +120,8 @@ class Oozie(s.Service):
     @el.provision_event(instance_reference=1)
     @g.remote_command(1)
     def _rebuild_oozie_war(self, remote, cluster_context):
-        cmd = '%(home)s/bin/oozie-setup.sh -hadoop %(version)s' \
+        cmd = 'cp -f /opt/mapr-repository/ext-2.2.zip %(home)s/libext/ext-2.2.zip &&' \
+              ' %(home)s/bin/oozie-setup.sh -hadoop %(version)s' \
               ' /opt/mapr/hadoop/hadoop-%(version)s'
         args = {'home': self.home_dir(cluster_context),
                 'version': cluster_context.hadoop_version}
