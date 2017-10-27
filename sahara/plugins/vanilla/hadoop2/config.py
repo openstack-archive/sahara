@@ -51,7 +51,8 @@ PORTS_MAP = {
     "datanode": [50010, 50075, 50020],
     "nodemanager": [8042],
     "oozie": [11000],
-    "hiveserver": [9999, 10000]
+    "hiveserver": [9999, 10000],
+    "spark history server": [18080],
 }
 
 
