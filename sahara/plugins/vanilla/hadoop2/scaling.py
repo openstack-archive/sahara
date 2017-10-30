@@ -39,6 +39,8 @@ def scale_cluster(pctx, cluster, instances):
     config.configure_topology_data(pctx, cluster)
     run.start_dn_nm_processes(instances)
     swift_helper.install_ssl_certs(instances)
+    config.configure_zookeeper(cluster)
+    run.refresh_zk_servers(cluster)
 
 
 def _get_instances_with_service(instances, service):
@@ -87,6 +89,9 @@ def decommission_nodes(pctx, cluster, instances):
     run.refresh_hadoop_nodes(cluster)
 
     config.configure_topology_data(pctx, cluster)
+    config.configure_zookeeper(cluster, instances)
+    # TODO(shuyingya):should invent a way to lastly restart the leader node
+    run.refresh_zk_servers(cluster, instances)
 
 
 def _update_exclude_files(cluster, instances):

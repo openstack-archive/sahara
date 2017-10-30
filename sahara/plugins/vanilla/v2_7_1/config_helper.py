@@ -79,6 +79,7 @@ def _init_all_configs():
     configs.extend(PLUGIN_ENV_CONFIGS)
     configs.extend(c_helper.PLUGIN_GENERAL_CONFIGS)
     configs.extend(_get_spark_configs())
+    configs.extend(_get_zookeeper_configs())
     return configs
 
 
@@ -94,6 +95,20 @@ def _get_spark_configs():
                            priority=item["priority"])
             spark_configs.append(cfg)
     return spark_configs
+
+
+def _get_zookeeper_configs():
+    zk_configs = []
+    for service, config_items in six.iteritems(c_helper.ZOOKEEPER_CONFS):
+        for item in config_items['OPTIONS']:
+            cfg = p.Config(name=item["name"],
+                           description=item["description"],
+                           default_value=item["default"],
+                           applicable_target=service,
+                           scope="cluster", is_optional=True,
+                           priority=item["priority"])
+            zk_configs.append(cfg)
+    return zk_configs
 
 
 PLUGIN_CONFIGS = _init_all_configs()

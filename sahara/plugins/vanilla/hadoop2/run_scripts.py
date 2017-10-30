@@ -115,6 +115,46 @@ def start_spark_history_server(master):
                 sp_home, 'sbin/start-history-server.sh'))
 
 
+def start_zk_server(instances):
+    cpo.add_provisioning_step(
+        instances[0].cluster_id,
+        pu.start_process_event_message("ZooKeeper"),
+        len(instances))
+
+    with context.ThreadGroup() as tg:
+        for instance in instances:
+            with context.set_current_instance_id(instance.instance_id):
+                tg.spawn('ZK-start-processes-%s' % instance.instance_name,
+                         _start_zk_processes, instance, 'start')
+
+
+def refresh_zk_servers(cluster, to_delete_instances=None):
+    instances = vu.get_zk_servers(cluster)
+    if to_delete_instances:
+        for instance in to_delete_instances:
+            if instance in instances:
+                instances.remove(instance)
+
+    cpo.add_provisioning_step(
+        cluster.id,
+        pu.start_process_event_message("ZooKeeper"),
+        len(instances))
+
+    with context.ThreadGroup() as tg:
+        for instance in instances:
+            with context.set_current_instance_id(instance.instance_id):
+                tg.spawn('ZK-restart-processes-%s' % instance.instance_name,
+                         _start_zk_processes, instance, 'restart')
+
+
+@cpo.event_wrapper(True)
+def _start_zk_processes(instance, operation):
+    with instance.remote() as r:
+        r.execute_command(
+            'sudo su - -c "bash /opt/zookeeper/bin/zkServer.sh %s"'
+            ' hadoop' % operation)
+
+
 def format_namenode(instance):
     instance.remote().execute_command(
         'sudo su - -c "hdfs namenode -format" hadoop')

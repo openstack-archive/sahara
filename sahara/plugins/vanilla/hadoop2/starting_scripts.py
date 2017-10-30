@@ -77,3 +77,9 @@ def start_spark(cluster):
     spark = vu.get_spark_history_server(cluster)
     if spark:
         run.start_spark_history_server(spark)
+
+
+def start_zookeeper(cluster):
+    zk_servers = vu.get_zk_servers(cluster)
+    if zk_servers:
+        run.start_zk_server(zk_servers)

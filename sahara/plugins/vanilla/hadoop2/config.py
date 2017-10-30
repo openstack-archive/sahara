@@ -53,6 +53,7 @@ PORTS_MAP = {
     "oozie": [11000],
     "hiveserver": [9999, 10000],
     "spark history server": [18080],
+    "zookeeper": [2181, 2888, 3888]
 }
 
 
@@ -66,12 +67,52 @@ def configure_cluster(pctx, cluster):
     instances = utils.get_instances(cluster)
     configure_instances(pctx, instances)
     configure_topology_data(pctx, cluster)
+    configure_zookeeper(cluster)
     configure_spark(cluster)
 
 
+def configure_zookeeper(cluster, instances=None):
+    zk_servers = vu.get_zk_servers(cluster)
+    if zk_servers:
+        zk_conf = c_helper.generate_zk_basic_config(cluster)
+        zk_conf += _form_zk_servers_to_quorum(cluster, instances)
+        _push_zk_configs_to_nodes(cluster, zk_conf, instances)
+
+
+def _form_zk_servers_to_quorum(cluster, to_delete_instances=None):
+    quorum = []
+    instances = map(vu.get_instance_hostname, vu.get_zk_servers(cluster))
+    if to_delete_instances:
+        delete_instances = map(vu.get_instance_hostname, to_delete_instances)
+        reserve_instances = list(set(instances) - set(delete_instances))
+        # keep the original order of instances
+        reserve_instances.sort(key=instances.index)
+    else:
+        reserve_instances = instances
+    for index, instance in enumerate(reserve_instances):
+        quorum.append("server.%s=%s:2888:3888" % (index, instance))
+    return '\n'.join(quorum)
+
+
+def _push_zk_configs_to_nodes(cluster, zk_conf, to_delete_instances=None):
+    instances = vu.get_zk_servers(cluster)
+    if to_delete_instances:
+        for instance in to_delete_instances:
+            if instance in instances:
+                instances.remove(instance)
+    for index, instance in enumerate(instances):
+        with instance.remote() as r:
+            r.write_file_to('/opt/zookeeper/conf/zoo.cfg', zk_conf,
+                            run_as_root=True)
+            r.execute_command(
+                'sudo su - -c "echo %s > /var/zookeeper/myid" hadoop' % index)
+
+
 def configure_spark(cluster):
-    extra = _extract_spark_configs_to_extra(cluster)
-    _push_spark_configs_to_node(cluster, extra)
+    spark_servers = vu.get_spark_history_server(cluster)
+    if spark_servers:
+        extra = _extract_spark_configs_to_extra(cluster)
+        _push_spark_configs_to_node(cluster, extra)
 
 
 def _push_spark_configs_to_node(cluster, extra):

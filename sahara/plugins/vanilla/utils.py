@@ -60,6 +60,10 @@ def get_instance_hostname(instance):
     return instance.hostname() if instance else None
 
 
+def get_zk_servers(cluster):
+    return u.get_instances(cluster, 'zookeeper')
+
+
 def generate_random_password():
     password = uuidutils.generate_uuid()
     return castellan.store_secret(password)

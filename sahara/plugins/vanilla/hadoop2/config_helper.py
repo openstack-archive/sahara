@@ -26,7 +26,6 @@ from sahara.utils import types
 CONF = cfg.CONF
 CONF.import_opt("enable_data_locality", "sahara.topology.topology_helper")
 
-
 HIDDEN_CONFS = [
     'dfs.hosts',
     'dfs.hosts.exclude',
@@ -126,6 +125,33 @@ SPARK_CONFS = {
                 'description': 'No job data will be purged unless the total'
                 ' job data exceeds this size (default: 4096 = 4GB)',
                 'default': '4096',
+                'priority': 2,
+            },
+        ]
+    }
+}
+
+ZOOKEEPER_CONFS = {
+    "ZooKeeper": {
+        "OPTIONS": [
+            {
+                'name': 'tickTime',
+                'description': 'The number of milliseconds of each tick',
+                'default': 2000,
+                'priority': 2,
+            },
+            {
+                'name': 'initLimit',
+                'description': 'The number of ticks that the initial'
+                ' synchronization phase can take',
+                'default': 10,
+                'priority': 2,
+            },
+            {
+                'name': 'syncLimit',
+                'description': 'The number of ticks that can pass between'
+                ' sending a request and getting an acknowledgement',
+                'default': 5,
                 'priority': 2,
             },
         ]
@@ -305,3 +331,17 @@ def generate_job_cleanup_config(cluster):
 
 def get_spark_home(cluster):
     return utils.get_config_value_or_default("Spark", "Spark home", cluster)
+
+
+def generate_zk_basic_config(cluster):
+    args = {
+        'ticktime': utils.get_config_value_or_default(
+            "ZooKeeper", "tickTime", cluster),
+        'initlimit': utils.get_config_value_or_default(
+            "ZooKeeper", "initLimit", cluster),
+        'synclimit': utils.get_config_value_or_default(
+            "ZooKeeper", "syncLimit", cluster)
+    }
+    zoo_cfg = f.get_file_text(
+        'plugins/vanilla/hadoop2/resources/zoo_sample.cfg')
+    return zoo_cfg.format(**args)

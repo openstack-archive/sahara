@@ -83,6 +83,12 @@ def validate_cluster_creating(pctx, cluster):
         raise ex.InvalidComponentCountException('hive', _('0 or 1'),
                                                 hive_count)
 
+    zk_count = _get_inst_count(cluster, 'zookeeper')
+    if zk_count > 0 and (zk_count % 2) != 1:
+        raise ex.InvalidComponentCountException(
+            'zookeeper', _('odd'), zk_count, _('Number of zookeeper nodes'
+                                               'should be in odd.'))
+
 
 def validate_additional_ng_scaling(cluster, additional):
     rm = vu.get_resourcemanager(cluster)
@@ -125,8 +131,27 @@ def validate_existing_ng_scaling(pctx, cluster, existing):
             cluster.name, msg % rep_factor)
 
 
+def validate_zookeeper_node_count(zk_ng, existing, additional):
+    zk_amount = 0
+    for ng in zk_ng:
+        if ng.id in existing:
+            zk_amount += existing[ng.id]
+        else:
+            zk_amount += ng.count
+
+    for ng_id in additional:
+        ng = gu.get_by_id(zk_ng, ng_id)
+        if "zookeeper" in ng.node_processes:
+            zk_amount += ng.count
+
+    if (zk_amount % 2) != 1:
+        msg = _("Vanilla plugin cannot scale cluster because it must keep"
+                " zookeeper service in odd.")
+        raise ex.ClusterCannotBeScaled(zk_ng[0].cluster.name, msg)
+
+
 def _get_scalable_processes():
-    return ['datanode', 'nodemanager']
+    return ['datanode', 'nodemanager', 'zookeeper']
 
 
 def _get_inst_count(cluster, process):

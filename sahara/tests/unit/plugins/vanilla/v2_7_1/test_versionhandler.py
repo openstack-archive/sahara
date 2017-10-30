@@ -15,7 +15,10 @@
 
 import mock
 import six
+import testtools
 
+from sahara.conductor import resource as r
+from sahara.plugins import exceptions as ex
 from sahara.plugins.vanilla.v2_7_1.edp_engine import EdpOozieEngine
 from sahara.plugins.vanilla.v2_7_1.edp_engine import EdpSparkEngine
 from sahara.plugins.vanilla.v2_7_1 import versionhandler as v_h
@@ -110,11 +113,12 @@ class VersionHandlerTest(base.SaharaTestCase):
                                                    cluster,
                                                    instances)
 
+    @mock.patch('sahara.utils.general.get_by_id')
     @mock.patch(plugin_hadoop2_path +
                 'validation.validate_additional_ng_scaling')
     @mock.patch(plugin_hadoop2_path +
                 'validation.validate_existing_ng_scaling')
-    def test_validate_scaling(self, vls, vla):
+    def test_validate_scaling(self, vls, vla, get_by_id):
         self.vh.pctx['all_confs'] = [TestConfig('HDFS', 'dfs.replication', -1)]
         ng1 = testutils.make_ng_dict('ng1', '40', ['namenode'], 1)
         ng2 = testutils.make_ng_dict('ng2', '41', ['datanode'], 2)
@@ -126,6 +130,21 @@ class VersionHandlerTest(base.SaharaTestCase):
         self.vh.validate_scaling(cluster, existing, additional)
         vla.assert_called_once_with(cluster, additional)
         vls.assert_called_once_with(self.vh.pctx, cluster, existing)
+
+        ng4 = testutils.make_ng_dict('ng4', '43', ['datanode', 'zookeeper'], 3)
+        ng5 = testutils.make_ng_dict('ng5', '44', ['datanode', 'zookeeper'], 1)
+        existing = {ng4['id']: 2}
+        additional = {ng5['id']}
+        cluster = testutils.create_cluster('test-cluster', 'tenant1', 'fake',
+                                           '0.1', [ng1, ng4])
+
+        with testtools.ExpectedException(ex.ClusterCannotBeScaled):
+            self.vh.validate_scaling(cluster, existing, {})
+
+        get_by_id.return_value = r.NodeGroupResource(ng5)
+
+        with testtools.ExpectedException(ex.ClusterCannotBeScaled):
+            self.vh.validate_scaling(cluster, {}, additional)
 
     @mock.patch(plugin_hadoop2_path + 'scaling.scale_cluster')
     @mock.patch(plugin_hadoop2_path + 'keypairs.provision_keypairs')
