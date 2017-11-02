@@ -84,27 +84,27 @@ individual Job Binary objects that are required for execution. An individual
 Job Binary may be referenced by multiple Jobs.  A Job object specifies a main
 binary and/or supporting libraries depending on its type:
 
-      +-------------------------+-------------+-----------+
-      | Job type                | Main binary | Libraries |
-      +=========================+=============+===========+
-      | ``Hive``                | required    | optional  |
-      +-------------------------+-------------+-----------+
-      | ``Pig``                 | required    | optional  |
-      +-------------------------+-------------+-----------+
-      | ``MapReduce``           | not used    | required  |
-      +-------------------------+-------------+-----------+
-      | ``MapReduce.Streaming`` | not used    | optional  |
-      +-------------------------+-------------+-----------+
-      | ``Java``                | not used    | required  |
-      +-------------------------+-------------+-----------+
-      | ``Shell``               | required    | optional  |
-      +-------------------------+-------------+-----------+
-      | ``Spark``               | required    | optional  |
-      +-------------------------+-------------+-----------+
-      | ``Storm``               | required    | not used  |
-      +-------------------------+-------------+-----------+
-      | ``Storm Pyelus``        | required    | not used  |
-      +-------------------------+-------------+-----------+
++-------------------------+-------------+-----------+
+| Job type                | Main binary | Libraries |
++=========================+=============+===========+
+| ``Hive``                | required    | optional  |
++-------------------------+-------------+-----------+
+| ``Pig``                 | required    | optional  |
++-------------------------+-------------+-----------+
+| ``MapReduce``           | not used    | required  |
++-------------------------+-------------+-----------+
+| ``MapReduce.Streaming`` | not used    | optional  |
++-------------------------+-------------+-----------+
+| ``Java``                | not used    | required  |
++-------------------------+-------------+-----------+
+| ``Shell``               | required    | optional  |
++-------------------------+-------------+-----------+
+| ``Spark``               | required    | optional  |
++-------------------------+-------------+-----------+
+| ``Storm``               | required    | not used  |
++-------------------------+-------------+-----------+
+| ``Storm Pyelus``        | required    | not used  |
++-------------------------+-------------+-----------+
 
 
 Data Sources
@@ -198,28 +198,28 @@ Specifying Configuration Values, Parameters, and Arguments
 Jobs can be configured at launch. The job type determines the kinds of values
 that may be set:
 
-      +--------------------------+---------------+------------+-----------+
-      | Job type                 | Configuration | Parameters | Arguments |
-      |                          | Values        |            |           |
-      +==========================+===============+============+===========+
-      | ``Hive``                 | Yes           | Yes        | No        |
-      +--------------------------+---------------+------------+-----------+
-      | ``Pig``                  | Yes           | Yes        | Yes       |
-      +--------------------------+---------------+------------+-----------+
-      | ``MapReduce``            | Yes           | No         | No        |
-      +--------------------------+---------------+------------+-----------+
-      | ``MapReduce.Streaming``  | Yes           | No         | No        |
-      +--------------------------+---------------+------------+-----------+
-      | ``Java``                 | Yes           | No         | Yes       |
-      +--------------------------+---------------+------------+-----------+
-      | ``Shell``                | Yes           | Yes        | Yes       |
-      +--------------------------+---------------+------------+-----------+
-      | ``Spark``                | Yes           | No         | Yes       |
-      +--------------------------+---------------+------------+-----------+
-      | ``Storm``                | Yes           | No         | Yes       |
-      +--------------------------+---------------+------------+-----------+
-      | ``Storm Pyelus``         | Yes           | No         | Yes       |
-      +--------------------------+---------------+------------+-----------+
++--------------------------+---------------+------------+-----------+
+| Job type                 | Configuration | Parameters | Arguments |
+|                          | Values        |            |           |
++==========================+===============+============+===========+
+| ``Hive``                 | Yes           | Yes        | No        |
++--------------------------+---------------+------------+-----------+
+| ``Pig``                  | Yes           | Yes        | Yes       |
++--------------------------+---------------+------------+-----------+
+| ``MapReduce``            | Yes           | No         | No        |
++--------------------------+---------------+------------+-----------+
+| ``MapReduce.Streaming``  | Yes           | No         | No        |
++--------------------------+---------------+------------+-----------+
+| ``Java``                 | Yes           | No         | Yes       |
++--------------------------+---------------+------------+-----------+
+| ``Shell``                | Yes           | Yes        | Yes       |
++--------------------------+---------------+------------+-----------+
+| ``Spark``                | Yes           | No         | Yes       |
++--------------------------+---------------+------------+-----------+
+| ``Storm``                | Yes           | No         | Yes       |
++--------------------------+---------------+------------+-----------+
+| ``Storm Pyelus``         | Yes           | No         | Yes       |
++--------------------------+---------------+------------+-----------+
 
 * :dfn:`Configuration values` are key/value pairs.
 
@@ -436,17 +436,17 @@ be added manually with the ``Configure`` tab.
 
 Make sure to add these values with the correct names:
 
-      +-----------------------------+----------------------------------------+
-      | Name                        | Example Value                          |
-      +=============================+========================================+
-      | mapred.mapper.new-api       | true                                   |
-      +-----------------------------+----------------------------------------+
-      | mapred.reducer.new-api      | true                                   |
-      +-----------------------------+----------------------------------------+
-      | mapreduce.job.map.class     | org.apache.oozie.example.SampleMapper  |
-      +-----------------------------+----------------------------------------+
-      | mapreduce.job.reduce.class  | org.apache.oozie.example.SampleReducer |
-      +-----------------------------+----------------------------------------+
++-----------------------------+----------------------------------------+
+| Name                        | Example Value                          |
++=============================+========================================+
+| mapred.mapper.new-api       | true                                   |
++-----------------------------+----------------------------------------+
+| mapred.reducer.new-api      | true                                   |
++-----------------------------+----------------------------------------+
+| mapreduce.job.map.class     | org.apache.oozie.example.SampleMapper  |
++-----------------------------+----------------------------------------+
+| mapreduce.job.reduce.class  | org.apache.oozie.example.SampleReducer |
++-----------------------------+----------------------------------------+
 
 Additional Details for MapReduce.Streaming jobs
 +++++++++++++++++++++++++++++++++++++++++++++++
@@ -461,13 +461,13 @@ values on the form and will take care of adding them to the job configuration
 with the appropriate names. If using the python client, however, be certain to
 add these values to the job configuration manually with the correct names:
 
-      +-------------------------+---------------+
-      | Name                    | Example Value |
-      +=========================+===============+
-      | edp.streaming.mapper    | /bin/cat      |
-      +-------------------------+---------------+
-      | edp.streaming.reducer   | /usr/bin/wc   |
-      +-------------------------+---------------+
++-------------------------+---------------+
+| Name                    | Example Value |
++=========================+===============+
+| edp.streaming.mapper    | /bin/cat      |
++-------------------------+---------------+
+| edp.streaming.reducer   | /usr/bin/wc   |
++-------------------------+---------------+
 
 Additional Details for Java jobs
 ++++++++++++++++++++++++++++++++
@@ -588,25 +588,25 @@ sahara.
 Sahara swift URLs passed to running jobs as input or output sources include a
 ".sahara" suffix on the container, for example:
 
-  ``swift://container.sahara/object``
+``swift://container.sahara/object``
 
 You may notice these swift URLs in job logs, however, you do not need to add
 the suffix to the containers yourself. sahara will add the suffix if
 necessary, so when using the UI or the python client you may write the above
 URL simply as:
 
-  ``swift://container/object``
+``swift://container/object``
 
 Sahara internal database URLs have the form:
 
-  ``internal-db://sahara-generated-uuid``
+``internal-db://sahara-generated-uuid``
 
 This indicates a file object in the sahara database which has the given uuid
 as a key.
 
 Manila NFS filesystem reference URLS take the form:
 
-  ``manila://share-uuid/path``
+``manila://share-uuid/path``
 
 This format should be used when referring to a job binary or a data source
 stored in a manila NFS share.
@@ -627,13 +627,13 @@ be an instance of HDFS available to the nodes in the sahara cluster.
 
 If the swift service *is not* running in the OpenStack installation:
 
-  + Job binaries may only be stored in the sahara internal database
-  + Data sources require a long-running HDFS
++ Job binaries may only be stored in the sahara internal database
++ Data sources require a long-running HDFS
 
 If the swift service *is* running in the OpenStack installation:
 
-  + Job binaries may be stored in swift or the sahara internal database
-  + Data sources may be in swift or a long-running HDFS
++ Job binaries may be stored in swift or the sahara internal database
++ Data sources may be in swift or a long-running HDFS
 
 
 Cluster Processes
@@ -677,10 +677,10 @@ is finished.
 
 Two config parameters control the behaviour of periodic clusters:
 
- * periodic_enable - if set to 'false', sahara will do nothing to a transient
+* periodic_enable - if set to 'false', sahara will do nothing to a transient
    cluster once the job it was created for is completed. If it is set to
    'true', then the behaviour depends on the value of the next parameter.
- * use_identity_api_v3 - set it to 'false' if your OpenStack installation
+* use_identity_api_v3 - set it to 'false' if your OpenStack installation
    does not provide keystone API v3. In that case sahara will not terminate
    unneeded clusters. Instead it will set their state to 'AwaitingTermination'
    meaning that they could be manually deleted by a user. If the parameter is
@@ -690,10 +690,10 @@ Two config parameters control the behaviour of periodic clusters:
 If both parameters are set to 'true', sahara works with transient clusters in
 the following manner:
 
- 1. When a user requests for a job to be executed on a transient cluster,
-    sahara creates such a cluster.
- 2. Sahara drops the user's credentials once the cluster is created but
-    prior to that it creates a trust allowing it to operate with the
-    cluster instances in the future without user credentials.
- 3. Once a cluster is not needed, sahara terminates its instances using the
-    stored trust. sahara drops the trust after that.
+1. When a user requests for a job to be executed on a transient cluster,
+   sahara creates such a cluster.
+2. Sahara drops the user's credentials once the cluster is created but
+   prior to that it creates a trust allowing it to operate with the
+   cluster instances in the future without user credentials.
+3. Once a cluster is not needed, sahara terminates its instances using the
+   stored trust. sahara drops the trust after that.

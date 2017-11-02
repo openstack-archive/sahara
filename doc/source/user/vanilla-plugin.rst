@@ -42,15 +42,15 @@ plugin:
 
 For Vanilla Hadoop version 2.x.x:
 
-  + Cluster must contain exactly one namenode
-  + Cluster can contain at most one resourcemanager
-  + Cluster can contain at most one secondary namenode
-  + Cluster can contain at most one historyserver
-  + Cluster can contain at most one oozie and this process is also required
-    for EDP
-  + Cluster can't contain oozie without resourcemanager and without
-    historyserver
-  + Cluster can't have nodemanager nodes if it doesn't have resourcemanager
-  + Cluster can have at most one hiveserver node.
-  + Cluster can have at most one spark history server and this process is also
-    required for Spark EDP (Spark is available since the Newton release).
++ Cluster must contain exactly one namenode
++ Cluster can contain at most one resourcemanager
++ Cluster can contain at most one secondary namenode
++ Cluster can contain at most one historyserver
++ Cluster can contain at most one oozie and this process is also required
+  for EDP
++ Cluster can't contain oozie without resourcemanager and without
+  historyserver
++ Cluster can't have nodemanager nodes if it doesn't have resourcemanager
++ Cluster can have at most one hiveserver node.
++ Cluster can have at most one spark history server and this process is also
+  required for Spark EDP (Spark is available since the Newton release).

@@ -29,23 +29,23 @@ from the bare metal performance with self-service resource provisioning.
    $ qemu-img convert -O raw image-converted.qcow image-converted-from-qcow2.raw
 ..
 
-   - Mount the raw image to the system.
-   - ``chroot`` to the mounted directory and remove the installed grub.
-   - Build grub2 from sources and install to ``/usr/sbin``.
-   - In ``/etc/sysconfig/selinux``, disable selinux ``SELINUX=disabled``
-   - In the configuration file, set ``onboot=yes`` and ``BOOTPROTO=dhcp``
-     for every interface.
-   - Add the configuration files for all interfaces in the
-     ``/etc/sysconfig/network-scripts`` directory.
+- Mount the raw image to the system.
+- ``chroot`` to the mounted directory and remove the installed grub.
+- Build grub2 from sources and install to ``/usr/sbin``.
+- In ``/etc/sysconfig/selinux``, disable selinux ``SELINUX=disabled``
+- In the configuration file, set ``onboot=yes`` and ``BOOTPROTO=dhcp``
+  for every interface.
+- Add the configuration files for all interfaces in the
+  ``/etc/sysconfig/network-scripts`` directory.
 
 5. Upload the Sahara disk image to Glance, and register it in the
    Sahara Image Registry. Referencing its separate kernel and initramfs images.
 
 6. Configure the bare metal network for the Sahara cluster nodes:
 
-   - Add bare metal servers to your environment manually referencing their
-     IPMI addresses (Ironic does not detect servers), for Ironic to manage
-     the servers power and network. For example:
+- Add bare metal servers to your environment manually referencing their
+  IPMI addresses (Ironic does not detect servers), for Ironic to manage
+  the servers power and network. For example:
 
 .. code-block:: bash
 
@@ -59,7 +59,7 @@ from the bare metal performance with self-service resource provisioning.
    $ ironic port-create -n $NODE_ID -a "$MAC_eth1"
 ..
 
-   - Add the hardware information:
+- Add the hardware information:
 
 .. code-block:: bash
 

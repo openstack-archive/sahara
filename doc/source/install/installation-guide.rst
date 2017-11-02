@@ -80,14 +80,14 @@ To install into a virtual environment
     $ sudo apt-get install python-setuptools python-virtualenv python-dev
 ..
 
-   For Fedora:
+For Fedora:
 
 .. sourcecode:: console
 
     $ sudo yum install gcc python-setuptools python-virtualenv python-devel
 ..
 
-   For CentOS:
+For CentOS:
 
 .. sourcecode:: console
 
@@ -102,10 +102,10 @@ To install into a virtual environment
     $ virtualenv sahara-venv
 ..
 
-   This will install a python virtual environment into ``sahara-venv``
-   directory in your current working directory. This command does not
-   require super user privileges and can be executed in any directory where
-   the current user has write permissions.
+This will install a python virtual environment into ``sahara-venv``
+directory in your current working directory. This command does not
+require super user privileges and can be executed in any directory where
+the current user has write permissions.
 
 3. You can get a sahara archive from
    `<http://tarballs.openstack.org/sahara/>`_ and install it using pip:
@@ -115,18 +115,18 @@ To install into a virtual environment
     $ sahara-venv/bin/pip install 'http://tarballs.openstack.org/sahara/sahara-master.tar.gz'
 ..
 
-   Note that ``sahara-master.tar.gz`` contains the latest changes and
-   might not be stable at the moment. We recommend browsing
-   `<http://tarballs.openstack.org/sahara/>`_ and selecting the latest
-   stable release. For installation just execute (where replace the 'release'
-   word with release name, e.g. 'mitaka'):
+Note that ``sahara-master.tar.gz`` contains the latest changes and
+might not be stable at the moment. We recommend browsing
+`<http://tarballs.openstack.org/sahara/>`_ and selecting the latest
+stable release. For installation just execute (where replace the 'release'
+word with release name, e.g. 'mitaka'):
 
 .. sourcecode:: console
 
     $ sahara-venv/bin/pip install 'http://tarballs.openstack.org/sahara/sahara-stable-release.tar.gz'
 ..
 
-   For example, you can get Sahara Mitaka release by executing:
+For example, you can get Sahara Mitaka release by executing:
 
 .. sourcecode:: console
 
@@ -142,9 +142,9 @@ To install into a virtual environment
     $ cp sahara-venv/share/sahara/sahara.conf.sample-basic sahara-venv/etc/sahara.conf
 ..
 
-    Make any necessary changes to ``sahara-venv/etc/sahara.conf``.
-    For details see
-    :doc:`Sahara Configuration Guide <../admin/configuration-guide>`
+Make any necessary changes to ``sahara-venv/etc/sahara.conf``.
+For details see
+:doc:`Sahara Configuration Guide <../admin/configuration-guide>`
 
 .. _common_installation_steps:
 

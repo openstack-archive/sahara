@@ -57,10 +57,10 @@ topology requested by user is verified for consistency.
 Currently there are the following limitations in cluster topology for the
 Spark plugin:
 
-  + Cluster must contain exactly one HDFS namenode
-  + Cluster must contain exactly one Spark master
-  + Cluster must contain at least one Spark slave
-  + Cluster must contain at least one HDFS datanode
++ Cluster must contain exactly one HDFS namenode
++ Cluster must contain exactly one Spark master
++ Cluster must contain at least one Spark slave
++ Cluster must contain at least one HDFS datanode
 
 The tested configuration co-locates the NameNode with the master and a
 DataNode with each slave to maximize data locality.

@@ -70,11 +70,11 @@ Create a Cluster Template
 5) Under the "Node Groups" tab, you should add one or more nodes that can be
    based on one or more templates
 
-  - To do this, start by choosing a Node Group Template from the dropdown and
-    click the "+" button
-  - You can adjust the number of nodes to be spawned for this node group via
-    the text box or the "-" and "+" buttons
-  - Repeat these steps if you need nodes from additional node group templates
+- To do this, start by choosing a Node Group Template from the dropdown and
+  click the "+" button
+- You can adjust the number of nodes to be spawned for this node group via
+  the text box or the "-" and "+" buttons
+- Repeat these steps if you need nodes from additional node group templates
 
 6) Optionally, you can adjust your configuration further by using the "General
    Parameters", "HDFS Parameters" and "MapReduce Parameters" tabs
@@ -107,8 +107,8 @@ Launching a Cluster
 
 8) Click on the "Create" button to start your cluster
 
-  - Your cluster's status will display on the Clusters table
-  - It will likely take several minutes to reach the "Active" state
+- Your cluster's status will display on the Clusters table
+- It will likely take several minutes to reach the "Active" state
 
 Scaling a Cluster
 -----------------
@@ -121,10 +121,10 @@ Scaling a Cluster
 3) You can also add a new Node Group Template and choose a number of instances
    to launch
 
-  - This can be done by selecting your desired Node Group Template from the
-    dropdown and clicking the "+" button
-  - Your new Node Group will appear below and you can adjust the number of
-    instances via the text box or the "+" and "-" buttons
+- This can be done by selecting your desired Node Group Template from the
+  dropdown and clicking the "+" button
+- Your new Node Group will appear below and you can adjust the number of
+  instances via the text box or the "+" and "-" buttons
 
 4) To confirm the scaling settings and trigger the spawning/deletion of
    instances, click on "Scale"
@@ -142,14 +142,14 @@ Data Sources are where the input and output from your jobs are housed.
 
 3) Enter the URL of the Data Source
 
-  - For a swift object, enter <container>/<path> (ie: *mycontainer/inputfile*).
-    sahara will prepend *swift://* for you
-  - For an HDFS object, enter an absolute path, a relative path or a full URL:
+- For a swift object, enter <container>/<path> (ie: *mycontainer/inputfile*).
+  sahara will prepend *swift://* for you
+- For an HDFS object, enter an absolute path, a relative path or a full URL:
 
-    + */my/absolute/path* indicates an absolute path in the cluster HDFS
-    + *my/path* indicates the path */user/hadoop/my/path* in the cluster HDFS
-      assuming the defined HDFS user is *hadoop*
-    + *hdfs://host:port/path* can be used to indicate any HDFS location
+  + */my/absolute/path* indicates an absolute path in the cluster HDFS
+  + *my/path* indicates the path */user/hadoop/my/path* in the cluster HDFS
+    assuming the defined HDFS user is *hadoop*
+  + *hdfs://host:port/path* can be used to indicate any HDFS location
 
 4) Enter the username and password for the Data Source (also see
    `Additional Notes`_)
@@ -172,10 +172,10 @@ for your job.
 
 3) Choose the type of storage for your Job Binary
 
-  - For "swift", enter the URL of your binary (<container>/<path>) as well as
-    the username and password (also see `Additional Notes`_)
-  - For "Internal database", you can choose from "Create a script" or "Upload
-    a new file"
+- For "swift", enter the URL of your binary (<container>/<path>) as well as
+  the username and password (also see `Additional Notes`_)
+- For "Internal database", you can choose from "Create a script" or "Upload
+  a new file"
 
 4) Enter an optional description
 
@@ -226,10 +226,10 @@ status of your job to see when it has completed its run
 
 4) If additional configuration is required, click on the "Configure" tab
 
-  - Additional configuration properties can be defined by clicking on the "Add"
-    button
-  - An example configuration entry might be mapred.mapper.class for the Name
-    and org.apache.oozie.example.SampleMapper for the Value
+- Additional configuration properties can be defined by clicking on the "Add"
+  button
+- An example configuration entry might be mapred.mapper.class for the Name
+  and org.apache.oozie.example.SampleMapper for the Value
 
 5) Click on "Launch".  To monitor the status of your job, you can navigate to
    the Data Processing/Jobs panel and click on the Jobs tab.
@@ -237,11 +237,11 @@ status of your job to see when it has completed its run
 6) You can relaunch a Job from the Jobs page by using the
    "Relaunch on New Cluster" or "Relaunch on Existing Cluster" links
 
-  - Relaunch on New Cluster will take you through the forms to start a new
-    cluster before letting you specify input/output Data Sources and job
-    configuration
-  - Relaunch on Existing Cluster will prompt you for input/output Data Sources
-    as well as allow you to change job configuration before launching the job
+- Relaunch on New Cluster will take you through the forms to start a new
+  cluster before letting you specify input/output Data Sources and job
+  configuration
+- Relaunch on Existing Cluster will prompt you for input/output Data Sources
+  as well as allow you to change job configuration before launching the job
 
 Example Jobs
 ------------
@@ -254,117 +254,117 @@ so that you will have all of the source code and inputs stored locally.
 1) Sample Pig job -
    https://git.openstack.org/cgit/openstack/sahara-tests/tree/sahara_tests/scenario/defaults/edp-examples/edp-pig/cleanup-string/example.pig
 
-  - Load the input data file from
-    https://git.openstack.org/cgit/openstack/sahara-tests/tree/sahara_tests/scenario/defaults/edp-examples/edp-pig/cleanup-string/data/input
-    into swift
+- Load the input data file from
+  https://git.openstack.org/cgit/openstack/sahara-tests/tree/sahara_tests/scenario/defaults/edp-examples/edp-pig/cleanup-string/data/input
+  into swift
 
-    - Click on Project/Object Store/Containers and create a container with any
-      name ("samplecontainer" for our purposes here)
+  - Click on Project/Object Store/Containers and create a container with any
+    name ("samplecontainer" for our purposes here)
 
-    - Click on Upload Object and give the object a name
-      ("piginput" in this case)
+  - Click on Upload Object and give the object a name
+    ("piginput" in this case)
 
-  - Navigate to Data Processing/Jobs/Data Sources, Click on Create Data Source
+- Navigate to Data Processing/Jobs/Data Sources, Click on Create Data Source
 
-    - Name your Data Source ("pig-input-ds" in this sample)
+  - Name your Data Source ("pig-input-ds" in this sample)
 
-    - Type = Swift, URL samplecontainer/piginput, fill-in the Source
-      username/password fields with your username/password and click "Create"
+  - Type = Swift, URL samplecontainer/piginput, fill-in the Source
+    username/password fields with your username/password and click "Create"
 
-  - Create another Data Source to use as output for the job
+- Create another Data Source to use as output for the job
 
-    - Name = pig-output-ds, Type = Swift, URL = samplecontainer/pigoutput,
-      Source username/password, "Create"
+  - Name = pig-output-ds, Type = Swift, URL = samplecontainer/pigoutput,
+    Source username/password, "Create"
 
-  - Store your Job Binaries in the sahara database
+- Store your Job Binaries in the sahara database
 
-    - Navigate to Data Processing/Jobs/Job Binaries, Click on Create Job Binary
+  - Navigate to Data Processing/Jobs/Job Binaries, Click on Create Job Binary
 
-    - Name = example.pig, Storage type = Internal database, click Browse and
-      find example.pig wherever you checked out the sahara project
-      <sahara-tests root>/etc/edp-examples/edp-pig/trim-spaces
+  - Name = example.pig, Storage type = Internal database, click Browse and
+    find example.pig wherever you checked out the sahara project
+    <sahara-tests root>/etc/edp-examples/edp-pig/trim-spaces
 
-    - Create another Job Binary:  Name = edp-pig-udf-stringcleaner.jar,
-      Storage type = Internal database, click Browse and find
-      edp-pig-udf-stringcleaner.jar wherever you checked out the sahara project
-      <sahara-tests root>/sahara_tests/scenario/defaults/edp-examples/
-      edp-pig/cleanup-string/
+  - Create another Job Binary:  Name = edp-pig-udf-stringcleaner.jar,
+    Storage type = Internal database, click Browse and find
+    edp-pig-udf-stringcleaner.jar wherever you checked out the sahara project
+    <sahara-tests root>/sahara_tests/scenario/defaults/edp-examples/
+    edp-pig/cleanup-string/
 
-  - Create a Job Template
+- Create a Job Template
 
-    - Navigate to Data Processing/Jobs/Job Templates, Click on
-      Create Job Template
+  - Navigate to Data Processing/Jobs/Job Templates, Click on
+    Create Job Template
 
-    - Name = pigsample, Job Type = Pig, Choose "example.pig" as the main binary
+  - Name = pigsample, Job Type = Pig, Choose "example.pig" as the main binary
 
-    - Click on the "Libs" tab and choose "edp-pig-udf-stringcleaner.jar",
-      then hit the "Choose" button beneath the dropdown, then click
-      on "Create"
+  - Click on the "Libs" tab and choose "edp-pig-udf-stringcleaner.jar",
+    then hit the "Choose" button beneath the dropdown, then click
+    on "Create"
 
-  - Launch your job
+- Launch your job
 
-    - To launch your job from the Job Templates page, click on the down
-      arrow at the far right of the screen and choose
-      "Launch on Existing Cluster"
+  - To launch your job from the Job Templates page, click on the down
+    arrow at the far right of the screen and choose
+    "Launch on Existing Cluster"
 
-    - For the input, choose "pig-input-ds", for output choose "pig-output-ds".
-      Also choose whichever cluster you'd like to run the job on
+  - For the input, choose "pig-input-ds", for output choose "pig-output-ds".
+    Also choose whichever cluster you'd like to run the job on
 
-    - For this job, no additional configuration is necessary, so you can just
-      click on "Launch"
+  - For this job, no additional configuration is necessary, so you can just
+    click on "Launch"
 
-    - You will be taken to the "Jobs" page where you can see your job
-      progress through "PENDING, RUNNING, SUCCEEDED" phases
+  - You will be taken to the "Jobs" page where you can see your job
+    progress through "PENDING, RUNNING, SUCCEEDED" phases
 
-    - When your job finishes with "SUCCEEDED", you can navigate back to Object
-      Store/Containers and browse to the samplecontainer to see your output.
-      It should be in the "pigoutput" folder
+  - When your job finishes with "SUCCEEDED", you can navigate back to Object
+    Store/Containers and browse to the samplecontainer to see your output.
+    It should be in the "pigoutput" folder
 
 2) Sample Spark job -
    https://git.openstack.org/cgit/openstack/sahara-tests/tree/sahara_tests/scenario/defaults/edp-examples/edp-spark
    You can clone into https://git.openstack.org/cgit/openstack/sahara-tests/ for quicker
    access to the files for this sample job.
 
-  - Store the Job Binary in the sahara database
+- Store the Job Binary in the sahara database
 
-    - Navigate to Data Processing/Jobs/Job Binaries, Click on Create Job Binary
+  - Navigate to Data Processing/Jobs/Job Binaries, Click on Create Job Binary
 
-    - Name = sparkexample.jar, Storage type = Internal database, Browse to the
-      location <sahara-tests root>/sahara_tests/scenario/defaults/
-      edp-examples/edp-spark/ and choose spark-wordcount.jar, Click "Create"
+  - Name = sparkexample.jar, Storage type = Internal database, Browse to the
+    location <sahara-tests root>/sahara_tests/scenario/defaults/
+    edp-examples/edp-spark/ and choose spark-wordcount.jar, Click "Create"
 
-  - Create a Job Template
+- Create a Job Template
 
-    - Name = sparkexamplejob, Job Type = Spark,
-      Main binary = Choose sparkexample.jar, Click "Create"
+  - Name = sparkexamplejob, Job Type = Spark,
+    Main binary = Choose sparkexample.jar, Click "Create"
 
-  - Launch your job
+- Launch your job
 
-    - To launch your job from the Job Templates page, click on the
-      down arrow at the far right of the screen and choose
-      "Launch on Existing Cluster"
+  - To launch your job from the Job Templates page, click on the
+    down arrow at the far right of the screen and choose
+    "Launch on Existing Cluster"
 
-    - Choose whichever cluster you'd like to run the job on
+  - Choose whichever cluster you'd like to run the job on
 
-    - Click on the "Configure" tab
+  - Click on the "Configure" tab
 
-    - Set the main class to be:  sahara.edp.spark.SparkWordCount
+  - Set the main class to be:  sahara.edp.spark.SparkWordCount
 
-    - Under Arguments, click Add and fill url for the input file,
-      once more click Add and fill url for the output file.
+  - Under Arguments, click Add and fill url for the input file,
+    once more click Add and fill url for the output file.
 
-    - Click on Launch
+  - Click on Launch
 
-    - You will be taken to the "Jobs" page where you can see your job
-      progress through "PENDING, RUNNING, SUCCEEDED" phases
+  - You will be taken to the "Jobs" page where you can see your job
+    progress through "PENDING, RUNNING, SUCCEEDED" phases
 
-    - When your job finishes with "SUCCEEDED", you can see your results in
-      your output file.
+  - When your job finishes with "SUCCEEDED", you can see your results in
+    your output file.
 
-    - The stdout and stderr files of the command used for executing your job
-      are located at  /tmp/spark-edp/<name of job template>/<job id>
-      on Spark master node in case of Spark clusters, or on Spark JobHistory
-      node in other cases like Vanilla, CDH and so on.
+  - The stdout and stderr files of the command used for executing your job
+    are located at  /tmp/spark-edp/<name of job template>/<job id>
+    on Spark master node in case of Spark clusters, or on Spark JobHistory
+    node in other cases like Vanilla, CDH and so on.
 
 
 Additional Notes

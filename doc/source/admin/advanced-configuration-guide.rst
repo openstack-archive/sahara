@@ -195,24 +195,24 @@ further or run jobs on it via EDP.
 To run sahara in distributed mode pick several hosts on which
 you want to run sahara services and follow these steps:
 
- * On each host install and configure sahara using the
-   `installation guide <../install/installation-guide.html>`_
-   except:
+* On each host install and configure sahara using the
+  `installation guide <../install/installation-guide.html>`_
+  except:
 
-    * Do not run ``sahara-db-manage`` or launch sahara with ``sahara-all``
-    * Ensure that each configuration file provides a database connection
-      string to a single database for all hosts.
+  * Do not run ``sahara-db-manage`` or launch sahara with ``sahara-all``
+  * Ensure that each configuration file provides a database connection
+    string to a single database for all hosts.
 
- * Run ``sahara-db-manage`` as described in the installation guide,
-   but only on a single (arbitrarily picked) host.
+* Run ``sahara-db-manage`` as described in the installation guide,
+  but only on a single (arbitrarily picked) host.
 
- * The ``sahara-api`` and ``sahara-engine`` processes use oslo.messaging to
-   communicate with each other. You will need to configure it properly on
-   each host (see below).
+* The ``sahara-api`` and ``sahara-engine`` processes use oslo.messaging to
+  communicate with each other. You will need to configure it properly on
+  each host (see below).
 
- * Run ``sahara-api`` and ``sahara-engine`` on the desired hosts. You may
-   run both processes on the same or separate hosts as long as they are
-   configured to use the same message broker and database.
+* Run ``sahara-api`` and ``sahara-engine`` on the desired hosts. You may
+  run both processes on the same or separate hosts as long as they are
+  configured to use the same message broker and database.
 
 To configure oslo.messaging, first you will need to choose a message
 broker driver. Currently there are two drivers provided: RabbitMQ
@@ -224,29 +224,29 @@ For an expanded view of all the options provided by each message broker
 driver in oslo.messaging please refer to the options available in the
 respective source trees:
 
- * For Rabbit MQ see
+* For Rabbit MQ see
 
-   * rabbit_opts variable in `impl_rabbit.py <https://git.openstack.org/
-     cgit/openstack/oslo.messaging/tree/oslo/messaging/_drivers
-     /impl_rabbit.py?id=1.4.0#n38>`_
-   * amqp_opts variable in `amqp.py <https://git.openstack.org/cgit/
-     openstack/oslo.messaging/tree/oslo/messaging/
-     _drivers/amqp.py?id=1.4.0#n37>`_
+  * rabbit_opts variable in `impl_rabbit.py <https://git.openstack.org/
+    cgit/openstack/oslo.messaging/tree/oslo/messaging/_drivers
+    /impl_rabbit.py?id=1.4.0#n38>`_
+  * amqp_opts variable in `amqp.py <https://git.openstack.org/cgit/
+    openstack/oslo.messaging/tree/oslo/messaging/
+    _drivers/amqp.py?id=1.4.0#n37>`_
 
- * For Zmq see
+* For Zmq see
 
-   * zmq_opts variable in `impl_zmq.py <https://git.openstack.org/cgit/
-     openstack/oslo.messaging/tree/oslo/messaging/_drivers/
-     impl_zmq.py?id=1.4.0#n49>`_
-   * matchmaker_opts variable in `matchmaker.py <https://git.openstack.org/
-     cgit/openstack/oslo.messaging/tree/oslo/messaging/_drivers/
-     matchmaker.py?id=1.4.0#n27>`_
-   * matchmaker_redis_opts variable in `matchmaker_redis.py <https://
-     git.openstack.org/cgit/openstack/oslo.messaging/tree/oslo/messaging/
-     _drivers/matchmaker_redis.py?id=1.4.0#n26>`_
-   * matchmaker_opts variable in `matchmaker_ring.py <https://
-     git.openstack.org/cgit/openstack/oslo.messaging/tree/oslo/messaging/
-     _drivers/matchmaker_ring.py?id=1.4.0#n27>`_
+  * zmq_opts variable in `impl_zmq.py <https://git.openstack.org/cgit/
+    openstack/oslo.messaging/tree/oslo/messaging/_drivers/
+    impl_zmq.py?id=1.4.0#n49>`_
+  * matchmaker_opts variable in `matchmaker.py <https://git.openstack.org/
+    cgit/openstack/oslo.messaging/tree/oslo/messaging/_drivers/
+    matchmaker.py?id=1.4.0#n27>`_
+  * matchmaker_redis_opts variable in `matchmaker_redis.py <https://
+    git.openstack.org/cgit/openstack/oslo.messaging/tree/oslo/messaging/
+    _drivers/matchmaker_redis.py?id=1.4.0#n26>`_
+  * matchmaker_opts variable in `matchmaker_ring.py <https://
+    git.openstack.org/cgit/openstack/oslo.messaging/tree/oslo/messaging/
+    _drivers/matchmaker_ring.py?id=1.4.0#n27>`_
 
 These options will also be present in the generated sample configuration
 file. For instructions on creating the configuration file please see the
@@ -266,50 +266,50 @@ Distributed periodic tasks are based on Hash Ring implementation and the Tooz
 library that provides group membership support for a set of backends. In order
 to use periodic tasks distribution, the following steps are required:
 
- * One of the `supported backends <https://docs.openstack.org/tooz/latest/user/compatibility.html#driver-support>`_ should be configured and started.
- * Backend URL should be set in the sahara configuration file with the
-   ``periodic_coordinator_backend_url`` parameter. For example, if the
-   ZooKeeper backend is being used:
+* One of the `supported backends <https://docs.openstack.org/tooz/latest/user/compatibility.html#driver-support>`_ should be configured and started.
+* Backend URL should be set in the sahara configuration file with the
+  ``periodic_coordinator_backend_url`` parameter. For example, if the
+  ZooKeeper backend is being used:
 
-   .. sourcecode:: cfg
+  .. sourcecode:: cfg
 
-       [DEFAULT]
-       periodic_coordinator_backend_url=kazoo://IP:PORT
+      [DEFAULT]
+      periodic_coordinator_backend_url=kazoo://IP:PORT
 
- * Tooz extras should be installed. When using Zookeeper as coordination
-   backend, ``kazoo`` library should be installed. It can be done with pip:
+* Tooz extras should be installed. When using Zookeeper as coordination
+  backend, ``kazoo`` library should be installed. It can be done with pip:
 
-   .. sourcecode:: console
+  .. sourcecode:: console
 
       pip install tooz[zookeeper]
 
- * Periodic tasks can be performed in parallel. Number of threads to run
-   periodic tasks on a single engine can be set with
-   ``periodic_workers_number`` parameter (only 1 thread will be launched by
-   default). Example:
+* Periodic tasks can be performed in parallel. Number of threads to run
+  periodic tasks on a single engine can be set with
+  ``periodic_workers_number`` parameter (only 1 thread will be launched by
+  default). Example:
 
-   .. sourcecode:: cfg
+  .. sourcecode:: cfg
 
-       [DEFAULT]
-       periodic_workers_number=2
+      [DEFAULT]
+      periodic_workers_number=2
 
- * ``coordinator_heartbeat_interval`` can be set to change the interval between
-   heartbeat execution (1 second by default). Heartbeats are needed to make
-   sure that connection to the coordination backend is active. Example:
+* ``coordinator_heartbeat_interval`` can be set to change the interval between
+  heartbeat execution (1 second by default). Heartbeats are needed to make
+  sure that connection to the coordination backend is active. Example:
 
-   .. sourcecode:: cfg
+  .. sourcecode:: cfg
 
-       [DEFAULT]
-       coordinator_heartbeat_interval=2
+      [DEFAULT]
+      coordinator_heartbeat_interval=2
 
- * ``hash_ring_replicas_count`` can be set to change the number of replicas for
-   each engine on a Hash Ring. Each replica is a point on a Hash Ring that
-   belongs to a particular engine. A larger number of replicas leads to better
-   task distribution across the set of engines. (40 by default). Example:
+* ``hash_ring_replicas_count`` can be set to change the number of replicas for
+  each engine on a Hash Ring. Each replica is a point on a Hash Ring that
+  belongs to a particular engine. A larger number of replicas leads to better
+  task distribution across the set of engines. (40 by default). Example:
 
-   .. sourcecode:: cfg
+  .. sourcecode:: cfg
 
-       [DEFAULT]
+      [DEFAULT]
        hash_ring_replicas_count=100
 
 .. _external_key_manager_usage:
