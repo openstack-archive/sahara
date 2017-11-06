@@ -53,24 +53,24 @@ To create vanilla images follow these steps:
    "https://git.openstack.org/cgit/openstack/sahara-image-elements" and export necessary
    parameters.
 
-        * ``DIB_HADOOP_VERSION`` - version of Hadoop to install
-        * ``JAVA_DOWNLOAD_URL`` - download link for JDK (tarball or bin)
-        * ``OOZIE_DOWNLOAD_URL`` - download link for OOZIE (we have built
-          Oozie libs here: ``http://sahara-files.mirantis.com/oozie-4.2.0-hadoop-2.7.1.tar.gz``)
-        * ``SPARK_DOWNLOAD_URL`` - download link for Spark
-        * ``HIVE_VERSION`` - version of Hive to install
-          (currently supports only 0.11.0)
-        * ``ubuntu_image_name``
-        * ``fedora_image_name``
-        * ``DIB_IMAGE_SIZE`` - parameter that specifies a volume of hard disk
-          of instance. You need to specify it only for Fedora because Fedora
-          doesn't use all available volume
-        * ``DIB_COMMIT_ID`` - latest commit id of diskimage-builder project
-        * ``SAHARA_ELEMENTS_COMMIT_ID`` - latest commit id of
-          sahara-image-elements project
+* ``DIB_HADOOP_VERSION`` - version of Hadoop to install
+* ``JAVA_DOWNLOAD_URL`` - download link for JDK (tarball or bin)
+* ``OOZIE_DOWNLOAD_URL`` - download link for OOZIE (we have built
+  Oozie libs here: ``http://sahara-files.mirantis.com/oozie-4.2.0-hadoop-2.7.1.tar.gz``)
+* ``SPARK_DOWNLOAD_URL`` - download link for Spark
+* ``HIVE_VERSION`` - version of Hive to install
+  (currently supports only 0.11.0)
+* ``ubuntu_image_name``
+* ``fedora_image_name``
+* ``DIB_IMAGE_SIZE`` - parameter that specifies a volume of hard disk
+  of instance. You need to specify it only for Fedora because Fedora
+  doesn't use all available volume
+* ``DIB_COMMIT_ID`` - latest commit id of diskimage-builder project
+* ``SAHARA_ELEMENTS_COMMIT_ID`` - latest commit id of
+  sahara-image-elements project
 
    NOTE: If you don't want to use default values, you should set your values
-     of parameters.
+   of parameters.
 
    Then it will create required cloud images using image elements that install
    all the necessary packages and configure them. You will find created images

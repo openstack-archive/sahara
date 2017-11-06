@@ -82,53 +82,53 @@ cluster topology requested by the user is verified for consistency.
 The following limitations are required in the cluster topology for all
 cloudera plugin versions:
 
-  + Cluster must contain exactly one manager.
-  + Cluster must contain exactly one namenode.
-  + Cluster must contain exactly one secondarynamenode.
-  + Cluster must contain at least ``dfs_replication`` datanodes.
-  + Cluster can contain at most one resourcemanager and this process is also
-    required by nodemanager.
-  + Cluster can contain at most one jobhistory and this process is also
-    required for resourcemanager.
-  + Cluster can contain at most one oozie and this process is also required
-    for EDP.
-  + Cluster can't contain oozie without datanode.
-  + Cluster can't contain oozie without nodemanager.
-  + Cluster can't contain oozie without jobhistory.
-  + Cluster can't contain hive on the cluster without the following services:
-    metastore, hive server, webcat and resourcemanager.
-  + Cluster can contain at most one hue server.
-  + Cluster can't contain hue server without hive service and oozie.
-  + Cluster can contain at most one spark history server.
-  + Cluster can't contain spark history server without resourcemanager.
-  + Cluster can't contain hbase master service without at least one zookeeper
-    and at least one hbase regionserver.
-  + Cluster can't contain hbase regionserver without at least one hbase maser.
++ Cluster must contain exactly one manager.
++ Cluster must contain exactly one namenode.
++ Cluster must contain exactly one secondarynamenode.
++ Cluster must contain at least ``dfs_replication`` datanodes.
++ Cluster can contain at most one resourcemanager and this process is also
+  required by nodemanager.
++ Cluster can contain at most one jobhistory and this process is also
+  required for resourcemanager.
++ Cluster can contain at most one oozie and this process is also required
+  for EDP.
++ Cluster can't contain oozie without datanode.
++ Cluster can't contain oozie without nodemanager.
++ Cluster can't contain oozie without jobhistory.
++ Cluster can't contain hive on the cluster without the following services:
+  metastore, hive server, webcat and resourcemanager.
++ Cluster can contain at most one hue server.
++ Cluster can't contain hue server without hive service and oozie.
++ Cluster can contain at most one spark history server.
++ Cluster can't contain spark history server without resourcemanager.
++ Cluster can't contain hbase master service without at least one zookeeper
+  and at least one hbase regionserver.
++ Cluster can't contain hbase regionserver without at least one hbase maser.
 
 In case of 5.3.0, 5.4.0, 5.5.0, 5.7.x or 5.9.x version of Cloudera Plugin
 there are few extra limitations in the cluster topology:
 
-  + Cluster can't contain flume without at least one datanode.
-  + Cluster can contain at most one sentry server service.
-  + Cluster can't contain sentry server service without at least one zookeeper
-    and at least one datanode.
-  + Cluster can't contain solr server without at least one zookeeper and at
-    least one datanode.
-  + Cluster can contain at most one sqoop server.
-  + Cluster can't contain sqoop server without at least one datanode,
-    nodemanager and jobhistory.
-  + Cluster can't contain hbase indexer without at least one datanode,
-    zookeeper, solr server and hbase master.
-  + Cluster can contain at most one impala catalog server.
-  + Cluster can contain at most one impala statestore.
-  + Cluster can't contain impala catalogserver without impala statestore,
-    at least one impalad service, at least one datanode, and metastore.
-  + If using Impala, the daemons must be installed on every datanode.
++ Cluster can't contain flume without at least one datanode.
++ Cluster can contain at most one sentry server service.
++ Cluster can't contain sentry server service without at least one zookeeper
+  and at least one datanode.
++ Cluster can't contain solr server without at least one zookeeper and at
+  least one datanode.
++ Cluster can contain at most one sqoop server.
++ Cluster can't contain sqoop server without at least one datanode,
+  nodemanager and jobhistory.
++ Cluster can't contain hbase indexer without at least one datanode,
+  zookeeper, solr server and hbase master.
++ Cluster can contain at most one impala catalog server.
++ Cluster can contain at most one impala statestore.
++ Cluster can't contain impala catalogserver without impala statestore,
+  at least one impalad service, at least one datanode, and metastore.
++ If using Impala, the daemons must be installed on every datanode.
 
 In case of version 5.5.0, 5.7.x or 5.9.x of Cloudera Plugin additional
 services in the cluster topology are available:
 
-  + Cluster can have the kafka service and several kafka brokers.
++ Cluster can have the kafka service and several kafka brokers.
 
 Enabling Kerberos security for cluster
 --------------------------------------

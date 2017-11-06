@@ -11,9 +11,9 @@ Creating a login on Launchpad is important even if you don't use the Launchpad
 site itself, since Launchpad credentials are used for logging in on several
 OpenStack-related sites. These sites include:
 
- * `Wiki`_
- * Gerrit (see :doc:`gerrit`)
- * Jenkins (see :doc:`jenkins`)
+* `Wiki`_
+* Gerrit (see :doc:`gerrit`)
+* Jenkins (see :doc:`jenkins`)
 
 Mailing list
 ------------
