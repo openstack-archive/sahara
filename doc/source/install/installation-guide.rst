@@ -27,7 +27,7 @@ To install with RDO
 -------------------
 
 1. Start by following the `RDO Quickstart
-   <https://www.rdoproject.org/install/quickstart/>`_ to install and setup
+   <https://www.rdoproject.org/install/>`_ to install and setup
    OpenStack.
 
 2. Install sahara:
