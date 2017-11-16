@@ -198,6 +198,16 @@ class SwiftClientException(SaharaException):
     message = _("An error has occurred while performing a request to Swift")
 
 
+class S3ClientException(SaharaException):
+    '''General wrapper object for boto exceptions
+
+    Intended to replace any errors raised by the botocore client.
+    '''
+
+    code = "S3_CLIENT_EXCEPTION"
+    message = _("An error has occurred while performing a request to S3")
+
+
 class DataTooBigException(SaharaException):
     code = "DATA_TOO_BIG"
     message_template = _("Size of data (%(size)s) is greater than maximum "

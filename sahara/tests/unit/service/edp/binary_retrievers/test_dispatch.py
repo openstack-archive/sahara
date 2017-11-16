@@ -23,6 +23,7 @@ class TestDispatch(base.SaharaTestCase):
     def setUp(self):
         super(TestDispatch, self).setUp()
 
+    @mock.patch('sahara.service.edp.s3_common.get_raw_job_binary_data')
     @mock.patch('sahara.service.edp.binary_retrievers.'
                 'manila_share.get_file_info')
     @mock.patch(
@@ -33,7 +34,8 @@ class TestDispatch(base.SaharaTestCase):
     @mock.patch('sahara.service.edp.binary_retrievers.sahara_db.get_raw_data')
     @mock.patch('sahara.context.ctx')
     def test_get_raw_binary(self, ctx, db_get_raw_data, i_s_get_raw_data,
-                            i_s_get_raw_data_with_context, m_s_get_file_info):
+                            i_s_get_raw_data_with_context, m_s_get_file_info,
+                            s3_get_raw_jb_data):
         ctx.return_value = mock.Mock()
 
         job_binary = mock.Mock()
@@ -58,3 +60,7 @@ class TestDispatch(base.SaharaTestCase):
         remote.instance.node_group.shares = []
         dispatch.get_raw_binary(job_binary, remote=remote)
         self.assertEqual(1, m_s_get_file_info.call_count)
+
+        job_binary.url = 's3://bucket/object.jar'
+        dispatch.get_raw_binary(job_binary)
+        self.assertEqual(1, s3_get_raw_jb_data.call_count)

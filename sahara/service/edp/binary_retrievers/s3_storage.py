@@ -1,4 +1,4 @@
-# Copyright (c) 2017 OpenStack Foundation
+# Copyright (c) 2017 Massachusetts Open Cloud
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,17 +12,8 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from sahara.service.edp import s3_common
 
-# File contains job binaries opts to avoid cyclic imports issue
 
-from oslo_config import cfg
-
-opts = [
-    cfg.ListOpt('job_binary_types',
-                default=['swift', 'manila', 'internal-db', 's3'],
-                help='List of job binary types to be loaded. Sahara '
-                     'preserves the order of the list when returning it.'),
-]
-
-CONF = cfg.CONF
-CONF.register_opts(opts)
+def get_raw_data(job_binary):
+    return s3_common.get_raw_job_binary_data(job_binary)

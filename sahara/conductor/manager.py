@@ -609,6 +609,9 @@ class ConductorManager(db_base.Base):
         if values.get('extra') and values['extra'].get('password'):
             values['extra']['password'] = key_manager.store_secret(
                 values['extra']['password'], context)
+        if values.get('extra') and values['extra'].get('secretkey'):
+            values['extra']['secretkey'] = key_manager.store_secret(
+                values['extra']['secretkey'], context)
         return self.db.job_binary_create(context, values)
 
     def job_binary_destroy(self, context, job_binary):
@@ -617,11 +620,16 @@ class ConductorManager(db_base.Base):
         # in cases where the credentials to access the job binary are
         # stored with the record and the external key manager is being
         # used, we need to delete the key from the external manager.
-        if (CONF.use_barbican_key_manager and not
-                CONF.use_domain_for_proxy_users):
+        if CONF.use_barbican_key_manager:
             jb_record = self.job_binary_get(context, job_binary)
-            if jb_record.get('extra') and jb_record['extra'].get('password'):
-                key_manager.delete_secret(jb_record['extra']['password'],
+            if not CONF.use_domain_for_proxy_users:
+                if (jb_record.get('extra') and
+                        jb_record['extra'].get('password')):
+                    key_manager.delete_secret(jb_record['extra']['password'],
+                                              context)
+            if (jb_record.get('extra') and
+                    jb_record['extra'].get('secretkey')):
+                key_manager.delete_secret(jb_record['extra']['secretkey'],
                                           context)
         self.db.job_binary_destroy(context, job_binary)
 
@@ -637,18 +645,25 @@ class ConductorManager(db_base.Base):
         # the previous key and check to see if it has changed, but it
         # seems less expensive to just delete the old and create a new
         # one.
-        if (CONF.use_barbican_key_manager and not
-                CONF.use_domain_for_proxy_users):
+        if CONF.use_barbican_key_manager:
             # first we retrieve the original record to get the old key
             # uuid, and delete it.
-            jb_record = self.job_binary_get(context, id)
-            if jb_record.get('extra') and jb_record['extra'].get('password'):
-                key_manager.delete_secret(jb_record['extra']['password'],
-                                          context)
             # next we create the new key.
-            if values.get('extra') and values['extra'].get('password'):
-                values['extra']['password'] = key_manager.store_secret(
-                    values['extra']['password'], context)
+            jb_record = self.job_binary_get(context, id)
+            if not CONF.use_domain_for_proxy_users:
+                if (jb_record.get('extra') and
+                        jb_record['extra'].get('password')):
+                    key_manager.delete_secret(jb_record['extra']['password'],
+                                              context)
+                if values.get('extra') and values['extra'].get('password'):
+                    values['extra']['password'] = key_manager.store_secret(
+                        values['extra']['password'], context)
+            if jb_record.get('extra') and jb_record['extra'].get('secretkey'):
+                key_manager.delete_secret(jb_record['extra']['secretkey'],
+                                          context)
+            if values.get('extra') and values['extra'].get('secretkey'):
+                values['extra']['secretkey'] = key_manager.store_secret(
+                    values['extra']['secretkey'], context)
         return self.db.job_binary_update(context, values)
 
     # JobBinaryInternal ops
