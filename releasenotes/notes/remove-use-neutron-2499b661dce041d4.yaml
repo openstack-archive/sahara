@@ -1,0 +1,6 @@
+---
+upgrade:
+  - |
+    Nova network has been fully removed from the OpenStack codebase,
+    remove all instances of switches on use_neutron and the
+    configuration value.

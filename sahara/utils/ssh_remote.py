@@ -719,8 +719,6 @@ class InstanceInteropHelper(remote.Remote):
         # fp -- just compare to internal?
         # in the neutron case, we check the node group for the
         # access_instance and look for fp
-        # in the nova case, we compare management_ip to internal_ip or even
-        # use the nova interface
         elif CONF.use_namespaces and not net_utils.has_floating_ip(
                 access_instance):
             # Build a session through a netcat socket in the Neutron namespace
@@ -803,13 +801,10 @@ class InstanceInteropHelper(remote.Remote):
             proxy_command = CONF.proxy_command
 
         # tmckay-fp again we can check the node group for the instance
-        # what are the implications for nova here? None, because use_namespaces
-        # is synonomous with use_neutron
-        # this is a test on whether access_instance has a floating_ip
+        # what are the implications for nova here? None.
+        # This is a test on whether access_instance has a floating_ip
         # in the neutron case, we check the node group for the
         # access_instance and look for fp
-        # in the nova case, we compare management_ip to internal_ip or even
-        # use the nova interface
         elif (CONF.use_namespaces and not net_utils.has_floating_ip(
                 access_instance)):
             # need neutron info

@@ -71,23 +71,15 @@ networking_opts = [
                 default=True,
                 help='If set to True, Sahara will use floating IPs to '
                      'communicate with instances. To make sure that all '
-                     'instances have floating IPs assigned in Nova Network '
-                     'set "auto_assign_floating_ip=True" in nova.conf. '
-                     'If Neutron is used for networking, make sure that '
-                     'all Node Groups have "floating_ip_pool" parameter '
-                     'defined.'),
+                     'instances have floating IPs assigned, make sure '
+                     'that all Node Groups have "floating_ip_pool" '
+                     'parameter defined.'),
     cfg.StrOpt('node_domain',
                default='novalocal',
-               help="The suffix of the node's FQDN. In nova-network that is "
-                    "the dhcp_domain config parameter."),
-    cfg.BoolOpt('use_neutron',
-                default=True,
-                help="Use Neutron Networking (False indicates the use of Nova "
-                     "networking)."),
+               help="The suffix of the node's FQDN."),
     cfg.BoolOpt('use_namespaces',
                 default=False,
-                help="Use network namespaces for communication (only valid to "
-                     "use in conjunction with use_neutron=True)."),
+                help="Use network namespaces for communication."),
     cfg.BoolOpt('use_rootwrap',
                 default=False,
                 help="Use rootwrap facility to allow non-root users to run "
@@ -227,15 +219,3 @@ def parse_configs(conf_files=None):
         raise ex.ConfigurationError(
             _("Option '%(option)s' is required for config group '%(group)s'") %
             {'option': roe.opt_name, 'group': roe.group.name})
-    validate_configs()
-
-
-def validate_network_configs():
-    if CONF.use_namespaces and not CONF.use_neutron:
-        raise ex.ConfigurationError(
-            _('use_namespaces can not be set to "True" when use_neutron '
-              'is set to "False"'))
-
-
-def validate_configs():
-    validate_network_configs()

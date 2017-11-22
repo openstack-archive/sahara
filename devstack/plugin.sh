@@ -119,14 +119,11 @@ function configure_sahara {
         database connection `database_connection_url sahara`
 
     if is_service_enabled neutron; then
-        iniset $SAHARA_CONF_FILE DEFAULT use_neutron true
         iniset $SAHARA_CONF_FILE neutron endpoint_type $SAHARA_ENDPOINT_TYPE
         if is_ssl_enabled_service "neutron" \
             || is_service_enabled tls-proxy; then
             iniset $SAHARA_CONF_FILE neutron ca_file $SSL_BUNDLE_FILE
         fi
-    else
-        iniset $SAHARA_CONF_FILE DEFAULT use_neutron false
     fi
 
     if is_ssl_enabled_service "heat" || is_service_enabled tls-proxy; then

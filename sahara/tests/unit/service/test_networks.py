@@ -87,7 +87,6 @@ class TestNetworks(base.SaharaTestCase):
     def test_init_instances_ips_neutron_with_floating(
             self, nova, upd):
 
-        self.override_config('use_neutron', True)
         server = mock.Mock(id='serv_id')
         server.addresses = {
             'network': [
@@ -111,7 +110,6 @@ class TestNetworks(base.SaharaTestCase):
     def test_init_instances_ips_neutron_without_floating(
             self, nova, upd):
 
-        self.override_config('use_neutron', True)
         self.override_config('use_floating_ips', False)
         server = mock.Mock(id='serv_id')
         server.addresses = {

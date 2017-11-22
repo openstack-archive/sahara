@@ -198,7 +198,6 @@ class TestQuotas(base.SaharaTestCase):
         type(ng).open_ports = mock.PropertyMock(return_value=[1111, 2222])
 
         limits = quotas._get_zero_limits()
-        self.override_config('use_neutron', True)
         quotas._update_limits_for_ng(limits, ng, 3)
 
         self.assertEqual(3, limits['instances'])
@@ -211,22 +210,9 @@ class TestQuotas(base.SaharaTestCase):
         self.assertEqual(5, limits['security_group_rules'])
         self.assertEqual(3, limits['ports'])
 
-        type(ng).open_ports = mock.PropertyMock(return_value=[1, 2, 3])
-        self.override_config('use_neutron', False)
-        quotas._update_limits_for_ng(limits, ng, 3)
-
-        self.assertEqual(6, limits['security_group_rules'])
-        self.assertEqual(3, limits['ports'])
-
     @mock.patch('sahara.utils.openstack.nova.client',
                 return_value=FakeNovaClient(nova_limits))
     def test_get_nova_limits(self, nova):
-        self.override_config('use_neutron', False)
-        self.assertEqual(
-            {'cpu': 10, 'floatingips': 200,
-             'instances': 3, 'ram': 9, 'security_group_rules': 'unlimited',
-             'security_groups': 28}, quotas._get_nova_limits())
-        self.override_config('use_neutron', True)
         self.assertEqual(
             {'cpu': 10, 'instances': 3, 'ram': 9}, quotas._get_nova_limits())
 
@@ -239,9 +225,6 @@ class TestQuotas(base.SaharaTestCase):
     @mock.patch('sahara.utils.openstack.neutron.client',
                 return_value=FakeNeutronClient(neutron_limits))
     def test_neutron_limits(self, neutron):
-        self.override_config('use_neutron', False)
-        self.assertEqual({}, quotas._get_neutron_limits())
-        self.override_config('use_neutron', True)
         self.assertEqual({'floatingips': 2340,
                           'ports': 'unlimited',
                           'security_group_rules': 332,

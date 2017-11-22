@@ -52,20 +52,11 @@ Next you will configure the default Networking service. If using
 neutron for networking the following parameter should be set
 in the ``[DEFAULT]`` section:
 
-.. sourcecode:: cfg
-
-    use_neutron=true
-
-If you are using nova-network for networking then this parameter should
-be set to ``false``.
-
 With these parameters set, sahara is ready to run.
 
 By default the sahara's log level is set to INFO. If you wish to increase
 the logging levels for troubleshooting, set ``debug`` to ``true`` in the
 ``[DEFAULT]`` section of the configuration file.
-
-.. _neutron-nova-network:
 
 Networking configuration
 ------------------------
@@ -77,17 +68,12 @@ be used to enable their usage.
 .. sourcecode:: cfg
 
     [DEFAULT]
-    use_neutron=True
     use_namespaces=True
 
 .. note::
     If a user other than ``root`` will be running the Sahara server
     instance and namespaces are used, some additional configuration is
     required, please see :ref:`non-root-users` for more information.
-
-If an OpenStack cluster uses the deprecated nova-network,
-then the ``use_neutron`` parameter should be set to ``False`` in the
-sahara configuration file.
 
 .. _floating_ip_management:
 
@@ -101,11 +87,6 @@ to use floating IP addresses for access. This is controlled by the
 ``use_floating_ips`` configuration parameter. With this setup the user
 has two options for ensuring that the instances in the node groups
 templates that requires floating IPs gain a floating IP address:
-
-* If using the nova-network, it may be configured to assign floating
-  IP addresses automatically by setting the ``auto_assign_floating_ip``
-  parameter to ``True`` in the nova configuration file
-  (usually ``nova.conf``).
 
 * The user may specify a floating IP address pool for each node
   group that requires floating IPs directly.
@@ -122,9 +103,7 @@ use both.
 If not using floating IP addresses (``use_floating_ips=False``) sahara
 will use fixed IP addresses for instance management. When using neutron
 for the Networking service the user will be able to choose the
-fixed IP network for all instances in a cluster. Whether using nova-network
-or neutron it is important to ensure that all instances running sahara
-have access to the fixed IP networks.
+fixed IP network for all instances in a cluster.
 
 .. _notification-configuration:
 

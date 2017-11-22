@@ -112,14 +112,9 @@ def _update_limits_for_ng(limits, ng, count):
     if ng.auto_security_group:
         limits['security_groups'] += sign(count)
         # NOTE: +3 - all traffic for private network
-        if CONF.use_neutron:
-            limits['security_group_rules'] += (
-                (len(ng.open_ports) + 3) * sign(count))
-        else:
-            limits['security_group_rules'] = max(
-                limits['security_group_rules'], len(ng.open_ports) + 3)
-    if CONF.use_neutron:
-        limits['ports'] += count
+        limits['security_group_rules'] += (
+            (len(ng.open_ports) + 3) * sign(count))
+    limits['ports'] += count
 
 
 def _get_avail_limits():
@@ -146,23 +141,11 @@ def _get_nova_limits():
     limits['cpu'] = _sub_limit(lim['maxTotalCores'], lim['totalCoresUsed'])
     limits['instances'] = _sub_limit(lim['maxTotalInstances'],
                                      lim['totalInstancesUsed'])
-    if CONF.use_neutron:
-        return limits
-
-    # tmckay-fp here we would just get the limits all the time
-    limits['floatingips'] = _sub_limit(lim['maxTotalFloatingIps'],
-                                       lim['totalFloatingIpsUsed'])
-    limits['security_groups'] = _sub_limit(lim['maxSecurityGroups'],
-                                           lim['totalSecurityGroupsUsed'])
-    limits['security_group_rules'] = _sub_limit(lim['maxSecurityGroupRules'],
-                                                0)
     return limits
 
 
 def _get_neutron_limits():
     limits = {}
-    if not CONF.use_neutron:
-        return limits
     neutron = neutron_client.client()
     tenant_id = context.ctx().tenant_id
     total_lim = b.execute_with_retries(neutron.show_quota, tenant_id)['quota']

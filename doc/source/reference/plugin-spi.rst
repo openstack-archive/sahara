@@ -368,8 +368,7 @@ below further specifies which fields are filled at which moment.
 |                            |        | to make them accessible for user.     |
 +----------------------------+--------+---------------------------------------+
 | neutron_management_network | string | Neutron network ID. Instances will    |
-|                            |        | get fixed IPs in this network if      |
-|                            |        | 'use_neutron' config is set to True.  |
+|                            |        | get fixed IPs in this network.        |
 +----------------------------+--------+---------------------------------------+
 | anti_affinity              | list   | List of processes that will be run on |
 |                            |        | different hosts.                      |

@@ -196,15 +196,7 @@ def check_security_groups_exist(security_groups):
 
 def check_floatingip_pool_exists(pool_id):
     network = None
-    if CONF.use_neutron:
-        network = neutron.get_network(pool_id)
-    else:
-        # tmckay-fp, whoa, this suggests that we allow floating_ip_pools with
-        # nova?  Can that be true? Scour for this
-        for net in nova.client().floating_ip_pools.list():
-            if net.name == pool_id:
-                network = net.name
-                break
+    network = neutron.get_network(pool_id)
 
     if not network:
         raise ex.NotFoundException(pool_id, _("Floating IP pool %s not found"))
