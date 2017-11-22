@@ -37,18 +37,53 @@ class FakeOps(object):
 
     def provision_cluster(self, id):
         self.calls_order.append('ops.provision_cluster')
+        cluster = conductor.cluster_get(context.ctx(), id)
+        target_count = {}
+        for node_group in cluster.node_groups:
+            target_count[node_group.id] = node_group.count
+
+        for node_group in cluster.node_groups:
+            conductor.node_group_update(context.ctx(),
+                                        node_group, {"count": 0})
+
+        for node_group in cluster.node_groups:
+            for i in range(target_count[node_group.id]):
+                inst = {
+                    "instance_id": node_group.name + '_' + str(i),
+                    "instance_name": node_group.name + '_' + str(i)
+                }
+                conductor.instance_add(context.ctx(), node_group, inst)
         conductor.cluster_update(
             context.ctx(), id, {'status': c_u.CLUSTER_STATUS_ACTIVE})
 
-    def provision_scaled_cluster(self, id, to_be_enlarged):
+    def provision_scaled_cluster(self, id, to_be_enlarged,
+                                 node_group_instance_map=None):
         self.calls_order.append('ops.provision_scaled_cluster')
+        cluster = conductor.cluster_get(context.ctx(), id)
+
         # Set scaled to see difference between active and scaled
         for (ng, count) in six.iteritems(to_be_enlarged):
+            instances_to_delete = []
+            if node_group_instance_map:
+                if ng in node_group_instance_map:
+                    instances_to_delete = self._get_instance(
+                        cluster, node_group_instance_map[ng])
+            for instance in instances_to_delete:
+                conductor.instance_remove(context.ctx(), instance)
+
             conductor.node_group_update(context.ctx(), ng, {'count': count})
         conductor.cluster_update(context.ctx(), id, {'status': 'Scaled'})
 
     def terminate_cluster(self, id):
         self.calls_order.append('ops.terminate_cluster')
+
+    def _get_instance(self, cluster, instances_to_delete):
+        instances = []
+        for node_group in cluster.node_groups:
+            for instance in node_group.instances:
+                if instance.instance_id in instances_to_delete:
+                    instances.append(instance)
+        return instances
 
 
 class TestClusterApi(base.SaharaWithDbTestCase):
@@ -134,6 +169,7 @@ class TestClusterApi(base.SaharaWithDbTestCase):
     @mock.patch('sahara.service.quotas.check_scaling', return_value=None)
     def test_scale_cluster_success(self, check_scaling, check_cluster):
         cluster = api.create_cluster(api_base.SAMPLE_CLUSTER)
+        cluster = api.get_cluster(cluster.id)
         api.scale_cluster(cluster.id, api_base.SCALE_DATA)
         result_cluster = api.get_cluster(cluster.id)
         self.assertEqual('Scaled', result_cluster.status)
@@ -155,6 +191,46 @@ class TestClusterApi(base.SaharaWithDbTestCase):
              'recommend_configs', 'validate_scaling',
              'ops.provision_scaled_cluster',
              'ops.terminate_cluster'], self.calls_order)
+
+    @mock.patch('sahara.service.quotas.check_cluster', return_value=None)
+    @mock.patch('sahara.service.quotas.check_scaling', return_value=None)
+    def test_scale_cluster_n_specific_instances_success(self, check_scaling,
+                                                        check_cluster):
+        cluster = api.create_cluster(api_base.SAMPLE_CLUSTER)
+        cluster = api.get_cluster(cluster.id)
+        api.scale_cluster(cluster.id, api_base.SCALE_DATA_N_SPECIFIC_INSTANCE)
+        result_cluster = api.get_cluster(cluster.id)
+        self.assertEqual('Scaled', result_cluster.status)
+        expected_count = {
+            'ng_1': 3,
+            'ng_2': 1,
+            'ng_3': 1,
+        }
+        ng_count = 0
+        for ng in result_cluster.node_groups:
+            self.assertEqual(expected_count[ng.name], ng.count)
+            ng_count += 1
+        self.assertEqual(1, result_cluster.node_groups[1].count)
+        self.assertNotIn('ng_2_0',
+                         self._get_instances_ids(
+                             result_cluster.node_groups[1]))
+        self.assertNotIn('ng_2_2',
+                         self._get_instances_ids(
+                             result_cluster.node_groups[1]))
+        self.assertEqual(3, ng_count)
+        api.terminate_cluster(result_cluster.id)
+        self.assertEqual(
+            ['get_open_ports', 'recommend_configs', 'validate',
+             'ops.provision_cluster', 'get_open_ports',
+             'recommend_configs', 'validate_scaling',
+             'ops.provision_scaled_cluster',
+             'ops.terminate_cluster'], self.calls_order)
+
+    def _get_instances_ids(self, node_group):
+        instance_ids = []
+        for instance in node_group.instances:
+            instance_ids.append(instance.instance_id)
+        return instance_ids
 
     @mock.patch('sahara.service.quotas.check_cluster', return_value=None)
     @mock.patch('sahara.service.quotas.check_scaling', return_value=None)

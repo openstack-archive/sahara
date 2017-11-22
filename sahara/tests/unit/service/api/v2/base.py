@@ -77,6 +77,36 @@ SCALE_DATA = {
     ]
 }
 
+SCALE_DATA_SPECIFIC_INSTANCE = {
+    'resize_node_groups': [
+        {
+            'name': 'ng_1',
+            'count': 3,
+        },
+        {
+            'name': 'ng_2',
+            'count': 2,
+            'instances': ['ng_2_0']
+        }
+    ],
+    'add_node_groups': []
+}
+
+SCALE_DATA_N_SPECIFIC_INSTANCE = {
+    'resize_node_groups': [
+        {
+            'name': 'ng_1',
+            'count': 3,
+        },
+        {
+            'name': 'ng_2',
+            'count': 1,
+            'instances': ['ng_2_0', 'ng_2_2']
+        }
+    ],
+    'add_node_groups': []
+}
+
 
 class FakePlugin(pr_base.ProvisioningPluginBase):
     _info = {}
