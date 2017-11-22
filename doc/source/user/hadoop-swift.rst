@@ -104,7 +104,7 @@ assumed to be a Swift container named ``integration`` holding an object named
 
 The following example illustrates how to copy an object to a new location in
 the same container. We will use Hadoop's ``distcp`` command
-(http://hadoop.apache.org/docs/r0.19.0/distcp.html) to accomplish the copy.
+(http://hadoop.apache.org/docs/stable/hadoop-distcp/DistCp.html) to accomplish the copy.
 Note that the service provider for our Swift access is ``sahara``, and that
 we will not need to specify the project of our Swift container as it will
 be provided in the Hadoop configuration.
