@@ -27,7 +27,7 @@ def has_floating_ip(instance):
     # ip, but a simple comparison with the internal_ip
     # corresponds with the logic in
     # sahara.service.networks.init_instances_ips
-    if CONF.use_neutron and not instance.node_group.floating_ip_pool:
+    if not instance.node_group.floating_ip_pool:
         return False
 
     # in the neutron case comparing ips is an extra simple check ...

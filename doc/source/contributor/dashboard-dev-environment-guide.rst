@@ -93,8 +93,8 @@ Set the proper values for host and url variables:
     OPENSTACK_HOST = "ip of your controller"
 ..
 
-If you are using Nova-Network with ``auto_assign_floating_ip=True`` add the
-following parameter:
+If you wish to disable floating IP options during node group template
+creation, add the following parameter:
 
 .. sourcecode:: python
 

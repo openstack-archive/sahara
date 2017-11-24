@@ -24,9 +24,8 @@ from sahara.tests.unit import testutils as tu
 class BaseTestClusterTemplate(base.SaharaWithDbTestCase):
     """Checks valid structure of Resources section in generated Heat templates.
 
-    1. It checks templates generation with different OpenStack
-    network installations: Neutron, NovaNetwork with floating Ip auto
-    assignment set to True or False.
+    1. It checks templates generation with OpenStack network
+    installation: Neutron.
     2. Cinder volume attachments.
     3. Basic instances creations with multi line user data provided.
     4. Anti-affinity feature with proper nova scheduler hints included
@@ -120,8 +119,7 @@ class TestClusterTemplate(BaseTestClusterTemplate):
         actual = heat_template._get_security_groups(ng1)
         self.assertEqual([], actual)
 
-    def _generate_auto_security_group_template(self, use_neutron):
-        self.override_config('use_neutron', use_neutron)
+    def _generate_auto_security_group_template(self):
         ng1, ng2 = self._make_node_groups('floating')
         cluster = self._make_cluster('private_net', ng1, ng2)
         ng1['cluster'] = cluster
@@ -163,32 +161,7 @@ class TestClusterTemplate(BaseTestClusterTemplate):
                 } for rule in expected_rules]
             }
         }}
-        actual = self._generate_auto_security_group_template(True)
-        self.assertEqual(expected, actual)
-
-    def test_serialize_auto_security_group_nova_network(self):
-        expected = {'cluster-master-1': {
-            'type': 'AWS::EC2::SecurityGroup',
-            'properties': {
-                'GroupDescription': 'Data Processing Cluster by Sahara\n'
-                                    'Sahara cluster name: cluster\n'
-                                    'Sahara engine: heat.3.0\n'
-                                    'Auto security group for Sahara '
-                                    'Node Group: master',
-                'SecurityGroupIngress': [{
-                    'ToPort': '22',
-                    'CidrIp': '0.0.0.0/0',
-                    'FromPort': '22',
-                    'IpProtocol': 'tcp'
-                }, {
-                    'ToPort': '22',
-                    'CidrIp': '::/0',
-                    'FromPort': '22',
-                    'IpProtocol': 'tcp'
-                }]
-            }
-        }}
-        actual = self._generate_auto_security_group_template(False)
+        actual = self._generate_auto_security_group_template()
         self.assertEqual(expected, actual)
 
     @mock.patch("sahara.conductor.objects.Cluster.use_designate_feature")

@@ -10,14 +10,12 @@ The sample configuration file is available `from the Horizon repository. <https:
 1. Networking
 -------------
 
-Depending on the Networking backend (Nova Network or Neutron) used in the
+Depending on the Networking backend (Neutron) used in the
 cloud, Sahara panels will determine automatically which input fields should be
 displayed.
 
-While using Nova Network backend the cloud may be configured to automatically
-assign floating IPs to instances. If Sahara service is configured to use those
-automatically assigned floating IPs the same configuration should be done to
-the dashboard through the ``SAHARA_AUTO_IP_ALLOCATION_ENABLED`` parameter.
+If you wish to disable floating IP options during node group template
+creation, add the following parameter:
 
 Example:
 
@@ -25,7 +23,6 @@ Example:
 
     SAHARA_AUTO_IP_ALLOCATION_ENABLED = True
 ..
-
 
 2. Different endpoint
 ---------------------

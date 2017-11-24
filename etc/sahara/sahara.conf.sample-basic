@@ -8,18 +8,12 @@
 #port=8386
 
 # If set to True, Sahara will use floating IPs to communicate
-# with instances. To make sure that all instances have
-# floating IPs assigned in Nova Network set
-# "auto_assign_floating_ip=True" in nova.conf.If Neutron is
-# used for networking, make sure that all Node Groups have
-# "floating_ip_pool" parameter defined. (boolean value)
+# with instances. If Neutron is used for networking, make
+# sure that all Node Groups have "floating_ip_pool" parameter
+# defined. (boolean value)
 #use_floating_ips=true
 
-# Use Neutron or Nova Network (boolean value)
-#use_neutron=true
-
-# Use network namespaces for communication (only valid to use in conjunction
-# with use_neutron=True)
+# Use network namespaces for communication
 #use_namespaces=false
 
 # Use Designate for internal and external hostnames resolution (boolean value)

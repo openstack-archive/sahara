@@ -11,11 +11,10 @@ Custom network topologies
 -------------------------
 
 Sahara accesses instances at several stages of cluster spawning through
-SSH and HTTP. Floating IPs and network namespaces
-(see :ref:`neutron-nova-network`) will be automatically used for
-access when present. When floating IPs are not assigned to instances and
-namespaces are not being used, sahara will need an alternative method to
-reach them.
+SSH and HTTP. Floating IPs and network namespaces will be automatically
+used for access when present. When floating IPs are not assigned to
+instances and namespaces are not being used, sahara will need an
+alternative method to reach them.
 
 The ``proxy_command`` parameter of the configuration file can be used to
 give sahara a command to access instances. This command is run on the
@@ -363,13 +362,13 @@ Indirect instance access through proxy nodes
 
 Sahara needs to access instances through SSH during cluster setup. This
 access can be obtained a number of different ways (see
-:ref:`neutron-nova-network`, :ref:`floating_ip_management`,
-:ref:`custom_network_topologies`). Sometimes it is impossible to provide
-access to all nodes (because of limited numbers of floating IPs or security
-policies). In these cases access can be gained using other nodes of the
-cluster as proxy gateways. To enable this set ``is_proxy_gateway=true``
-for the node group you want to use as proxy. Sahara will communicate with
-all other cluster instances through the instances of this node group.
+:ref:`floating_ip_management`,:ref:`custom_network_topologies`).Sometimes
+it is impossible to provide access to all nodes (because of limited
+numbers of floating IPs or security policies). In these cases access can
+be gained using other nodes of the cluster as proxy gateways. To enable
+this set ``is_proxy_gateway=true`` for the node group you want to use as
+proxy. Sahara will communicate with all other cluster instances through
+the instances of this node group.
 
 Note, if ``use_floating_ips=true`` and the cluster contains a node group with
 ``is_proxy_gateway=true``, the requirement to have ``floating_ip_pool``

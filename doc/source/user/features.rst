@@ -137,10 +137,7 @@ Standby NameNode.
 Networking support
 ------------------
 
-Sahara supports both the nova-network and neutron implementations of
-OpenStack Networking. By default sahara is configured to behave as if
-the nova-network implementation is available. For OpenStack installations
-that are using the neutron project please see :ref:`neutron-nova-network`.
+Sahara supports neutron implementations of OpenStack Networking.
 
 Object Storage support
 ----------------------
@@ -190,7 +187,7 @@ The following table provides a plugin capability matrix:
 +--------------------------+---------+----------+----------+-------+
 | Feature/Plugin           | Vanilla |   HDP    | Cloudera | Spark |
 +==========================+=========+==========+==========+=======+
-| Nova and Neutron network | x       | x        | x        | x     |
+| Neutron network          | x       | x        | x        | x     |
 +--------------------------+---------+----------+----------+-------+
 | Cluster Scaling          | x       | x        | x        | x     |
 +--------------------------+---------+----------+----------+-------+
