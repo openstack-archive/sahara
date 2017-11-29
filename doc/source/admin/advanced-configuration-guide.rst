@@ -94,7 +94,7 @@ change your ``/etc/resolv.conf`` file by adding appropriate ip addresses of
 DNS servers (e.g. 1.1.1.1 and 2.2.2.2). Also the VMs with DNS servers should
 be available from your local machine.
 
-.. _Designate manual installation: https://docs.openstack.org/project-install-guide/dns/ocata/
+.. _Designate manual installation: https://docs.openstack.org/designate/latest/install/index.html
 .. _Configuring OpenStack Networking with Designate: https://docs.openstack.org/neutron/latest/admin/config-dns-int.html#configuring-openstack-networking-for-integration-with-an-external-dns-service
 .. _Designate devstack: https://docs.openstack.org/designate/latest/contributor/devstack.html
 
