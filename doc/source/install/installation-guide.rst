@@ -178,7 +178,7 @@ installations of sahara.
    max_allowed_packet = 256M
 ..
 
-    Then restart the mysql server to ensure these changes are active.
+Then restart the mysql server to ensure these changes are active.
 
 2. Create the database schema:
 
@@ -206,16 +206,17 @@ installations of sahara.
 
 .. sourcecode:: console
 
-    openstack service create --name sahara --description \
+    $ openstack service create --name sahara --description \
         "Sahara Data Processing" data-processing
 
-    openstack endpoint create --region RegionOne \
+    $ openstack endpoint create --region RegionOne \
     --publicurl http://10.0.0.2:8386/v1.1/%\(project_id\)s \
     --adminurl http://10.0.0.2:8386/v1.1/%\(project_id\)s \
     --internalurl http://10.0.0.2:8386/v1.1/%\(project_id\)s \
     data-processing
 
 .. note::
+
    You have to install the openstack-client package in order to execute
    ``openstack`` command.
 ..
