@@ -1,5 +1,5 @@
-OpenStack Dashboard Configuration Guide
-=======================================
+Sahara Dashboard Configuration Guide
+====================================
 
 After installing the Sahara dashboard, there are a few extra configurations
 that can be made.
@@ -39,11 +39,11 @@ Local endpoint example:
 
 .. sourcecode:: console
 
-    openstack service create --name sahara_local --description \
+    $ openstack service create --name sahara_local --description \
         "Sahara Data Processing (local installation)" \
         data_processing_local
 
-    openstack endpoint create --region RegionOne \
+    $ openstack endpoint create --region RegionOne \
     --publicurl http://127.0.0.1:8386/v1.1/%\(project_id\)s \
     --adminurl http://127.0.0.1:8386/v1.1/%\(project_id\)s \
     --internalurl http://127.0.0.1:8386/v1.1/%\(project_id\)s \
@@ -51,7 +51,8 @@ Local endpoint example:
 ..
 
 Then the endpoint name should be changed in ``sahara.py`` under the module of
-`sahara-dashboard/sahara_dashboard/api/sahara.py. <https://git.openstack.org/cgit/openstack/sahara-dashboard/tree/sahara_dashboard/api/sahara.py>`_
+`sahara-dashboard/sahara_dashboard/api/sahara.py
+<https://git.openstack.org/cgit/openstack/sahara-dashboard/tree/sahara_dashboard/api/sahara.py>`__.
 
 .. sourcecode:: python
 
