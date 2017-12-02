@@ -41,31 +41,6 @@ def delete_job_binary(id):
     conductor.job_binary_destroy(context.ctx(), id)
 
 
-def create_job_binary_internal(values):
-    return conductor.job_binary_internal_create(context.ctx(), values)
-
-
-def get_job_binary_internals(**kwargs):
-    return conductor.job_binary_internal_get_all(context.ctx(),
-                                                 regex_search=True, **kwargs)
-
-
-def get_job_binary_internal(id):
-    return conductor.job_binary_internal_get(context.ctx(), id)
-
-
-def delete_job_binary_internal(id):
-    conductor.job_binary_internal_destroy(context.ctx(), id)
-
-
-def get_job_binary_internal_data(id):
-    return conductor.job_binary_internal_get_raw_data(context.ctx(), id)
-
-
-def update_job_binary_internal(id, values):
-    return conductor.job_binary_internal_update(context.ctx(), id, values)
-
-
 def get_job_binary_data(id):
     job_binary = conductor.job_binary_get(context.ctx(), id)
     return jb_manager.JOB_BINARIES.get_job_binary(job_binary.type). \
