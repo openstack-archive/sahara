@@ -67,16 +67,16 @@ class AuthValidatorV2(base.Middleware):
 
     @webob.dec.wsgify
     def __call__(self, req):
-        """Ensures that the requested and token tenants match
+        """Ensures valid path and tenant
 
         Handle incoming requests by checking tenant info from the
         headers and url ({tenant_id} url attribute), if using v1 or v1.1
-        APIs. If using the v2 API, this function will check the token
-        tenant and the requested tenant in the headers.
+        APIs. If using the v2 API, this function just makes sure that
+        keystonemiddleware has populated the WSGI environment.
 
         Pass request downstream on success.
         Reject request if tenant_id from headers is not equal to the
-        tenant_id from url or v2 project header.
+        tenant_id from url in the case of v1.
         """
         path = req.environ['PATH_INFO']
         if path != '/':
@@ -88,7 +88,6 @@ class AuthValidatorV2(base.Middleware):
             try:
                 if path.startswith('/v2'):
                     version, rest = strutils.split_path(path, 2, 2, True)
-                    requested_tenant = req.headers.get('OpenStack-Project-ID')
                 else:
                     version, requested_tenant, rest = strutils.split_path(
                         path, 3, 3, True)
@@ -96,8 +95,9 @@ class AuthValidatorV2(base.Middleware):
                 LOG.warning("Incorrect path: {path}".format(path=path))
                 raise ex.HTTPNotFound(_("Incorrect path"))
 
-            if token_tenant != requested_tenant:
-                LOG.debug("Unauthorized: token tenant != requested tenant")
-                raise ex.HTTPUnauthorized(
-                    _('Token tenant != requested tenant'))
+            if path.startswith('/v1'):
+                if token_tenant != requested_tenant:
+                    LOG.debug("Unauthorized: token tenant != requested tenant")
+                    raise ex.HTTPUnauthorized(
+                        _('Token tenant != requested tenant'))
         return self.application
