@@ -1,0 +1,8 @@
+---
+deprecations:
+  - |
+    The use of [keystone_authtoken] credentials for trust creation is now
+    deprecated. Please use the new [trustee] config section. The options
+    ``username``, ``password``, ``project_name``, ``user_domain_name``,
+    ``project_domain_name``, and ``auth_url`` (with version) are obligatory
+    within that section.

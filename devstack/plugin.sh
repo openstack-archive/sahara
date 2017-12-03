@@ -94,14 +94,16 @@ function configure_sahara {
 
     # Set admin user parameters needed for trusts creation
     iniset $SAHARA_CONF_FILE \
-        keystone_authtoken project_name $SERVICE_TENANT_NAME
-    iniset $SAHARA_CONF_FILE keystone_authtoken username sahara
+        trustee project_name $SERVICE_TENANT_NAME
+    iniset $SAHARA_CONF_FILE trustee username sahara
     iniset $SAHARA_CONF_FILE \
-        keystone_authtoken password $SERVICE_PASSWORD
+        trustee password $SERVICE_PASSWORD
     iniset $SAHARA_CONF_FILE \
-        keystone_authtoken user_domain_name "$SERVICE_DOMAIN_NAME"
+        trustee user_domain_name "$SERVICE_DOMAIN_NAME"
     iniset $SAHARA_CONF_FILE \
-        keystone_authtoken project_domain_name "$SERVICE_DOMAIN_NAME"
+        trustee project_domain_name "$SERVICE_DOMAIN_NAME"
+    iniset $SAHARA_CONF_FILE \
+        trustee auth_url "$KEYSTONE_SERVICE_URI/v3"
 
     iniset_rpc_backend sahara $SAHARA_CONF_FILE DEFAULT
 

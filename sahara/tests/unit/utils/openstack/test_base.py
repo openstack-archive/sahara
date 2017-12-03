@@ -61,7 +61,7 @@ class AuthUrlTest(testbase.SaharaTestCase):
         correct = "https://127.0.0.1:8080/v3"
 
         def _assert(uri):
-            self.override_config('auth_uri', uri, 'keystone_authtoken')
+            self.override_config('auth_url', uri, 'trustee')
             self.assertEqual(correct, base.retrieve_auth_url())
 
         _assert("%s/" % correct)
@@ -110,7 +110,7 @@ class AuthUrlTest(testbase.SaharaTestCase):
         correct = "https://127.0.0.1:8080/v2.0"
 
         def _assert(uri):
-            self.override_config('auth_uri', uri, 'keystone_authtoken')
+            self.override_config('auth_url', uri, 'trustee')
             self.assertEqual(correct, base.retrieve_auth_url())
 
         _assert("%s/" % correct)
