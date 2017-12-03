@@ -50,11 +50,11 @@ from the bare metal performance with self-service resource provisioning.
 .. code-block:: bash
 
    $ ironic node-create -d pxe_ipmitool \
-   $ -i ipmi_address=$IP_ADDRESS \
-   $ -i ipmi_username=$USERNAME \
-   $ -i ipmi_password=$PASSWORD \
-   $ -i pxe_deploy_kernel=$deploy.kernel.id \
-   $ -i pxe_deploy_ramdisk=$deploy.ramfs.id
+     -i ipmi_address=$IP_ADDRESS \
+     -i ipmi_username=$USERNAME \
+     -i ipmi_password=$PASSWORD \
+     -i pxe_deploy_kernel=$deploy.kernel.id \
+     -i pxe_deploy_ramdisk=$deploy.ramfs.id
 
    $ ironic port-create -n $NODE_ID -a "$MAC_eth1"
 ..
@@ -64,8 +64,8 @@ from the bare metal performance with self-service resource provisioning.
 .. code-block:: bash
 
    $ ironic node-update $NODE_ID add properties/cpus=$CPU \
-   $ properties/memory_mb=$RAM properties/local_gb=$ROOT_GB \
-   $ properties/cpu_arch='x86_64'
+     properties/memory_mb=$RAM properties/local_gb=$ROOT_GB \
+     properties/cpu_arch='x86_64'
 ..
 
 7. Add a special flavor for the bare metal instances with an arch meta
