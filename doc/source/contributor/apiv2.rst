@@ -3,8 +3,7 @@ API Version 2 Development
 
 The sahara project is currently in the process of creating a new
 RESTful application programming interface (API). This interface is
-experimental and will not be enabled until it has achieved feature
-parity with the current (version 1.1) API.
+by-default enabled, although it remains experimental.
 
 This document defines the steps necessary to enable and communicate
 with the new API. This API has a few fundamental changes from the
