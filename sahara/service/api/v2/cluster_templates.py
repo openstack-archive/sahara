@@ -41,3 +41,7 @@ def terminate_cluster_template(id):
 
 def update_cluster_template(id, values):
     return conductor.cluster_template_update(context.ctx(), id, values)
+
+
+def export_cluster_template(id):
+    return conductor.cluster_template_get(context.ctx(), id)
