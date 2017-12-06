@@ -31,7 +31,8 @@ def create_cluster(name, tenant, plugin, version, node_groups, **kwargs):
 
 
 def make_ng_dict(name, flavor, processes, count, instances=None,
-                 volumes_size=None, node_configs=None, **kwargs):
+                 volumes_size=None, node_configs=None, resource=False,
+                 **kwargs):
     node_configs = node_configs or {}
     instances = instances or []
     dct = {'id': uuidutils.generate_uuid(), 'name': name,
@@ -43,6 +44,8 @@ def make_ng_dict(name, flavor, processes, count, instances=None,
            'open_ports': [], 'is_proxy_gateway': False,
            'volume_local_to_instance': False}
     dct.update(kwargs)
+    if resource:
+        return r.NodeGroupTemplateResource(dct)
     return dct
 
 
