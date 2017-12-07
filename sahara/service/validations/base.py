@@ -364,9 +364,14 @@ def check_resize(cluster, r_node_groups):
             raise ex.InvalidReferenceException(
                 _("Cluster doesn't contain node group with name '%s'")
                 % ng['name'])
-        check_node_group_basic_fields(cluster.plugin_name,
-                                      cluster.hadoop_version,
-                                      ng_map[ng['name']])
+        node_group = ng_map[ng['name']]
+        if node_group.get('node_group_template_id'):
+            ng_tmpl_id = node_group['node_group_template_id']
+            check_node_group_template_exists(ng_tmpl_id)
+            ng_tmp = api.get_node_group_template(ng_tmpl_id).to_wrapped_dict()
+            check_node_group_basic_fields(cluster.plugin_name,
+                                          cluster.hadoop_version,
+                                          ng_tmp['node_group_template'])
 
 
 def check_add_node_groups(cluster, add_node_groups):

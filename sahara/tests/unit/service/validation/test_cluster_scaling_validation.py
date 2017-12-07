@@ -63,11 +63,15 @@ class TestScalingValidation(u.ValidationTestCase):
                 self.assertEqual(expected_message, message)
                 raise e
 
+    @mock.patch('sahara.service.api.v10.get_node_group_template')
     @mock.patch('sahara.utils.openstack.nova.client')
     @mock.patch("sahara.service.api.OPS")
-    def test_check_cluster_scaling_resize_ng(self, ops, nova_client):
+    def test_check_cluster_scaling_resize_ng(self, ops, nova_client, get_ngt):
         ops.get_engine_type_and_version.return_value = "direct.1.1"
-        ng1 = tu.make_ng_dict('ng', '42', ['namenode'], 1)
+        ng1 = tu.make_ng_dict('ng', '42', ['namenode'], 1,
+                              node_group_template_id='aaa')
+        ng2 = tu.make_ng_dict('ng', '42', ['namenode'], 1,
+                              resource=True)
         cluster = tu.create_cluster("cluster1", "tenant1", "fake", "0.1",
                                     [ng1],
                                     status=c_u.CLUSTER_STATUS_VALIDATING,
@@ -122,6 +126,7 @@ class TestScalingValidation(u.ValidationTestCase):
         client = mock.Mock()
         nova_client.return_value = client
         client.flavors.list.return_value = []
+        get_ngt.return_value = ng2
 
         self._assert_check_scaling(
             data=data, cluster=cluster,
