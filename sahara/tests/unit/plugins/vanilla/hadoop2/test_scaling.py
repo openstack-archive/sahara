@@ -39,6 +39,8 @@ class ScalingTest(base.SaharaTestCase):
 
     @mock.patch('sahara.swift.swift_helper.install_ssl_certs')
     @mock.patch('sahara.plugins.vanilla.utils.get_resourcemanager')
+    @mock.patch(PLUGINS_PATH + 'run_scripts.refresh_zk_servers')
+    @mock.patch(PLUGINS_PATH + 'config.configure_zookeeper')
     @mock.patch(PLUGINS_PATH + 'run_scripts.start_dn_nm_processes')
     @mock.patch(PLUGINS_PATH + 'run_scripts.refresh_yarn_nodes')
     @mock.patch(PLUGINS_PATH + 'run_scripts.refresh_hadoop_nodes')
@@ -51,6 +53,7 @@ class ScalingTest(base.SaharaTestCase):
                            refresh_hadoop_nodes,
                            refresh_yarn_nodes,
                            start_dn_nm_processes,
+                           configure_zk, refresh_zk,
                            get_resourcemanager,
                            install_ssl_certs):
         get_resourcemanager.return_value = 'node1'
@@ -64,6 +67,9 @@ class ScalingTest(base.SaharaTestCase):
         configure_topology_data.assert_called_once_with(pctx, self.cluster)
         start_dn_nm_processes.assert_called_once_with(self.instances)
         install_ssl_certs.assert_called_once_with(self.instances)
+        configure_topology_data.assert_called_once_with(pctx, self.cluster)
+        configure_zk.assert_called_once_with(self.cluster)
+        refresh_zk.assert_called_once_with(self.cluster)
 
     def test_get_instances_with_service(self):
         ins_1 = mock.Mock()
@@ -115,6 +121,8 @@ class ScalingTest(base.SaharaTestCase):
         self.r.execute_command.assert_has_calls(command_calls, any_order=True)
 
     @mock.patch('sahara.plugins.vanilla.utils.get_resourcemanager')
+    @mock.patch(PLUGINS_PATH + 'run_scripts.refresh_zk_servers')
+    @mock.patch(PLUGINS_PATH + 'config.configure_zookeeper')
     @mock.patch(PLUGINS_PATH + 'config.configure_topology_data')
     @mock.patch(PLUGINS_PATH + 'run_scripts.refresh_yarn_nodes')
     @mock.patch(PLUGINS_PATH + 'run_scripts.refresh_hadoop_nodes')
@@ -130,6 +138,7 @@ class ScalingTest(base.SaharaTestCase):
                                 _update_include_files, _clear_exclude_files,
                                 _update_exclude_files, refresh_hadoop_nodes,
                                 refresh_yarn_nodes, configure_topology_data,
+                                configure_zk, refresh_zk,
                                 get_resourcemanager):
         data = 'test_data'
         _get_instances_with_service.return_value = data
@@ -152,6 +161,8 @@ class ScalingTest(base.SaharaTestCase):
                                                       self.instances)
         _clear_exclude_files.assert_called_once_with(self.cluster)
         configure_topology_data.assert_called_once_with(pctx, self.cluster)
+        configure_zk.assert_called_once_with(self.cluster, self.instances)
+        refresh_zk.assert_called_once_with(self.cluster, self.instances)
 
     @mock.patch(PLUGINS_PATH + 'scaling._get_instances_with_service')
     @mock.patch('sahara.plugins.utils.generate_fqdn_host_names')

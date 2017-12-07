@@ -89,6 +89,13 @@ class ValidationTest(base.SaharaTestCase):
         with testtools.ExpectedException(ex.InvalidComponentCountException):
             self._validate_case(1, 1, 0, 0, 3, 0, 0, 0, 2)
 
+        self.ng.append(tu.make_ng_dict("zk", "f1", ["zookeeper"], 0))
+
+        self._validate_case(1, 1, 0, 0, 3, 0, 0, 1, 1, 3)
+
+        with testtools.ExpectedException(ex.InvalidComponentCountException):
+            self._validate_case(1, 1, 0, 0, 3, 0, 0, 1, 1, 2)
+
     def _create_cluster(self, *args, **kwargs):
         lst = []
         for i in range(0, len(args)):

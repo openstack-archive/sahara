@@ -33,7 +33,10 @@ class TestConfigHelper(base.SaharaTestCase):
     @mock.patch(plugin_path + 'config_helper.PLUGIN_ENV_CONFIGS')
     @mock.patch(plugin_path + 'config_helper.PLUGIN_XML_CONFIGS')
     @mock.patch(plugin_path + 'config_helper._get_spark_configs')
-    def test_init_all_configs(self, _get_spark_configs,
+    @mock.patch(plugin_path + 'config_helper._get_zookeeper_configs')
+    def test_init_all_configs(self,
+                              _get_zk_configs,
+                              _get_spark_configs,
                               PLUGIN_XML_CONFIGS,
                               PLUGIN_ENV_CONFIGS,
                               PLUGIN_GENERAL_CONFIGS):
@@ -42,6 +45,7 @@ class TestConfigHelper(base.SaharaTestCase):
         configs.extend(PLUGIN_ENV_CONFIGS)
         configs.extend(PLUGIN_GENERAL_CONFIGS)
         configs.extend(_get_spark_configs())
+        configs.extend(_get_zk_configs())
         init_configs = v_helper._init_all_configs()
         self.assertEqual(init_configs, configs)
 

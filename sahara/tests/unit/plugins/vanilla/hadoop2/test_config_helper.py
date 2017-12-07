@@ -191,3 +191,19 @@ class TestConfigHelper(base.SaharaTestCase):
         get_config_value_or_default.assert_called_once_with('Spark',
                                                             'Spark home',
                                                             self.cluster)
+
+    @mock.patch('sahara.utils.files.get_file_text')
+    @mock.patch('sahara.plugins.utils.get_config_value_or_default')
+    def test_generate_zk_basic_config(self, get_config_value_or_default,
+                                      get_file_text):
+        key = ('tickTime={ticktime}\n' +
+               'initLimit={initlimit}\n' +
+               'syncLimit={synclimit}\n')
+        actual = 'tickTime=5\ninitLimit=5\nsyncLimit=5\n'
+
+        get_config_value_or_default.return_value = 5
+        get_file_text.return_value = key
+
+        ret = c_helper.generate_zk_basic_config(self.cluster)
+        self.assertEqual(get_config_value_or_default.call_count, 3)
+        self.assertEqual(ret, actual)

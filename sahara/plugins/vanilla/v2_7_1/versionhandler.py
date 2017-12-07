@@ -56,7 +56,8 @@ class VersionHandler(avm.AbstractVersionHandler):
             "YARN": ["resourcemanager", "nodemanager"],
             "JobFlow": ["oozie"],
             "Hive": ["hiveserver"],
-            "Spark": ["spark history server"]
+            "Spark": ["spark history server"],
+            "ZooKeeper": ["zookeeper"]
         }
 
     def validate(self, cluster):
@@ -81,6 +82,7 @@ class VersionHandler(avm.AbstractVersionHandler):
         s_scripts.start_historyserver(cluster)
         s_scripts.start_oozie(self.pctx, cluster)
         s_scripts.start_hiveserver(self.pctx, cluster)
+        s_scripts.start_zookeeper(cluster)
 
         swift_helper.install_ssl_certs(cluster_utils.get_instances(cluster))
 
@@ -93,6 +95,9 @@ class VersionHandler(avm.AbstractVersionHandler):
     def validate_scaling(self, cluster, existing, additional):
         vl.validate_additional_ng_scaling(cluster, additional)
         vl.validate_existing_ng_scaling(self.pctx, cluster, existing)
+        zk_ng = utils.get_node_groups(cluster, "zookeeper")
+        if zk_ng:
+            vl.validate_zookeeper_node_count(zk_ng, existing, additional)
 
     def scale_cluster(self, cluster, instances):
         keypairs.provision_keypairs(cluster, instances)
