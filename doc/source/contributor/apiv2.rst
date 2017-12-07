@@ -61,9 +61,10 @@ Communicating with the v2 API
 -----------------------------
 
 The v2 API makes at least one major change from the previous versions,
-removing the OpenStack project identifier from the URL. Instead of
-adding this UUID to the URL, it is now required to be included as a
-header named ``OpenStack-Project-ID``.
+removing the OpenStack project identifier from the URL. Now users of
+the API do not provide their project ID explictly; instead we fully
+trust keystonemiddeware to provide it in the WSGI environment based
+on the given user token.
 
 For example, in previous versions of the API, a call to get the list of
 clusters for project "12345678-1234-1234-1234-123456789ABC" would have
@@ -72,19 +73,16 @@ been made as follows::
     GET /v1.1/12345678-1234-1234-1234-123456789ABC/clusters
     X-Auth-Token: {valid auth token}
 
-This call would now be made to the following URL, while including the
-project identifier in a header named ``OpenStack-Project-ID``::
+This call would now be made to the following URL::
 
     GET /v2/clusters
     X-Auth-Token: {valid auth token}
-    OpenStack-Project-ID: 12345678-1234-1234-1234-123456789ABC
 
 Using a tool like `HTTPie <https://httpie.org/>`_, the
 same request could be made like this::
 
     $ httpie http://{sahara service ip:port}/v2/clusters \
-      X-Auth-Token:{valid auth token} \
-      OpenStack-Project-ID:12345678-1234-1234-1234-123456789ABC
+      X-Auth-Token:{valid auth token}
 
 Following the implementation progress
 -------------------------------------
