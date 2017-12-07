@@ -72,3 +72,26 @@ def cluster_templates_update(cluster_template_id, data):
 def cluster_templates_delete(cluster_template_id):
     api.terminate_cluster_template(cluster_template_id)
     return u.render()
+
+
+def _cluster_template_export_helper(template):
+    template.pop('id')
+    template.pop('updated_at')
+    template.pop('created_at')
+    template.pop('tenant_id')
+    template.pop('is_default')
+    template['default_image_id'] = '{default_image_id}'
+    template['node_groups'] = '{node_groups}'
+
+
+@rest.get('/cluster-templates/<cluster_template_id>/export')
+@acl.enforce("data-processing:cluster-templates:get")
+@v.check_exists(api.get_cluster_template, 'cluster_template_id')
+def cluster_template_export(cluster_template_id):
+    content = u.to_wrapped_dict_no_render(
+        api.export_cluster_template, cluster_template_id)
+    _cluster_template_export_helper(content['cluster_template'])
+    res = u.render(content)
+    res.headers.add('Content-Disposition', 'attachment',
+                    filename='cluster_template.json')
+    return res
