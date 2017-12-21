@@ -1,0 +1,12 @@
+#!/bin/bash
+
+config=/etc/python/cert-verification.cfg
+check=$(cat $config | grep 'verify=disable' | wc -l)
+
+if [ $check -eq 0 ]; then
+    if [ $test_only -eq 0 ]; then
+        [ -e $config ] && sed -i "s%^\(verify=\s*\).*$%verify=disable%" $config
+    else
+        exit 0
+    fi
+fi
