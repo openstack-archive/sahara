@@ -86,7 +86,9 @@ def clusters_update(cluster_id, data):
 @rest.delete('/clusters/<cluster_id>')
 @acl.enforce("data-processing:clusters:delete")
 @v.check_exists(api.get_cluster, 'cluster_id')
-@v.validate(None, v_c.check_cluster_delete)
+@v.validate(v_c_schema.CLUSTER_DELETE_SCHEMA_V2, v_c.check_cluster_delete)
 def clusters_delete(cluster_id):
-    api.terminate_cluster(cluster_id)
+    data = u.request_data()
+    force = data.get('force', False)
+    api.terminate_cluster(cluster_id, force=force)
     return u.render()

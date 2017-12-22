@@ -18,7 +18,6 @@ import abc
 import datetime
 import string
 
-from novaclient import exceptions as nova_exceptions
 from oslo_config import cfg
 from oslo_log import log as logging
 import six
@@ -27,14 +26,11 @@ from sahara import conductor as c
 from sahara import context
 from sahara.i18n import _
 from sahara.service import networks
-from sahara.service import volumes
 from sahara.utils import cluster as cluster_utils
 from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils import edp
-from sahara.utils import general as g
 from sahara.utils.openstack import base as b
 from sahara.utils.openstack import images as sahara_images
-from sahara.utils.openstack import nova
 from sahara.utils import poll_utils
 from sahara.utils import remote
 
@@ -55,7 +51,7 @@ class Engine(object):
         pass
 
     @abc.abstractmethod
-    def shutdown_cluster(self, cluster):
+    def shutdown_cluster(self, cluster, force):
         pass
 
     @abc.abstractmethod
@@ -228,115 +224,6 @@ sed '/^Defaults    requiretty*/ s/^/#/' -i /etc/sudoers\n
                 update.update({"info": info,
                                "end_time": datetime.datetime.now()})
             conductor.job_execution_update(ctx, je, update)
-
-    def _delete_auto_security_group(self, node_group):
-        if not node_group.auto_security_group:
-            return
-
-        if not node_group.security_groups:
-            # node group has no security groups
-            # nothing to delete
-            return
-
-        name = node_group.security_groups[-1]
-
-        try:
-            client = nova.client().security_groups
-            security_group = b.execute_with_retries(client.get, name)
-            if (security_group.name !=
-                    g.generate_auto_security_group_name(node_group)):
-                LOG.warning("Auto security group for node group {name} is "
-                            "not found".format(name=node_group.name))
-                return
-            b.execute_with_retries(client.delete, name)
-        except Exception:
-            LOG.warning("Failed to delete security group {name}".format(
-                name=name))
-
-    def _delete_aa_server_groups(self, cluster):
-        if cluster.anti_affinity:
-            for i in range(1, cluster.anti_affinity_ratio):
-                server_group_name = g.generate_aa_group_name(cluster.name, i)
-
-                client = nova.client().server_groups
-
-                server_groups = b.execute_with_retries(client.findall,
-                                                       name=server_group_name)
-                if len(server_groups) == 1:
-                    b.execute_with_retries(client.delete, server_groups[0].id)
-
-                '''In case the server group is created
-                using mitaka or older version'''
-                old_server_group_name = server_group_name.rsplit('-', 1)[0]
-                server_groups_old = b.execute_with_retries(
-                    client.findall,
-                    name=old_server_group_name)
-                if len(server_groups_old) == 1:
-                    b.execute_with_retries(client.delete,
-                                           server_groups_old[0].id)
-
-    def _shutdown_instance(self, instance):
-        # Heat dissociates and deletes upon deletion of resources
-        # See OS::Neutron::FloatingIP and OS::Neutron::FloatingIPAssociation
-        if instance.node_group.floating_ip_pool:
-            pass
-
-        try:
-            volumes.detach_from_instance(instance)
-        except Exception:
-            LOG.warning("Detaching volumes from instance failed")
-
-        try:
-            b.execute_with_retries(nova.client().servers.delete,
-                                   instance.instance_id)
-        except nova_exceptions.NotFound:
-            LOG.warning("Attempted to delete non-existent instance")
-
-        conductor.instance_remove(context.ctx(), instance)
-
-    @cpo.event_wrapper(mark_successful_on_exit=False)
-    def _check_if_deleted(self, instance):
-        try:
-            nova.get_instance_info(instance)
-        except nova_exceptions.NotFound:
-            return True
-
-        return False
-
-    @poll_utils.poll_status(
-        'delete_instances_timeout',
-        _("Wait for instances to be deleted"), sleep=1)
-    def _check_deleted(self, deleted_ids, cluster, instances):
-        if not cluster_utils.check_cluster_exists(cluster):
-            return True
-
-        for instance in instances:
-            if instance.id not in deleted_ids:
-                with context.set_current_instance_id(instance.instance_id):
-                    if self._check_if_deleted(instance):
-                        LOG.debug("Instance is deleted")
-                        deleted_ids.add(instance.id)
-                        cpo.add_successful_event(instance)
-        return len(deleted_ids) == len(instances)
-
-    def _await_deleted(self, cluster, instances):
-        """Await all instances are deleted."""
-        if not instances:
-            return
-        cpo.add_provisioning_step(
-            cluster.id, _("Wait for instances to be deleted"), len(instances))
-
-        deleted_ids = set()
-        self._check_deleted(deleted_ids, cluster, instances)
-
-    def _shutdown_instances(self, cluster):
-        for node_group in cluster.node_groups:
-            for instance in node_group.instances:
-                with context.set_current_instance_id(instance.instance_id):
-                    self._shutdown_instance(instance)
-
-            self._await_deleted(cluster, node_group.instances)
-            self._delete_auto_security_group(node_group)
 
     def _remove_db_objects(self, cluster):
         ctx = context.ctx()

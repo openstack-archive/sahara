@@ -70,7 +70,7 @@ class FakeINFRA(object):
         TestOPS.SEQUENCE.append('INFRA.scale_cluster')
         return True
 
-    def shutdown_cluster(self, cluster):
+    def shutdown_cluster(self, cluster, force):
         TestOPS.SEQUENCE.append('shutdown_cluster')
 
     def rollback_cluster(self, cluster, reason):

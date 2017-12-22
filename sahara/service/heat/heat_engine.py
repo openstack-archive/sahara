@@ -191,21 +191,22 @@ class HeatEngine(e.Engine):
         self._launch_instances(cluster, rollback_count, ROLLBACK_STAGES,
                                update_stack=True)
 
-    def shutdown_cluster(self, cluster):
+    def shutdown_cluster(self, cluster, force=False):
         """Shutdown specified cluster and all related resources."""
+        if force:
+            heat_shutdown = heat.abandon_stack
+        else:
+            heat_shutdown = heat.delete_stack
+
         try:
-            heat.delete_stack(cluster)
+            heat_shutdown(cluster)
         except heat_exc.HTTPNotFound:
-            LOG.warning('Did not find stack for cluster. Trying to delete '
-                        'cluster manually.')
-
-            # Stack not found. Trying to delete cluster like direct engine
-            #  do it
-            self._shutdown_instances(cluster)
-            self._delete_aa_server_groups(cluster)
-
-        self._clean_job_executions(cluster)
-        self._remove_db_objects(cluster)
+            LOG.warning('Did not find stack for cluster.')
+        except heat_exc.BadRequest:
+            LOG.error("Can't force delete cluster.", exc_info=True)
+        finally:
+            self._clean_job_executions(cluster)
+            self._remove_db_objects(cluster)
 
     @cpo.event_wrapper(
         True, step=_('Create Heat stack'), param=('cluster', 1))

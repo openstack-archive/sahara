@@ -146,3 +146,14 @@ CLUSTER_SCALING_SCHEMA_V2['properties']['resize_node_groups'][
                 },
             }
         })
+
+CLUSTER_DELETE_SCHEMA_V2 = {
+    "type": "object",
+    "properties": {
+        "force": {
+            "type": "boolean"
+        }
+    },
+    "additionalProperties": False,
+    "required": []
+}

@@ -60,9 +60,9 @@ class LocalOps(object):
                       _provision_scaled_cluster, cluster_id, node_group_id_map,
                       node_group_instance_map)
 
-    def terminate_cluster(self, cluster_id):
+    def terminate_cluster(self, cluster_id, force=False):
         context.spawn("cluster-terminating-%s" % cluster_id,
-                      terminate_cluster, cluster_id)
+                      terminate_cluster, cluster_id, force)
 
     def run_edp_job(self, job_execution_id):
         context.spawn("Starting Job Execution %s" % job_execution_id,
@@ -102,8 +102,8 @@ class RemoteOps(rpc_utils.RPCClient):
                   node_group_id_map=node_group_id_map,
                   node_group_instance_map=node_group_instance_map)
 
-    def terminate_cluster(self, cluster_id):
-        self.cast('terminate_cluster', cluster_id=cluster_id)
+    def terminate_cluster(self, cluster_id, force=False):
+        self.cast('terminate_cluster', cluster_id=cluster_id, force=force)
 
     def run_edp_job(self, job_execution_id):
         self.cast('run_edp_job', job_execution_id=job_execution_id)
@@ -153,8 +153,8 @@ class OpsServer(rpc_utils.RPCServer):
                                   node_group_instance_map)
 
     @request_context
-    def terminate_cluster(self, cluster_id):
-        terminate_cluster(cluster_id)
+    def terminate_cluster(self, cluster_id, force=False):
+        terminate_cluster(cluster_id, force)
 
     @request_context
     def run_edp_job(self, job_execution_id):
@@ -394,7 +394,7 @@ def _get_random_instance_from_ng(instances, instances_to_delete):
 
 @ops_error_handler(
     _("Terminating cluster failed for the following reason(s): {reason}"))
-def terminate_cluster(cluster_id):
+def terminate_cluster(cluster_id, force=False):
     ctx = context.ctx()
     _setup_trust_for_cluster(cluster_id)
 
@@ -406,7 +406,7 @@ def terminate_cluster(cluster_id):
     plugin.on_terminate_cluster(cluster)
 
     context.set_step_type(_("Engine: shutdown cluster"))
-    INFRA.shutdown_cluster(cluster)
+    INFRA.shutdown_cluster(cluster, force)
 
     trusts.delete_trust_from_cluster(cluster)
 
