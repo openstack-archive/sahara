@@ -1,0 +1,22 @@
+#!/bin/bash
+
+echo "START: installing MapR core dependencies"
+
+if [ ! -f /etc/apt/sources.list.d/security_repo.list ]; then
+    if [ $test_only -eq 0 ]; then
+        # Required for libicu48
+        cat >> /etc/apt/sources.list.d/security_repo.list << EOF
+deb http://security.ubuntu.com/ubuntu precise-security main
+EOF
+        # Required for libmysqlclient16
+        cat >> /etc/apt/sources.list.d/security_repo.list << EOF
+deb http://old-releases.ubuntu.com/ubuntu lucid-security main
+EOF
+    else
+        exit 0
+    fi
+fi
+
+apt-get update
+
+echo "END: installing MapR core dependencies"

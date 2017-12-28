@@ -1,0 +1,32 @@
+#!/bin/bash
+
+
+VERSIONS_PY="/tmp/versions.py"
+DISTRO_NAME=$distro
+
+source "/tmp/package_utils.sh"
+
+echo "START: installing MapR ecosystem repository"
+
+MAPR_REPO_URL="http://package.mapr.com/releases/MEP/MEP-2.0.0/ubuntu/ binary trusty"
+MAPR_REPO_DIR="/opt/mapr-repository/ecosystem"
+
+if [ ! -d "$MAPR_REPO_DIR" ] || [ -z "$(ls -A $MAPR_REPO_DIR)" ]; then
+    if [ $test_only -eq 0 ]; then
+
+        MAPR_REPO_NAME="mapr_ecosystem"
+        MAPR_PKG_GROUPS="/tmp/packages.json"
+
+        if [ -f /tmp/spec_$plugin_version_ubuntu.json ]; then
+            MAPR_SPEC="/tmp/spec_$plugin_version_ubuntu.json"
+        else
+            MAPR_SPEC="/tmp/spec_$plugin_version.json"
+        fi
+
+        echo "Creating local MapR ecosystem repository"
+        localize_repo "$MAPR_REPO_NAME" "$MAPR_REPO_URL" "$MAPR_PKG_GROUPS" "$MAPR_SPEC" "$MAPR_REPO_DIR"
+        echo $MAPR_SPEC
+    fi
+fi
+
+echo "END: installing MapR ecosystem repository"

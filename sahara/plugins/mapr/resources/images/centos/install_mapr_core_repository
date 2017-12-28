@@ -1,0 +1,27 @@
+#!/bin/bash
+
+DISTRO_NAME=$distro
+source "/tmp/package_utils.sh"
+
+echo "START: installing MapR core repository"
+
+MAPR_REPO_URL="http://package.mapr.com/releases/v${plugin_version}/redhat/mapr-v${plugin_version}GA.rpm.tgz"
+MAPR_REPO_DIR="/opt/mapr-repository/core"
+
+if [ ! -d "$MAPR_REPO_DIR" ] || [ -z "$(ls -A $MAPR_REPO_DIR)" ]; then
+    if [ $test_only -eq 0 ]; then
+
+        MAPR_REPO_NAME="mapr_core"
+
+        echo "Downloading MapR repository archive"
+        mkdir -p "$MAPR_REPO_DIR" && curl "$MAPR_REPO_URL" | tar -xz -C "$MAPR_REPO_DIR"
+
+        echo "Creating local repository"
+        create_repo "$MAPR_REPO_DIR"
+
+        echo "Adding MapR repository"
+        add_local_repo "$MAPR_REPO_NAME" "$MAPR_REPO_DIR"
+    fi
+fi
+
+echo "END: installing MapR core repository"

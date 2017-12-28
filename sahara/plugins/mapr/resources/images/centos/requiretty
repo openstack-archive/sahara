@@ -1,0 +1,6 @@
+#!/bin/bash
+
+
+if [ $test_only -eq 0 ]; then
+    sed '/^Defaults    requiretty*/ s/^/#/' -i /etc/sudoers
+fi

@@ -1,0 +1,195 @@
+arguments:
+  java_distro:
+    default: openjdk
+    description: The distribution of Java to install. Defaults to cloudera-jdk.
+    choices:
+      - openjdk
+      - oracle-java
+  plugin_version:
+    default: 5.2.0
+    description: The distribution of MapR to install. Defaults to 5.2.0.
+    hidden: True
+    required: False
+  scala_version:
+    default: 2.11.6
+    description: The version of scala to install. Defaults to 2.11.6.
+    hidden: True
+    required: False
+  hdfs_lib_dir:
+    default: /usr/lib/hadoop-mapreduce
+    description: The path to HDFS_LIB_DIR. Default to /usr/lib/hadoop-mapreduce
+    required: False
+
+validators:
+  - os_case:
+      - ubuntu:
+          - script: ubuntu/install_mapr_dependencies
+  - package:
+    - mtools
+    - rpcbind
+    - sdparm
+    - syslinux
+    - unzip
+    - wget
+    - zip
+  - os_case:
+      - centos:
+          - package:
+              - cups
+              - cdparanoia-libs
+              - cups-libs
+              - createrepo
+              - cvs
+              - cyrus-sasl-gssapi
+              - cyrus-sasl-plain
+              - foomatic
+              - foomatic-db
+              - foomatic-db-filesystem
+              - foomatic-db-ppds
+              - gdbm-devel
+              - gettext
+              - ghostscript
+              - ghostscript-fonts
+              - glibc
+              - glibc-common
+              - glibc-devel
+              - glibc-headers
+              - gstreamer
+              - gstreamer-plugins-base
+              - gstreamer-tools
+              - hdparm
+              - irqbalance
+              - iso-codes
+              - kernel-headers
+              - libXt
+              - libXv
+              - libXxf86vm
+              - libgomp
+              - libgudev1
+              - libicu
+              - libmng
+              - liboil
+              - libtheora
+              - libtirpc
+              - libvisual
+              - libxslt
+              - mesa-dri-drivers
+              - mesa-libGL
+              - mesa-libGLU
+              - mesa-private-llvm
+              - nmap-ncat
+              - numactl
+              - openjpeg-libs
+              - patch
+              - pax
+              - perl-CGI
+              - perl-ExtUtils-MakeMaker
+              - perl-ExtUtils-ParseXS
+              - perl-Test-Harness
+              - perl-Test-Simple
+              - perl-devel
+              - phonon-backend-gstreamer
+              - poppler
+              - poppler-data
+              - poppler-utils
+              - portreserve
+              - qt
+              - qt-x11
+              - qt3
+              - redhat-lsb
+              - redhat-lsb-core
+              - redhat-lsb-printing
+              - urw-fonts
+              - yum-utils
+              - xml-common
+      - ubuntu:
+          - package:
+              - binutils
+              - daemon
+              - dpkg-dev
+              - dpkg-repack
+              - gcc
+              - gcc-4.8
+              - gcc-doc
+              - gcc-multilib
+              - iputils-arping
+              - libasan0
+              - libatomic1
+              - libc-dev-bin
+              - libc6
+              - libc6-dev
+              - libcrypt-passwdmd5-perl
+              - libgcc-4.8-dev
+              - libgomp1
+              - libgssglue1
+              - libicu48
+              - libitm1
+              - libmysqlclient-dev
+              - libmysqlclient16
+              - libmysqlclient18
+              - libnfsidmap2
+              - libquadmath0
+              - libsasl2-dev
+              - libsasl2-modules-gssapi-mit
+              - libssl0.9.8
+              - libtirpc1
+              - libtsan0
+              - libxslt1.1
+              - linux-libc-dev
+              - manpages-dev
+              - mysql-common
+              - nfs-common
+              - open-iscsi
+              - openjdk-7-jre
+              - syslinux-common
+              - zlib1g-dev
+  - script: common/configure_extjs
+  - os_case:
+      - centos:
+          - copy_script: common/resources/package_utils.sh
+          - copy_script: common/resources/packages.json
+          - copy_script: common/resources/spec_5.1.0.json
+          - copy_script: common/resources/spec_5.2.0.json
+          - copy_script: common/resources/versions.py
+          - script:
+              centos/install_scala:
+                  env_vars: [scala_version]
+          - script:
+              centos/install_mapr_core_repository:
+                  env_vars: [plugin_version]
+          - script:
+              centos/install_mapr_eco_repository:
+                  env_vars: [plugin_version]
+          - script: centos/selinux_permissive
+          - argument_case:
+              argument_name: java_distro
+              cases:
+                  openjdk:
+                      - script: centos/install_openjdk
+                  oracle-java:
+                      - script: common/oracle_java
+      - ubuntu:
+          - copy_script: common/resources/package_utils.sh
+          - copy_script: common/resources/packages.json
+          - copy_script: common/resources/spec_5.1.0.json
+          - copy_script: common/resources/spec_5.2.0.json
+          - copy_script: common/resources/spec_5.2.0_ubuntu.json
+          - copy_script: common/resources/versions.py
+          - script:
+              ubuntu/install_scala:
+                  env_vars: [scala_version]
+          - script:
+              ubuntu/install_mapr_core_repository:
+                  env_vars: [plugin_version]
+          - script:
+              ubuntu/install_mapr_eco_repository:
+                  env_vars: [plugin_version]
+  - os_case:
+      - ubuntu:
+          - argument_case:
+              argument_name: java_distro
+              cases:
+                  openjdk:
+                      - script: ubuntu/install_openjdk
+                  oracle-java:
+                      - script: common/oracle_java
