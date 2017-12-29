@@ -21,7 +21,8 @@ class TestDistro(b.SaharaTestCase):
         super(TestDistro, self).__init__(*args, **kwds)
         self.install_cmd = 'foo_bar'
         self.separator = '-'
-        self.distro = distro.Distro('foo', self.install_cmd, self.separator)
+        self.distro = distro.Distro('foo', 'foo', self.install_cmd,
+                                    self.separator)
 
     def test_create_install_cmd(self):
         pkgs = [('foo',), ('bar', 'version')]

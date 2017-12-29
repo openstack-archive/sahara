@@ -28,7 +28,9 @@ protect=1
 EOF
     rpm --import http://package.mapr.com/releases/pub/maprgpg.key
     yum install -y wget
-    yum install -y epel-release
+    if [ ! -e /etc/yum.repos.d/epel.repo ]; then
+        rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    fi
 else
     echo "Unknown distribution"
     exit 1
