@@ -14,14 +14,19 @@
 
 
 class Distro(object):
-    def __init__(self, name, install_cmd, version_separator):
+    def __init__(self, name, internal_name, install_cmd, version_separator):
         self._name = name
+        self._internal_name = internal_name
         self._install_command = install_cmd
         self._version_separator = version_separator
 
     @property
     def name(self):
         return self._name
+
+    @property
+    def internal_name(self):
+        return self._internal_name
 
     @property
     def install_command(self):
@@ -46,24 +51,28 @@ class Distro(object):
 
 UBUNTU = Distro(
     name='Ubuntu',
+    internal_name='Ubuntu',
     install_cmd='apt-get install --force-yes -y',
     version_separator='=',
 )
 
 CENTOS = Distro(
     name='CentOS',
+    internal_name='CentOS',
     install_cmd='yum install -y',
     version_separator='-',
 )
 
 RHEL = Distro(
     name='RedHatEnterpriseServer',
+    internal_name='RedHat',
     install_cmd='yum install -y',
     version_separator='-',
 )
 
 SUSE = Distro(
     name='Suse',
+    internal_name='Suse',
     install_cmd='zypper',
     version_separator=':',
 )
@@ -77,7 +86,7 @@ def get(instance):
     with instance.remote() as r:
         name = r.get_os_distrib()
         for d in get_all():
-            if d.name.lower() in name:
+            if d.internal_name.lower() in name:
                 return d
 
 
