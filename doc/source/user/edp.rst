@@ -12,8 +12,8 @@ of jobs on clusters created from sahara. EDP supports:
 * Spark jobs on Spark standalone clusters, MapR (v5.0.0 - v5.2.0) clusters,
   Vanilla clusters (v2.7.1) and CDH clusters (v5.3.0 or higher).
 * storage of job binaries in the OpenStack Object Storage service (swift),
-  the OpenStack Shared file systems service (manila), or sahara's own
-  database
+  the OpenStack Shared file systems service (manila), sahara's own database,
+  or any S3-like object store
 * access to input and output data sources in
 
   + HDFS for all job types
@@ -65,6 +65,11 @@ Sahara requires credentials (username and password) to access files stored in
 swift unless swift proxy users are configured as described in
 :doc:`../admin/advanced-configuration-guide`. The swift service must be
 running in the same OpenStack installation referenced by sahara.
+
+Sahara requires the following credentials/configs to access files stored in an
+S3-like object store: ``accesskey``, ``secretkey``, ``endpoint``.
+These credentials are specified through the `extra` in the body of the request
+when creating a job binary or data source referencing S3.
 
 To reference a binary file stored in manila, create the job binary with the
 URL ``manila://{share_id}/{path}``. This assumes that you have already stored
@@ -581,9 +586,9 @@ estimating Pi.
 Special Sahara URLs
 -------------------
 
-Sahara uses custom URLs to refer to objects stored in swift, in manila, or in
-the sahara internal database. These URLs are not meant to be used outside of
-sahara.
+Sahara uses custom URLs to refer to objects stored in swift, in manila, in the
+sahara internal database, or in S3-like storage. These URLs are usually not
+meant to be used outside of sahara.
 
 Sahara swift URLs passed to running jobs as input or output sources include a
 ".sahara" suffix on the container, for example:
@@ -610,6 +615,10 @@ Manila NFS filesystem reference URLS take the form:
 
 This format should be used when referring to a job binary or a data source
 stored in a manila NFS share.
+
+For job binaries only, S3 urls take the form:
+
+``s3://bucket/path/to/object``
 
 
 EDP Requirements

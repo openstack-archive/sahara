@@ -16,7 +16,9 @@
 from sahara import context
 from sahara.service.edp.binary_retrievers import internal_swift as i_swift
 from sahara.service.edp.binary_retrievers import manila_share as manila
+from sahara.service.edp.binary_retrievers import s3_storage as s3
 from sahara.service.edp.binary_retrievers import sahara_db as db
+from sahara.service.edp import s3_common
 from sahara.swift import utils as su
 from sahara.utils.openstack import manila as m
 
@@ -41,6 +43,9 @@ def get_raw_binary(job_binary, proxy_configs=None,
     url = job_binary.url
     if url.startswith("internal-db://"):
         res = db.get_raw_data(context.ctx(), job_binary)
+
+    if url.startswith(s3_common.S3_JB_PREFIX):
+        res = s3.get_raw_data(job_binary)
 
     if url.startswith(su.SWIFT_INTERNAL_PREFIX):
         if with_context:

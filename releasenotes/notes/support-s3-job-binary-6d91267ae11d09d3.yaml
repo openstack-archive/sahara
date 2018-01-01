@@ -1,0 +1,3 @@
+---
+features:
+  - An EDP job binary may reference a file stored in a S3-like object store.
