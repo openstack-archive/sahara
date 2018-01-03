@@ -60,7 +60,7 @@ def clusters_create_multiple(data):
 @rest.put('/clusters/<cluster_id>')
 @acl.enforce("data-processing:clusters:scale")
 @v.check_exists(api.get_cluster, 'cluster_id')
-@v.validate(v_c_schema.CLUSTER_SCALING_SCHEMA, v_c_s.check_cluster_scaling)
+@v.validate(v_c_schema.CLUSTER_SCALING_SCHEMA_V2, v_c_s.check_cluster_scaling)
 def clusters_scale(cluster_id, data):
     return u.to_wrapped_dict(api.scale_cluster, cluster_id, data)
 

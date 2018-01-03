@@ -136,6 +136,10 @@ def _get_wc_waiter_name(inst_name):
     return '%s-wc-waiter' % inst_name
 
 
+def _get_index_from_inst_name(inst_name):
+    return inst_name.split('-')[-1]
+
+
 class ClusterStack(object):
     def __init__(self, cluster):
         self.cluster = cluster
@@ -165,15 +169,16 @@ class ClusterStack(object):
                     node_group=ng.name, info=self.base_info))
 
     def add_node_group_extra(self, node_group_id, node_count,
-                             gen_userdata_func):
+                             gen_userdata_func, instances_to_delete=None):
         self.node_groups_extra[node_group_id] = {
             'node_count': node_count,
-            'gen_userdata_func': gen_userdata_func
+            'gen_userdata_func': gen_userdata_func,
+            'instances_to_delete': instances_to_delete
         }
 
-    def _get_main_template(self):
+    def _get_main_template(self, instances_to_delete=None):
         outputs = {}
-        resources = self._serialize_resources(outputs)
+        resources = self._serialize_resources(outputs, instances_to_delete)
         return yaml.safe_dump({
             "heat_template_version": heat_common.HEAT_TEMPLATE_VERSION,
             "description": self.base_info,
@@ -181,8 +186,9 @@ class ClusterStack(object):
             "outputs": outputs
         })
 
-    def instantiate(self, update_existing, disable_rollback=True):
-        main_tmpl = self._get_main_template()
+    def instantiate(self, update_existing, disable_rollback=True,
+                    instances_to_delete=None):
+        main_tmpl = self._get_main_template(instances_to_delete)
         kwargs = {
             'stack_name': self.cluster.stack_name,
             'timeout_mins': 180,
@@ -241,7 +247,7 @@ class ClusterStack(object):
             }
         }
 
-    def _serialize_resources(self, outputs):
+    def _serialize_resources(self, outputs, instances_to_delete=None):
         resources = {}
 
         if self.cluster.anti_affinity:
@@ -250,14 +256,15 @@ class ClusterStack(object):
                 resources.update(self._serialize_aa_server_group(i))
 
         for ng in self.cluster.node_groups:
-            resources.update(self._serialize_ng_group(ng, outputs))
+            resources.update(self._serialize_ng_group(ng, outputs,
+                                                      instances_to_delete))
 
         for ng in self.cluster.node_groups:
             resources.update(self._serialize_auto_security_group(ng))
 
         return resources
 
-    def _serialize_ng_group(self, ng, outputs):
+    def _serialize_ng_group(self, ng, outputs, instances_to_delete=None):
         ng_file_name = "file://" + ng.name + ".yaml"
         self.files[ng_file_name] = self._serialize_ng_file(ng)
 
@@ -279,11 +286,19 @@ class ClusterStack(object):
             properties[AUTO_SECURITY_GROUP_PARAM_NAME] = {
                 'get_resource': g.generate_auto_security_group_name(ng)}
 
+        removal_policies = []
+        if self.node_groups_extra[ng.id]['instances_to_delete']:
+            resource_list = []
+            for name in self.node_groups_extra[ng.id]['instances_to_delete']:
+                resource_list.append(_get_index_from_inst_name(name))
+            removal_policies.append({'resource_list': resource_list})
+
         return {
             ng.name: {
                 "type": "OS::Heat::ResourceGroup",
                 "properties": {
                     "count": self.node_groups_extra[ng.id]['node_count'],
+                    "removal_policies": removal_policies,
                     "resource_def": {
                         "type": ng_file_name,
                         "properties": properties

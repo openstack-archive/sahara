@@ -17,6 +17,7 @@ import collections
 
 import novaclient.exceptions as nova_ex
 from oslo_config import cfg
+from oslo_utils import uuidutils
 import six
 
 from sahara import conductor as cond
@@ -372,6 +373,40 @@ def check_resize(cluster, r_node_groups):
             check_node_group_basic_fields(cluster.plugin_name,
                                           cluster.hadoop_version,
                                           ng_tmp['node_group_template'])
+
+    for scaling_ng in r_node_groups:
+        current_count = ng_map[scaling_ng['name']].count
+        new_count = scaling_ng['count']
+        count_diff = current_count - new_count
+        if 'instances' in scaling_ng:
+            if len(scaling_ng['instances']) > count_diff:
+                raise ex.InvalidDataException(
+                    _("Number of specific instances (%(instance)s) to"
+                      " delete can not be greater than the count difference"
+                      " (%(count)s during scaling")
+                    % {'instance': str(len(scaling_ng['instances'])),
+                       'count': str(count_diff)})
+            else:
+                if len(scaling_ng['instances']) > 0:
+                    is_uuid = uuidutils.is_uuid_like(
+                        scaling_ng['instances'][0])
+                    if is_uuid:
+                        for instance in scaling_ng['instances']:
+                            if not uuidutils.is_uuid_like(instance):
+                                raise ex.InvalidReferenceException(
+                                    _("You can only reference instances by"
+                                      " Name or UUID, not both on the same"
+                                      " request"))
+                    else:
+                        for instance in scaling_ng['instances']:
+                            if uuidutils.is_uuid_like(instance):
+                                raise ex.InvalidReferenceException(
+                                    _("You can only reference instances by"
+                                      " Name or UUID, not both on the same"
+                                      " request"))
+                    _check_duplicates(scaling_ng['instances'],
+                                      _("Duplicate entry for instances to"
+                                        " delete"))
 
 
 def check_add_node_groups(cluster, add_node_groups):

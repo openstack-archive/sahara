@@ -211,6 +211,23 @@ class TestScalingValidation(u.ValidationTestCase):
         self.assertEqual(1, req_data.call_count)
         self._assert_calls(bad_req, bad_req_i)
 
+    @mock.patch("sahara.utils.api.request_data")
+    @mock.patch("sahara.utils.api.bad_request")
+    def _assert_cluster_scaling_validation_v2(self,
+                                              bad_req=None,
+                                              req_data=None,
+                                              data=None,
+                                              bad_req_i=None):
+        m_func = mock.Mock()
+        m_func.__name__ = "m_func"
+        req_data.return_value = data
+        v.validate(c_schema.CLUSTER_SCALING_SCHEMA_V2,
+                   self._create_object_fun)(m_func)(data=data,
+                                                    cluster_id='42')
+
+        self.assertEqual(1, req_data.call_count)
+        self._assert_calls(bad_req, bad_req_i)
+
     @mock.patch("sahara.service.api.OPS")
     def test_cluster_scaling_scheme_v_resize_ng(self, ops):
         ops.get_engine_type_and_version.return_value = "direct.1.1"
@@ -253,6 +270,55 @@ class TestScalingValidation(u.ValidationTestCase):
             ]
         }
         self._assert_cluster_scaling_validation(
+            data=data,
+            bad_req_i=(1, 'VALIDATION_ERROR',
+                       u"resize_node_groups[0]: Additional properties are not "
+                       u"allowed ('flavor_id' was unexpected)")
+        )
+
+    @mock.patch("sahara.service.api.OPS")
+    def test_cluster_scaling_scheme_v_resize_ng_v2(self, ops):
+        ops.get_engine_type_and_version.return_value = "direct.1.1"
+        self._create_object_fun = mock.Mock()
+        data = {
+        }
+        self._assert_cluster_scaling_validation_v2(
+            data=data,
+            bad_req_i=(1, 'VALIDATION_ERROR',
+                       u'{} is not valid under any of the given schemas')
+        )
+        data = {
+            'resize_node_groups': [{}]
+        }
+        self._assert_cluster_scaling_validation_v2(
+            data=data,
+            bad_req_i=(1, 'VALIDATION_ERROR',
+                       u"resize_node_groups[0]: 'name' is a required property")
+        )
+        data = {
+            'resize_node_groups': [
+                {
+                    'name': 'a'
+                }
+            ]
+        }
+        self._assert_cluster_scaling_validation_v2(
+            data=data,
+            bad_req_i=(1, 'VALIDATION_ERROR',
+                       u"resize_node_groups[0]: 'count' is a required "
+                       u"property")
+        )
+        data = {
+            'resize_node_groups': [
+                {
+                    'name': 'a',
+                    'flavor_id': '42',
+                    'instances': ['id1'],
+                    'count': 2
+                }
+            ]
+        }
+        self._assert_cluster_scaling_validation_v2(
             data=data,
             bad_req_i=(1, 'VALIDATION_ERROR',
                        u"resize_node_groups[0]: Additional properties are not "

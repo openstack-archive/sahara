@@ -30,7 +30,8 @@ class FakeCluster(object):
 class FakeNodeGroup(object):
     id = 'id'
     count = 2
-    instances = [1, 2]
+    instances = [{'instance_name': 'id-10', 'id': 2},
+                 {'instance_name': 'id-2', 'id': 1}]
 
 
 class FakePlugin(mock.Mock):
@@ -52,7 +53,8 @@ class FakePlugin(mock.Mock):
     def decommission_nodes(self, cluster, instances_to_delete):
         TestOPS.SEQUENCE.append('decommission_nodes')
 
-    def scale_cluster(self, cluster, node_group_id_map):
+    def scale_cluster(self, cluster, node_group_id_map,
+                      node_group_instance_map=None):
         TestOPS.SEQUENCE.append('plugin.scale_cluster')
 
     def cluster_destroy(self, ctx, cluster):
@@ -63,7 +65,8 @@ class FakeINFRA(object):
     def create_cluster(self, cluster):
         TestOPS.SEQUENCE.append('create_cluster')
 
-    def scale_cluster(self, cluster, node_group_id_map):
+    def scale_cluster(self, cluster, node_group_id_map,
+                      node_group_instance_map=None):
         TestOPS.SEQUENCE.append('INFRA.scale_cluster')
         return True
 

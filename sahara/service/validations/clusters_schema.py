@@ -134,3 +134,15 @@ CLUSTER_SCALING_SCHEMA = {
         }
     ]
 }
+
+CLUSTER_SCALING_SCHEMA_V2 = copy.deepcopy(CLUSTER_SCALING_SCHEMA)
+CLUSTER_SCALING_SCHEMA_V2['properties']['resize_node_groups'][
+    'items']['properties'].update(
+        {
+            "instances": {
+                "type": "array",
+                "items": {
+                    "type": "string",
+                },
+            }
+        })

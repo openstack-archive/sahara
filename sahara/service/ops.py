@@ -54,9 +54,11 @@ class LocalOps(object):
         context.spawn("cluster-creating-%s" % cluster_id,
                       _provision_cluster, cluster_id)
 
-    def provision_scaled_cluster(self, cluster_id, node_group_id_map):
+    def provision_scaled_cluster(self, cluster_id, node_group_id_map,
+                                 node_group_instance_map=None):
         context.spawn("cluster-scaling-%s" % cluster_id,
-                      _provision_scaled_cluster, cluster_id, node_group_id_map)
+                      _provision_scaled_cluster, cluster_id, node_group_id_map,
+                      node_group_instance_map)
 
     def terminate_cluster(self, cluster_id):
         context.spawn("cluster-terminating-%s" % cluster_id,
@@ -94,9 +96,11 @@ class RemoteOps(rpc_utils.RPCClient):
     def provision_cluster(self, cluster_id):
         self.cast('provision_cluster', cluster_id=cluster_id)
 
-    def provision_scaled_cluster(self, cluster_id, node_group_id_map):
+    def provision_scaled_cluster(self, cluster_id, node_group_id_map,
+                                 node_group_instance_map=None):
         self.cast('provision_scaled_cluster', cluster_id=cluster_id,
-                  node_group_id_map=node_group_id_map)
+                  node_group_id_map=node_group_id_map,
+                  node_group_instance_map=node_group_instance_map)
 
     def terminate_cluster(self, cluster_id):
         self.cast('terminate_cluster', cluster_id=cluster_id)
@@ -143,8 +147,10 @@ class OpsServer(rpc_utils.RPCServer):
         _provision_cluster(cluster_id)
 
     @request_context
-    def provision_scaled_cluster(self, cluster_id, node_group_id_map):
-        _provision_scaled_cluster(cluster_id, node_group_id_map)
+    def provision_scaled_cluster(self, cluster_id, node_group_id_map,
+                                 node_group_instance_map=None):
+        _provision_scaled_cluster(cluster_id, node_group_id_map,
+                                  node_group_instance_map)
 
     @request_context
     def terminate_cluster(self, cluster_id):
@@ -314,42 +320,76 @@ def _provision_cluster(cluster_id):
 
 @ops_error_handler(
     _("Scaling cluster failed for the following reason(s): {reason}"))
-def _provision_scaled_cluster(cluster_id, node_group_id_map):
+def _provision_scaled_cluster(cluster_id, node_group_id_map,
+                              node_group_instance_map=None):
     ctx, cluster, plugin = _prepare_provisioning(cluster_id)
 
     # Decommissioning surplus nodes with the plugin
     cluster = c_u.change_cluster_status(
         cluster, c_u.CLUSTER_STATUS_DECOMMISSIONING)
 
-    instances_to_delete = []
+    try:
+        instances_to_delete = []
+        for node_group in cluster.node_groups:
+            new_count = node_group_id_map[node_group.id]
+            if new_count < node_group.count:
+                if (node_group_instance_map and
+                        node_group.id in node_group_instance_map):
+                        for instance_ref in node_group_instance_map[
+                                node_group.id]:
+                            instance = _get_instance_obj(node_group.instances,
+                                                         instance_ref)
+                            instances_to_delete.append(instance)
 
-    for node_group in cluster.node_groups:
-        new_count = node_group_id_map[node_group.id]
-        if new_count < node_group.count:
-            instances_to_delete += node_group.instances[new_count:
-                                                        node_group.count]
+                while node_group.count - new_count > len(instances_to_delete):
+                    instances_to_delete.append(_get_random_instance_from_ng(
+                        node_group.instances, instances_to_delete))
 
-    if instances_to_delete:
-        context.set_step_type(_("Plugin: decommission cluster"))
-        plugin.decommission_nodes(cluster, instances_to_delete)
+        if instances_to_delete:
+            context.set_step_type(_("Plugin: decommission cluster"))
+            plugin.decommission_nodes(cluster, instances_to_delete)
 
-    # Scaling infrastructure
-    cluster = c_u.change_cluster_status(
-        cluster, c_u.CLUSTER_STATUS_SCALING)
-    context.set_step_type(_("Engine: scale cluster"))
-    instance_ids = INFRA.scale_cluster(cluster, node_group_id_map)
-
-    # Setting up new nodes with the plugin
-    if instance_ids:
-        ntp_service.configure_ntp(cluster_id, instance_ids)
+        # Scaling infrastructure
         cluster = c_u.change_cluster_status(
-            cluster, c_u.CLUSTER_STATUS_CONFIGURING)
-        instances = c_u.get_instances(cluster, instance_ids)
-        context.set_step_type(_("Plugin: scale cluster"))
-        plugin.scale_cluster(cluster, instances)
+            cluster, c_u.CLUSTER_STATUS_SCALING)
+        context.set_step_type(_("Engine: scale cluster"))
+        instance_ids = INFRA.scale_cluster(cluster, node_group_id_map,
+                                           instances_to_delete)
+        # Setting up new nodes with the plugin
+        if instance_ids:
+            ntp_service.configure_ntp(cluster_id, instance_ids)
+            cluster = c_u.change_cluster_status(
+                cluster, c_u.CLUSTER_STATUS_CONFIGURING)
+            instances = c_u.get_instances(cluster, instance_ids)
+            context.set_step_type(_("Plugin: scale cluster"))
+            plugin.scale_cluster(cluster, instances)
 
-    c_u.change_cluster_status(cluster, c_u.CLUSTER_STATUS_ACTIVE)
-    _refresh_health_for_cluster(cluster_id)
+        c_u.change_cluster_status(cluster, c_u.CLUSTER_STATUS_ACTIVE)
+        _refresh_health_for_cluster(cluster_id)
+
+    except Exception as e:
+        c_u.change_cluster_status(cluster, c_u.CLUSTER_STATUS_ACTIVE,
+                                  six.text_type(e))
+
+
+def _get_instance_obj(instances, instance_ref):
+    for instance in instances:
+        if (instance.instance_id == instance_ref or
+                instance.instance_name == instance_ref):
+            return instance
+
+    raise exceptions.NotFoundException(str(instance_ref),
+                                       _("Instance %s not found"))
+
+
+def _get_random_instance_from_ng(instances, instances_to_delete):
+    # instances list doesn't order by creating date, so we should
+    # sort it to make sure deleted instances same as heat deleted.
+    insts = sorted(instances,
+                   key=lambda x: int(x['instance_name'].split('-')[-1]))
+    for instance in reversed(insts):
+        if instance not in instances_to_delete:
+            return instance
 
 
 @ops_error_handler(
