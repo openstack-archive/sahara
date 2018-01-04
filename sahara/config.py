@@ -121,21 +121,16 @@ CONF.register_opts(dns_opts)
 
 log.register_options(CONF)
 
-log.set_defaults(default_log_levels=[
-    'amqplib=WARN',
-    'qpid.messaging=INFO',
+sahara_default_log_levels = [
     'stevedore=INFO',
     'eventlet.wsgi.server=WARN',
-    'sqlalchemy=WARN',
-    'boto=WARN',
-    'suds=INFO',
-    'keystonemiddleware=WARN',
     'paramiko=WARN',
     'requests=WARN',
-    'iso8601=WARN',
-    'oslo_messaging=INFO',
     'neutronclient=INFO',
-])
+]
+
+log.set_defaults(
+    default_log_levels=log.get_default_log_levels()+sahara_default_log_levels)
 
 
 def list_opts():
