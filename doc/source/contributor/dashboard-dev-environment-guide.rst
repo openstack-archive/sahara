@@ -98,7 +98,7 @@ creation, add the following parameter:
 
 .. sourcecode:: python
 
-    SAHARA_AUTO_IP_ALLOCATION_ENABLED = True
+    SAHARA_FLOATING_IP_DISABLED = True
 ..
 
 5. Clone sahara-dashboard repository and checkout the desired branch

@@ -21,7 +21,7 @@ Example:
 
 .. sourcecode:: python
 
-    SAHARA_AUTO_IP_ALLOCATION_ENABLED = True
+    SAHARA_FLOATING_IP_DISABLED = True
 ..
 
 2. Different endpoint
