@@ -170,11 +170,13 @@ class Engine(object):
     def _configure_instance_etc_hosts(self, instance, cluster):
         LOG.debug('Configuring "/etc/hosts" of instance.')
         hosts_file = cluster_utils.generate_etc_hosts(cluster)
+        hostname = instance.fqdn()
         with instance.remote() as r:
             r.write_file_to('etc-hosts', hosts_file)
-            r.execute_command('sudo hostname %s' % instance.fqdn())
+            r.write_file_to('etc-hostname', hostname)
+            r.execute_command('sudo hostname %s' % hostname)
             r.execute_command('sudo mv etc-hosts /etc/hosts')
-
+            r.execute_command('sudo mv etc-hostname /etc/hostname')
             r.execute_command('sudo usermod -s /bin/bash $USER')
 
     def _configure_instance_resolve_conf(self, instance):
