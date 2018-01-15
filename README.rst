@@ -24,6 +24,7 @@ How to participate: https://docs.openstack.org/sahara/latest/contributor/how-to-
 
 Source: http://git.openstack.org/cgit/openstack/sahara
 
+Bugs and feature requests: https://bugs.launchpad.net/sahara
 
 License
 -------
