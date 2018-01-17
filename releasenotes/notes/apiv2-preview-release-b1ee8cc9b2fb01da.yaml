@@ -1,0 +1,9 @@
+---
+features:
+  - |
+    Sahara's APIv2 is now exposed by default (although its state is
+    still experimental). It has feature parity with Sahara's APIv1.1,
+    but APIv2 brings better REST semantics, tweaks to some response
+    payloads, and some other improvements. APIv2 will remain labeled
+    experimental until it is stabilized following the addition of new
+    features to it in the coming cycle(s).
