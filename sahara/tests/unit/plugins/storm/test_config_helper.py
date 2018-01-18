@@ -29,22 +29,22 @@ class TestStormConfigHelper(testcase.TestCase):
         zk_hostnames = ["s-zoo"]
         configs_092 = s_config.generate_storm_config(
             master_hostname, zk_hostnames, STORM_092)
-        self.assertTrue('nimbus.host' in configs_092.keys())
-        self.assertFalse('nimbus.seeds' in configs_092.keys())
+        self.assertIn('nimbus.host', configs_092.keys())
+        self.assertNotIn('nimbus.seeds', configs_092.keys())
         tested_versions.append(STORM_092)
         configs_101 = s_config.generate_storm_config(
             master_hostname, zk_hostnames, STORM_101)
-        self.assertFalse('nimbus.host' in configs_101.keys())
-        self.assertTrue('nimbus.seeds' in configs_101.keys())
-        self.assertTrue('client.jartransformer.class' in configs_101.keys())
+        self.assertNotIn('nimbus.host', configs_101.keys())
+        self.assertIn('nimbus.seeds', configs_101.keys())
+        self.assertIn('client.jartransformer.class', configs_101.keys())
         self.assertEqual(configs_101['client.jartransformer.class'],
                          'org.apache.storm.hack.StormShadeTransformer')
         tested_versions.append(STORM_101)
         configs_110 = s_config.generate_storm_config(
             master_hostname, zk_hostnames, STORM_110)
-        self.assertFalse('nimbus.host' in configs_110.keys())
-        self.assertTrue('nimbus.seeds' in configs_110.keys())
-        self.assertTrue('client.jartransformer.class' in configs_110.keys())
+        self.assertNotIn('nimbus.host', configs_110.keys())
+        self.assertIn('nimbus.seeds', configs_110.keys())
+        self.assertIn('client.jartransformer.class', configs_110.keys())
         self.assertEqual(configs_110['client.jartransformer.class'],
                          'org.apache.storm.hack.StormShadeTransformer')
         tested_versions.append(STORM_110)
