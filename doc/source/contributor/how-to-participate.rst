@@ -22,7 +22,7 @@ Getting started
   * Sign `OpenStack Individual Contributor License Agreement <https://review.openstack.org/#/settings/agreements>`_
   * Make sure that your email is listed in `identities <https://review.openstack.org/#/settings/web-identities>`_
 
-* Subscribe to code-reviews. Go to your settings on http://review.openstack.org
+* Subscribe to code-reviews. Go to your settings on https://review.openstack.org
 
   * Go to ``watched projects``
   * Add ``openstack/sahara``, ``openstack/sahara-extra``,
@@ -53,9 +53,9 @@ How to post your first patch for review
 
 * Checkout Sahara code from `its repository <https://git.openstack.org/cgit/openstack/sahara>`_
 
-* Carefully read http://docs.openstack.org/infra/manual/developers.html#development-workflow
+* Carefully read https://docs.openstack.org/infra/manual/developers.html#development-workflow
 
-  * Pay special attention to http://docs.openstack.org/infra/manual/developers.html#committing-a-change
+  * Pay special attention to https://docs.openstack.org/infra/manual/developers.html#committing-a-change
 
 * Apply and commit your changes
 
