@@ -120,7 +120,7 @@ class TestInternalSwift(base.SaharaTestCase):
         job_binary.extra = dict(user='test', password='secret')
         i_s.get_raw_data_with_context(job_binary)
         self.assertEqual([mock.call(
-            auth_version='2.0',
+            auth_version='3',
             cacert=None, insecure=False,
             max_backoff=10,
             preauthtoken='testtoken',

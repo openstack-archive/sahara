@@ -29,14 +29,10 @@ SWIFT_URL_SUFFIX = SWIFT_URL_SUFFIX_START + 'sahara'
 
 
 def retrieve_auth_url(endpoint_type="publicURL"):
-    """This function returns auth url v2.0 api.
+    """This function returns auth url v3 api.
 
-    Hadoop Swift library doesn't support keystone v3 api.
     """
-    if CONF.use_domain_for_proxy_users:
-        version_suffix = 'v3/auth'
-    else:
-        version_suffix = 'v2.0'
+    version_suffix = 'v3'
 
     # return auth url with trailing slash
     return clients_base.retrieve_auth_url(
