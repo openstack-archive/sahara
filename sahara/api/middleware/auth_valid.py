@@ -16,6 +16,7 @@
 from oslo_log import log as logging
 from oslo_middleware import base
 from oslo_utils import strutils
+from oslo_utils import uuidutils
 import webob
 import webob.exc as ex
 
@@ -48,55 +49,16 @@ class AuthValidator(base.Middleware):
         path = req.environ['PATH_INFO']
         if path != '/':
             try:
-                version, url_tenant, rest = strutils.split_path(path, 3, 3,
-                                                                True)
+                version, possibly_url_tenant, rest = (
+                    strutils.split_path(path, 2, 3, True)
+                )
             except ValueError:
                 LOG.warning("Incorrect path: {path}".format(path=path))
                 raise ex.HTTPNotFound(_("Incorrect path"))
 
-            if token_tenant != url_tenant:
-                LOG.debug("Unauthorized: token tenant != requested tenant")
-                raise ex.HTTPUnauthorized(
-                    _('Token tenant != requested tenant'))
-        return self.application
-
-
-class AuthValidatorV2(base.Middleware):
-
-    """Handles token auth results and tenants."""
-
-    @webob.dec.wsgify
-    def __call__(self, req):
-        """Ensures valid path and tenant
-
-        Handle incoming requests by checking tenant info from the
-        headers and url ({tenant_id} url attribute), if using v1 or v1.1
-        APIs. If using the v2 API, this function just makes sure that
-        keystonemiddleware has populated the WSGI environment.
-
-        Pass request downstream on success.
-        Reject request if tenant_id from headers is not equal to the
-        tenant_id from url in the case of v1.
-        """
-        path = req.environ['PATH_INFO']
-        if path != '/':
-            token_tenant = req.environ.get("HTTP_X_TENANT_ID")
-            if not token_tenant:
-                LOG.warning("Can't get tenant_id from env")
-                raise ex.HTTPServiceUnavailable()
-
-            try:
-                if path.startswith('/v2'):
-                    version, rest = strutils.split_path(path, 2, 2, True)
-                else:
-                    version, requested_tenant, rest = strutils.split_path(
-                        path, 3, 3, True)
-            except ValueError:
-                LOG.warning("Incorrect path: {path}".format(path=path))
-                raise ex.HTTPNotFound(_("Incorrect path"))
-
-            if path.startswith('/v1'):
-                if token_tenant != requested_tenant:
+            if uuidutils.is_uuid_like(possibly_url_tenant):
+                url_tenant = possibly_url_tenant
+                if token_tenant != url_tenant:
                     LOG.debug("Unauthorized: token tenant != requested tenant")
                     raise ex.HTTPUnauthorized(
                         _('Token tenant != requested tenant'))
