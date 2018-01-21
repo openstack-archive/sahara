@@ -1,0 +1,14 @@
+#!/bin/bash
+
+echo "Installing OpenJDK"
+
+if [ $test_only -eq 0 ]; then
+    yum install -y java-1.8.0-openjdk-devel
+
+    JRE_HOME="/usr/lib/jvm/java-openjdk/jre"
+    JDK_HOME="/usr/lib/jvm/java-openjdk"
+
+    echo "OpenJDK has been installed"
+else
+    exit 0
+fi

@@ -22,6 +22,7 @@ import sahara.plugins.mapr.base.base_cluster_validator as bv
 import sahara.plugins.mapr.base.base_edp_engine as edp
 import sahara.plugins.mapr.base.base_health_checker as health
 import sahara.plugins.mapr.base.base_node_manager as bs
+from sahara.plugins.mapr import images
 import sahara.plugins.mapr.util.general as util
 import sahara.plugins.provisioning as p
 import sahara.plugins.utils as u
@@ -38,6 +39,7 @@ class BaseVersionHandler(vh.AbstractVersionHandler):
         self._services = []
         self._node_processes = {}
         self._configs = []
+        self.images = images
 
     def get_edp_engine(self, cluster, job_type):
         if job_type in edp.MapROozieJobEngine.get_supported_job_types():
@@ -177,3 +179,20 @@ class BaseVersionHandler(vh.AbstractVersionHandler):
     def get_cluster_checks(self, cluster):
         cluster_context = self.get_context(cluster)
         return self._health_checker.get_checks(cluster_context)
+
+    def get_image_arguments(self):
+        if hasattr(self, 'images'):
+            return self.images.get_image_arguments()
+        else:
+            return NotImplemented
+
+    def pack_image(self, hadoop_version, remote, test_only=False,
+                   image_arguments=None):
+        if hasattr(self, 'images'):
+            self.images.pack_image(
+                remote, test_only=test_only, image_arguments=image_arguments)
+
+    def validate_images(self, cluster, test_only=False, image_arguments=None):
+        if hasattr(self, 'images'):
+            self.images.validate_images(
+                cluster, test_only=test_only, image_arguments=image_arguments)

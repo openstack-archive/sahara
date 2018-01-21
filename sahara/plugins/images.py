@@ -202,6 +202,7 @@ class SaharaImageValidatorBase(ImageValidator):
         default_validator_map = {
             'package': SaharaPackageValidator,
             'script': SaharaScriptValidator,
+            'copy_script': SaharaCopyScriptValidator,
             'any': SaharaAnyValidator,
             'all': SaharaAllValidator,
             'os_case': SaharaOSCaseValidator,
@@ -687,6 +688,117 @@ class SaharaScriptValidator(SaharaImageValidatorBase):
         code, stdout = _sudo(remote, path)
         if self.output_var:
             image_arguments[self.output_var] = stdout
+
+
+class SaharaCopyScriptValidator(SaharaImageValidatorBase):
+    """A validator that copy a script to the instance."""
+
+    SPEC_SCHEMA = {
+        "title": "SaharaCopyScriptValidator",
+        "oneOf": [
+            {
+                "type": "object",
+                "minProperties": 1,
+                "maxProperties": 1,
+                "additionalProperties": {
+                    "type": "object",
+                    "properties": {
+                        "output": {
+                            "type": "string",
+                            "minLength": 1
+                        },
+                        "inline": {
+                            "type": "string",
+                            "minLength": 1
+                        }
+                    },
+                }
+            },
+            {
+                "type": "string"
+            }
+        ]
+    }
+
+    @classmethod
+    def from_spec(cls, spec, validator_map, resource_roots):
+        """Builds a copy script validator from a specification.
+
+        :param spec: May be a string or a single-length dictionary of name to
+            configuration values. Configuration values include:
+            env_vars: A list of environment variable names to send to the
+                script.
+            output: A key into which to put the stdout of the script in the
+                image_arguments of the validation run.
+        :param validator_map: A map of validator name to class.
+        :param resource_roots: The roots from which relative paths to
+            resources (scripts and such) will be referenced. Any resource will
+            be pulled from the first path in the list at which a file exists.
+        :return: A validator that will copy a script to the image.
+        """
+        jsonschema.validate(spec, cls.SPEC_SCHEMA)
+
+        script_contents = None
+        if isinstance(spec, six.string_types):
+            script_path = spec
+            output_var = None
+        else:
+            script_path, properties = list(six.iteritems(spec))[0]
+            output_var = properties.get('output', None)
+            script_contents = properties.get('inline')
+
+        if not script_contents:
+            for root in resource_roots:
+                file_path = path.join(root, script_path)
+                script_contents = files.try_get_file_text(file_path)
+                if script_contents:
+                    break
+        script_name = script_path.split('/')[2]
+
+        if not script_contents:
+            raise p_ex.ImageValidationSpecificationError(
+                _("Script %s not found in any resource roots.") % script_path)
+
+        return SaharaCopyScriptValidator(script_contents, script_name,
+                                         output_var)
+
+    def __init__(self, script_contents, script_name, output_var=None):
+        """Constructor method.
+
+        :param script_contents: A string representation of the script.
+        :param output_var: A key into which to put the stdout of the script in
+            the image_arguments of the validation run.
+        :return: A SaharaScriptValidator.
+        """
+        self.script_contents = script_contents
+        self.script_name = script_name
+        self.output_var = output_var
+
+    @transform_exception(ex.RemoteCommandException, p_ex.ImageValidationError)
+    def validate(self, remote, test_only=False,
+                 image_arguments=None, **kwargs):
+        """Attempts to validate by running a script on the image.
+
+        :param remote: A remote socket to the instance.
+        :param test_only: If true, all validators will only verify that a
+            desired state is present, and fail if it is not. If false, all
+            validators will attempt to enforce the desired state if possible,
+            and succeed if this enforcement succeeds.
+        :param image_arguments: A dictionary of image argument values keyed by
+            argument name.
+            Note that the key SIV_TEST_ONLY will be set to 1 if the script
+            should test_only and 0 otherwise; all scripts should act on this
+            input if possible. The key SIV_DISTRO will also contain the
+            distro representation, per `lsb_release -is`.
+        :raises ImageValidationError: If validation fails.
+        """
+
+        arguments = copy.deepcopy(image_arguments)
+        arguments[self.TEST_ONLY_KEY] = 1 if test_only else 0
+        script = "\n".join(["%(script)s"])
+        script = script % {"script": self.script_contents}
+        path = '/tmp/%s' % self.script_name
+        remote.write_file_to(path, script, run_as_root=True)
 
 
 @six.add_metaclass(abc.ABCMeta)

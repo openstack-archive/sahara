@@ -1,0 +1,4 @@
+---
+features:
+  - Adding ability to create and validate MapR 5.2.0 images using the new image
+    gen tool.

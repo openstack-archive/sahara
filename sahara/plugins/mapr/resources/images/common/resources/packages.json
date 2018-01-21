@@ -1,0 +1,140 @@
+{
+  "asynchbase": {
+    "all": [
+      "mapr-asynchbase"
+    ]
+  },
+  "drill": {
+    "all": [
+      "mapr-drill"
+    ]
+  },
+  "flume": {
+    "all": [
+      "mapr-flume"
+    ]
+  },
+  "hbase": {
+    "all": [
+      "mapr-hbase",
+      "mapr-hbase-internal",
+      "mapr-hbase-master",
+      "mapr-hbase-regionserver",
+      "mapr-hbasethrift",
+      "mapr-hbase-rest"
+    ],
+    "0.98.12": [
+      "mapr-hbase",
+      "mapr-hbase-internal",
+      "mapr-hbase-master",
+      "mapr-hbase-regionserver",
+      "mapr-hbasethrift",
+      "mapr-libhbase",
+      "mapr-hbase-rest"
+    ],
+    "1.1.1": [
+      "mapr-hbase",
+      "mapr-hbase-internal",
+      "mapr-hbase-master",
+      "mapr-hbase-regionserver",
+      "mapr-hbasethrift",
+      "mapr-libhbase",
+      "mapr-hbase-rest"
+    ]
+  },
+  "hive": {
+    "all": [
+      "mapr-hive",
+      "mapr-hivemetastore",
+      "mapr-hiveserver2"
+    ]
+  },
+  "httpfs": {
+    "all": [
+      "mapr-httpfs"
+    ]
+  },
+  "hue": {
+    "all": [
+      "mapr-hue",
+      "mapr-hue-base",
+      "mapr-hue-livy"
+    ],
+    "3.10.0": [
+      "mapr-hue",
+      "mapr-hue-livy"
+    ]
+  },
+  "impala": {
+    "all": [
+      "mapr-impala",
+      "mapr-impala-catalog",
+      "mapr-impala-server",
+      "mapr-impala-statestore",
+      "mapr-impala-udf"
+    ]
+  },
+  "mahout": {
+    "all": [
+      "mapr-mahout"
+    ]
+  },
+  "oozie": {
+    "all": [
+      "mapr-oozie",
+      "mapr-oozie-internal"
+    ]
+  },
+  "pig": {
+    "all": [
+      "mapr-pig"
+    ]
+  },
+  "sentry": {
+    "all": [
+      "mapr-sentry"
+    ]
+  },
+  "spark": {
+    "all": [
+      "mapr-spark",
+      "mapr-spark-historyserver",
+      "mapr-spark-master"
+    ]
+  },
+  "sqoop": {
+    "all": [
+      "mapr-sqoop2-client",
+      "mapr-sqoop2-server"
+    ]
+  },
+  "storm": {
+    "all": [
+      "mapr-storm",
+      "mapr-storm-ui",
+      "mapr-storm-nimbus",
+      "mapr-storm-supervisor"
+    ]
+  },
+  "tez": {
+    "all": [
+      "mapr-tez"
+    ]
+  },
+  "kafka": {
+    "all": [
+      "mapr-kafka"
+    ]
+  },
+  "kafka-connect": {
+    "all": [
+      "mapr-kafka-connect-hdfs",
+      "mapr-kafka-connect-jdbc"
+    ]
+  },
+  "kafka-rest": {
+    "all": [
+      "mapr-kafka-rest"
+    ]
+  }
+}

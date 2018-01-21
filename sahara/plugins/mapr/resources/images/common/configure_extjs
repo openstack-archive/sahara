@@ -1,0 +1,23 @@
+#!/bin/bash
+
+EXTJS_DESTINATION_DIR="/opt/mapr-repository"
+EXTJS_DOWNLOAD_URL="http://tarballs.openstack.org/sahara/dist/common-artifacts/ext-2.2.zip"
+EXTJS_NO_UNPACK=1
+
+extjs_archive=/tmp/$(basename $EXTJS_DOWNLOAD_URL)
+
+if [ ! -f "${EXTJS_DESTINATION_DIR}/${extjs_archive}" ]; then
+    if [ $test_only -eq 0 ]; then
+        wget -O $extjs_archive $EXTJS_DOWNLOAD_URL
+
+        mkdir -p $EXTJS_DESTINATION_DIR
+        if [ -z "${EXTJS_NO_UNPACK:-}" ]; then
+            unzip -d "$EXTJS_DESTINATION_DIR" $extjs_archive
+            rm -f $extjs_archive
+        else
+            mv $extjs_archive $EXTJS_DESTINATION_DIR
+        fi
+    else
+        exit 0
+    fi
+fi

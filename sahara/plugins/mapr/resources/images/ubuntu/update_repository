@@ -1,0 +1,5 @@
+#!/bin/bash
+
+if [ $test_only -eq 0 ]; then
+    apt-get update
+fi
