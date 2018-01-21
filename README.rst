@@ -22,7 +22,7 @@ Quickstart guide: https://docs.openstack.org/sahara/latest/user/quickstart.html
 
 How to participate: https://docs.openstack.org/sahara/latest/contributor/how-to-participate.html
 
-Source: http://git.openstack.org/cgit/openstack/sahara
+Source: https://git.openstack.org/cgit/openstack/sahara
 
 Bugs and feature requests: https://bugs.launchpad.net/sahara
 
