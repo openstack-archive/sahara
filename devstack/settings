@@ -39,8 +39,5 @@ memcached://127.0.0.1:11211}
 #Toggle for deploying Sahara API with Apache + mod_wsgi
 SAHARA_USE_MOD_WSGI=${SAHARA_USE_MOD_WSGI:-False}
 
-# Tell Tempest this project is present
-TEMPEST_SERVICES+=,sahara
-
 enable_service sahara-api sahara-eng
 enable_service heat h-eng h-api h-api-cfn h-api-cw
