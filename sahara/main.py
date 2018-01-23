@@ -35,6 +35,7 @@ from sahara.service.edp.job_binaries import manager as jb_manager
 from sahara.service import ops as service_ops
 from sahara.service import periodic
 from sahara.utils.openstack import cinder
+from sahara.utils.openstack import keystone
 from sahara.utils import remote
 from sahara.utils import rpc as messaging
 
@@ -80,6 +81,7 @@ def setup_common(possible_topdir, service_name):
 
     # Validate other configurations (that may produce logs) here
     cinder.validate_config()
+    keystone.validate_config()
     validate_castellan_config()
 
     messaging.setup(service_name)

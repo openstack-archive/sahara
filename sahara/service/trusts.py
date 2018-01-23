@@ -87,7 +87,7 @@ def create_trust_for_cluster(cluster, expires=True):
     if CONF.use_identity_api_v3 and not cluster.trust_id:
         trustor = keystone.auth()
         trustee = keystone.auth_for_admin(
-            project_name=keystone.get_keystoneauth_cfg(CONF, 'project_name'))
+            project_name=CONF.trustee.project_name)
 
         trust_id = create_trust(trustor=trustor,
                                 trustee=trustee,
@@ -153,7 +153,7 @@ def use_os_admin_auth_token(cluster):
     ctx = context.current()
     cluster = conductor.cluster_get(ctx, cluster)
     if CONF.use_identity_api_v3 and cluster.trust_id:
-        ctx.username = keystone.get_keystoneauth_cfg(CONF, 'username')
+        ctx.username = CONF.trustee.username
         ctx.tenant_id = cluster.tenant_id
         ctx.auth_plugin = keystone.auth_for_admin(
             trust_id=cluster.trust_id)

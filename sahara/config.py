@@ -195,6 +195,8 @@ def list_opts():
          itertools.chain(swift.opts)),
         (keystone.keystone_group.name,
          itertools.chain(keystone.ssl_opts)),
+        (keystone.trustee_group.name,
+         itertools.chain(keystone.trustee_opts)),
         (base.retries.name,
          itertools.chain(base.opts)),
         (swift_helper.public_endpoint_cert_group.name,

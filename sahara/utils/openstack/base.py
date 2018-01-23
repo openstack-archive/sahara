@@ -80,7 +80,7 @@ def retrieve_auth_url(endpoint_type="internalURL", version=None):
     if ctx.service_catalog:
         auth_url = url_for(ctx.service_catalog, 'identity', endpoint_type)
     else:
-        auth_url = CONF.keystone_authtoken.auth_uri
+        auth_url = CONF.trustee.auth_url
     return prepare_auth_url(auth_url, version)
 
 
