@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env {{PYTHON_VERSION}}
 
 # Copyright (c) 2014 OpenStack Foundation
 #

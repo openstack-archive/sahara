@@ -358,7 +358,7 @@ def _read_file_from(remote_file, run_as_root=False):
                 'rm %s' % fl, run_as_root=True, raise_when_error=False)
 
 
-def __get_python_to_execute():
+def _get_python_to_execute():
     try:
         _execute_command('python3 --version')
     except Exception:
@@ -368,7 +368,7 @@ def __get_python_to_execute():
 
 
 def _get_os_distrib():
-    python_version = __get_python_to_execute()
+    python_version = _get_python_to_execute()
     return _execute_command(
         ('printf "import platform\nprint(platform.linux_distribution('
          'full_distribution_name=0)[0])" | {}'.format(python_version)),
@@ -376,7 +376,7 @@ def _get_os_distrib():
 
 
 def _get_os_version():
-    python_version = __get_python_to_execute()
+    python_version = _get_python_to_execute()
     return _execute_command(
         ('printf "import platform\nprint(platform.linux_distribution()[1])"'
          ' | {}'.format(python_version)), run_as_root=False)[1].strip()
@@ -877,6 +877,10 @@ class InstanceInteropHelper(remote.Remote):
         self._log_command(description)
         return self._run_s(_read_file_from, timeout, description,
                            remote_file, run_as_root)
+
+    def get_python_version(self, timeout=None):
+        return self._run_s(
+            _get_python_to_execute, timeout, "get_python_version")
 
     def get_os_distrib(self, timeout=None):
         return self._run_s(_get_os_distrib, timeout, "get_os_distrib")
