@@ -56,16 +56,19 @@ def build_app(version_response=None):
     app.register_blueprint(api_v10.rest, url_prefix='/v1.1')
     app.register_blueprint(api_v11.rest, url_prefix='/v1.1')
 
-    def make_json_error(ex):
-        status_code = (ex.code
-                       if isinstance(ex, werkzeug_exceptions.HTTPException)
-                       else 500)
-        description = (ex.description
-                       if isinstance(ex, werkzeug_exceptions.HTTPException)
-                       else str(ex))
-        return api_utils.render({'error': status_code,
-                                 'error_message': description},
-                                status=status_code)
+    class _JSONErrorHandler(dict):
+        def __getitem__(self, ex):
+            status_code = (ex.code
+                           if isinstance(ex, werkzeug_exceptions.HTTPException)
+                           else 500)
+            description = (ex.description
+                           if isinstance(ex, werkzeug_exceptions.HTTPException)
+                           else str(ex))
+            return api_utils.render({'error': status_code,
+                                     'error_message': description},
+                                    status=status_code)
+
+    make_json_error = _JSONErrorHandler()
 
     for code in six.iterkeys(werkzeug_exceptions.default_exceptions):
         app.error_handler_spec[None][code] = make_json_error
