@@ -36,6 +36,7 @@ class TestSparkShellEngine(base.SaharaTestCase):
     def _create_master_instance(self, return_code=0):
         master = mock.Mock()
         master.execute_command.return_value = (return_code, self.spark_pid)
+        master.get_python_version.return_value = 'python'
         master.hostname.return_value = self.master_host
         master.id = self.master_instance_id
         return master

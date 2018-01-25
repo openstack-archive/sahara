@@ -107,9 +107,10 @@ class StormJobEngine(base_engine.JobEngine):
                     return {"status": edp.JOB_STATUS_KILLED}
                 context.sleep(10)
 
-    def _job_script(self):
+    def _job_script(self, python_version):
         path = "service/edp/resources/launch_command.py"
-        return files.get_file_text(path)
+        return files.get_file_text(path).replace(
+            '{{PYTHON_VERSION}}', python_version)
 
     def _prepare_job_binaries(self, job_binaries, r):
         for jb in job_binaries:
@@ -182,7 +183,8 @@ class StormJobEngine(base_engine.JobEngine):
         with remote.get_remote(master) as r:
             # Upload the command launch script
             launch = os.path.join(wf_dir, "launch_command")
-            r.write_file_to(launch, self._job_script())
+            python_version = r.get_python_version()
+            r.write_file_to(launch, self._job_script(python_version))
             r.execute_command("chmod +x %s" % launch)
             ret, stdout = r.execute_command(
                 "cd %s; ./launch_command %s > /dev/null 2>&1 & echo $!"
