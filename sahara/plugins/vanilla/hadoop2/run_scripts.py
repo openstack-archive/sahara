@@ -192,6 +192,8 @@ def _oozie_share_lib(remote):
         'hadoop fs -mkdir /user && '
         'hadoop fs -mkdir /user/hadoop && '
         'hadoop fs -put /tmp/oozielib/share /user/hadoop/ && '
+        'hadoop fs -put /opt/oozie/libtools/commons-httpclient-3.1.jar '
+        '/user/hadoop/share/lib/oozie/ &&'
         'rm -rf /tmp/oozielib" hadoop')
 
     LOG.debug("Creating sqlfile for Oozie")
@@ -278,8 +280,10 @@ def start_hiveserver_process(pctx, instance):
                 if not oozie or instance.hostname() != oozie.hostname():
                     _start_mysql(r)
 
+                version = instance.cluster.hadoop_version
                 sql_script = files.get_file_text(
-                    'plugins/vanilla/hadoop2/resources/create_hive_db.sql'
+                    'plugins/vanilla/v{}/resources/create_hive_db.sql'.format(
+                        version.replace('.', '_'))
                 )
 
                 sql_script = sql_script.replace(
