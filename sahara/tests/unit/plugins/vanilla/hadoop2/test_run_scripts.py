@@ -189,6 +189,8 @@ class RunScriptsTest(base.SaharaTestCase):
                 'hadoop fs -mkdir /user && ' \
                 'hadoop fs -mkdir /user/hadoop && ' \
                 'hadoop fs -put /tmp/oozielib/share /user/hadoop/ && ' \
+                'hadoop fs -put /opt/oozie/libtools/commons-httpclient-3.1.jar ' \
+                '/user/hadoop/share/lib/oozie/ &&' \
                 'rm -rf /tmp/oozielib" hadoop'
         cmd_2 = 'sudo su - -c "/opt/oozie/bin/ooziedb.sh ' \
                 'create -sqlfile oozie.sql ' \
@@ -291,10 +293,11 @@ class RunScriptsTest(base.SaharaTestCase):
         path = edp.get_hive_shared_conf_path('hadoop')
         is_mysql_enabled.return_value = True
         cluster = self.instance.cluster
+        self.instance.cluster.hadoop_version = '2.7.1'
         ng_cluster = self.instance.node_group.cluster
         get_oozie.return_value = None
         sql_script = files.get_file_text(
-            'plugins/vanilla/hadoop2/resources/create_hive_db.sql')
+            'plugins/vanilla/v2_7_1/resources/create_hive_db.sql')
         get_hive_password.return_value = '123'
         pwd_script = sql_script.replace('{{password}}', '123')
         rs.start_hiveserver_process(pctx, self.instance)
