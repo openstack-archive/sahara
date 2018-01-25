@@ -1,0 +1,3 @@
+---
+other:
+  - The presence of project ID in Sahara APIv1 paths is now optional.

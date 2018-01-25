@@ -76,7 +76,7 @@ class Rest(flask.Blueprint):
                 if status:
                     flask.request.status_code = status
 
-                kwargs.pop("tenant_id")
+                kwargs.pop("tenant_id", None)
                 req_id = flask.request.environ.get(oslo_req_id.ENV_REQUEST_ID)
                 auth_plugin = flask.request.environ.get('keystone.token_auth')
                 ctx = context.Context(
@@ -103,6 +103,8 @@ class Rest(flask.Blueprint):
                     return internal_error(500, 'Internal Server Error', e)
 
             f_rule = "/<tenant_id>" + rule
+            self.add_url_rule(rule, endpoint, handler, **options)
+            self.add_url_rule(rule + '.json', endpoint, handler, **options)
             self.add_url_rule(f_rule, endpoint, handler, **options)
             self.add_url_rule(f_rule + '.json', endpoint, handler, **options)
 
@@ -131,6 +133,7 @@ class RestV2(Rest):
                 if status:
                     flask.request.status_code = status
 
+                kwargs.pop("tenant_id", None)
                 req_id = flask.request.environ.get(oslo_req_id.ENV_REQUEST_ID)
                 auth_plugin = flask.request.environ.get('keystone.token_auth')
                 ctx = context.Context(
@@ -156,8 +159,11 @@ class RestV2(Rest):
                 except Exception as e:
                     return internal_error(500, 'Internal Server Error', e)
 
+            f_rule = "/<tenant_id>" + rule
             self.add_url_rule(rule, endpoint, handler, **options)
             self.add_url_rule(rule + '.json', endpoint, handler, **options)
+            self.add_url_rule(f_rule, endpoint, handler, **options)
+            self.add_url_rule(f_rule + '.json', endpoint, handler, **options)
 
             return func
 
