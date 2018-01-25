@@ -144,6 +144,13 @@ Deleting an existing Cluster
 The only step, that releases all Cluster's resources and removes it from the
 database.
 
+2. Force Deleting
+~~~~~~~~~~~~~~~~~
+
+In extreme cases the regular "Deleting" step may hang. Sahara APIv2 introduces
+the ability to force delete a Cluster. This prevents deleting from hanging but
+comes with the risk of orphaned resources.
+
 Error State
 -----------
 

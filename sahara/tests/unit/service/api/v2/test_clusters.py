@@ -74,7 +74,7 @@ class FakeOps(object):
             conductor.node_group_update(context.ctx(), ng, {'count': count})
         conductor.cluster_update(context.ctx(), id, {'status': 'Scaled'})
 
-    def terminate_cluster(self, id):
+    def terminate_cluster(self, id, force):
         self.calls_order.append('ops.terminate_cluster')
 
     def _get_instance(self, cluster, instances_to_delete):

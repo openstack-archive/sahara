@@ -1,0 +1,4 @@
+---
+features:
+  - The ability to force delete clusters is exposed in Sahara APIv2. The Heat
+    service must support Stack Abandon for force delete to function properly.

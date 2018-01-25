@@ -20,7 +20,6 @@ import mock
 from sahara.service import engine
 from sahara.service.heat import heat_engine
 from sahara.tests.unit import base
-from sahara.utils import general as g
 
 
 class EngineTest(engine.Engine):
@@ -97,84 +96,11 @@ class TestDeletion(base.SaharaTestCase):
         super(TestDeletion, self).setUp()
         self.engine = EngineTest()
 
-    @mock.patch('sahara.utils.openstack.nova.client')
-    def test_delete_auto_security_group(self, nova_client):
-        ng = mock.Mock(id="16fd2706-8baf-433b-82eb-8c7fada847da",
-                       auto_security_group=True)
-        ng.name = "ngname"
-        ng.cluster.name = "cluster"
-        auto_name = g.generate_auto_security_group_name(ng)
-        ng.security_groups = [auto_name]
-
-        client = mock.Mock()
-        nova_client.return_value = client
-
-        client.security_groups.get.side_effect = lambda x: SecurityGroup(x)
-
-        self.engine._delete_auto_security_group(ng)
-
-        client.security_groups.delete.assert_called_once_with(auto_name)
-
-    @mock.patch('sahara.utils.openstack.nova.client')
-    def test_delete_auto_security_group_other_groups(self, nova_client):
-        ng = mock.Mock(id="16fd2706-8baf-433b-82eb-8c7fada847da",
-                       auto_security_group=True)
-        ng.name = "ngname"
-        ng.cluster.name = "cluster"
-        auto_name = g.generate_auto_security_group_name(ng)
-        ng.security_groups = ['1', '2', auto_name]
-
-        client = mock.Mock()
-        nova_client.return_value = client
-
-        client.security_groups.get.side_effect = lambda x: SecurityGroup(x)
-
-        self.engine._delete_auto_security_group(ng)
-
-        client.security_groups.delete.assert_called_once_with(auto_name)
-
-    @mock.patch('sahara.utils.openstack.nova.client')
-    def test_delete_auto_security_group_no_groups(self, nova_client):
-        ng = mock.Mock(id="16fd2706-8baf-433b-82eb-8c7fada847da",
-                       auto_security_group=True)
-        ng.name = "ngname"
-        ng.cluster.name = "cluster"
-        ng.security_groups = []
-
-        client = mock.Mock()
-        nova_client.return_value = client
-
-        client.security_groups.get.side_effect = lambda x: SecurityGroup(x)
-
-        self.engine._delete_auto_security_group(ng)
-
-        self.assertEqual(0, client.security_groups.delete.call_count)
-
-    @mock.patch('sahara.utils.openstack.nova.client')
-    def test_delete_auto_security_group_wrong_group(self, nova_client):
-        ng = mock.Mock(id="16fd2706-8baf-433b-82eb-8c7fada847da",
-                       auto_security_group=True)
-        ng.name = "ngname"
-        ng.cluster.name = "cluster"
-        ng.security_groups = ['1', '2']
-
-        client = mock.Mock()
-        nova_client.return_value = client
-
-        client.security_groups.get.side_effect = lambda x: SecurityGroup(x)
-
-        self.engine._delete_auto_security_group(ng)
-
-        self.assertEqual(0, client.security_groups.delete.call_count)
-
-    @mock.patch('sahara.service.engine.Engine._delete_aa_server_groups')
-    @mock.patch('sahara.service.engine.Engine._shutdown_instances')
     @mock.patch('sahara.service.engine.Engine._remove_db_objects')
     @mock.patch('sahara.service.engine.Engine._clean_job_executions')
     @mock.patch('sahara.utils.openstack.heat.client')
     @mock.patch('sahara.service.heat.heat_engine.LOG.warning')
-    def test_calls_order(self, logger, heat_client, _job_ex, _db_ob,
-                         _shutdown, _delete_aa):
+    def test_calls_order(self, logger, heat_client, _job_ex, _db_ob):
         class FakeHeatEngine(heat_engine.HeatEngine):
             def __init__(self):
                 super(FakeHeatEngine, self).__init__()
@@ -188,26 +114,55 @@ class TestDeletion(base.SaharaTestCase):
                 self.order.append('remove_db_objects')
                 super(FakeHeatEngine, self)._remove_db_objects(cluster)
 
-            def _shutdown_instances(self, cluster):
-                self.order.append('shutdown_instances')
-                super(FakeHeatEngine, self)._shutdown_instances(cluster)
-
-            def _delete_aa_server_groups(self, cluster):
-                self.order.append('delete_aa_server_groups')
-                super(FakeHeatEngine, self)._delete_aa_server_groups(cluster)
-
         fake_cluster = mock.Mock()
         heat_client.side_effect = heat_exc.HTTPNotFound()
         engine = FakeHeatEngine()
         engine.shutdown_cluster(fake_cluster)
-        self.assertEqual(['shutdown_instances', 'delete_aa_server_groups',
-                          'clean_job_executions', 'remove_db_objects'],
+        self.assertEqual(['clean_job_executions', 'remove_db_objects'],
                          engine.order)
         self.assertEqual(
-            [mock.call('Did not find stack for cluster. Trying to '
-                       'delete cluster manually.')], logger.call_args_list)
+            [mock.call('Did not find stack for cluster.')],
+            logger.call_args_list
+        )
 
+    @mock.patch('sahara.service.heat.heat_engine.LOG.error')
+    @mock.patch('sahara.utils.openstack.heat.delete_stack')
+    @mock.patch('sahara.utils.openstack.heat.abandon_stack')
+    @mock.patch('sahara.service.engine.Engine._remove_db_objects')
+    @mock.patch('sahara.service.engine.Engine._clean_job_executions')
+    def test_force_delete_calls(self, cj, rdb, abandon, delete, log_err):
+        engine = heat_engine.HeatEngine()
 
-class SecurityGroup(object):
-    def __init__(self, name):
-        self.name = name
+        # Force delete when Heat service support abandon
+        engine.shutdown_cluster(mock.Mock(), force=True)
+        self.assertEqual(delete.call_count, 0)
+        self.assertEqual(abandon.call_count, 1)
+        self.assertEqual(cj.call_count, 1)
+        self.assertEqual(rdb.call_count, 1)
+
+        delete.reset_mock()
+        abandon.reset_mock()
+        rdb.reset_mock()
+        cj.reset_mock()
+
+        # Regular delete
+        engine.shutdown_cluster(mock.Mock(), force=False)
+        self.assertEqual(delete.call_count, 1)
+        self.assertEqual(abandon.call_count, 0)
+        self.assertEqual(cj.call_count, 1)
+        self.assertEqual(rdb.call_count, 1)
+
+        delete.reset_mock()
+        abandon.reset_mock()
+        rdb.reset_mock()
+        cj.reset_mock()
+
+        # Force delete when stack abandon unavailable
+        abandon.side_effect = heat_exc.BadRequest()
+        engine.shutdown_cluster(mock.Mock(), force=True)
+        self.assertEqual(delete.call_count, 0)
+        self.assertEqual(abandon.call_count, 1)
+        self.assertEqual(cj.call_count, 1)
+        self.assertEqual(rdb.call_count, 1)
+        log_err.assert_called_once_with(
+            "Can't force delete cluster.", exc_info=True)

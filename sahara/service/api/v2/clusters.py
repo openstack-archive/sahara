@@ -149,14 +149,14 @@ def _add_ports_for_auto_sg(ctx, cluster, plugin):
             conductor.node_group_update(ctx, ng, ports)
 
 
-def terminate_cluster(id):
+def terminate_cluster(id, force=False):
     context.set_current_cluster_id(id)
     cluster = c_u.change_cluster_status(id, c_u.CLUSTER_STATUS_DELETING)
 
     if cluster is None:
         return
 
-    api.OPS.terminate_cluster(id)
+    api.OPS.terminate_cluster(id, force)
     sender.status_notify(cluster.id, cluster.name, cluster.status,
                          "delete")
 
