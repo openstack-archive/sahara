@@ -59,8 +59,9 @@ def cluster_templates_get(cluster_template_id):
 @v.validate(ct_schema.CLUSTER_TEMPLATE_UPDATE_SCHEMA_V2,
             v_ct.check_cluster_template_update)
 def cluster_templates_update(cluster_template_id, data):
-    data['hadoop_version'] = data['plugin_version']
-    del data['plugin_version']
+    if data.get('plugin_version', None):
+        data['hadoop_version'] = data['plugin_version']
+        del data['plugin_version']
     return u.to_wrapped_dict(
         api.update_cluster_template, cluster_template_id, data)
 

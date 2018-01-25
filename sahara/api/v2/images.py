@@ -72,7 +72,6 @@ def image_tags_update(image_id, data):
 @rest.delete('/images/<image_id>/tags')
 @acl.enforce("data-processing:images:remove_tags")
 @v.check_exists(api.get_image, id='image_id')
-@v.validate(v_images.image_tags_schema)
 def image_tags_delete(image_id):
     api.remove_image_tags(image_id)
     return u.render()

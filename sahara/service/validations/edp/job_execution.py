@@ -113,10 +113,10 @@ def check_job_execution(data, job_templates_id=None):
 
     jt_err_msg = _("Job template with id '%s' doesn't exist")
     if job_templates_id is None:
-        job = conductor.job_get(ctx, data['job_templates_id'])
+        job = conductor.job_get(ctx, data['job_template_id'])
         if not job:
             raise ex.InvalidReferenceException(
-                jt_err_msg % data['job_templates_id'])
+                jt_err_msg % data['job_template_id'])
     else:
         job = conductor.job_get(ctx, job_templates_id)
         if not job:

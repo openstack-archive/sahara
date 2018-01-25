@@ -61,8 +61,9 @@ def node_group_templates_get(node_group_template_id):
 @v.validate(ngt_schema.NODE_GROUP_TEMPLATE_UPDATE_SCHEMA_V2,
             v_ngt.check_node_group_template_update)
 def node_group_templates_update(node_group_template_id, data):
-    data['hadoop_version'] = data['plugin_version']
-    del data['plugin_version']
+    if data.get('plugin_version', None):
+        data['hadoop_version'] = data['plugin_version']
+        del data['plugin_version']
     return u.to_wrapped_dict(
         api.update_node_group_template, node_group_template_id, data)
 

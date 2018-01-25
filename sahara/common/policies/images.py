@@ -67,6 +67,12 @@ images_policies = [
                      'method': 'POST'},
                     {'path': '/v2/images/{image_id}/tags',
                      'method': 'DELETE'}]),
+    policy.DocumentedRuleDefault(
+        name=base.DATA_PROCESSING_IMAGES % 'get_tags',
+        check_str=base.UNPROTECTED,
+        description='List tags on an image.',
+        operations=[{'path': '/v2/images/{image_id}/tags',
+                     'method': 'GET'}]),
 ]
 
 
