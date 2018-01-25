@@ -54,11 +54,11 @@ JOB_EXEC_SCHEMA = {
 
 JOB_EXEC_SCHEMA_V2 = copy.deepcopy(JOB_EXEC_SCHEMA)
 JOB_EXEC_SCHEMA_V2['properties'].update({
-    "job_templates_id": {
+    "job_template_id": {
         "type": "string",
         "format": "uuid",
     }})
-JOB_EXEC_SCHEMA_V2['required'].append('job_templates_id')
+JOB_EXEC_SCHEMA_V2['required'].append('job_template_id')
 
 
 JOB_EXEC_UPDATE_SCHEMA = {

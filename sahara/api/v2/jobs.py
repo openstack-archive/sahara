@@ -37,13 +37,12 @@ def jobs_list():
     # once APIv1 is deprecated this can be
     # removed
     for je in result:
-        je['engine_job_id'] = je['oozie_job_id']
-        del je['oozie_job_id']
+        je.pop('oozie_job_id', force=True)
     return u.render(res=result, name='jobs')
 
 
 @rest.post('/jobs')
-@acl.enforce("data-processing:job-executions:execute")
+@acl.enforce("data-processing:jobs:execute")
 @v.validate(v_j_e_schema.JOB_EXEC_SCHEMA_V2, v_j_e.check_job_execution)
 def jobs_execute(data):
     return u.render(api.execute_job(data).to_wrapped_dict())
@@ -58,8 +57,10 @@ def jobs_get(job_id):
         data.get('refresh_status', 'false')).lower() == 'true'
     result = u.to_wrapped_dict_no_render(
         api.get_job_execution, job_id, refresh_status)
-    result['engine_job_id'] = result['oozie_job_id']
-    del result['oozie_job_id']
+    result['job_execution']['engine_job_id'] = (
+        result['job_execution']['oozie_job_id']
+    )
+    del result['job_execution']['oozie_job_id']
     return u.render(result)
 
 
@@ -71,8 +72,10 @@ def jobs_get(job_id):
 def jobs_update(job_id, data):
     result = u.to_wrapped_dict_no_render(
         api.update_job_execution, job_id, data)
-    result['engine_job_id'] = result['oozie_job_id']
-    del result['oozie_job_id']
+    result['job_execution']['engine_job_id'] = (
+        result['job_execution']['oozie_job_id']
+    )
+    del result['job_execution']['oozie_job_id']
     return u.render(result)
 
 

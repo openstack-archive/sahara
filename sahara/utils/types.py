@@ -64,7 +64,9 @@ class FrozenDict(dict):
     def clear(self):
         raise ex.FrozenClassError(self)
 
-    def pop(self, k, d=None):
+    def pop(self, k, d=None, force=False):
+        if force:
+            return super(FrozenDict, self).pop(k, d)
         raise ex.FrozenClassError(self)
 
     def popitem(self):
