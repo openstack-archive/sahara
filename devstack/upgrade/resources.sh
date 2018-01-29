@@ -2,10 +2,10 @@
 
 set -o errexit
 
-source $GRENADE_DIR/grenaderc
-source $GRENADE_DIR/functions
+. $GRENADE_DIR/grenaderc
+. $GRENADE_DIR/functions
 
-source $TOP_DIR/openrc admin admin
+. $TOP_DIR/openrc admin admin
 
 set -o xtrace
 

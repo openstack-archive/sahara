@@ -24,10 +24,10 @@ trap cleanup SIGHUP SIGINT SIGTERM
 RUN_DIR=$(cd $(dirname "$0") && pwd)
 
 # Source params
-source $GRENADE_DIR/grenaderc
+. $GRENADE_DIR/grenaderc
 
 # Import common functions
-source $GRENADE_DIR/functions
+. $GRENADE_DIR/functions
 
 # This script exits on an error so that errors don't compound and you see
 # only the first error that occurred.
@@ -37,10 +37,10 @@ set -o errexit
 # ============
 
 # Get functions from current DevStack
-source $TARGET_DEVSTACK_DIR/stackrc
-source $TARGET_DEVSTACK_DIR/lib/tls
-source $(dirname $(dirname $BASH_SOURCE))/plugin.sh
-source $(dirname $(dirname $BASH_SOURCE))/settings
+. $TARGET_DEVSTACK_DIR/stackrc
+. $TARGET_DEVSTACK_DIR/lib/tls
+. $(dirname $(dirname $BASH_SOURCE))/plugin.sh
+. $(dirname $(dirname $BASH_SOURCE))/settings
 
 # Print the commands being run so that we can see the command that triggers
 # an error.  It is also useful for following allowing as the install occurs.

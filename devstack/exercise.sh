@@ -23,13 +23,13 @@ EXERCISE_DIR=$(cd $(dirname "$0") && pwd)
 TOP_DIR=$(cd $EXERCISE_DIR/..; pwd)
 
 # Import common functions
-source $TOP_DIR/functions
+. $TOP_DIR/functions
 
 # Import configuration
-source $TOP_DIR/openrc
+. $TOP_DIR/openrc
 
 # Import exercise configuration
-source $TOP_DIR/exerciserc
+. $TOP_DIR/exerciserc
 
 is_service_enabled sahara || exit 55
 

@@ -4,15 +4,15 @@
 
 set -o errexit
 
-source $GRENADE_DIR/grenaderc
-source $GRENADE_DIR/functions
+. $GRENADE_DIR/grenaderc
+. $GRENADE_DIR/functions
 
 # We need base DevStack functions for this
-source $BASE_DEVSTACK_DIR/functions
-source $BASE_DEVSTACK_DIR/stackrc # needed for status directory
+. $BASE_DEVSTACK_DIR/functions
+. $BASE_DEVSTACK_DIR/stackrc # needed for status directory
 
-source $BASE_DEVSTACK_DIR/lib/tls
-source ${GITDIR[sahara]}/devstack/plugin.sh
+. $BASE_DEVSTACK_DIR/lib/tls
+. ${GITDIR[sahara]}/devstack/plugin.sh
 
 set -o xtrace
 
