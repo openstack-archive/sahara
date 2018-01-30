@@ -9,6 +9,7 @@ management/monitoring tools.
 * :doc:`vanilla-plugin` - deploys Vanilla Apache Hadoop
 * :doc:`ambari-plugin` - deploys Hortonworks Data Platform
 * :doc:`spark-plugin` - deploys Apache Spark with Cloudera HDFS
+* :doc:`storm-plugin` - deploys Apache Storm
 * :doc:`mapr-plugin` - deploys MapR plugin with MapR File System
 * :doc:`cdh-plugin` - deploys Cloudera Hadoop
 
