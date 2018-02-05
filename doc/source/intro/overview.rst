@@ -47,7 +47,7 @@ Details
 
 The sahara product communicates with the following OpenStack services:
 
-* Dashboard (horizon) - provides a GUI with ability to use all of sahara’s
+* Dashboard (horizon) - provides a GUI with ability to use all of sahara's
   features.
 * Identity (keystone) - authenticates users and provides security tokens that
   are used to work with OpenStack, limiting a user's abilities in sahara to

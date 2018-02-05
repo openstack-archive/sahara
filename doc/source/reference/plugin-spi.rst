@@ -195,7 +195,7 @@ Here is a description of all the objects involved in the API.
 
 Notes:
 
-  - clusters and node_groups have ‘extra’ fields allowing the plugin to
+  - clusters and node_groups have 'extra' fields allowing the plugin to
     persist any supplementary info about the cluster.
   - node_process is just a process that runs on some node in cluster.
 

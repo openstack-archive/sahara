@@ -69,7 +69,7 @@ from the bare metal performance with self-service resource provisioning.
 ..
 
 7. Add a special flavor for the bare metal instances with an arch meta
-   parameter to match the virtual architecture of the server’s CPU
+   parameter to match the virtual architecture of the server's CPU
    with the metal one. For example:
 
 .. code-block:: bash
@@ -92,7 +92,7 @@ you must use Neutron to configure it.
 
    * Go to Data Processing > Node Group Templates.
        * Find the templates that belong to the plugin you would like to use
-       * Update those templates to use ‘bare metal’ flavor instead of the
+       * Update those templates to use 'bare metal' flavor instead of the
          default one
 
    * Go to Data Processing > Cluster Templates.
