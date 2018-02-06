@@ -53,10 +53,10 @@ Job Binaries
 
 A :dfn:`Job Binary` object stores a URL to a single script or Jar file and
 any credentials needed to retrieve the file.  The file itself may be stored
-in the sahara internal database (but it is deprecated now), in swift,
+in the sahara internal database (**only API v1.1**), in swift,
 or in manila.
 
-**deprecated:** Files in the sahara database are stored as raw bytes in a
+Files in the sahara database are stored as raw bytes in a
 :dfn:`Job Binary Internal` object. This object's sole purpose is to store a
 file for later retrieval. No extra credentials need to be supplied for files
 stored internally.

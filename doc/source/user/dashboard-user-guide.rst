@@ -174,8 +174,13 @@ for your job.
 
 - For "swift", enter the URL of your binary (<container>/<path>) as well as
   the username and password (also see `Additional Notes`_)
+- For "manila", choose the share and enter the path for the binary in this
+  share. This assumes that you have already stored that file in the
+  appropriate path on the share. The share will be automatically mounted to
+  any cluster nodes which require access to the file, if it is not mounted
+  already.
 - For "Internal database", you can choose from "Create a script" or "Upload
-  a new file"
+  a new file" (**only API v1.1**)
 
 4) Enter an optional description
 
@@ -276,19 +281,32 @@ so that you will have all of the source code and inputs stored locally.
   - Name = pig-output-ds, Type = Swift, URL = samplecontainer/pigoutput,
     Source username/password, "Create"
 
-- Store your Job Binaries in the sahara database
+- Store your Job Binaries in Swift (you can choose another type of storage
+  if you want)
+
+  - Navigate to Project/Object Store/Containers, choose "samplecontainer"
+
+  - Click on Upload Object and find example.pig at
+    <sahara-tests root>/sahara-tests/scenario/defaults/edp-examples/
+    edp-pig/cleanup-string/, name it "example.pig" (or other name).
+    The Swift path will be swift://samplecontainer/example.pig
+
+  - Click on Upload Object and find edp-pig-udf-stringcleaner.jar at
+    <sahara-tests root>/sahara-tests/scenario/defaults/edp-examples/
+    edp-pig/cleanup-string/, name it "edp-pig-udf-stringcleaner.jar"
+    (or other name). The Swift path will be
+    swift://samplecontainer/edp-pig-udf-stringcleaner.jar
 
   - Navigate to Data Processing/Jobs/Job Binaries, Click on Create Job Binary
 
-  - Name = example.pig, Storage type = Internal database, click Browse and
-    find example.pig wherever you checked out the sahara project
-    <sahara-tests root>/etc/edp-examples/edp-pig/trim-spaces
+  - Name = example.pig, Storage type = Swift,
+    URL = samplecontainer/example.pig, Username = <your username>,
+    Password = <your password>
 
   - Create another Job Binary:  Name = edp-pig-udf-stringcleaner.jar,
-    Storage type = Internal database, click Browse and find
-    edp-pig-udf-stringcleaner.jar wherever you checked out the sahara project
-    <sahara-tests root>/sahara_tests/scenario/defaults/edp-examples/
-    edp-pig/cleanup-string/
+    Storage type = Swift,
+    URL = samplecontainer/edp-pig-udf-stringcleaner.jar,
+    Username = <your username>, Password = <your password>
 
 - Create a Job Template
 
@@ -325,13 +343,22 @@ so that you will have all of the source code and inputs stored locally.
    You can clone into https://git.openstack.org/cgit/openstack/sahara-tests/ for quicker
    access to the files for this sample job.
 
-- Store the Job Binary in the sahara database
+- Store the Job Binary in Swift (you can choose another type of storage if
+  you want)
+
+  - Click on Project/Object Store/Containers and create a container with any
+    name ("samplecontainer" for our purposes here)
+
+  - Click on Upload Object and find spark-wordcount.jar at
+    <sahara-tests root>/sahara-tests/scenario/defaults/edp-examples/
+    edp-spark/, name it "spark-wordcount.jar" (or other name).
+    The Swift path will be swift://samplecontainer/spark-wordcount.jar
 
   - Navigate to Data Processing/Jobs/Job Binaries, Click on Create Job Binary
 
-  - Name = sparkexample.jar, Storage type = Internal database, Browse to the
-    location <sahara-tests root>/sahara_tests/scenario/defaults/
-    edp-examples/edp-spark/ and choose spark-wordcount.jar, Click "Create"
+  - Name = sparkexample.jar, Storage type = Swift,
+    URL = samplecontainer/spark-wordcount.jar, Username = <your username>,
+    Password = <your password>
 
 - Create a Job Template
 
