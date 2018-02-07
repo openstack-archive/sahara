@@ -63,7 +63,7 @@ def client(username, password, trust_id=None):
         return client_from_token(k.token_from_auth(proxyauth))
     else:
         return swiftclient.Connection(
-            auth_version='2.0',
+            auth_version='3',
             cacert=CONF.swift.ca_file,
             insecure=CONF.swift.api_insecure,
             authurl=su.retrieve_auth_url(CONF.keystone.endpoint_type),
@@ -80,7 +80,7 @@ def client_from_token(token=None):
     if not token:
         token = context.get_auth_token()
     '''return a Swift client authenticated from a token.'''
-    return swiftclient.Connection(auth_version='2.0',
+    return swiftclient.Connection(auth_version='3',
                                   cacert=CONF.swift.ca_file,
                                   insecure=CONF.swift.api_insecure,
                                   preauthurl=base.url_for(
