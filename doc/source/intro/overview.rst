@@ -12,9 +12,9 @@ OpenStack. It is worth mentioning that Amazon has provided Hadoop for
 several years as Amazon Elastic MapReduce (EMR) service.
 
 Sahara aims to provide users with a simple means to provision Hadoop, Spark,
-and Storm clusters by specifying several parameters such as the version,
-cluster topology, hardware node details and more. After a user fills in all
-the parameters, sahara deploys the cluster in a few minutes. Also sahara
+and Storm clusters by specifying several parameters such as the framework
+version, cluster topology, hardware node details and more. After a user fills
+in all the parameters, sahara deploys the cluster in a few minutes. Also sahara
 provides means to scale an already provisioned cluster by adding or removing
 worker nodes on demand.
 
@@ -53,6 +53,8 @@ The sahara product communicates with the following OpenStack services:
   are used to work with OpenStack, limiting a user's abilities in sahara to
   their OpenStack privileges.
 * Compute (nova) - used to provision VMs for data processing clusters.
+* Bare metal (ironic) - used to provision Baremetal nodes for data processing
+  clusters.
 * Orchestration (heat) - used to provision and orchestrate the deployment of
   data processing clusters.
 * Image (glance) - stores VM images, each image containing an operating system
@@ -90,8 +92,6 @@ For fast cluster provisioning a generic workflow will be as following:
 
     * for base images without a pre-installed framework, sahara will support
       pluggable deployment engines that integrate with vendor tooling.
-    * you can download prepared up-to-date images from
-      http://sahara-files.mirantis.com/images/upstream/
 
 * define cluster configuration, including cluster size, topology, and
   framework parameters (for example, heap size):
@@ -99,8 +99,8 @@ For fast cluster provisioning a generic workflow will be as following:
     * to ease the configuration of such parameters, configurable templates
       are provided.
 
-* provision the cluster; sahara will provision VMs, install and configure
-  the data processing framework.
+* provision the cluster; sahara will provision nodes (VMs or baremetal),
+  install and configure the data processing framework.
 * perform operations on the cluster; add or remove nodes.
 * terminate the cluster when it is no longer needed.
 
@@ -118,7 +118,8 @@ For analytics as a service, a generic workflow will be as following:
 
     * all cluster provisioning and job execution will happen transparently
       to the user.
-    * cluster will be removed automatically after job completion.
+    * if using a transient cluster, it will be removed automatically after job
+      completion.
 
 * get the results of computations (for example, from swift).
 
@@ -129,28 +130,28 @@ While provisioning clusters through sahara, the user operates on three types
 of entities: Node Group Templates, Cluster Templates and Clusters.
 
 A Node Group Template describes a group of nodes within cluster. It contains
-a list of hadoop processes that will be launched on each instance in a group.
+a list of processes that will be launched on each instance in a group.
 Also a Node Group Template may provide node scoped configurations for those
 processes. This kind of template encapsulates hardware parameters (flavor)
-for the node VM and configuration for data processing framework processes
+for the node instance and configuration for data processing framework processes
 running on the node.
 
 A Cluster Template is designed to bring Node Group Templates together to
 form a Cluster. A Cluster Template defines what Node Groups will be included
-and how many instances will be created in each. Some data processing framework
+and how many instances will be created for each. Some data processing framework
 configurations can not be applied to a single node, but to a whole Cluster.
 A user can specify these kinds of configurations in a Cluster Template. Sahara
 enables users to specify which processes should be added to an anti-affinity
 group within a Cluster Template. If a process is included into an
-anti-affinity group, it means that VMs where this process is going to be
+anti-affinity group, it means that instances where this process is going to be
 launched should be scheduled to different hardware hosts.
 
-The Cluster entity represents a collection of VM instances that all have the
-same data processing framework installed. It is mainly characterized by a VM
+The Cluster entity represents a collection of instances that all have the
+same data processing framework installed. It is mainly characterized by an
 image with a pre-installed framework which will be used for cluster
 deployment. Users may choose one of the pre-configured Cluster Templates to
-start a Cluster. To get access to VMs after a Cluster has started, the user
-should specify a keypair.
+start a Cluster. To get access to instances after a Cluster has started, the
+user should specify a keypair.
 
 Sahara provides several constraints on cluster framework topology. You can see
 all constraints in the documentation for the appropriate plugin.

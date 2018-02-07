@@ -16,7 +16,7 @@ Launching a cluster via the sahara UI
 Registering an Image
 --------------------
 
-1) Navigate to the "Project" dashboard, then the "Data Processing" tab, then
+1) Navigate to the "Project" dashboard, then to the "Data Processing" tab, then
    click on the "Clusters" panel and finally the "Image Registry" tab.
 
 2) From that page, click on the "Register Image" button at the top right
@@ -33,7 +33,7 @@ Registering an Image
 Create Node Group Templates
 ---------------------------
 
-1) Navigate to the "Project" dashboard, then the "Data Processing" tab, then
+1) Navigate to the "Project" dashboard, then to the "Data Processing" tab, then
    click on the "Clusters" panel and then the "Node Group Templates" tab.
 
 2) From that page, click on the "Create Template" button at the top right
@@ -57,7 +57,7 @@ Create Node Group Templates
 Create a Cluster Template
 -------------------------
 
-1) Navigate to the "Project" dashboard, then the "Data Processing" tab, then
+1) Navigate to the "Project" dashboard, then to the "Data Processing" tab, then
    click on the "Clusters" panel and finally the "Cluster Templates" tab.
 
 2) From that page, click on the "Create Template" button at the top right
@@ -87,7 +87,7 @@ Create a Cluster Template
 Launching a Cluster
 -------------------
 
-1) Navigate to the "Project" dashboard, then the "Data Processing" tab, then
+1) Navigate to the "Project" dashboard, then to the "Data Processing" tab, then
    click on the "Clusters" panel and lastly, click on the "Clusters" tab.
 
 2) Click on the "Launch Cluster" button at the top right

@@ -13,13 +13,13 @@ having a different role (set of processes).
 
 Node group parameters include Hadoop parameters like ``io.sort.mb`` or
 ``mapred.child.java.opts``, and several infrastructure parameters like the
-flavor for VMs or storage location (ephemeral drive or cinder volume).
+flavor for instances or storage location (ephemeral drive or cinder volume).
 
 A cluster is characterized by its node groups and its parameters. Like a node
 group, a cluster has data processing framework and infrastructure parameters.
 An example of a cluster-wide Hadoop parameter is ``dfs.replication``. For
 infrastructure, an example could be image which will be used to launch cluster
-VMs.
+instances.
 
 Templates
 ---------
@@ -32,14 +32,15 @@ corresponding entities. Their aim is to remove the burden of specifying all
 of the required parameters each time a user wants to launch a cluster.
 
 In the REST interface, templates have extended functionality. First you can
-specify node-scoped parameters here, they will work as defaults for node
+specify node-scoped parameters, they will work as defaults for node
 groups. Also with the REST interface, during cluster creation a user can
 override template parameters for both cluster and node groups.
 
 Templates are portable - they can be exported to JSON files and imported
-later either on the same deployment or on another one. To import an exported
+either on the same deployment or on another one. To import an exported
 template, replace the placeholder values with appropriate ones. This can be
-accomplished easily through the CLI or UI, or be done manually.
+accomplished easily through the CLI or UI, or manually editing the template
+file.
 
 Provisioning Plugins
 --------------------
@@ -62,7 +63,7 @@ Image Registry
 OpenStack starts VMs based on a pre-built image with an installed OS. The image
 requirements for sahara depend on the plugin and data processing framework
 version. Some plugins require just a basic cloud image and will install the
-framework on the VMs from scratch. Some plugins might require images with
+framework on the instance from scratch. Some plugins might require images with
 pre-installed frameworks or Hadoop distributions.
 
 The Sahara Image Registry is a feature which helps filter out images during
@@ -72,5 +73,5 @@ with Image Registry.
 Features
 --------
 
-Sahara has several interesting features. The full list could be found there:
+Sahara has several interesting features. The full list could be found here:
 :doc:`features`
