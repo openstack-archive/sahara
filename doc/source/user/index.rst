@@ -27,6 +27,7 @@ Plugins
    vanilla-plugin
    ambari-plugin
    spark-plugin
+   storm-plugin
    cdh-plugin
    mapr-plugin
 
