@@ -28,7 +28,7 @@ Request
 
    - project_id: url_project_id
    - tags: tags
-   - image_id: image_id
+   - image_id: url_image_id
 
 Request Example
 ---------------
