@@ -1,0 +1,44 @@
+- project:
+    check:
+      jobs:
+        - openstack-tox-pylint:
+            voting: false
+        - sahara-tests-scenario
+        - sahara-tests-scenario-modwsgi:
+            voting: false
+        - sahara-tests-tempest
+    gate:
+      jobs:
+        - sahara-tests-scenario
+        - sahara-tests-tempest
+    experimental:
+      jobs:
+        - sahara-buildimages-ambari
+        - sahara-buildimages-cloudera
+        - sahara-buildimages-mapr
+        - sahara-tests-scenario-multinode-spark
+        - sahara-tests-scenario-py3
+
+- job:
+    name: sahara-buildimages-base
+    nodeset: centos-7
+    run: playbooks/buildimages/run.yaml
+    timeout: 7200
+
+- job:
+    name: sahara-buildimages-ambari
+    parent: sahara-buildimages-base
+    vars:
+      sahara_plugin: ambari
+
+- job:
+    name: sahara-buildimages-cloudera
+    parent: sahara-buildimages-base
+    vars:
+      sahara_plugin: cloudera
+
+- job:
+    name: sahara-buildimages-mapr
+    parent: sahara-buildimages-base
+    vars:
+      sahara_plugin: mapr

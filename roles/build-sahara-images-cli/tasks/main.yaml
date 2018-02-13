@@ -1,0 +1,4 @@
+- name: Build all the images for the selected plugin
+  command: ./tools/gate/build-images "{{ sahara_plugin }}"
+  args:
+    chdir: "{{ sahara_src_dir }}"
