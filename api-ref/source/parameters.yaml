@@ -196,13 +196,13 @@ url_node_group_template_id:
   description: |
     The UUID of the node group template.
   in: path
-  required: false
+  required: true
   type: string
 url_plugin_name:
   description: |
     Name of the plugin.
   in: path
-  required: false
+  required: true
   type: string
 url_project_id:
   description: |
@@ -214,7 +214,7 @@ version:
   description: |
     Filters the response by a plugin version.
   in: path
-  required: false
+  required: true
   type: string
 version_1:
   description: |
