@@ -153,7 +153,7 @@ complete a few steps below.
 
 * Ensure that you have the latest hadoop-openstack jar file distributed
   on your cluster nodes. You can download one at
-  ``http://tarballs.openstack.org/sahara/dist/``
+  ``https://tarballs.openstack.org/sahara-extra/dist/``
 
 * Sahara will create principals along with keytabs for system users
   like ``hdfs`` and ``spark`` so that you will not have to

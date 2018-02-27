@@ -15,7 +15,7 @@ the most current features enabled.
   `Sahara Extra repository <https://git.openstack.org/cgit/openstack/sahara-extra>`_
 
 * The latest compiled version of the jar for this component can be downloaded
-  from http://tarballs.openstack.org/sahara/dist/hadoop-openstack/master/
+  from https://tarballs.openstack.org/sahara-extra/dist/hadoop-openstack/master/
 
 Now the latest version of this jar (which uses Keystone API v3) is used in
 the plugins' images automatically during build of these images. But for
@@ -27,7 +27,7 @@ Hadoop patching
 You may build the jar file yourself by choosing the latest patch from the
 Sahara Extra repository and using Maven to build with the pom.xml file
 provided. Or you may get the latest jar pre-built at
-http://tarballs.openstack.org/sahara/dist/hadoop-openstack/master/
+https://tarballs.openstack.org/sahara-extra/dist/hadoop-openstack/master/
 
 You will need to put this file into the hadoop libraries
 (e.g. /usr/lib/share/hadoop/lib, it depends on the plugin which you use) on

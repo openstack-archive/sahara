@@ -4,7 +4,7 @@ hadoop="2.6.0"
 
 HADOOP_SWIFT_JAR_NAME="hadoop-openstack-$hadoop-cdh$plugin_version.jar"
 
-HADOOP_SWIFT_BUILD_LOCATION="http://tarballs.openstack.org/sahara/dist/hadoop-openstack/master"
+HADOOP_SWIFT_BUILD_LOCATION="https://tarballs.openstack.org/sahara-extra/dist/hadoop-openstack/master"
 SWIFT_LIB_URI="$HADOOP_SWIFT_BUILD_LOCATION/hadoop-openstack-${hadoop}.jar"
 HADOOP_SWIFT_JAR_NAME="hadoop-openstack.jar"
 

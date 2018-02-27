@@ -17,7 +17,7 @@ arguments:
     description: The path to HDFS lib. Defaults to /opt.
     required: False
   swift_url:
-    default: https://tarballs.openstack.org/sahara/dist/hadoop-openstack/master/
+    default: https://tarballs.openstack.org/sahara-extra/dist/hadoop-openstack/master/
     description: Location of the swift jar file.
     required: False
 

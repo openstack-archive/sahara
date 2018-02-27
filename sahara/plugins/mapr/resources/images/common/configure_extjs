@@ -1,7 +1,7 @@
 #!/bin/bash
 
 EXTJS_DESTINATION_DIR="/opt/mapr-repository"
-EXTJS_DOWNLOAD_URL="http://tarballs.openstack.org/sahara/dist/common-artifacts/ext-2.2.zip"
+EXTJS_DOWNLOAD_URL="https://tarballs.openstack.org/sahara-extra/dist/common-artifacts/ext-2.2.zip"
 EXTJS_NO_UNPACK=1
 
 extjs_archive=/tmp/$(basename $EXTJS_DOWNLOAD_URL)
