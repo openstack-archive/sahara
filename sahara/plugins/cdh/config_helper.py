@@ -58,7 +58,7 @@ class ConfigHelper(object):
                      " will be downloaded by VMs."))
 
     DEFAULT_EXTJS_LIB_URL = (
-        'http://tarballs.openstack.org/sahara/dist/common-artifacts/'
+        'https://tarballs.openstack.org/sahara-extra/dist/common-artifacts/'
         'ext-2.2.zip')
 
     EXTJS_LIB_URL = p.Config(
