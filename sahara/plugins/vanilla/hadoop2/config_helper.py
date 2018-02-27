@@ -85,20 +85,9 @@ PRIORITY_1_CONFS = [
     'yarn.scheduler.minimum-allocation-vcores'
 ]
 
-_default_executor_classpath = ":".join(
-    ['/opt/hadoop/share/hadoop/tools/lib/hadoop-openstack-2.7.1.jar'])
-
 SPARK_CONFS = {
     'Spark': {
         "OPTIONS": [
-            {
-                'name': 'Executor extra classpath',
-                'description': 'Value for spark.executor.extraClassPath'
-                ' in spark-defaults.conf'
-                ' (default: %s)' % _default_executor_classpath,
-                'default': '%s' % _default_executor_classpath,
-                'priority': 2,
-            },
             {
                 'name': 'Spark home',
                 'description': 'The location of the spark installation'
@@ -276,13 +265,6 @@ def is_data_locality_enabled(pctx, cluster):
         return False
     return get_config_value(pctx, ENABLE_DATA_LOCALITY.applicable_target,
                             ENABLE_DATA_LOCALITY.name, cluster)
-
-
-def _get_spark_opt_default(opt_name):
-    for opt in SPARK_CONFS["Spark"]["OPTIONS"]:
-        if opt_name == opt["name"]:
-            return opt["default"]
-    return None
 
 
 def generate_spark_env_configs(cluster):
