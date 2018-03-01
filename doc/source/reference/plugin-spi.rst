@@ -148,7 +148,7 @@ this plugin method to get a list of ports that need to be opened.
 group
 
 get_edp_job_types( versions )
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Optional method, which provides the ability to see all supported job types for
 specified plugin versions.
@@ -156,13 +156,13 @@ specified plugin versions.
 *Returns*: dict with supported job types for specified versions of plugin
 
 recommend_configs( self, cluster, scaling=False )
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Optional method, which provides recommendations for cluster configuration
 before creating/scaling operation.
 
 get_image_arguments( self, hadoop_version ):
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Optional method, which gets the argument set taken by the plugin's image
 generator, or NotImplemented if the plugin does not provide image generation
@@ -171,7 +171,7 @@ support. See :doc:`../contributor/image-gen`.
 *Returns*: A sequence with items of type sahara.plugins.images.ImageArgument.
 
 pack_image( self, hadoop_version, remote, test_only=False, ... ):
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Optional method which packs an image for registration in Glance and use by
 Sahara. This method is called from the image generation CLI rather than from
@@ -180,7 +180,7 @@ the Sahara api or engine service. See :doc:`../contributor/image-gen`.
 *Returns*: None (modifies the image pointed to by the remote in-place.)
 
 validate_images( self, cluster, test_only=False, image_arguments=None ):
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Validates the image to be used to create a cluster, to ensure that it meets
 the specifications of the plugin. See :doc:`../contributor/image-gen`.

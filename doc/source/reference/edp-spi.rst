@@ -30,7 +30,7 @@ values for job types:
     Constants for job types are defined in *sahara.utils.edp*.
 
 Job Status Values
-------------------------
+-----------------
 
 Several of the methods below return a job status value. A job status value is
 a dictionary of the form:
