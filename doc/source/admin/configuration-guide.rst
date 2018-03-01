@@ -31,7 +31,7 @@ database. For example, the connection string for a MySQL database will be:
 
 .. sourcecode:: cfg
 
-    connection=mysql://username:password@host:port/database
+    connection=mysql+pymsql://username:password@host:port/database
 
 Next you will configure the Identity service parameters in the
 ``[keystone_authtoken]`` section. The ``auth_uri`` parameter
