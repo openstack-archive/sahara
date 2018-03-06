@@ -11,7 +11,7 @@ castellan>=0.16.0 # Apache-2.0
 eventlet!=0.18.3,!=0.20.1,<0.21.0,>=0.18.2 # MIT
 Flask!=0.11,<1.0,>=0.10 # BSD
 iso8601>=0.1.11 # MIT
-Jinja2!=2.9.0,!=2.9.1,!=2.9.2,!=2.9.3,!=2.9.4,>=2.8 # BSD License (3 clause)
+Jinja2>=2.10 # BSD License (3 clause)
 jsonschema<3.0.0,>=2.6.0 # MIT
 keystoneauth1>=3.4.0 # Apache-2.0
 keystonemiddleware>=4.17.0 # Apache-2.0
