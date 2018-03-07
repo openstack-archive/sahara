@@ -123,19 +123,6 @@ class TestConfigHelper(base.SaharaTestCase):
         get_config_value.assert_called_once_with(self.pctx, target,
                                                  name, self.cluster)
 
-    def test_get_spark_opt_default(self):
-        c_helper.SPARK_CONFS = {'Spark': {
-            'OPTIONS': [{'name': 'test_name',
-                         'default': 'test'}]}
-        }
-        opt_name = 'tt'
-        default = c_helper._get_spark_opt_default(opt_name)
-        self.assertIsNone(default)
-
-        opt_name = 'test_name'
-        default = c_helper._get_spark_opt_default(opt_name)
-        self.assertEqual(default, 'test')
-
     def test_generate_spark_env_configs(self):
         configs = 'HADOOP_CONF_DIR=/opt/hadoop/etc/hadoop\n' \
                   'YARN_CONF_DIR=/opt/hadoop/etc/hadoop'

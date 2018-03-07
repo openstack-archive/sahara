@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import copy
+
 from oslo_config import cfg
 import six
 
@@ -40,6 +42,22 @@ OOZIE_DEFAULT = x.load_hadoop_xml_defaults(
 
 HIVE_DEFAULT = x.load_hadoop_xml_defaults(
     'plugins/vanilla/v2_8_2/resources/hive-default.xml')
+
+_default_executor_classpath = ":".join(
+    ['/opt/hadoop/share/hadoop/tools/lib/hadoop-openstack-2.8.2.jar'])
+
+SPARK_CONFS = copy.deepcopy(c_helper.SPARK_CONFS)
+
+SPARK_CONFS['Spark']['OPTIONS'].append(
+    {
+        'name': 'Executor extra classpath',
+        'description': 'Value for spark.executor.extraClassPath'
+                       ' in spark-defaults.conf'
+                       ' (default: %s)' % _default_executor_classpath,
+        'default': '%s' % _default_executor_classpath,
+        'priority': 2,
+    }
+)
 
 XML_CONFS = {
     "Hadoop": [CORE_DEFAULT],
@@ -83,9 +101,16 @@ def _init_all_configs():
     return configs
 
 
+def _get_spark_opt_default(opt_name):
+    for opt in SPARK_CONFS["Spark"]["OPTIONS"]:
+        if opt_name == opt["name"]:
+            return opt["default"]
+    return None
+
+
 def _get_spark_configs():
     spark_configs = []
-    for service, config_items in six.iteritems(c_helper.SPARK_CONFS):
+    for service, config_items in six.iteritems(SPARK_CONFS):
         for item in config_items['OPTIONS']:
             cfg = p.Config(name=item["name"],
                            description=item["description"],

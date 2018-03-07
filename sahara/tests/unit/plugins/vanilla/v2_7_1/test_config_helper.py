@@ -16,7 +16,6 @@
 import mock
 
 from sahara.plugins import provisioning as p
-from sahara.plugins.vanilla.hadoop2 import config_helper as h_helper
 from sahara.plugins.vanilla.v2_7_1 import config_helper as v_helper
 from sahara.tests.unit import base
 
@@ -49,17 +48,14 @@ class TestConfigHelper(base.SaharaTestCase):
         init_configs = v_helper._init_all_configs()
         self.assertEqual(init_configs, configs)
 
+    def test_get_spark_opt_default(self):
+        opt_name = 'Executor extra classpath'
+        _default_executor_classpath = ":".join(
+            ['/opt/hadoop/share/hadoop/tools/lib/hadoop-openstack-2.7.1.jar'])
+        default = v_helper._get_spark_opt_default(opt_name)
+        self.assertEqual(default, _default_executor_classpath)
+
     def test_get_spark_configs(self):
-        h_helper.SPARK_CONFS = {
-            'Spark': {
-                'OPTIONS': [{
-                    'name': 'test',
-                    'description': 'This is a test',
-                    'default': 'default',
-                    'priority': 1
-                }]
-            }
-        }
         spark_configs = v_helper._get_spark_configs()
         for i in spark_configs:
             self.assertIsInstance(i, p.Config)
