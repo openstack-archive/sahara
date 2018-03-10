@@ -33,7 +33,7 @@ validators:
     - wget
     - zip
   - os_case:
-      - centos:
+      - redhat:
           - package:
               - cups
               - cdparanoia-libs
@@ -145,7 +145,7 @@ validators:
               - zlib1g-dev
   - script: common/configure_extjs
   - os_case:
-      - centos:
+      - redhat:
           - copy_script: common/resources/package_utils.sh
           - copy_script: common/resources/packages.json
           - copy_script: common/resources/spec_5.1.0.json
