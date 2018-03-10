@@ -51,6 +51,7 @@ the image packing feature. Plugins may require their own arguments at specific
 versions; use the ``--help`` feature with ``PLUGIN`` and ``VERSION`` to see
 the appropriate argument structure.
 
+
 a plausible command-line invocation would be:
 
 ::
@@ -69,6 +70,16 @@ which the image packing feature is available. The next sections of this guide
 will first describe how to modify an image packing specification for one
 of the plugins, and second, how to enable the image packing feature for new
 or existing plugins.
+
+Note: In case of a RHEL 7 images, it is necessary to register the image before
+starting to pack it, also enable some required repos.
+
+::
+
+    virt-customize -v -a $SAHARA_RHEL_IMAGE --sm-register \
+        --sm-credentials ${REG_USER}:password:${REG_PASSWORD} --sm-attach \
+        pool:${REG_POOL_ID} --run-command 'subscription-manager repos \
+        --disable=* --enable=$REPO_A \ --enable=$REPO_B \ --enable=$REPO_C'
 
 Dev notes on the CLI itself
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~

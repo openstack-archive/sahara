@@ -27,7 +27,7 @@ arguments:
 validators:
   - script: common/install_extjs
   - os_case:
-      - centos:
+      - redhat:
           - package: wget
           - script:
               centos/wget_repo:
@@ -75,7 +75,7 @@ validators:
     - oozie
     - spark-core
   - os_case:
-    - centos:
+    - redhat:
       - package: spark-history-server
   - package: zookeeper
   - package: unzip
@@ -101,7 +101,7 @@ validators:
       common/install_cloudera:
         env_vars: [plugin_version]
   - os_case:
-    - centos:
+    - redhat:
       - script: centos/turn_off_services
     - ubuntu:
       - script: ubuntu/turn_off_services
@@ -112,7 +112,7 @@ validators:
       common/unlimited_security_artifacts:
         env_vars: [unlimited_security_location]
   - os_case:
-    - centos:
+    - redhat:
       - package:
         - krb5-server
         - krb5-libs
