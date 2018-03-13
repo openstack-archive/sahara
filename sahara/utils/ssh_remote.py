@@ -73,7 +73,7 @@ ssh_config_options = [
         'ssh_timeout_interactive', default=1800, min=1,
         help="Overrides timeout for interactive ssh operations, in seconds"),
     cfg.IntOpt(
-        'ssh_timeout_files', default=120, min=1,
+        'ssh_timeout_files', default=600, min=1,
         help="Overrides timeout for ssh operations with files, in seconds"),
 ]
 
@@ -270,9 +270,8 @@ def _get_http_client(host, port, proxy_command=None, gateway_host=None,
 
 
 def _write_fl(sftp, remote_file, data):
-    fl = sftp.file(remote_file, 'w')
-    fl.write(data)
-    fl.close()
+    write_data = paramiko.py3compat.StringIO(data)
+    sftp.putfo(write_data, remote_file)
 
 
 def _append_fl(sftp, remote_file, data):
