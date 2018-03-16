@@ -30,7 +30,7 @@ validators:
            oracle-java:
                - script: common/oracle_java
   - os_case:
-      - centos:
+      - redhat:
           - script: centos/disable_selinux
           - script: centos/disable_certificate_check
           - script:
@@ -77,7 +77,7 @@ validators:
       - rng-tools
       - iptables-services
   - os_case:
-      - centos:
+      - redhat:
           - script: centos/disable_ambari
           - script: centos/disable_firewall
           - script:
@@ -91,7 +91,7 @@ validators:
               common/add_jar:
                 env_vars: [hdfs_lib_dir, swift_url]
   - os_case:
-    - centos:
+    - redhat:
       - package:
         - krb5-server
         - krb5-libs
