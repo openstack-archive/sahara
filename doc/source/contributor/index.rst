@@ -26,6 +26,6 @@ Other Resources
 .. toctree::
    :maxdepth: 2
 
-   launchpad
+   project
    gerrit
    jenkins
