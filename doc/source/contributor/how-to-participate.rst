@@ -7,7 +7,7 @@ Getting started
 * Make sure that your local git is properly configured by executing
   ``git config --list``. If not, configure ``user.name``, ``user.email``
 
-* Create account on `Launchpad <https://launchpad.net/sahara>`_
+* Create account on `Launchpad <https://launchpad.net/>`_
   (if you don't have one)
 
 * Subscribe to `OpenStack general mail-list <http://lists.openstack.org/cgi-bin/mailman/listinfo/openstack>`_

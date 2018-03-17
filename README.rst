@@ -12,7 +12,7 @@ OpenStack Data Processing ("Sahara") project
 
 Sahara at wiki.openstack.org: https://wiki.openstack.org/wiki/Sahara
 
-Launchpad project: https://launchpad.net/sahara
+Storyboard project: https://storyboard.openstack.org/#!/project/935
 
 Sahara docs site: https://docs.openstack.org/sahara/latest/
 
@@ -22,7 +22,7 @@ Quickstart guide: https://docs.openstack.org/sahara/latest/user/quickstart.html
 
 How to participate: https://docs.openstack.org/sahara/latest/contributor/how-to-participate.html
 
-Source: http://git.openstack.org/cgit/openstack/sahara
+Source: https://git.openstack.org/cgit/openstack/sahara
 
 
 License

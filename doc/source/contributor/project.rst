@@ -1,8 +1,8 @@
 Project hosting
 ===============
 
-`Launchpad`_ hosts the Sahara project. The Sahara project homepage on
-Launchpad is http://launchpad.net/sahara.
+`Storyboard`_ hosts the Sahara project. The Sahara project group homepage on
+Storyboard is https://storyboard.openstack.org/#!/project_group/74.
 
 Launchpad credentials
 ---------------------
@@ -26,20 +26,17 @@ http://lists.openstack.org/cgi-bin/mailman/listinfo
 Bug tracking
 ------------
 
-Report Sahara bugs at https://bugs.launchpad.net/sahara
+Report Sahara bugs/stories at the various project under the Sahara project
+group https://storyboard.openstack.org/#!/project_group/74
 
-Feature requests (Blueprints)
+Feature requests (Specs)
 -----------------------------
 
-Sahara uses specs to track feature requests. Blueprints are at
-https://blueprints.launchpad.net/sahara. They provide a high-level summary of
-proposed changes and track associated commits. Sahara also uses specs for
+Sahara uses specs to track feature requests. They provide a high-level summary
+of proposed changes and track associated commits. Sahara also uses specs for
 in-depth descriptions and discussions of blueprints. Specs follow a defined
 format and are submitted as change requests to the openstack/sahara-specs
-repository. Every blueprint should have an associated spec that is agreed
-on and merged to the sahara-specs repository before it is approved, unless the
-whole team agrees that the implementation path for the feature described in
-the blueprint is completely understood.
+repository.
 
 Technical support
 -----------------
@@ -47,8 +44,6 @@ Technical support
 Sahara uses `Ask OpenStack`_ to track Sahara technical support questions.
 Questions related to Sahara should be tagged with 'sahara'.
 
-.. _Launchpad: http://launchpad.net
+.. _Storyboard: https://storyboard.openstack.org
 .. _Wiki: http://wiki.openstack.org/sahara
-.. _Sahara Drivers: https://launchpad.net/~sahara-drivers
-.. _Sahara Bug Team: https://launchpad.net/~sahara-bugs
 .. _Ask OpenStack: https://ask.openstack.org

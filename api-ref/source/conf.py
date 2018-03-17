@@ -34,7 +34,7 @@ extensions = [
 
 # openstackdocstheme options
 repository_name = 'openstack/sahara'
-bug_project = 'sahara'
+bug_project = '935'
 bug_tag = 'api-ref'
 html_last_updated_fmt = '%Y-%m-%d %H:%M'
 
