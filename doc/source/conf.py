@@ -41,7 +41,7 @@ extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.todo', 'sp
 
 # openstackdocstheme options
 repository_name = 'openstack/sahara'
-bug_project = 'sahara'
+bug_project = '935'
 bug_tag = 'doc'
 html_last_updated_fmt = '%Y-%m-%d %H:%M'
 
