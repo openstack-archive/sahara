@@ -24,6 +24,8 @@ validators:
   - os_case:
       - ubuntu:
           - script: ubuntu/install_mapr_dependencies
+      - redhat:
+          - script: centos/epel_dependencies
   - package:
     - mtools
     - rpcbind
