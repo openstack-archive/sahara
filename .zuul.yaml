@@ -7,10 +7,12 @@
         - sahara-tests-scenario-modwsgi:
             voting: false
         - sahara-tests-tempest
+        - openstack-tox-lower-constraints
     gate:
       jobs:
         - sahara-tests-scenario
         - sahara-tests-tempest
+        - openstack-tox-lower-constraints
     experimental:
       jobs:
         - sahara-buildimages-ambari
