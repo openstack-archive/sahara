@@ -1,0 +1,3 @@
+---
+features:
+  - Implemented support of HDP 2.6 in the Ambari plugin.

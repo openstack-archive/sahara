@@ -44,7 +44,7 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
                  "using Apache Ambari")
 
     def get_versions(self):
-        return ["2.3", "2.4", "2.5"]
+        return ["2.3", "2.4", "2.5", "2.6"]
 
     def get_node_processes(self, hadoop_version):
         return {
