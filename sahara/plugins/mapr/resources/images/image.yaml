@@ -75,10 +75,14 @@ validators:
               - libtirpc
               - libvisual
               - libxslt
+              - mariadb
+              - mariadb-server
+              - mariadb-libs
               - mesa-dri-drivers
               - mesa-libGL
               - mesa-libGLU
               - mesa-private-llvm
+              - mysql-connector-java
               - nmap-ncat
               - numactl
               - openjpeg-libs
