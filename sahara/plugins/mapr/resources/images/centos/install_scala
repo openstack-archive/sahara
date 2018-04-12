@@ -2,7 +2,7 @@
 
 echo "START: installing Scala"
 sudo yum -y update
-exit 0
+DEF_VERSION="2.11.6"
 
 if [ $test_only -eq 0 ]; then
 
@@ -12,14 +12,14 @@ if [ $test_only -eq 0 ]; then
        echo "http://www.scala-lang.org is unreachable" && exit 1
    fi
 
-   if [ -n "${scala_version:-}" ]; then
+   if [ "${scala_version}" != "1" ]; then
        VERSION=$scala_version
    else
        VERSION="$(curl -s --fail http://www.scala-lang.org| tr -d '\n' | sed 's/^.*<div[^<]\+scala-version">[^0-9]\+\([0-9\.\?]\+\)<.\+$/\1/')"
 
        if [ $? != 0 -o -z "${VERSION}" ]; then
-           echo "Installing default version $scala_version"
-           VERSION=$scala_version
+           echo "Installing default version $DEF_VERSION"
+           VERSION=${DEF_VERSION}
        fi
    fi
 
