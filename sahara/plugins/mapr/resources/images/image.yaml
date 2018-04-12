@@ -11,8 +11,10 @@ arguments:
     hidden: True
     required: False
   scala_version:
-    default: 2.11.6
-    description: The version of scala to install. Defaults to 2.11.6.
+    default: 1
+    description: The version of scala to install. Defaults to 1 to indicate
+                 that the value should be autodetected or fallback to well
+                 known version.
     hidden: True
     required: False
   hdfs_lib_dir:
@@ -84,6 +86,8 @@ validators:
               - mesa-private-llvm
               - mysql-connector-java
               - nmap-ncat
+              - ntp
+              - ntpdate
               - numactl
               - openjpeg-libs
               - patch

@@ -1,34 +1,36 @@
 #!/bin/bash
 
 echo "START: installing Scala"
-
+DEF_VERSION="2.11.6"
 
 if [ $test_only -eq 0 ]; then
+    RETURN_CODE="$(curl -s -o /dev/null -w "%{http_code}" http://www.scala-lang.org/)"
+    if [ "$RETURN_CODE" != "200" ]; then
+        echo "http://www.scala-lang.org is unreachable" && exit 1
+    fi
 
-   RETURN_CODE="$(curl -s -o /dev/null -w "%{http_code}" http://www.scala-lang.org/)"
-
-   if [ "$RETURN_CODE" != "200" ]; then
-       echo "http://www.scala-lang.org is unreachable" && exit 1
-   fi
-
-   if [ -n "${scala_version:-}" ]; then
-       VERSION=$scala_version
-   else
-       VERSION="$(curl -s --fail http://www.scala-lang.org| tr -d '\n' | sed 's/^.*<div[^<]\+scala-version">[^0-9]\+\([0-9\.\?]\+\)<.\+$/\1/')"
-
-       if [ $? != 0 -o -z "${VERSION}" ]; then
-           echo "Installing default version $scala_version"
+    if [ $(lsb_release -c -s) == "trusty" ]; then
+        VERSION=${DEF_VERSION}
+    else
+        if [ "${scala_version}" != "1" ]; then
            VERSION=$scala_version
-       fi
-   fi
+        else
+            VERSION="$(curl -s --fail http://www.scala-lang.org| tr -d '\n' | sed 's/^.*<div[^<]\+scala-version">[^0-9]\+\([0-9\.\?]\+\)<.\+$/\1/')"
 
-   PKG=scala-${VERSION}
+            if [ $? != 0 -o -z "${VERSION}" ]; then
+                echo "Installing default version $DEF_VERSION"
+                VERSION=${DEF_VERSION}
+            fi
+        fi
+    fi
 
-   URL="http://downloads.lightbend.com/scala/${VERSION}"
+    PKG=scala-${VERSION}
 
-   wget -N ${URL}/${PKG}.deb
-   dpkg -i ${PKG}.deb
-   rm ${PKG}.deb
+    URL="http://downloads.lightbend.com/scala/${VERSION}"
+
+    wget -N ${URL}/${PKG}.deb
+    dpkg -i ${PKG}.deb
+    rm ${PKG}.deb
 fi
 
 echo "END: installing Scala"
