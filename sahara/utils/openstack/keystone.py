@@ -40,6 +40,8 @@ def _get_keystoneauth_cfg(name):
     try:
         value_list = CONF._namespace._get_file_value([('keystone_authtoken',
                                                        name)])
+        if isinstance(value_list, tuple):
+            value_list = value_list[0]
         cfg_val = value_list[0]
         if name == "auth_url" and not re.findall(r'\/v[2-3].*', cfg_val):
             cfg_val += "/v3"
