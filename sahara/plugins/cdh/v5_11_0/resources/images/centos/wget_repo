@@ -21,8 +21,8 @@ if [ ! -f /etc/yum.repos.d/cloudera-cdh5.repo ]; then
         echo 'gpgcheck = 1' >> /etc/yum.repos.d/kms.repo
 
         echo "[cloudera-kafka]" > /etc/yum.repos.d/cloudera-kafka.repo
-        echo "name=Cloudera's Distribution for kafka, Version 2.0.2" >> /etc/yum.repos.d/cloudera-kafka.repo
-        echo "baseurl=http://archive.cloudera.com/kafka/redhat/7/x86_64/kafka/2.0.2/" >> /etc/yum.repos.d/cloudera-kafka.repo
+        echo "name=Cloudera's Distribution for kafka, Version 2.2.0" >> /etc/yum.repos.d/cloudera-kafka.repo
+        echo "baseurl=http://archive.cloudera.com/kafka/redhat/7/x86_64/kafka/2.2.0/" >> /etc/yum.repos.d/cloudera-kafka.repo
         echo "gpgkey = http://archive.cloudera.com/kafka/redhat/7/x86_64/kafka/RPM-GPG-KEY-cloudera" >> /etc/yum.repos.d/cloudera-kafka.repo
         echo "gpgcheck = 1" >> /etc/yum.repos.d/cloudera-kafka.repo
 
