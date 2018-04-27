@@ -207,13 +207,16 @@ Then restart the mysql server to ensure these changes are active.
 .. sourcecode:: console
 
     $ openstack service create --name sahara --description \
-        "Sahara Data Processing" data-processing
+      "Sahara Data Processing" data-processing
 
     $ openstack endpoint create --region RegionOne \
-    --publicurl http://10.0.0.2:8386/v1.1/%\(project_id\)s \
-    --adminurl http://10.0.0.2:8386/v1.1/%\(project_id\)s \
-    --internalurl http://10.0.0.2:8386/v1.1/%\(project_id\)s \
-    data-processing
+      data-processing public http://10.0.0.2:8386/v1.1/%\(project_id\)s
+
+    $ openstack endpoint create --region RegionOne \
+      data-processing internal http://10.0.0.2:8386/v1.1/%\(project_id\)s
+
+    $ openstack endpoint create --region RegionOne \
+      data-processing admin http://10.0.0.2:8386/v1.1/%\(project_id\)s
 
 .. note::
 
