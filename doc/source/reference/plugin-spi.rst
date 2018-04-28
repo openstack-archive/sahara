@@ -15,7 +15,7 @@ and whatever else that plugin needs to create the Hadoop cluster.
 
 *Returns*: list of strings representing plugin versions
 
-*Example return value*: [“1.2.1”, “2.3.0”, “2.4.1”]
+*Example return value*: ["1.2.1", "2.3.0", "2.4.1"]
 
 get_configs( hadoop_version )
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -25,8 +25,8 @@ targets for which this config is applicable.
 
 *Returns*: list of configs
 
-*Example return value*: ((“JobTracker heap size”, "JobTracker heap size, in
-MB", "int", “512”, `“mapreduce”`, "node", True, 1))
+*Example return value*: (("JobTracker heap size", "JobTracker heap size, in
+MB", "int", "512", `"mapreduce"`, "node", True, 1))
 
 get_node_processes( hadoop_version )
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -338,7 +338,7 @@ Cluster
 -------
 
 Contains all relevant info about cluster.  This object is is provided to the
-plugin for both cluster creation and scaling.  The “Cluster Lifecycle” section
+plugin for both cluster creation and scaling.  The "Cluster Lifecycle" section
 below further specifies which fields are filled at which moment.
 
 +----------------------------+--------+---------------------------------------+
