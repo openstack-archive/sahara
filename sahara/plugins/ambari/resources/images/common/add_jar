@@ -4,7 +4,7 @@ hadoop="2.7.1"
 
 HDFS_LIB_DIR=${hdfs_lib_dir:-"/usr/share/hadoop/lib"}
 JAR_BUILD_DATE="2016-03-17"
-SWIFT_LIB_URI="https://tarballs.openstack.org/sahara-extra/dist/hadoop-openstack/hadoop-openstack-${hadoop}.jar"
+SWIFT_LIB_URI="https://tarballs.openstack.org/sahara-extra/dist/hadoop-openstack/master/hadoop-openstack-${hadoop}.jar"
 HADOOP_SWIFT_JAR_NAME=hadoop-openstack.jar
 
 if [ ! -f $HDFS_LIB_DIR/$HADOOP_SWIFT_JAR_NAME ]; then
