@@ -24,7 +24,7 @@ from sahara.service.health import health_check_base
 
 
 class BaseHealthChecker(hc.AbstractHealthChecker):
-    def _is_avaliable(self, process):
+    def _is_available(self, process):
         return process.open_ports and process not in spark.SparkOnYarn().\
             node_processes
 
@@ -32,7 +32,7 @@ class BaseHealthChecker(hc.AbstractHealthChecker):
         checks = [
             functools.partial(ZookeeperCheck, cluster_context=cluster_context)]
         for node_process in cluster_context.get_node_processes():
-            if self._is_avaliable(
+            if self._is_available(
                     node_process) and node_process.ui_name != 'ZooKeeper':
                 checks.append(functools.partial
                               (MapRNodeProcessCheck,
