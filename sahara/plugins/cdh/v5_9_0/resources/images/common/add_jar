@@ -8,18 +8,15 @@ HADOOP_SWIFT_BUILD_LOCATION="https://tarballs.openstack.org/sahara-extra/dist/ha
 SWIFT_LIB_URI="$HADOOP_SWIFT_BUILD_LOCATION/hadoop-openstack-${hadoop}.jar"
 HADOOP_SWIFT_JAR_NAME="hadoop-openstack.jar"
 
-if [ ! -f $hdfs_lib_dir/$HADOOP_SWIFT_JAR_NAME ]; then
-    if [ $test_only -eq 0 ]; then
-        wget -O $hdfs_lib_dir/$HADOOP_SWIFT_JAR_NAME $SWIFT_LIB_URI
+if [ $test_only -eq 0 ]; then
+    wget -O $hdfs_lib_dir/$HADOOP_SWIFT_JAR_NAME $SWIFT_LIB_URI
 
-        if [ $? -ne 0 ]; then
-            echo -e "Could not download Swift Hadoop FS implementation.\nAborting"
-            exit 1
-        fi
-
-        chmod 0644 $hdfs_lib_dir/$HADOOP_SWIFT_JAR_NAME
-    else
-        exit 0
+    if [ $? -ne 0 ]; then
+        echo -e "Could not download Swift Hadoop FS implementation.\nAborting"
+        exit 1
     fi
-fi
 
+    chmod 0644 $hdfs_lib_dir/$HADOOP_SWIFT_JAR_NAME
+else
+    exit 0
+fi
