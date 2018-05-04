@@ -189,8 +189,6 @@ class RunScriptsTest(base.SaharaTestCase):
                 'hadoop fs -mkdir /user && ' \
                 'hadoop fs -mkdir /user/hadoop && ' \
                 'hadoop fs -put /tmp/oozielib/share /user/hadoop/ && ' \
-                'hadoop fs -put /opt/oozie/libtools/commons-httpclient-3.1.jar ' \
-                '/user/hadoop/share/lib/oozie/ &&' \
                 'rm -rf /tmp/oozielib" hadoop'
         cmd_2 = 'sudo su - -c "/opt/oozie/bin/ooziedb.sh ' \
                 'create -sqlfile oozie.sql ' \

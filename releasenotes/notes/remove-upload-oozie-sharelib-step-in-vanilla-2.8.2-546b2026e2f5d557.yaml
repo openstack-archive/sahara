@@ -1,0 +1,6 @@
+---
+issues:
+  - |
+    Remove the step "upload httpclient to oozie/sharelib" in sahara code.
+    User should use latest vanilla-2.8.2 image which is built on SIE
+    "Change-ID: I3a25ee8c282849911089adf6c3593b1bb50fd067".
