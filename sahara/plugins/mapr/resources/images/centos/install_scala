@@ -6,16 +6,16 @@ DEF_VERSION="2.11.6"
 
 if [ $test_only -eq 0 ]; then
 
-   RETURN_CODE="$(curl -s -o /dev/null -w "%{http_code}" http://www.scala-lang.org/)"
+   RETURN_CODE="$(curl -s -L -o /dev/null -w "%{http_code}" https://www.scala-lang.org/)"
 
    if [ "$RETURN_CODE" != "200" ]; then
-       echo "http://www.scala-lang.org is unreachable" && exit 1
+       echo "https://www.scala-lang.org is unreachable" && exit 1
    fi
 
    if [ "${scala_version}" != "1" ]; then
        VERSION=$scala_version
    else
-       VERSION="$(curl -s --fail http://www.scala-lang.org| tr -d '\n' | sed 's/^.*<div[^<]\+scala-version">[^0-9]\+\([0-9\.\?]\+\)<.\+$/\1/')"
+       VERSION="$(curl -s -L --fail https://www.scala-lang.org| tr -d '\n' | sed 's/^.*<div[^<]\+scala-version">[^0-9]\+\([0-9\.\?]\+\)<.\+$/\1/')"
 
        if [ $? != 0 -o -z "${VERSION}" ]; then
            echo "Installing default version $DEF_VERSION"
@@ -25,7 +25,7 @@ if [ $test_only -eq 0 ]; then
 
    PKG=scala-${VERSION}
 
-   URL="http://downloads.lightbend.com/scala/${VERSION}"
+   URL="https://downloads.lightbend.com/scala/${VERSION}"
 
    rpm -Uhv ${URL}/${PKG}.rpm
 fi
