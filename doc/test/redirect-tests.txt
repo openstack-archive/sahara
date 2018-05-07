@@ -1,0 +1,3 @@
+/sahara/pike/contributor/launchpad.html 301 /sahara/pike/contributor/project.html
+/sahara/queens/contributor/launchpad.html 301 /sahara/queens/contributor/project.html
+/sahara/latest/contributor/launchpad.html 301 /sahara/latest/contributor/project.html

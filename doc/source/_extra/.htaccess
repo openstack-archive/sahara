@@ -1,0 +1,2 @@
+# renamed after the switch to Storyboard
+redirectmatch 301 ^/sahara/([^/]+)/contributor/launchpad.html$ /sahara/$1/contributor/project.html

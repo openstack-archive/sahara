@@ -51,6 +51,10 @@ config_sample_basename = 'sahara'
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
+# Add any paths that contain "extra" files, such as .htaccess or
+# robots.txt.
+html_extra_path = ['_extra']
+
 # The suffix of source filenames.
 source_suffix = '.rst'
 
