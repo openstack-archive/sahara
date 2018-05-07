@@ -270,7 +270,7 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
         resource_roots=['plugins/ambari/resources/images'])
 
     def get_image_arguments(self, hadoop_version):
-        if hadoop_version != '2.4':
+        if hadoop_version not in self.get_versions():
             return NotImplemented
         return self.validator.get_argument_list()
 
