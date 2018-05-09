@@ -4,8 +4,6 @@
         - openstack-tox-pylint:
             voting: false
         - sahara-tests-scenario
-        - sahara-tests-scenario-modwsgi:
-            voting: false
         - sahara-tests-tempest
         - openstack-tox-lower-constraints
     gate:
