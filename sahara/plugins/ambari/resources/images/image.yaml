@@ -26,7 +26,7 @@ validators:
        argument_name: java_distro
        cases:
            openjdk:
-               - package: java-1.7.0-openjdk-devel
+               - package: java-1.8.0-openjdk-devel
            oracle-java:
                - script: common/oracle_java
   - os_case:
