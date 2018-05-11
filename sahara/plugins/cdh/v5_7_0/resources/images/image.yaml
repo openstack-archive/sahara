@@ -23,7 +23,7 @@ arguments:
     description: The path to HDFS_LIB_DIR. Default to /usr/lib/hadoop-mapreduce
     required: False
   unlimited_security_location:
-    default: http://sahara-files.mirantis.com/kerberos-artifacts/
+    default: https://tarballs.openstack.org/sahara-extra/dist/common-artifacts/
     description: Place where UnlimitedSecurity polices are located
     required: False
 
