@@ -1,9 +1,9 @@
 arguments:
   ambari_version:
-    description: The version of Ambari to install. Defaults to 2.4.2.0.
-    default: 2.4.2.0
+    description: The version of Ambari to install. Defaults to 2.4.3.0.
+    default: 2.4.3.0
     choices:
-      - 2.4.2.0  # HDP 2.5 / HDP 2.4 / HDP 2.3
+      - 2.4.3.0  # HDP 2.5 / HDP 2.4 / HDP 2.3
       - 2.2.0.0  # HDP 2.3
       - 2.2.1.0  # HDP 2.4
   java_distro:
@@ -68,6 +68,7 @@ validators:
               - mysql-server-5.5
               - libmysql-java
   - package: ambari-agent
+  - script: common/fix_tls_ambari_agent
   - package:
       - unzip
       - zip
