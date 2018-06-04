@@ -125,8 +125,8 @@ def _cluster_create(values, plugin):
         plugin.recommend_configs(cluster)
         cluster = c_u.change_cluster_status(
             cluster, c_u.CLUSTER_STATUS_VALIDATING)
-        quotas.check_cluster(cluster)
         plugin.validate(cluster)
+        quotas.check_cluster(cluster)
     except Exception as e:
         with excutils.save_and_reraise_exception():
             c_u.change_cluster_status(
