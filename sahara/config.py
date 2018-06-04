@@ -103,6 +103,20 @@ dns_opts = [
                      "This is required if 'use_designate' is True")
 ]
 
+accessible_ip_opts = [
+    cfg.IPOpt('identity_ip_accessible',
+              default=None,
+              help='IP address of Keystone endpoint, accessible by tenant'
+                   ' machines. If not set, the results of the DNS lookup'
+                   ' performed where Sahara services are running will be'
+                   ' used.'),
+    cfg.IPOpt('object_store_ip_accessible',
+              default=None,
+              help='IP address of Swift endpoint, accessible by tenant'
+                   ' machines. If not set, the results of the DNS lookup'
+                   ' performed where Sahara services are running will be'
+                   ' used.'),
+]
 
 CONF = cfg.CONF
 CONF.register_cli_opts(cli_opts)
@@ -110,6 +124,7 @@ CONF.register_opts(networking_opts)
 CONF.register_opts(edp_opts)
 CONF.register_opts(db_opts)
 CONF.register_opts(dns_opts)
+CONF.register_opts(accessible_ip_opts)
 
 log.register_options(CONF)
 
@@ -158,6 +173,7 @@ def list_opts():
                          networking_opts,
                          dns_opts,
                          db_opts,
+                         accessible_ip_opts,
                          plugins_base.opts,
                          topology_helper.opts,
                          keystone.opts,

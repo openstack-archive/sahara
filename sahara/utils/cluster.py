@@ -143,6 +143,13 @@ def etc_hosts_entry_for_service(service):
     except keystone_ex.EndpointNotFound:
         LOG.debug("Endpoint not found for service: '{}'".format(service))
         return result
+
+    overridden_ip = (
+        getattr(CONF, "%s_ip_accessible" % service.replace('-', '_'), None)
+    )
+    if overridden_ip is not None:
+        return "%s %s\n" % (overridden_ip, hostname)
+
     try:
         result = "%s %s\n" % (socket.gethostbyname(hostname), hostname)
     except socket.gaierror:
