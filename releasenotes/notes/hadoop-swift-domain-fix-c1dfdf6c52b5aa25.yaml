@@ -1,0 +1,5 @@
+---
+fixes:
+  - Hadoop is now better configured to use the proper Keystone domain
+    for interaction with Swift; previously the 'default' domain may
+    have been incorrectly used.

@@ -60,6 +60,16 @@ def get_swift_configs():
             conf['value'] = retrieve_tenant()
         if CONF.os_region_name and conf['name'] == HADOOP_SWIFT_REGION:
             conf['value'] = CONF.os_region_name
+        if conf['name'] == HADOOP_SWIFT_DOMAIN_NAME:
+            # NOTE(jfreud): Don't be deceived here... Even though there is an
+            # attribute provided by context called domain_name, it is used for
+            # domain scope, and hadoop-swiftfs always authenticates using
+            # project scope. The purpose of the setting below is to override
+            # the default value for project domain and user domain, domain id
+            # as 'default', which may not always be correct.
+            # TODO(jfreud): When hadoop-swiftfs allows it, stop hoping that
+            # project_domain_name is always equal to user_domain_name.
+            conf['value'] = context.current().project_domain_name
 
     result = [cfg for cfg in configs if cfg['value']]
     LOG.info("Swift would be integrated with the following "
