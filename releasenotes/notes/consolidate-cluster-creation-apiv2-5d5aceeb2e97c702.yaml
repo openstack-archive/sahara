@@ -1,0 +1,5 @@
+---
+features:
+  - The experimental APIv2 supports simultaneous creation of multiple clusters
+    only through POST /v2/clusters (using the `count` parameter). The POST
+    /v2/clusters/multiple endpoint has been removed.

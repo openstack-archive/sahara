@@ -123,8 +123,10 @@ class TestClusterApi(base.SaharaWithDbTestCase):
         MULTIPLE_CLUSTERS['count'] = 2
         clusters = api.create_multiple_clusters(MULTIPLE_CLUSTERS)
         self.assertEqual(2, check_cluster.call_count)
-        result_cluster1 = api.get_cluster(clusters['clusters'][0])
-        result_cluster2 = api.get_cluster(clusters['clusters'][1])
+        result_cluster1 = api.get_cluster(
+            clusters['clusters'][0]['cluster']['id'])
+        result_cluster2 = api.get_cluster(
+            clusters['clusters'][1]['cluster']['id'])
         self.assertEqual(c_u.CLUSTER_STATUS_ACTIVE, result_cluster1.status)
         self.assertEqual(c_u.CLUSTER_STATUS_ACTIVE, result_cluster2.status)
         expected_count = {

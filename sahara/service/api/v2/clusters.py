@@ -105,9 +105,9 @@ def create_multiple_clusters(values):
         cluster_dict['name'] = get_multiple_cluster_name(num_of_clusters,
                                                          cluster_name,
                                                          counter + 1)
-        cluster = _cluster_create(cluster_dict, plugin)
+        cluster = _cluster_create(cluster_dict, plugin).to_wrapped_dict()
 
-        clusters.append(cluster.id)
+        clusters.append(cluster)
 
     clusters_dict = {'clusters': clusters}
     return clusters_dict
