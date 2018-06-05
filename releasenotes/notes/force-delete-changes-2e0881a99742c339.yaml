@@ -1,0 +1,6 @@
+---
+features:
+  - The behavior of force deletion of clusters (APIv2) has changed.
+    Stack-abandon is no longer used. The response from the force-delete
+    API call now includes the name of the stack which had underlain
+    that deleted cluster.

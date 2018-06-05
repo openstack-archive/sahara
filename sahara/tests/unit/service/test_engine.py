@@ -127,42 +127,27 @@ class TestDeletion(base.SaharaTestCase):
 
     @mock.patch('sahara.service.heat.heat_engine.LOG.error')
     @mock.patch('sahara.utils.openstack.heat.delete_stack')
-    @mock.patch('sahara.utils.openstack.heat.abandon_stack')
+    @mock.patch('sahara.utils.openstack.heat.lazy_delete_stack')
     @mock.patch('sahara.service.engine.Engine._remove_db_objects')
     @mock.patch('sahara.service.engine.Engine._clean_job_executions')
-    def test_force_delete_calls(self, cj, rdb, abandon, delete, log_err):
+    def test_force_delete_calls(self, cj, rdb, lazy_delete, delete, log_err):
         engine = heat_engine.HeatEngine()
 
-        # Force delete when Heat service support abandon
+        # Force delete (lazy_delete)
         engine.shutdown_cluster(mock.Mock(), force=True)
         self.assertEqual(delete.call_count, 0)
-        self.assertEqual(abandon.call_count, 1)
+        self.assertEqual(lazy_delete.call_count, 1)
         self.assertEqual(cj.call_count, 1)
         self.assertEqual(rdb.call_count, 1)
 
         delete.reset_mock()
-        abandon.reset_mock()
+        lazy_delete.reset_mock()
         rdb.reset_mock()
         cj.reset_mock()
 
         # Regular delete
         engine.shutdown_cluster(mock.Mock(), force=False)
         self.assertEqual(delete.call_count, 1)
-        self.assertEqual(abandon.call_count, 0)
+        self.assertEqual(lazy_delete.call_count, 0)
         self.assertEqual(cj.call_count, 1)
         self.assertEqual(rdb.call_count, 1)
-
-        delete.reset_mock()
-        abandon.reset_mock()
-        rdb.reset_mock()
-        cj.reset_mock()
-
-        # Force delete when stack abandon unavailable
-        abandon.side_effect = heat_exc.BadRequest()
-        engine.shutdown_cluster(mock.Mock(), force=True)
-        self.assertEqual(delete.call_count, 0)
-        self.assertEqual(abandon.call_count, 1)
-        self.assertEqual(cj.call_count, 1)
-        self.assertEqual(rdb.call_count, 1)
-        log_err.assert_called_once_with(
-            "Can't force delete cluster.", exc_info=True)

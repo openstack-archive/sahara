@@ -20,20 +20,26 @@ from sahara.utils.openstack import heat as heat_u
 
 
 class HeatClientTest(testtools.TestCase):
+    @mock.patch('sahara.utils.openstack.heat.get_stack')
     @mock.patch('heatclient.client.Client')
     @mock.patch('sahara.utils.openstack.base.url_for')
     @mock.patch('sahara.service.sessions.cache')
     @mock.patch('sahara.context.ctx')
-    def test_abandon(self, ctx, cache, url_for, heat):
+    def test_deleting(self, ctx, cache, url_for, heat, get_stack):
         class _FakeHeatStacks(object):
             def delete(self, stack):
                 call_list.append("delete")
 
-            def abandon(self, stack):
-                call_list.append("abandon")
+        call_list = None
+        get_stack.return_value = None
+        get_stack.side_effect = lambda *args, **kwargs: call_list.append("get")
 
         heat.return_value.stacks = _FakeHeatStacks()
 
         call_list = []
-        heat_u.abandon_stack(mock.Mock())
-        self.assertEqual(call_list, ["delete", "abandon"])
+        heat_u.lazy_delete_stack(mock.Mock())
+        self.assertEqual(call_list, ["delete"])
+
+        call_list = []
+        heat_u.delete_stack(mock.Mock())
+        self.assertEqual(call_list, ["delete", "get"])

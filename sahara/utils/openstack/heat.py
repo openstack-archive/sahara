@@ -84,13 +84,10 @@ def delete_stack(cluster):
         stack = get_stack(stack_name, raise_on_missing=False)
 
 
-def abandon_stack(cluster):
-    '''Put stack in deleting state if not already, then abandon it.'''
-    heat_client = client()
+def lazy_delete_stack(cluster):
+    '''Attempt to delete stack once, but do not await successful deletion'''
     stack_name = cluster.stack_name
-    base.execute_with_retries(heat_client.stacks.delete, stack_name)
-    # TODO(jfreud): sleep between calls?
-    base.execute_with_retries(heat_client.stacks.abandon, stack_name)
+    base.execute_with_retries(client().stacks.delete, stack_name)
 
 
 def get_stack_outputs(cluster):

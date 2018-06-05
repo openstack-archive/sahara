@@ -90,5 +90,11 @@ def clusters_update(cluster_id, data):
 def clusters_delete(cluster_id):
     data = u.request_data()
     force = data.get('force', False)
+    stack_name = api.get_cluster(cluster_id).get(
+        'extra', {}).get(
+        'heat_stack_name', None)
     api.terminate_cluster(cluster_id, force=force)
-    return u.render()
+    if force:
+        return u.render({"stack_name": stack_name}, status=200)
+    else:
+        return u.render(res=None, status=204)
