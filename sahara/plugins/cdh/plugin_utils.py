@@ -413,30 +413,32 @@ class AbstractPluginUtils(object):
                 cm5_key = (
                     self.c_helper.get_cm5_key_url(cluster) or
                     self.c_helper.DEFAULT_CM5_UBUNTU_REPO_KEY_URL)
-                kms_key = (
-                    self.c_helper.get_kms_key_url(cluster) or
-                    self.c_helper.DEFAULT_KEY_TRUSTEE_UBUNTU_REPO_KEY_URL)
+                if self.c_helper.is_keytrustee_available():
+                    kms_key = (
+                        self.c_helper.get_kms_key_url(cluster) or
+                        self.c_helper.DEFAULT_KEY_TRUSTEE_UBUNTU_REPO_KEY_URL)
+                    kms_repo_url = self.c_helper.KEY_TRUSTEE_UBUNTU_REPO_URL
+                    cmd.add_ubuntu_repository(r, kms_repo_url, 'kms')
+                    cmd.add_apt_key(r, kms_key)
 
                 cdh5_repo_content = self.c_helper.CDH5_UBUNTU_REPO
                 cm5_repo_content = self.c_helper.CM5_UBUNTU_REPO
-                kms_repo_url = self.c_helper.KEY_TRUSTEE_UBUNTU_REPO_URL
 
                 cmd.write_ubuntu_repository(r, cdh5_repo_content, 'cdh')
                 cmd.add_apt_key(r, cdh5_key)
                 cmd.write_ubuntu_repository(r, cm5_repo_content, 'cm')
                 cmd.add_apt_key(r, cm5_key)
-                cmd.add_ubuntu_repository(r, kms_repo_url, 'kms')
-                cmd.add_apt_key(r, kms_key)
                 cmd.update_repository(r)
 
             if cmd.is_centos_os(r):
                 cdh5_repo_content = self.c_helper.CDH5_CENTOS_REPO
                 cm5_repo_content = self.c_helper.CM5_CENTOS_REPO
-                kms_repo_url = self.c_helper.KEY_TRUSTEE_CENTOS_REPO_URL
+                if self.c_helper.is_keytrustee_available():
+                    kms_repo_url = self.c_helper.KEY_TRUSTEE_CENTOS_REPO_URL
+                    cmd.add_centos_repository(r, kms_repo_url, 'kms')
 
                 cmd.write_centos_repository(r, cdh5_repo_content, 'cdh')
                 cmd.write_centos_repository(r, cm5_repo_content, 'cm')
-                cmd.add_centos_repository(r, kms_repo_url, 'kms')
                 cmd.update_repository(r)
 
     def _get_config_value(self, service, name, configs, cluster=None):

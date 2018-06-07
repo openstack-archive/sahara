@@ -68,6 +68,7 @@ case "$PLUGIN" in
         build_images "cdh" "5.7.0" "centos7"
         build_images "cdh" "5.9.0" "centos7"
         build_images "cdh" "5.11.0" "centos7"
+        build_images "cdh" "5.13.0" "centos7"
         ;;
     "ambari")
         build_images "ambari" "2.4" "centos7"

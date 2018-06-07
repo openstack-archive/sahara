@@ -1,0 +1,746 @@
+[
+    {
+        "desc": "Whether to suppress the results of the Impala Daemon Scratch Directories Free Space heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Impala Daemon Scratch Directories Free Space",
+        "name": "role_health_suppression_impalad_scratch_directories_free_space",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Impala Lineage Enabled Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Impala Lineage Enabled Validator",
+        "name": "role_config_suppression_impala_lineage_enabled_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Impala Daemons Load Balancer parameter.",
+        "display_name": "Suppress Parameter Validation: Impala Daemons Load Balancer",
+        "name": "role_config_suppression_impalad_load_balancer",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds for failures encountered when monitoring queries within a recent period specified by the impala_query_monitoring_failure_window configuration for the role.",
+        "display_name": "Query Monitoring Failures Thresholds",
+        "name": "impala_query_monitoring_failure_thresholds",
+        "value": "{\"critical\":\"any\",\"warning\":\"never\"}"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Impala Daemon HDFS Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: Impala Daemon HDFS Advanced Configuration Snippet (Safety Valve)",
+        "name": "role_config_suppression_impala_hdfs_site_conf_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only, key-value pairs (one on each line) to be added (verbatim) to Impala Daemon command-line flags. Key names should begin with a hyphen(-). <b>For example</b>: <code>-log_filename=foo.log</code>",
+        "display_name": "Impala Daemon Command Line Argument Advanced Configuration Snippet (Safety Valve)",
+        "name": "impalad_cmd_args_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Impala Audit Enabled Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Impala Audit Enabled Validator",
+        "name": "role_config_suppression_impala_audit_enabled_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Directory where an Impala Daemon core dump is placed.",
+        "display_name": "Impala Daemon Core Dump Directory",
+        "name": "core_dump_dir",
+        "value": "/var/log/impalad"
+    },
+    {
+        "desc": "Port on which HiveServer2 client requests are served by Impala Daemons.",
+        "display_name": "Impala Daemon HiveServer2 Port",
+        "name": "hs2_port",
+        "value": "21050"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Impala Daemon Fair Scheduler Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: Impala Daemon Fair Scheduler Advanced Configuration Snippet (Safety Valve)",
+        "name": "role_config_suppression_impalad_fair_scheduler_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Maximum number of seconds that Impala attempts to register or re-register with Llama. If registration is unsuccessful, Impala cancels the action with an error, which could result in an impalad startup failure or a cancelled query. A setting of -1 seconds means try indefinitely.",
+        "display_name": "Llama Registration Timeout Seconds",
+        "name": "llama_registration_timeout_secs",
+        "value": "30"
+    },
+    {
+        "desc": "When computing the overall Impala Daemon health, consider the host's health.",
+        "display_name": "Impala Daemon Host Health Test",
+        "name": "impalad_host_health_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "The directory in which Impala daemon audit event log files are written. If \"Impala Audit Event Generation\" property is enabled, Impala will generate its audit logs in this directory.",
+        "display_name": "Impala Daemon Audit Log Directory",
+        "name": "audit_event_log_dir",
+        "value": "/var/log/impalad/audit"
+    },
+    {
+        "desc": "The period to review when computing unexpected exits.",
+        "display_name": "Unexpected Exits Monitoring Period",
+        "name": "unexpected_exits_window",
+        "value": "5"
+    },
+    {
+        "desc": "A list of key-value pairs of additional query options to pass to the Impala Daemon command line, separated by ','.",
+        "display_name": "Impala Daemon Query Options Advanced Configuration Snippet (Safety Valve)",
+        "name": "default_query_options",
+        "value": ""
+    },
+    {
+        "desc": "Port on which Beeswax client requests are served by Impala Daemons.",
+        "display_name": "Impala Daemon Beeswax Port",
+        "name": "beeswax_port",
+        "value": "21000"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Impala Daemon Web Server User Password parameter.",
+        "display_name": "Suppress Parameter Validation: Impala Daemon Web Server User Password",
+        "name": "role_config_suppression_webserver_htpassword_password",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>log4j.properties</strong> for this role only.",
+        "display_name": "Impala Daemon Logging Advanced Configuration Snippet (Safety Valve)",
+        "name": "log4j_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Enable or disable the Impala Daemon web server. This web server contains useful information about Impala Daemon.",
+        "display_name": "Enable Impala Daemon Web Server",
+        "name": "impalad_enable_webserver",
+        "value": "true"
+    },
+    {
+        "desc": "An XML snippet to append to llama-site.xml for Impala Daemons. This configuration only has effect on Impala versions 1.3 or greater.",
+        "display_name": "Impala Daemon Llama Site Advanced Configuration Snippet (Safety Valve)",
+        "name": "impala_llama_site_conf_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "When set, Cloudera Manager will send alerts when this entity's configuration changes.",
+        "display_name": "Enable Configuration Change Alerts",
+        "name": "enable_config_alerts",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds of the number of file descriptors used. Specified as a percentage of file descriptor limit.",
+        "display_name": "File Descriptor Monitoring Thresholds",
+        "name": "impalad_fd_thresholds",
+        "value": "{\"critical\":\"70.0\",\"warning\":\"50.0\"}"
+    },
+    {
+        "desc": "For advanced use only, key-value pairs (one on each line) to be inserted into a role's environment. Applies to configurations of this role except client configuration.",
+        "display_name": "Impala Daemon Environment Advanced Configuration Snippet (Safety Valve)",
+        "name": "IMPALAD_role_env_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Impala Daemon Log Directory parameter.",
+        "display_name": "Suppress Parameter Validation: Impala Daemon Log Directory",
+        "name": "role_config_suppression_log_dir",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Impala Daemon Web Server Username parameter.",
+        "display_name": "Suppress Parameter Validation: Impala Daemon Web Server Username",
+        "name": "role_config_suppression_webserver_htpassword_user",
+        "value": "false"
+    },
+    {
+        "desc": "Enables the health test that verifies the Impala Daemon is connected to the StateStore.",
+        "display_name": "Impala Daemon Connectivity Health Test",
+        "name": "impalad_connectivity_health_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Enables the health check that determines if query collection for the Impala Daemon is successful.",
+        "display_name": "Impala Daemon Query Collection Status Health Check",
+        "name": "impala_query_monitoring_status_check_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "The amount of time at Impala Daemon startup allowed for the Impala Daemon to start accepting new queries for processing.",
+        "display_name": "Impala Daemon Ready Status Startup Tolerance",
+        "name": "impalad_ready_status_check_startup_tolerance",
+        "value": "180"
+    },
+    {
+        "desc": "The maximum size (in queries) of the Impala Daemon audit event log file before a new one is created.",
+        "display_name": "Impala Daemon Maximum Audit Log File Size",
+        "name": "max_audit_event_log_file_size",
+        "value": "5000"
+    },
+    {
+        "desc": "Whether to suppress the results of the Web Server Status heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Web Server Status",
+        "name": "role_health_suppression_impalad_web_metric_collection",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Local UDF Library Dir parameter.",
+        "display_name": "Suppress Parameter Validation: Local UDF Library Dir",
+        "name": "role_config_suppression_local_library_dir",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the LDAP Server CA Certificate parameter.",
+        "display_name": "Suppress Parameter Validation: LDAP Server CA Certificate",
+        "name": "role_config_suppression_impalad_ldap_ca_certificate",
+        "value": "false"
+    },
+    {
+        "desc": "The directory in which Impala daemon lineage log files are written. If \"Impala Lineage Generation\" property is enabled, Impala generates its lineage logs in this directory.",
+        "display_name": "Impala Daemon Lineage Log Directory",
+        "name": "lineage_event_log_dir",
+        "value": "/var/log/impalad/lineage"
+    },
+    {
+        "desc": "The password for the private key in the Impala Daemon Webserver TLS/SSL Server Certificate and Private Key file.  If left blank, the private key is not protected by a password.",
+        "display_name": "Impala Daemon Webserver TLS/SSL Private Key Password",
+        "name": "webserver_private_key_password_cmd",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Impala Daemon Llama Site Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: Impala Daemon Llama Site Advanced Configuration Snippet (Safety Valve)",
+        "name": "role_config_suppression_impala_llama_site_conf_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Impala Daemon Scratch Directories parameter.",
+        "display_name": "Suppress Parameter Validation: Impala Daemon Scratch Directories",
+        "name": "role_config_suppression_scratch_dirs",
+        "value": "false"
+    },
+    {
+        "desc": "Number of retry attempts the Impala Daemon will make when connecting to the Hive Metastore Server. By default, the Impala Daemon waits one second between retries.",
+        "display_name": "Impala Daemon Hive Metastore Connection Retries",
+        "name": "hive_metastore_connect_retries",
+        "value": "5"
+    },
+    {
+        "desc": "The health test thresholds for monitoring of free space on the filesystem that contains this role's log directory. Specified as a percentage of the capacity on that filesystem. This setting is not used if a Log Directory Free Space Monitoring Absolute Thresholds setting is configured.",
+        "display_name": "Log Directory Free Space Monitoring Percentage Thresholds",
+        "name": "log_directory_free_space_percentage_thresholds",
+        "value": "{\"critical\":\"never\",\"warning\":\"never\"}"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Impala Daemon Breakpad Dump Directory parameter.",
+        "display_name": "Suppress Parameter Validation: Impala Daemon Breakpad Dump Directory",
+        "name": "role_config_suppression_minidump_path",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Impala Daemon Webserver TLS/SSL Server Certificate File (PEM Format) parameter.",
+        "display_name": "Suppress Parameter Validation: Impala Daemon Webserver TLS/SSL Server Certificate File (PEM Format)",
+        "name": "role_config_suppression_webserver_certificate_file",
+        "value": "false"
+    },
+    {
+        "desc": "User-defined function (UDF) libraries are copied from HDFS into this local directory.",
+        "display_name": "Local UDF Library Dir",
+        "name": "local_library_dir",
+        "value": "/var/lib/impala/udfs"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Impala Daemon Audit Log Directory parameter.",
+        "display_name": "Suppress Parameter Validation: Impala Daemon Audit Log Directory",
+        "name": "role_config_suppression_audit_event_log_dir",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds on the duration of the metrics request to the web server.",
+        "display_name": "Web Metric Collection Duration",
+        "name": "impalad_web_metric_collection_thresholds",
+        "value": "{\"critical\":\"never\",\"warning\":\"10000.0\"}"
+    },
+    {
+        "desc": "The health test thresholds for monitoring of free space on the filesystem that contains this role's heap dump directory.",
+        "display_name": "Heap Dump Directory Free Space Monitoring Absolute Thresholds",
+        "name": "heap_dump_directory_free_space_absolute_thresholds",
+        "value": "{\"critical\":\"5.36870912E9\",\"warning\":\"1.073741824E10\"}"
+    },
+    {
+        "desc": "Whether to suppress the results of the Unexpected Exits heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Unexpected Exits",
+        "name": "role_health_suppression_impalad_unexpected_exits",
+        "value": "false"
+    },
+    {
+        "desc": "The maximum size, in megabytes, per log file for Impala Daemon logs.  Typically used by log4j or logback.",
+        "display_name": "Impala Daemon Max Log Size",
+        "name": "max_log_size",
+        "value": "200"
+    },
+    {
+        "desc": "<p>The configured triggers for this role. This is a JSON-formatted list of triggers. These triggers are evaluated as part as the health system. Every trigger expression is parsed, and if the trigger condition is met, the list of actions provided in the trigger expression is executed.</p><p>Each trigger has the following fields:</p><ul><li><code>triggerName</code> <b>(mandatory)</b> - The name of the trigger. This value must be unique for the specific role. </li><li><code>triggerExpression</code> <b>(mandatory)</b> - A tsquery expression representing the trigger. </li><li><code>streamThreshold</code> <b>(optional)</b> - The maximum number of streams that can satisfy a condition of a trigger before the condition fires. By default set to 0, and any stream returned causes the condition to fire. </li><li><code>enabled</code> <b> (optional)</b> - By default set to 'true'. If set to 'false', the trigger is not evaluated.</li><li><code>expressionEditorConfig</code> <b> (optional)</b> - Metadata for the trigger editor. If present, the trigger should only be edited from the Edit Trigger page; editing the trigger here can lead to inconsistencies.</li></ul><p>For example, the following JSON formatted trigger configured for a DataNode fires if the DataNode has more than 1500 file descriptors opened:</p><p><pre>[{\"triggerName\": \"sample-trigger\",\n  \"triggerExpression\": \"IF (SELECT fd_open WHERE roleName=$ROLENAME and last(fd_open) > 1500) DO health:bad\",\n  \"streamThreshold\": 0, \"enabled\": \"true\"}]</pre></p><p>See the trigger rules documentation for more details on how to write triggers using tsquery.</p><p>The JSON format is evolving and may change and, as a result, backward compatibility is not guaranteed between releases.</p>",
+        "display_name": "Role Triggers",
+        "name": "role_triggers",
+        "value": "[]"
+    },
+    {
+        "desc": "Username for Impala Daemon webserver authentication.",
+        "display_name": "Impala Daemon Web Server Username",
+        "name": "webserver_htpassword_user",
+        "value": null
+    },
+    {
+        "desc": "Password for Impala Daemon webserver authentication.",
+        "display_name": "Impala Daemon Web Server User Password",
+        "name": "webserver_htpassword_password",
+        "value": null
+    },
+    {
+        "desc": "Directory where Impala Daemon will place its log files.",
+        "display_name": "Impala Daemon Log Directory",
+        "name": "log_dir",
+        "value": "/var/log/impalad"
+    },
+    {
+        "desc": "An XML string to use verbatim for the contents of fair-scheduler.xml for Impala Daemons. This configuration only has effect on Impala versions 1.3 or greater.",
+        "display_name": "Impala Daemon Fair Scheduler Advanced Configuration Snippet (Safety Valve)",
+        "name": "impalad_fair_scheduler_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Impala Daemon Command Line Argument Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: Impala Daemon Command Line Argument Advanced Configuration Snippet (Safety Valve)",
+        "name": "role_config_suppression_impalad_cmd_args_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Impala Daemon Query Options Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: Impala Daemon Query Options Advanced Configuration Snippet (Safety Valve)",
+        "name": "role_config_suppression_default_query_options",
+        "value": "false"
+    },
+    {
+        "desc": "Port on which ImpalaBackendService is exported.",
+        "display_name": "Impala Daemon Backend Port",
+        "name": "be_port",
+        "value": "22000"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>hbase-site.xml</strong> for this role only.",
+        "display_name": "Impala Daemon HBase Advanced Configuration Snippet (Safety Valve)",
+        "name": "impalad_hbase_conf_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>hive-site.xml</strong> for this role only.",
+        "display_name": "Impala Daemon Hive Advanced Configuration Snippet (Safety Valve)",
+        "name": "impala_hive_conf_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "The health test thresholds for unexpected exits encountered within a recent period specified by the unexpected_exits_window configuration for the role.",
+        "display_name": "Unexpected Exits Thresholds",
+        "name": "unexpected_exits_thresholds",
+        "value": "{\"critical\":\"any\",\"warning\":\"never\"}"
+    },
+    {
+        "desc": "Whether to suppress the results of the Audit Pipeline Test heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Audit Pipeline Test",
+        "name": "role_health_suppression_impalad_audit_health",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds on the resident size of the process.",
+        "display_name": "Resident Set Size Thresholds",
+        "name": "process_resident_set_size_thresholds",
+        "value": "{\"critical\":\"never\",\"warning\":\"never\"}"
+    },
+    {
+        "desc": "The health test thresholds for monitoring of free space on the filesystem that contains this role's heap dump directory. Specified as a percentage of the capacity on that filesystem. This setting is not used if a Heap Dump Directory Free Space Monitoring Absolute Thresholds setting is configured.",
+        "display_name": "Heap Dump Directory Free Space Monitoring Percentage Thresholds",
+        "name": "heap_dump_directory_free_space_percentage_thresholds",
+        "value": "{\"critical\":\"never\",\"warning\":\"never\"}"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Impala Daemon HBase Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: Impala Daemon HBase Advanced Configuration Snippet (Safety Valve)",
+        "name": "role_config_suppression_impalad_hbase_conf_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Directory for storing Impala Daemon Breakpad dumps.",
+        "display_name": "Impala Daemon Breakpad Dump Directory",
+        "name": "minidump_path",
+        "value": "/var/log/impala-minidumps"
+    },
+    {
+        "desc": "Verbose logging level for the GLog logger. These messages are always logged at 'INFO' log level, so this setting has no effect if Logging Threshold is set to 'WARN' or above.  ",
+        "display_name": "Impala Daemon Verbose Log Level",
+        "name": "log_verbose_level",
+        "value": "1"
+    },
+    {
+        "desc": "Whether to suppress the results of the Resident Set Size heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Resident Set Size",
+        "name": "role_health_suppression_impalad_memory_rss_health",
+        "value": "false"
+    },
+    {
+        "desc": "Encrypt and verify the integrity of all data spilled to disk as part of a query. This feature is only supported for Impala 2.0 and higher and CDH 5.2 and higher (which includes Impala 2.0).",
+        "display_name": "Disk Spill Encryption",
+        "name": "disk_spill_encryption",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the Swap Memory Usage heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Swap Memory Usage",
+        "name": "role_health_suppression_impalad_swap_memory_usage",
+        "value": "false"
+    },
+    {
+        "desc": "The timeout used by the Cloudera Manager Agent's query monitor when communicating with the Impala Daemon web server, specified in seconds.",
+        "display_name": "Query Monitoring Timeout",
+        "name": "executing_queries_timeout_seconds",
+        "value": "5.0"
+    },
+    {
+        "desc": "Whether to suppress the results of the Heap Dump Directory Free Space heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Heap Dump Directory Free Space",
+        "name": "role_health_suppression_impalad_heap_dump_directory_free_space",
+        "value": "false"
+    },
+    {
+        "desc": "When set, this role's process is automatically (and transparently) restarted in the event of an unexpected failure.",
+        "display_name": "Automatically Restart Process",
+        "name": "process_auto_restart",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Impala Daemon Logging Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: Impala Daemon Logging Advanced Configuration Snippet (Safety Valve)",
+        "name": "role_config_suppression_log4j_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Impala Daemon Hive Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: Impala Daemon Hive Advanced Configuration Snippet (Safety Valve)",
+        "name": "role_config_suppression_impala_hive_conf_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Impala Daemon Webserver TLS/SSL Private Key Password parameter.",
+        "display_name": "Suppress Parameter Validation: Impala Daemon Webserver TLS/SSL Private Key Password",
+        "name": "role_config_suppression_webserver_private_key_password_cmd",
+        "value": "false"
+    },
+    {
+        "desc": "Enables audit event generation by Impala daemons. The audit log file will be placed in the directory specified by 'Impala Daemon Audit Log Directory' parameter.",
+        "display_name": "Enable Impala Audit Event Generation",
+        "name": "enable_audit_event_log",
+        "value": "false"
+    },
+    {
+        "desc": "Number of seconds to wait between attempts during Llama registration.",
+        "display_name": "Llama Registration Wait Seconds",
+        "name": "llama_registration_wait_secs",
+        "value": "3"
+    },
+    {
+        "desc": "Whether to suppress the results of the Process Status heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Process Status",
+        "name": "role_health_suppression_impalad_scm_health",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the CDH Version Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: CDH Version Validator",
+        "name": "role_config_suppression_cdh_version_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Hard memory limit to assign to this role, enforced by the Linux kernel. When the limit is reached, the kernel will reclaim pages charged to the process. If reclaiming fails, the kernel may kill the process. Both anonymous as well as page cache pages contribute to the limit. Use a value of -1 B to specify no limit. By default processes not managed by Cloudera Manager will have no limit.",
+        "display_name": "Cgroup Memory Hard Limit",
+        "name": "rm_memory_hard_limit",
+        "value": "-1"
+    },
+    {
+        "desc": "Whether to suppress the results of the File Descriptors heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: File Descriptors",
+        "name": "role_health_suppression_impalad_file_descriptor",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the Impala Daemon Ready Check heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Impala Daemon Ready Check",
+        "name": "role_health_suppression_impalad_ready_status",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds on the swap memory usage of the process.",
+        "display_name": "Process Swap Memory Thresholds",
+        "name": "process_swap_memory_thresholds",
+        "value": "{\"critical\":\"any\",\"warning\":\"any\"}"
+    },
+    {
+        "desc": "Enables the health check that determines if the Impala daemon is ready to process queries.",
+        "display_name": "Impala Daemon Ready Status Health Check",
+        "name": "impalad_ready_status_check_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "The health test thresholds for monitoring of free space on the filesystem that contains this role's log directory.",
+        "display_name": "Log Directory Free Space Monitoring Absolute Thresholds",
+        "name": "log_directory_free_space_absolute_thresholds",
+        "value": "{\"critical\":\"5.36870912E9\",\"warning\":\"1.073741824E10\"}"
+    },
+    {
+        "desc": "If configured, overrides the process soft and hard rlimits (also called ulimits) for file descriptors to the configured value.",
+        "display_name": "Maximum Process File Descriptors",
+        "name": "rlimit_fds",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Impala Daemon Core Dump Directory parameter.",
+        "display_name": "Suppress Parameter Validation: Impala Daemon Core Dump Directory",
+        "name": "role_config_suppression_core_dump_dir",
+        "value": "false"
+    },
+    {
+        "desc": "The polling period of the Impala query monitor in the Cloudera Manager Agent, specified in seconds. If set to zero, query monitoring is disabled.",
+        "display_name": "Query Monitoring Period",
+        "name": "query_monitoring_period_seconds",
+        "value": "1.0"
+    },
+    {
+        "desc": "Whether to suppress the results of the Query Monitoring Status Check heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Query Monitoring Status Check",
+        "name": "role_health_suppression_impalad_query_monitoring_status",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the Log Directory Free Space heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Log Directory Free Space",
+        "name": "role_health_suppression_impalad_log_directory_free_space",
+        "value": "false"
+    },
+    {
+        "desc": "The path to the TLS/SSL file containing the server certificate key used for TLS/SSL. Used when Impala Daemon Webserver is acting as a TLS/SSL server. The certificate file must be in PEM format.",
+        "display_name": "Impala Daemon Webserver TLS/SSL Server Certificate File (PEM Format)",
+        "name": "webserver_certificate_file",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Impala Daemon Environment Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: Impala Daemon Environment Advanced Configuration Snippet (Safety Valve)",
+        "name": "role_config_suppression_impalad_role_env_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds for monitoring of free space on the filesystem that contains this role's Impala Daemon Scratch Directories. Specified as a percentage of the capacity on that filesystem. This setting is not used if a Impala Daemon Scratch Directories Free Space Monitoring Absolute Thresholds setting is configured.",
+        "display_name": "Impala Daemon Scratch Directories Free Space Monitoring Percentage Thresholds",
+        "name": "impalad_scratch_directories_free_space_percentage_thresholds",
+        "value": "{\"critical\":\"never\",\"warning\":\"never\"}"
+    },
+    {
+        "desc": "Maximum number of query results a client may request to be cached on a per-query basis to support restarting fetches. This option guards against unreasonably large result caches requested by clients. Requests exceeding this maximum will be rejected.",
+        "display_name": "Result Cache Maximum Size",
+        "name": "impalad_result_cache_max_size",
+        "value": "100000"
+    },
+    {
+        "desc": "Whether to suppress the results of the StateStore Connectivity heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: StateStore Connectivity",
+        "name": "role_health_suppression_impalad_connectivity",
+        "value": "false"
+    },
+    {
+        "desc": "Abort Impala startup if there are improper configs or running on unsupported hardware.",
+        "display_name": "Abort on Config Error",
+        "name": "abort_on_config_error",
+        "value": "true"
+    },
+    {
+        "desc": "Directories where Impala Daemon will write data such as spilling information to disk to free up memory. This can potentially be large amounts of data.",
+        "display_name": "Impala Daemon Scratch Directories",
+        "name": "scratch_dirs",
+        "value": null
+    },
+    {
+        "desc": "Buffer log messages logged at this level or lower (-1 means don't buffer; 0 means buffer INFO only; 1 means buffer WARNING only, ...)",
+        "display_name": "Impala Daemon Log Buffer Level",
+        "name": "logbuflevel",
+        "value": "0"
+    },
+    {
+        "desc": "Enables lineage generation by Impala daemons. The lineage log file is placed in the directory specified by the 'Impala Daemon Lineage Log Directory' parameter.",
+        "display_name": "Enable Impala Lineage Generation",
+        "name": "enable_lineage_log",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress the results of the Host Health heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Host Health",
+        "name": "role_health_suppression_impalad_host_health",
+        "value": "false"
+    },
+    {
+        "desc": "The maximum size (in entries) of the Impala daemon lineage log file before a new one is created.",
+        "display_name": "Impala Daemon Maximum Lineage Log File Size",
+        "name": "max_lineage_log_file_size",
+        "value": "5000"
+    },
+    {
+        "desc": "The path to the TLS/SSL file containing the private key used for TLS/SSL. Used when Impala Daemon Webserver is acting as a TLS/SSL server. The certificate file must be in PEM format.",
+        "display_name": "Impala Daemon Webserver TLS/SSL Server Private Key File (PEM Format)",
+        "name": "webserver_private_key_file",
+        "value": null
+    },
+    {
+        "desc": "The location on disk of the certificate, in .pem format, used to confirm the authenticity of the LDAP server certificate. This is the Certificate Authority (CA) certificate, and it was used to sign the LDAP server certificate. If not set, all certificates are trusted, which means that an attacker could potentially intercept otherwise encrypted usernames and passwords.",
+        "display_name": "LDAP Server CA Certificate",
+        "name": "impalad_ldap_ca_certificate",
+        "value": null
+    },
+    {
+        "desc": "Timeout for requests to the Hive Metastore Server from Impala. Consider increasing this if you have tables with a lot of metadata and see timeout errors.",
+        "display_name": "Impala Daemon Hive Metastore Connection Timeout",
+        "name": "hive_metastore_timeout",
+        "value": "3600"
+    },
+    {
+        "desc": "Soft memory limit to assign to this role, enforced by the Linux kernel. When the limit is reached, the kernel will reclaim pages charged to the process if and only if the host is facing memory pressure. If reclaiming fails, the kernel may kill the process. Both anonymous as well as page cache pages contribute to the limit. Use a value of -1 B to specify no limit. By default processes not managed by Cloudera Manager will have no limit.",
+        "display_name": "Cgroup Memory Soft Limit",
+        "name": "rm_memory_soft_limit",
+        "value": "-1"
+    },
+    {
+        "desc": "Number of CPU shares to assign to this role. The greater the number of shares, the larger the share of the host's CPUs that will be given to this role when the host experiences CPU contention. Must be between 2 and 262144. Defaults to 1024 for processes not managed by Cloudera Manager.",
+        "display_name": "Cgroup CPU Shares",
+        "name": "rm_cpu_shares",
+        "value": "1024"
+    },
+    {
+        "desc": "The period to review when computing query monitoring failures.",
+        "display_name": "Monitoring Period For Query Monitoring Failures",
+        "name": "impala_query_monitoring_failure_window",
+        "value": "5"
+    },
+    {
+        "desc": "Cloudera Manager agent monitors each service and each of its role by publishing metrics to the Cloudera Manager Service Monitor. Setting it to false will stop Cloudera Manager agent from publishing any metric for corresponding service/roles. This is usually helpful for services that generate large amount of metrics which Service Monitor is not able to process.",
+        "display_name": "Enable Metric Collection",
+        "name": "process_should_monitor",
+        "value": "true"
+    },
+    {
+        "desc": "Maximum number of Breakpad dump files stored by Impala Daemon Role.",
+        "display_name": "Impala Daemon Max Breakpad Dump Files",
+        "name": "max_minidumps",
+        "value": "9"
+    },
+    {
+        "desc": "Port where StateStoreSubscriberService is running.",
+        "display_name": "StateStoreSubscriber Service Port",
+        "name": "state_store_subscriber_port",
+        "value": "23000"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Impala Daemon Webserver TLS/SSL Server Private Key File (PEM Format) parameter.",
+        "display_name": "Suppress Parameter Validation: Impala Daemon Webserver TLS/SSL Server Private Key File (PEM Format)",
+        "name": "role_config_suppression_webserver_private_key_file",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Role Triggers parameter.",
+        "display_name": "Suppress Parameter Validation: Role Triggers",
+        "name": "role_config_suppression_role_triggers",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Impala Daemon Lineage Log Directory parameter.",
+        "display_name": "Suppress Parameter Validation: Impala Daemon Lineage Log Directory",
+        "name": "role_config_suppression_lineage_event_log_dir",
+        "value": "false"
+    },
+    {
+        "desc": "Address of the load balancer used for Impala daemons. Should be specified in host:port format. If this is specified and Kerberos is enabled, Cloudera Manager adds a principal for 'impala/&lt;load_balancer_host&gt;@&lt;realm&gt;' to the keytab for all Impala daemons.",
+        "display_name": "Impala Daemons Load Balancer",
+        "name": "impalad_load_balancer",
+        "value": null
+    },
+    {
+        "desc": "Maximum number of times a request to reserve, expand, or release resources is attempted until the request is cancelled.",
+        "display_name": "Llama Maximum Request Attempts",
+        "name": "llama_max_request_attempts",
+        "value": "5"
+    },
+    {
+        "desc": "When set, Cloudera Manager will send alerts when the health of this role reaches the threshold specified by the EventServer setting eventserver_health_events_alert_threshold",
+        "display_name": "Enable Health Alerts for this Role",
+        "name": "enable_alerts",
+        "value": "true"
+    },
+    {
+        "desc": "The minimum log level for Impala Daemon logs",
+        "display_name": "Impala Daemon Logging Threshold",
+        "name": "log_threshold",
+        "value": "INFO"
+    },
+    {
+        "desc": "Port where Impala debug web server runs.",
+        "display_name": "Impala Daemon HTTP Server Port",
+        "name": "impalad_webserver_port",
+        "value": "25000"
+    },
+    {
+        "desc": "Enables the health test that the Impala Daemon's process state is consistent with the role configuration",
+        "display_name": "Impala Daemon Process Health Test",
+        "name": "impalad_scm_health_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Memory limit in bytes for Impala Daemon, enforced by the daemon itself. If reached, queries running on the Impala Daemon may be killed. Leave it blank to let Impala pick its own limit. Use a value of -1 B to specify no limit.",
+        "display_name": "Impala Daemon Memory Limit",
+        "name": "impalad_memory_limit",
+        "value": null
+    },
+    {
+        "desc": "Weight for the read I/O requests issued by this role. The greater the weight, the higher the priority of the requests when the host experiences I/O contention. Must be between 100 and 1000. Defaults to 1000 for processes not managed by Cloudera Manager.",
+        "display_name": "Cgroup I/O Weight",
+        "name": "rm_io_weight",
+        "value": "500"
+    },
+    {
+        "desc": "The amount of time to wait for the Impala Daemon to fully start up and connect to the StateStore before enforcing the connectivity check.",
+        "display_name": "Impala Daemon Connectivity Tolerance at Startup",
+        "name": "impalad_connectivity_tolerance",
+        "value": "180"
+    },
+    {
+        "desc": "Port where Llama notification callback should be started",
+        "display_name": "Llama Callback Port",
+        "name": "llama_callback_port",
+        "value": "28000"
+    },
+    {
+        "desc": "The health test thresholds for monitoring of free space on the filesystem that contains this role's Impala Daemon Scratch Directories.",
+        "display_name": "Impala Daemon Scratch Directories Free Space Monitoring Absolute Thresholds",
+        "name": "impalad_scratch_directories_free_space_absolute_thresholds",
+        "value": "{\"critical\":\"5.36870912E9\",\"warning\":\"1.073741824E10\"}"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>hdfs-site.xml</strong> for this role only.",
+        "display_name": "Impala Daemon HDFS Advanced Configuration Snippet (Safety Valve)",
+        "name": "impala_hdfs_site_conf_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Enables the health test that the Cloudera Manager Agent can successfully contact and gather metrics from the web server.",
+        "display_name": "Web Metric Collection",
+        "name": "impalad_web_metric_collection_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "The number of log files that are kept for each severity level before all older log files are removed. The number has to be greater than 1 to keep at least the current log file open. If set to 0, all log files are retained and log rotation is effectively disabled.",
+        "display_name": "Impala Maximum Log Files",
+        "name": "max_log_files",
+        "value": "10"
+    }
+]

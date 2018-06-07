@@ -1,0 +1,884 @@
+[
+    {
+        "desc": "Whether to suppress the results of the Checkpoint Status heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Checkpoint Status",
+        "name": "role_health_suppression_name_node_ha_checkpoint_age",
+        "value": "false"
+    },
+    {
+        "desc": "Name of the journal located on each JournalNode filesystem.",
+        "display_name": "Quorum-based Storage Journal name",
+        "name": "dfs_namenode_quorum_journal_name",
+        "value": null
+    },
+    {
+        "desc": "Timeout when starting a new edit segment with JournalNodes. This only applies when NameNode high availability is enabled.",
+        "display_name": "JournalNode Start Segment Timeout",
+        "name": "dfs_qjournal_start_segment_timeout_ms",
+        "value": "20000"
+    },
+    {
+        "desc": "Indicate whether or not to avoid reading from stale DataNodes for which heartbeat messages have not been received by the NameNode for more than Stale DataNode Time Interval. Stale DataNodes are moved to the end of the node list returned for reading. See dfs.namenode.avoid.write.stale.datanode for a similar setting for writes.",
+        "display_name": "Avoid Reading Stale DataNode",
+        "name": "dfs_namenode_avoid_read_stale_datanode",
+        "value": "false"
+    },
+    {
+        "desc": "The base port where the DFS NameNode web UI listens. If the port number is 0, then the server starts on a free port. Combined with the NameNode's hostname to build its HTTP address.",
+        "display_name": "NameNode Web UI Port",
+        "name": "dfs_http_port",
+        "value": "50070"
+    },
+    {
+        "desc": "Enables the health test that the NameNode is not in safemode",
+        "display_name": "NameNode Safemode Health Test",
+        "name": "namenode_safe_mode_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Number of minutes between trash checkpoints. After a .Trash directory checkpoint is created, the Filesystem Trash Interval will define the time until permanent deletion. If set to 0, the value will be considered equal to the Filesytem Trash Interval value, which can cause the permanent deletion of entries in Trash to take over twice as long. The value for this must not exceed the Filesystem Trash Interval value.",
+        "display_name": "Filesystem Trash Checkpoint Interval",
+        "name": "fs_trash_checkpoint_interval",
+        "value": "60"
+    },
+    {
+        "desc": "The method used to collect stacks. The jstack option involves periodically running the jstack command against the role's daemon process. The servlet method is available for those roles that have an HTTP server endpoint exposing the current stacks traces of all threads. When the servlet method is selected, that HTTP endpoint is periodically scraped.",
+        "display_name": "Stacks Collection Method",
+        "name": "stacks_collection_method",
+        "value": "jstack"
+    },
+    {
+        "desc": "Timeout when accepting recovery of an edit segment from JournalNodes. This only applies when NameNode high availability is enabled.",
+        "display_name": "JournalNode Accept Recovery Timeout",
+        "name": "dfs_qjournal_accept_recovery_timeout_ms",
+        "value": "120000"
+    },
+    {
+        "desc": "Whether or not periodic stacks collection is enabled.",
+        "display_name": "Stacks Collection Enabled",
+        "name": "stacks_collection_enabled",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the NameNode Data Directories Free Space heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: NameNode Data Directories Free Space",
+        "name": "role_health_suppression_name_node_data_directories_free_space",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the Heap Dump Directory Free Space heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Heap Dump Directory Free Space",
+        "name": "role_health_suppression_name_node_heap_dump_directory_free_space",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds on the duration of the metrics request to the web server.",
+        "display_name": "Web Metric Collection Duration",
+        "name": "namenode_web_metric_collection_thresholds",
+        "value": "{\"critical\":\"never\",\"warning\":\"10000.0\"}"
+    },
+    {
+        "desc": "The health check thresholds of the NameNode's RPC latency.",
+        "display_name": "NameNode RPC Latency Thresholds",
+        "name": "namenode_rpc_latency_thresholds",
+        "value": "{\"critical\":\"5000.0\",\"warning\":\"1000.0\"}"
+    },
+    {
+        "desc": "The period to review when computing the moving average of extra time the pause monitor spent paused.",
+        "display_name": "Pause Duration Monitoring Period",
+        "name": "namenode_pause_duration_window",
+        "value": "5"
+    },
+    {
+        "desc": "Timeout when writing edits to a JournalNode. This only applies when NameNode high availability is enabled.",
+        "display_name": "JournalNode Write Transactions Timeout",
+        "name": "dfs_qjournal_write_txns_timeout_ms",
+        "value": "20000"
+    },
+    {
+        "desc": "The period to review when computing unexpected exits.",
+        "display_name": "Unexpected Exits Monitoring Period",
+        "name": "unexpected_exits_window",
+        "value": "5"
+    },
+    {
+        "desc": "Whether to suppress the results of the RPC Latency heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: RPC Latency",
+        "name": "role_health_suppression_name_node_rpc_latency",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the File Descriptors heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: File Descriptors",
+        "name": "role_health_suppression_name_node_file_descriptor",
+        "value": "false"
+    },
+    {
+        "desc": "The maximum number of outgoing replication threads a node can have at one time. This limit is waived for the highest priority replications. Configure dfs.namenode.replication.max-streams-hard-limit to set the absolute limit, including the highest-priority replications.",
+        "display_name": "Maximum Number of Replication Threads on a DataNode",
+        "name": "dfs_namenode_replication_max_streams",
+        "value": "20"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>log4j.properties</strong> for this role only.",
+        "display_name": "NameNode Logging Advanced Configuration Snippet (Safety Valve)",
+        "name": "log4j_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "When the ratio of number stale DataNodes to total DataNodes marked is greater than this ratio, permit writing to stale nodes to prevent causing hotspots.",
+        "display_name": "Write Stale DataNode Ratio",
+        "name": "dfs_namenode_write_stale_datanode_ratio",
+        "value": "0.5"
+    },
+    {
+        "desc": "The health test thresholds for the weighted average extra time the pause monitor spent paused. Specified as a percentage of elapsed wall clock time.",
+        "display_name": "Pause Duration Thresholds",
+        "name": "namenode_pause_duration_thresholds",
+        "value": "{\"critical\":\"60.0\",\"warning\":\"30.0\"}"
+    },
+    {
+        "desc": "Whether to suppress the results of the Swap Memory Usage heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Swap Memory Usage",
+        "name": "role_health_suppression_name_node_swap_memory_usage",
+        "value": "false"
+    },
+    {
+        "desc": "When set, Cloudera Manager will send alerts when the health of this role reaches the threshold specified by the EventServer setting eventserver_health_events_alert_threshold",
+        "display_name": "Enable Health Alerts for this Role",
+        "name": "enable_alerts",
+        "value": "true"
+    },
+    {
+        "desc": "For advanced use only. A string to be inserted into <strong>dfs_all_hosts.txt</strong> for this role only.",
+        "display_name": "NameNode Advanced Configuration Snippet (Safety Valve) for dfs_all_hosts.txt",
+        "name": "namenode_all_hosts_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Filesystem Trash Interval On Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Filesystem Trash Interval On Validator",
+        "name": "role_config_suppression_fs_trash_interval_minimum_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the NameNode Advanced Configuration Snippet (Safety Valve) for hdfs-site.xml parameter.",
+        "display_name": "Suppress Parameter Validation: NameNode Advanced Configuration Snippet (Safety Valve) for hdfs-site.xml",
+        "name": "role_config_suppression_namenode_config_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Enables the health test that the NameNode's process state is consistent with the role configuration",
+        "display_name": "NameNode Process Health Test",
+        "name": "namenode_scm_health_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "When set, generates heap dump file when java.lang.OutOfMemoryError is thrown.",
+        "display_name": "Dump Heap When Out of Memory",
+        "name": "oom_heap_dump_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the NameNode Advanced Configuration Snippet (Safety Valve) for dfs_hosts_allow.txt parameter.",
+        "display_name": "Suppress Parameter Validation: NameNode Advanced Configuration Snippet (Safety Valve) for dfs_hosts_allow.txt",
+        "name": "role_config_suppression_namenode_hosts_allow_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the NameNode Log Directory parameter.",
+        "display_name": "Suppress Parameter Validation: NameNode Log Directory",
+        "name": "role_config_suppression_namenode_log_dir",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the NameNode Plugins parameter.",
+        "display_name": "Suppress Parameter Validation: NameNode Plugins",
+        "name": "role_config_suppression_dfs_namenode_plugins_list",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the NameNode Nameservice parameter.",
+        "display_name": "Suppress Parameter Validation: NameNode Nameservice",
+        "name": "role_config_suppression_dfs_federation_namenode_nameservice",
+        "value": "false"
+    },
+    {
+        "desc": "Enables the health test of the rolling metadata upgrade status of the NameNode. This covers rolling metadata upgrades. Nonrolling metadata upgrades are covered in a separate health test.",
+        "display_name": "HDFS Rolling Metadata Upgrade Status Health Test",
+        "name": "namenode_rolling_upgrade_status_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Mount points that are mapped to this NameNode's nameservice.",
+        "display_name": "Mount Points",
+        "name": "nameservice_mountpoints",
+        "value": "/"
+    },
+    {
+        "desc": "The health test thresholds of the number of file descriptors used. Specified as a percentage of file descriptor limit.",
+        "display_name": "File Descriptor Monitoring Thresholds",
+        "name": "namenode_fd_thresholds",
+        "value": "{\"critical\":\"70.0\",\"warning\":\"50.0\"}"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Stacks Collection Directory parameter.",
+        "display_name": "Suppress Parameter Validation: Stacks Collection Directory",
+        "name": "role_config_suppression_stacks_collection_directory",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds for monitoring of free space on the filesystem that contains this role's log directory. Specified as a percentage of the capacity on that filesystem. This setting is not used if a Log Directory Free Space Monitoring Absolute Thresholds setting is configured.",
+        "display_name": "Log Directory Free Space Monitoring Percentage Thresholds",
+        "name": "log_directory_free_space_percentage_thresholds",
+        "value": "{\"critical\":\"never\",\"warning\":\"never\"}"
+    },
+    {
+        "desc": "<p>This file contains the rules that govern how log messages are turned into events by the custom log4j appender that this role loads. It is in JSON format, and is composed of a list of rules. Every log message is evaluated against each of these rules in turn to decide whether or not to send an event for that message. If a log message matches multiple rules, the first matching rule is used. </p><p>Each rule has some or all of the following fields:</p><ul><li><code>alert</code> - whether or not events generated from this rule should be promoted to alerts. A value of \"true\" will cause alerts to be generated. If not specified, the default is \"false\".</li><li><code>rate</code> <b>(mandatory)</b> - the maximum number of log messages matching this rule that can be sent as events every minute. If more than <code>rate</code> matching log messages are received in a single minute, the extra messages are ignored. If rate is less than 0, the number of messages per minute is unlimited.</li><li><code>periodminutes</code>  - the number of minutes during which the publisher will only publish <code>rate</code> events or fewer. If not specified, the default is <b>one minute</b></li><li><code>threshold</code> - apply this rule only to messages with this log4j severity level or above. An example is \"WARN\" for warning level messages or higher.</li><li><code>content</code> - match only those messages for which contents match this regular expression.</li><li><code>exceptiontype</code> - match only those messages that are part of an exception message. The exception type must match this regular expression.</li></ul><p>Example:</p><ul><li><pre>{\"alert\": false, \"rate\": 10, \"exceptiontype\": \"java.lang.StringIndexOutOfBoundsException\"}</pre>This rule sends events to Cloudera Manager for every <code>StringIndexOutOfBoundsException</code>, up to a maximum of 10 every minute.</li><li><pre>{\"alert\": false, \"rate\": 1, \"periodminutes\": 1, \"exceptiontype\": \".*\"}, {\"alert\": true, \"rate\": 1, \"periodminutes\": 1, \"threshold\":\"ERROR\"}</pre>In this example, an event generated may not be promoted to alert if an exception is in the ERROR log message, because the first rule with alert = false will match.</li></ul>",
+        "display_name": "Rules to Extract Events from Log Files",
+        "name": "log_event_whitelist",
+        "value": "{\n  \"version\": \"0\",\n  \"rules\": [\n    {\"alert\": false, \"rate\": 1, \"periodminutes\": 1, \"threshold\":\"FATAL\"},\n    {\"alert\": false, \"rate\": 0, \"threshold\":\"WARN\", \"content\": \".* is deprecated. Instead, use .*\"},\n    {\"alert\": false, \"rate\": 0, \"threshold\":\"WARN\", \"content\": \".* is deprecated. Use .* instead\"},\n    {\"alert\": false, \"rate\": 0, \"exceptiontype\": \"java.io.IOException\"},\n    {\"alert\": false, \"rate\": 0, \"exceptiontype\": \"java.net.SocketException\"},\n    {\"alert\": false, \"rate\": 0, \"exceptiontype\": \"java.net.SocketClosedException\"},\n    {\"alert\": false, \"rate\": 0, \"exceptiontype\": \"java.io.EOFException\"},\n    {\"alert\": false, \"rate\": 0, \"exceptiontype\": \"java.nio.channels.CancelledKeyException\"},\n    {\"alert\": false, \"rate\": 1, \"periodminutes\": 2, \"exceptiontype\": \".*\"},\n    {\"alert\": false, \"rate\": 0, \"threshold\":\"WARN\", \"content\":\"Unknown job [^ ]+ being deleted.*\"},\n    {\"alert\": false, \"rate\": 0, \"threshold\":\"WARN\", \"content\":\"Error executing shell command .+ No such process.+\"},\n    {\"alert\": false, \"rate\": 0, \"threshold\":\"WARN\", \"content\":\".*attempt to override final parameter.+\"},\n    {\"alert\": false, \"rate\": 0, \"threshold\":\"WARN\", \"content\":\"[^ ]+ is a deprecated filesystem name. Use.*\"},\n    {\"alert\": false, \"rate\": 1, \"periodminutes\": 1, \"threshold\":\"WARN\"},\n    {\"alert\": false, \"rate\": 1, \"threshold\":\"INFO\", \"content\":\"Triggering checkpoint.*\"}\n  ]\n}\n"
+    },
+    {
+        "desc": "Whether to suppress the results of the Audit Pipeline Test heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Audit Pipeline Test",
+        "name": "role_health_suppression_name_node_audit_health",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Java Configuration Options for NameNode parameter.",
+        "display_name": "Suppress Parameter Validation: Java Configuration Options for NameNode",
+        "name": "role_config_suppression_namenode_java_opts",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the NameNode Edits Directories parameter.",
+        "display_name": "Suppress Parameter Validation: NameNode Edits Directories",
+        "name": "role_config_suppression_dfs_namenode_edits_dir",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the NameNode Advanced Configuration Snippet (Safety Valve) for dfs_hosts_exclude.txt parameter.",
+        "display_name": "Suppress Parameter Validation: NameNode Advanced Configuration Snippet (Safety Valve) for dfs_hosts_exclude.txt",
+        "name": "role_config_suppression_namenode_hosts_exclude_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the NameNode Service Handler Count Minimum Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: NameNode Service Handler Count Minimum Validator",
+        "name": "role_config_suppression_dfs_namenode_service_handler_count_minimum_validator",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds for monitoring of free space on the filesystem that contains this role's heap dump directory.",
+        "display_name": "Heap Dump Directory Free Space Monitoring Absolute Thresholds",
+        "name": "heap_dump_directory_free_space_absolute_thresholds",
+        "value": "{\"critical\":\"5.36870912E9\",\"warning\":\"1.073741824E10\"}"
+    },
+    {
+        "desc": "Timeout when preparing recovery of an edit segment with JournalNodes. This only applies when NameNode high availability is enabled.",
+        "display_name": "JournalNode Prepare Recovery Timeout",
+        "name": "dfs_qjournal_prepare_recovery_timeout_ms",
+        "value": "120000"
+    },
+    {
+        "desc": "Maximum size in bytes for the Java Process heap memory.  Passed to Java -Xmx.",
+        "display_name": "Java Heap Size of NameNode in Bytes",
+        "name": "namenode_java_heapsize",
+        "value": "4294967296"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Role Triggers parameter.",
+        "display_name": "Suppress Parameter Validation: Role Triggers",
+        "name": "role_config_suppression_role_triggers",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the JournalNode Sync Status heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: JournalNode Sync Status",
+        "name": "role_health_suppression_name_node_journal_node_sync_status",
+        "value": "false"
+    },
+    {
+        "desc": "The maximum size, in megabytes, per log file for NameNode logs.  Typically used by log4j or logback.",
+        "display_name": "NameNode Max Log Size",
+        "name": "max_log_size",
+        "value": "200"
+    },
+    {
+        "desc": "Determines where on the local file system the NameNode should store the name table (fsimage). For redundancy, enter a comma-delimited list of directories to replicate the name table in all of the directories. Typical values are /data/N/dfs/nn where N=1..3.",
+        "display_name": "NameNode Data Directories",
+        "name": "dfs_name_dir_list",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress the results of the Upgrade Status heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Upgrade Status",
+        "name": "role_health_suppression_name_node_upgrade_status",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Shared Edits Directory parameter.",
+        "display_name": "Suppress Parameter Validation: Shared Edits Directory",
+        "name": "role_config_suppression_dfs_namenode_shared_edits_dir",
+        "value": "false"
+    },
+    {
+        "desc": "Default time interval for marking a DataNode as \"stale\". If the NameNode has not received heartbeat messages from a DataNode for more than this time interval, the DataNode is marked and treated as \"stale\" by default.",
+        "display_name": "Stale DataNode Time Interval",
+        "name": "dfs_namenode_stale_datanode_interval",
+        "value": "30000"
+    },
+    {
+        "desc": "Whether to suppress the results of the Pause Duration heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Pause Duration",
+        "name": "role_health_suppression_name_node_pause_duration",
+        "value": "false"
+    },
+    {
+        "desc": "The port where the NameNode runs the HDFS protocol. Combined with the NameNode's hostname to build its address.",
+        "display_name": "NameNode Port",
+        "name": "namenode_port",
+        "value": "8020"
+    },
+    {
+        "desc": "Advanced Configuration Snippet (Safety Valve) for Hadoop Metrics2. Properties will be inserted into <strong>hadoop-metrics2.properties</strong>.",
+        "display_name": "Hadoop Metrics2 Advanced Configuration Snippet (Safety Valve)",
+        "name": "hadoop_metrics2_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "The amount of stacks data that is retained. After the retention limit is reached, the oldest data is deleted.",
+        "display_name": "Stacks Collection Data Retention",
+        "name": "stacks_collection_data_retention",
+        "value": "104857600"
+    },
+    {
+        "desc": "The frequency with which stacks are collected.",
+        "display_name": "Stacks Collection Frequency",
+        "name": "stacks_collection_frequency",
+        "value": "5.0"
+    },
+    {
+        "desc": "The period to review when computing the moving average of the NameNode's RPC latency.",
+        "display_name": "NameNode RPC Latency Monitoring Window",
+        "name": "namenode_rpc_latency_window",
+        "value": "5"
+    },
+    {
+        "desc": "Optional port for the service-rpc address which can be used by HDFS daemons instead of sharing the RPC address used by the clients.",
+        "display_name": "NameNode Service RPC Port",
+        "name": "dfs_namenode_servicerpc_address",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Quorum-based Storage Journal name parameter.",
+        "display_name": "Suppress Parameter Validation: Quorum-based Storage Journal name",
+        "name": "role_config_suppression_dfs_namenode_quorum_journal_name",
+        "value": "false"
+    },
+    {
+        "desc": "The health check thresholds for the number of out-of-sync JournalNodes for this NameNode.",
+        "display_name": "NameNode Out-Of-Sync JournalNodes Thresholds",
+        "name": "namenode_out_of_sync_journal_nodes_thresholds",
+        "value": "{\"critical\":\"any\",\"warning\":\"never\"}"
+    },
+    {
+        "desc": "The health test thresholds for monitoring of free space on the filesystem that contains this role's NameNode Data Directories.",
+        "display_name": "NameNode Data Directories Free Space Monitoring Absolute Thresholds",
+        "name": "namenode_data_directories_free_space_absolute_thresholds",
+        "value": "{\"critical\":\"5.36870912E9\",\"warning\":\"1.073741824E10\"}"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hadoop Metrics2 Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: Hadoop Metrics2 Advanced Configuration Snippet (Safety Valve)",
+        "name": "role_config_suppression_hadoop_metrics2_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "The absolute maximum number of outgoing replication threads a given node can have at one time. The regular limit (dfs.namenode.replication.max-streams) is waived for highest-priority block replications. Highest replication priority is for blocks that are at a very high risk of loss if the disk or server on which they remain fails. These are usually blocks with only one copy, or blocks with zero live copies but a copy in a node being decommissioned. dfs.namenode.replication.max-streams-hard-limit provides a limit on the total number of outgoing replication threads, including threads of all priorities.",
+        "display_name": "Hard Limit on the Number of Replication Threads on a Datanode",
+        "name": "dfs_namenode_replication_max_streams_hard_limit",
+        "value": "40"
+    },
+    {
+        "desc": "For advanced use only, key-value pairs (one on each line) to be inserted into a role's environment. Applies to configurations of this role except client configuration.",
+        "display_name": "NameNode Environment Advanced Configuration Snippet (Safety Valve)",
+        "name": "NAMENODE_role_env_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "The health test thresholds for monitoring of free space on the filesystem that contains this role's heap dump directory. Specified as a percentage of the capacity on that filesystem. This setting is not used if a Heap Dump Directory Free Space Monitoring Absolute Thresholds setting is configured.",
+        "display_name": "Heap Dump Directory Free Space Monitoring Percentage Thresholds",
+        "name": "heap_dump_directory_free_space_percentage_thresholds",
+        "value": "{\"critical\":\"never\",\"warning\":\"never\"}"
+    },
+    {
+        "desc": "Directory where NameNode will place its log files.",
+        "display_name": "NameNode Log Directory",
+        "name": "namenode_log_dir",
+        "value": "/var/log/hadoop-hdfs"
+    },
+    {
+        "desc": "Number of CPU shares to assign to this role. The greater the number of shares, the larger the share of the host's CPUs that will be given to this role when the host experiences CPU contention. Must be between 2 and 262144. Defaults to 1024 for processes not managed by Cloudera Manager.",
+        "display_name": "Cgroup CPU Shares",
+        "name": "rm_cpu_shares",
+        "value": "1024"
+    },
+    {
+        "desc": "Enables the health test of the metadata upgrade status of the NameNode. This covers nonrolling metadata upgrades. Rolling metadata upgrades are covered in a separate health test.",
+        "display_name": "HDFS Metadata Upgrade Status Health Test",
+        "name": "namenode_upgrade_status_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Nameservice of this NameNode. The Nameservice represents the interface to this NameNode and its High Availability partner. The Nameservice also represents the namespace associated with a federated NameNode.",
+        "display_name": "NameNode Nameservice",
+        "name": "dfs_federation_namenode_nameservice",
+        "value": null
+    },
+    {
+        "desc": "The minimum log level for NameNode logs",
+        "display_name": "NameNode Logging Threshold",
+        "name": "log_threshold",
+        "value": "INFO"
+    },
+    {
+        "desc": "Specifies the percentage of blocks that should satisfy the minimal replication requirement defined by dfs.replication.min. Enter a value less than or equal to 0 to wait for any particular percentage of blocks before exiting safemode. Values greater than 1 will make safemode permanent.",
+        "display_name": "Safemode Threshold Percentage",
+        "name": "dfs_safemode_threshold_pct",
+        "value": "0.999"
+    },
+    {
+        "desc": "Directories on the local file system to store the NameNode edits. If not set, the edits are stored in the NameNode's Data Directories. The value of this configuration is automatically generated to be the Quorum-based Storage URI if there are JournalNodes and this NameNode is not Highly Available.",
+        "display_name": "NameNode Edits Directories",
+        "name": "dfs_namenode_edits_dir",
+        "value": null
+    },
+    {
+        "desc": "If set to false and if one of the replicas of the NameNode storage fails, such as temporarily failure of NFS, this directory is not used until the NameNode restarts.  If enabled, failed storage is re-checked on every checkpoint and, if it becomes valid, the NameNode will try to restore the edits and fsimage.",
+        "display_name": "Restore NameNode Directories at Checkpoint Time",
+        "name": "dfs_name_dir_restore",
+        "value": "false"
+    },
+    {
+        "desc": "Timeout when creating new epoch number with JournalNodes. This only applies when NameNode high availability is enabled.",
+        "display_name": "JournalNode New Epoch Timeout",
+        "name": "dfs_qjournal_new_epoch_timeout_ms",
+        "value": "120000"
+    },
+    {
+        "desc": "The amount of time allowed after this role is started that failures of health tests that rely on communication with this role will be tolerated.",
+        "display_name": "Health Test Startup Tolerance",
+        "name": "namenode_startup_tolerance",
+        "value": "5"
+    },
+    {
+        "desc": "These arguments will be passed as part of the Java command line. Commonly, garbage collection flags, PermGen, or extra debugging flags would be passed here.",
+        "display_name": "Java Configuration Options for NameNode",
+        "name": "namenode_java_opts",
+        "value": "-XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:CMSInitiatingOccupancyFraction=70 -XX:+CMSParallelRemarkEnabled"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Java Heap Size of NameNode in Bytes Minimum Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Java Heap Size of NameNode in Bytes Minimum Validator",
+        "name": "role_config_suppression_namenode_java_heapsize_minimum_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Enable Automatic Failover to maintain High Availability. Requires a ZooKeeper service and a High Availability NameNode partner.",
+        "display_name": "Enable Automatic Failover",
+        "name": "autofailover_enabled",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds for monitoring of free space on the filesystem that contains this role's NameNode Data Directories. Specified as a percentage of the capacity on that filesystem. This setting is not used if a NameNode Data Directories Free Space Monitoring Absolute Thresholds setting is configured.",
+        "display_name": "NameNode Data Directories Free Space Monitoring Percentage Thresholds",
+        "name": "namenode_data_directories_free_space_percentage_thresholds",
+        "value": "{\"critical\":\"never\",\"warning\":\"never\"}"
+    },
+    {
+        "desc": "Timeout when finalizing current edit segment with JournalNodes. This only applies when NameNode high availability is enabled.",
+        "display_name": "JournalNode Finalize Segment Timeout",
+        "name": "dfs_qjournal_finalize_segment_timeout_ms",
+        "value": "120000"
+    },
+    {
+        "desc": "For advanced use only. A string to be inserted into <strong>dfs_hosts_exclude.txt</strong> for this role only.",
+        "display_name": "NameNode Advanced Configuration Snippet (Safety Valve) for dfs_hosts_exclude.txt",
+        "name": "namenode_hosts_exclude_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress the results of the Safe Mode Status heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Safe Mode Status",
+        "name": "role_health_suppression_name_node_safe_mode",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds for unexpected exits encountered within a recent period specified by the unexpected_exits_window configuration for the role.",
+        "display_name": "Unexpected Exits Thresholds",
+        "name": "unexpected_exits_thresholds",
+        "value": "{\"critical\":\"any\",\"warning\":\"never\"}"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the NameNode Environment Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: NameNode Environment Advanced Configuration Snippet (Safety Valve)",
+        "name": "role_config_suppression_namenode_role_env_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the Rolling Upgrade Status heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Rolling Upgrade Status",
+        "name": "role_health_suppression_name_node_rolling_upgrade_status",
+        "value": "false"
+    },
+    {
+        "desc": "When set, this role's process is automatically (and transparently) restarted in the event of an unexpected failure.",
+        "display_name": "Automatically Restart Process",
+        "name": "process_auto_restart",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the NameNode Logging Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: NameNode Logging Advanced Configuration Snippet (Safety Valve)",
+        "name": "role_config_suppression_log4j_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "This determines the percentage amount of block invalidations (deletes) to do over a single DataNode heartbeat deletion command. The final deletion count is determined by applying this percentage to the number of live nodes in the system. The resultant number is the number of blocks from the deletion list chosen for proper invalidation over a single heartbeat of a single DataNode.",
+        "display_name": "Invalidate Work Percentage Per Iteration",
+        "name": "dfs_namenode_invalidate_work_pct_per_iteration",
+        "value": "0.32"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the NameNode Advanced Configuration Snippet (Safety Valve) for dfs_all_hosts.txt parameter.",
+        "display_name": "Suppress Parameter Validation: NameNode Advanced Configuration Snippet (Safety Valve) for dfs_all_hosts.txt",
+        "name": "role_config_suppression_namenode_all_hosts_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Rules to Extract Events from Log Files parameter.",
+        "display_name": "Suppress Parameter Validation: Rules to Extract Events from Log Files",
+        "name": "role_config_suppression_log_event_whitelist",
+        "value": "false"
+    },
+    {
+        "desc": "Enables the health test that the Cloudera Manager Agent can successfully contact and gather metrics from the web server.",
+        "display_name": "Web Metric Collection",
+        "name": "namenode_web_metric_collection_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Hard memory limit to assign to this role, enforced by the Linux kernel. When the limit is reached, the kernel will reclaim pages charged to the process. If reclaiming fails, the kernel may kill the process. Both anonymous as well as page cache pages contribute to the limit. Use a value of -1 B to specify no limit. By default processes not managed by Cloudera Manager will have no limit.",
+        "display_name": "Cgroup Memory Hard Limit",
+        "name": "rm_memory_hard_limit",
+        "value": "-1"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the CDH Version Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: CDH Version Validator",
+        "name": "role_config_suppression_cdh_version_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the Log Directory Free Space heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Log Directory Free Space",
+        "name": "role_health_suppression_name_node_log_directory_free_space",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only. A string to be inserted into <strong>hdfs-site.xml</strong> for this role only.",
+        "display_name": "NameNode Advanced Configuration Snippet (Safety Valve) for hdfs-site.xml",
+        "name": "namenode_config_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "The time between two periodic file system checkpoints.",
+        "display_name": "Filesystem Checkpoint Period",
+        "name": "fs_checkpoint_period",
+        "value": "3600"
+    },
+    {
+        "desc": "The health test thresholds for monitoring of free space on the filesystem that contains this role's log directory.",
+        "display_name": "Log Directory Free Space Monitoring Absolute Thresholds",
+        "name": "log_directory_free_space_absolute_thresholds",
+        "value": "{\"critical\":\"5.36870912E9\",\"warning\":\"1.073741824E10\"}"
+    },
+    {
+        "desc": "When computing the overall NameNode health, consider the host's health.",
+        "display_name": "NameNode Host Health Test",
+        "name": "namenode_host_health_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "The access time for HDFS file is precise upto this value. Setting the value of 0 disables access times for HDFS. When using the NFS Gateway role, make sure this property is enabled.",
+        "display_name": "Access Time Precision",
+        "name": "dfs_access_time_precision",
+        "value": "3600000"
+    },
+    {
+        "desc": "Minimum number of running threads for the HDFS Thrift server running on the NameNode",
+        "display_name": "HDFS Thrift Server Min Threadcount",
+        "name": "dfs_thrift_threads_min",
+        "value": "10"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Topology Script File Name parameter.",
+        "display_name": "Suppress Parameter Validation: Topology Script File Name",
+        "name": "role_config_suppression_topology_script_file_name",
+        "value": "false"
+    },
+    {
+        "desc": "The number of transactions after which the NameNode or SecondaryNameNode will create a checkpoint of the namespace, regardless of whether the checkpoint period has expired.",
+        "display_name": "Filesystem Checkpoint Transaction Threshold",
+        "name": "fs_checkpoint_txns",
+        "value": "1000000"
+    },
+    {
+        "desc": "Maximum number of running threads for the HDFS Thrift server running on the NameNode",
+        "display_name": "HDFS Thrift Server Max Threadcount",
+        "name": "dfs_thrift_threads_max",
+        "value": "20"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the NameNode Handler Count Minimum Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: NameNode Handler Count Minimum Validator",
+        "name": "role_config_suppression_dfs_namenode_handler_count_minimum_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Full path to a custom topology script on the host file system. The topology script is used to determine the rack location of nodes. If left blank, a topology script will be provided that uses your hosts' rack information, visible in the \"Hosts\" page.",
+        "display_name": "Topology Script File Name",
+        "name": "topology_script_file_name",
+        "value": null
+    },
+    {
+        "desc": "Path to directory where heap dumps are generated when java.lang.OutOfMemoryError error is thrown. This directory is automatically created if it does not exist. If this directory already exists, role user must have write access to this directory. If this directory is shared among multiple roles, it should have 1777 permissions. The heap dump files are created with 600 permissions and are owned by the role user. The amount of free space in this directory should be greater than the maximum Java Process heap size configured for this role.",
+        "display_name": "Heap Dump Directory",
+        "name": "oom_heap_dump_dir",
+        "value": "/tmp"
+    },
+    {
+        "desc": "The minimum log level for NameNode block state change log messages. Setting this to WARN or higher greatly reduces the amount of log output related to block state changes.",
+        "display_name": "NameNode Block State Change Logging Threshold",
+        "name": "namenode_blockstatechange_log_threshold",
+        "value": "INFO"
+    },
+    {
+        "desc": "Indicate whether or not to avoid writing to stale DataNodes for which heartbeat messages have not been received by the NameNode for more than Stale DataNode Time Interval. Writes avoid using stale DataNodes unless more than a configured ratio (dfs.namenode.write.stale.datanode.ratio) of DataNodes are marked as stale. See dfs.namenode.avoid.read.stale.datanode for a similar setting for reads.",
+        "display_name": "Avoid Writing Stale DataNode",
+        "name": "dfs_namenode_avoid_write_stale_datanode",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds of failed status directories in a NameNode.",
+        "display_name": "NameNode Directory Failures Thresholds",
+        "name": "namenode_directory_failures_thresholds",
+        "value": "{\"critical\":\"any\",\"warning\":\"never\"}"
+    },
+    {
+        "desc": "Whether to suppress the results of the Unexpected Exits heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Unexpected Exits",
+        "name": "role_health_suppression_name_node_unexpected_exits",
+        "value": "false"
+    },
+    {
+        "desc": "Controls the number of minutes after which a trash checkpoint directory is deleted permanently. To disable the trash feature, enter 0. The checkpointing frequency of .Trash directory contents is separately controlled by Filesystem Trash Checkpoint Interval.",
+        "display_name": "Filesystem Trash Interval",
+        "name": "fs_trash_interval",
+        "value": "1440"
+    },
+    {
+        "desc": "The health test thresholds on the swap memory usage of the process.",
+        "display_name": "Process Swap Memory Thresholds",
+        "name": "process_swap_memory_thresholds",
+        "value": "{\"critical\":\"never\",\"warning\":\"any\"}"
+    },
+    {
+        "desc": "This determines the total amount of block transfers to begin in parallel at a DataNode for replication, when such a command list is being sent over a DataNode heartbeat by the NameNode. The actual number is obtained by multiplying this value by the total number of live nodes in the cluster. The result number is the number of blocks to transfer immediately, per DataNode heartbeat.",
+        "display_name": "Replication Work Multiplier Per Iteration",
+        "name": "dfs_namenode_replication_work_multiplier_per_iteration",
+        "value": "10"
+    },
+    {
+        "desc": "The maximum number of rolled log files to keep for NameNode logs.  Typically used by log4j or logback.",
+        "display_name": "NameNode Maximum Log File Backups",
+        "name": "max_log_backup_index",
+        "value": "10"
+    },
+    {
+        "desc": "Determines extension of safemode in milliseconds after the threshold level is reached.",
+        "display_name": "Safemode Extension",
+        "name": "dfs_safemode_extension",
+        "value": "30000"
+    },
+    {
+        "desc": "Timeout in seconds for the HDFS Thrift server running on the NameNode",
+        "display_name": "HDFS Thrift Server Timeout",
+        "name": "dfs_thrift_timeout",
+        "value": "60"
+    },
+    {
+        "desc": "Soft memory limit to assign to this role, enforced by the Linux kernel. When the limit is reached, the kernel will reclaim pages charged to the process if and only if the host is facing memory pressure. If reclaiming fails, the kernel may kill the process. Both anonymous as well as page cache pages contribute to the limit. Use a value of -1 B to specify no limit. By default processes not managed by Cloudera Manager will have no limit.",
+        "display_name": "Cgroup Memory Soft Limit",
+        "name": "rm_memory_soft_limit",
+        "value": "-1"
+    },
+    {
+        "desc": "The number of server threads for the NameNode used for service calls. Only used when NameNode Service RPC Port is configured.",
+        "display_name": "NameNode Service Handler Count",
+        "name": "dfs_namenode_service_handler_count",
+        "value": "30"
+    },
+    {
+        "desc": "Cloudera Manager agent monitors each service and each of its role by publishing metrics to the Cloudera Manager Service Monitor. Setting it to false will stop Cloudera Manager agent from publishing any metric for corresponding service/roles. This is usually helpful for services that generate large amount of metrics which Service Monitor is not able to process.",
+        "display_name": "Enable Metric Collection",
+        "name": "process_should_monitor",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Heap Dump Directory parameter.",
+        "display_name": "Suppress Parameter Validation: Heap Dump Directory",
+        "name": "role_config_suppression_oom_heap_dump_dir",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the NameNode Data Directories parameter.",
+        "display_name": "Suppress Parameter Validation: NameNode Data Directories",
+        "name": "role_config_suppression_dfs_name_dir_list",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds of the number of transactions since the last HDFS namespace checkpoint. Specified as a percentage of the configured checkpointing transaction limit.",
+        "display_name": "Filesystem Checkpoint Transactions Monitoring Thresholds",
+        "name": "namenode_checkpoint_transactions_thresholds",
+        "value": "{\"critical\":\"400.0\",\"warning\":\"200.0\"}"
+    },
+    {
+        "desc": "Whether to suppress the results of the Web Server Status heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Web Server Status",
+        "name": "role_health_suppression_name_node_web_metric_collection",
+        "value": "false"
+    },
+    {
+        "desc": "The health test thresholds of the age of the HDFS namespace checkpoint. Specified as a percentage of the configured checkpoint interval.",
+        "display_name": "Filesystem Checkpoint Age Monitoring Thresholds",
+        "name": "namenode_checkpoint_age_thresholds",
+        "value": "{\"critical\":\"400.0\",\"warning\":\"200.0\"}"
+    },
+    {
+        "desc": "When set, a SIGKILL signal is sent to the role process when java.lang.OutOfMemoryError is thrown.",
+        "display_name": "Kill When Out of Memory",
+        "name": "oom_sigkill_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress the results of the Process Status heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Process Status",
+        "name": "role_health_suppression_name_node_scm_health",
+        "value": "false"
+    },
+    {
+        "desc": "The base port where the secure NameNode web UI listens.",
+        "display_name": "Secure NameNode Web UI Port (TLS/SSL)",
+        "name": "dfs_https_port",
+        "value": "50470"
+    },
+    {
+        "desc": "For advanced use only. A string to be inserted into <strong>dfs_hosts_allow.txt</strong> for this role only.",
+        "display_name": "NameNode Advanced Configuration Snippet (Safety Valve) for dfs_hosts_allow.txt",
+        "name": "namenode_hosts_allow_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Mount Points parameter.",
+        "display_name": "Suppress Parameter Validation: Mount Points",
+        "name": "role_config_suppression_nameservice_mountpoints",
+        "value": "false"
+    },
+    {
+        "desc": "<p>The configured triggers for this role. This is a JSON-formatted list of triggers. These triggers are evaluated as part as the health system. Every trigger expression is parsed, and if the trigger condition is met, the list of actions provided in the trigger expression is executed.</p><p>Each trigger has the following fields:</p><ul><li><code>triggerName</code> <b>(mandatory)</b> - The name of the trigger. This value must be unique for the specific role. </li><li><code>triggerExpression</code> <b>(mandatory)</b> - A tsquery expression representing the trigger. </li><li><code>streamThreshold</code> <b>(optional)</b> - The maximum number of streams that can satisfy a condition of a trigger before the condition fires. By default set to 0, and any stream returned causes the condition to fire. </li><li><code>enabled</code> <b> (optional)</b> - By default set to 'true'. If set to 'false', the trigger is not evaluated.</li><li><code>expressionEditorConfig</code> <b> (optional)</b> - Metadata for the trigger editor. If present, the trigger should only be edited from the Edit Trigger page; editing the trigger here can lead to inconsistencies.</li></ul><p>For example, the following JSON formatted trigger configured for a DataNode fires if the DataNode has more than 1500 file descriptors opened:</p><p><pre>[{\"triggerName\": \"sample-trigger\",\n  \"triggerExpression\": \"IF (SELECT fd_open WHERE roleName=$ROLENAME and last(fd_open) > 1500) DO health:bad\",\n  \"streamThreshold\": 0, \"enabled\": \"true\"}]</pre></p><p>See the trigger rules documentation for more details on how to write triggers using tsquery.</p><p>The JSON format is evolving and may change and, as a result, backward compatibility is not guaranteed between releases.</p>",
+        "display_name": "Role Triggers",
+        "name": "role_triggers",
+        "value": "[]"
+    },
+    {
+        "desc": "When set, Cloudera Manager will send alerts when this entity's configuration changes.",
+        "display_name": "Enable Configuration Change Alerts",
+        "name": "enable_config_alerts",
+        "value": "false"
+    },
+    {
+        "desc": "If enabled, the NameNode binds to the wildcard address (\"0.0.0.0\") on all of its ports.",
+        "display_name": "Bind NameNode to Wildcard Address",
+        "name": "namenode_bind_wildcard",
+        "value": "false"
+    },
+    {
+        "desc": "Comma-separated list of NameNode plug-ins to be activated. If one plug-in cannot be loaded, all the plug-ins are ignored.",
+        "display_name": "NameNode Plugins",
+        "name": "dfs_namenode_plugins_list",
+        "value": ""
+    },
+    {
+        "desc": "Whether to suppress the results of the Host Health heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Host Health",
+        "name": "role_health_suppression_name_node_host_health",
+        "value": "false"
+    },
+    {
+        "desc": "Directory on a shared storage device, such as a Quorum-based Storage URI or a local directory that is an NFS mount from a NAS, to store the NameNode edits. The value of this configuration is automatically generated to be the Quourm Journal URI if there are JournalNodes and this NameNode is Highly Available.",
+        "display_name": "Shared Edits Directory",
+        "name": "dfs_namenode_shared_edits_dir",
+        "value": null
+    },
+    {
+        "desc": "The directory in which stacks logs are placed. If not set, stacks are logged into a <code>stacks</code> subdirectory of the role's log directory.",
+        "display_name": "Stacks Collection Directory",
+        "name": "stacks_collection_directory",
+        "value": null
+    },
+    {
+        "desc": "Weight for the read I/O requests issued by this role. The greater the weight, the higher the priority of the requests when the host experiences I/O contention. Must be between 100 and 1000. Defaults to 1000 for processes not managed by Cloudera Manager.",
+        "display_name": "Cgroup I/O Weight",
+        "name": "rm_io_weight",
+        "value": "500"
+    },
+    {
+        "desc": "The number of server threads for the NameNode.",
+        "display_name": "NameNode Handler Count",
+        "name": "dfs_namenode_handler_count",
+        "value": "30"
+    },
+    {
+        "desc": "Timeout when selecting input streams on JournalNodes. This only applies when NameNode high availability is enabled.",
+        "display_name": "JournalNode Select Input Streams Timeout",
+        "name": "dfs_qjournal_select_input_streams_timeout_ms",
+        "value": "20000"
+    },
+    {
+        "desc": "If configured, overrides the process soft and hard rlimits (also called ulimits) for file descriptors to the configured value.",
+        "display_name": "Maximum Process File Descriptors",
+        "name": "rlimit_fds",
+        "value": null
+    },
+    {
+        "desc": "Timeout when getting current states from JournalNodes. This only applies when NameNode high availability is enabled.",
+        "display_name": "JournalNode Get State Timeout",
+        "name": "dfs_qjournal_get_journal_state_timeout_ms",
+        "value": "120000"
+    },
+    {
+        "desc": "Whether to suppress the results of the Name Directory Status heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: Name Directory Status",
+        "name": "role_health_suppression_name_node_directory_failures",
+        "value": "false"
+    },
+    {
+        "desc": "Specifies the number of DataNodes that must be  live before the name node exits safemode. Enter a value less than or equal to 0 to take the number of live DataNodes into account when deciding whether to remain in safemode during startup. Values greater than the number of DataNodes in the cluster will make safemode permanent.",
+        "display_name": "Safemode Minimum DataNodes",
+        "name": "dfs_safemode_min_datanodes",
+        "value": "1"
+    }
+]

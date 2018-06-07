@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+hadoop="2.6.0"
+
+HADOOP_SWIFT_JAR_NAME="hadoop-openstack-$hadoop-cdh$plugin_version.jar"
+
+HADOOP_SWIFT_BUILD_LOCATION="https://tarballs.openstack.org/sahara-extra/dist/hadoop-openstack/master"
+SWIFT_LIB_URI="$HADOOP_SWIFT_BUILD_LOCATION/hadoop-openstack-${hadoop}.jar"
+HADOOP_SWIFT_JAR_NAME="hadoop-openstack.jar"
+
+if [ $test_only -eq 0 ]; then
+    wget -O $hdfs_lib_dir/$HADOOP_SWIFT_JAR_NAME $SWIFT_LIB_URI
+
+    if [ $? -ne 0 ]; then
+        echo -e "Could not download Swift Hadoop FS implementation.\nAborting"
+        exit 1
+    fi
+
+    chmod 0644 $hdfs_lib_dir/$HADOOP_SWIFT_JAR_NAME
+else
+    exit 0
+fi
