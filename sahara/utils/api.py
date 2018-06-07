@@ -238,7 +238,8 @@ def request_data():
     if hasattr(flask.request, 'parsed_data'):
         return flask.request.parsed_data
 
-    if not flask.request.content_length > 0:
+    if (flask.request.content_length is None
+            or not flask.request.content_length > 0):
         LOG.debug("Empty body provided in request")
         return dict()
 
