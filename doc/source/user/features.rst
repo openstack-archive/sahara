@@ -23,13 +23,12 @@ processes to increase HDFS replica reliability.
 Starting with the Juno release, sahara can create server groups with the
 ``anti-affinity`` policy to enable this feature. Sahara creates one server
 group per cluster and assigns all instances with affected processes to
-this server group. Refer to the `Nova Anti-Affinity documentation`_
+this server group. Refer to the :nova-doc:`Nova Anti-Affinity documentation
+<admin/configuration/schedulers.html#servergroupantiaffinityfilter>`
 on how server group affinity filters work.
 
 This feature is supported by all plugins out of the box, and can be enabled
 during the cluster template creation.
-
-.. _Nova Anti-Affinity documentation: https://docs.openstack.org/nova/latest/admin/configuration/schedulers.html#servergroupantiaffinityfilter
 
 Block Storage support
 ---------------------

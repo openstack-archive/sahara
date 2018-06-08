@@ -14,8 +14,8 @@ authentication service. When the Identity service is enabled, users who
 submit requests to the sahara service must provide an authentication token in
 the ``X-Auth-Token`` request header. A user can obtain the token by
 authenticating to the Identity service endpoint. For more information about
-the Identity service, please see the `keystone project developer documentation
-<https://docs.openstack.org/keystone/latest/>`_
+the Identity service, please see the :keystone-doc:`keystone project developer
+documentation <>`.
 
 With each request, a user must specify the keystone project
 in the url path, for example: '/v1.1/{project_id}/clusters'. Sahara
