@@ -40,6 +40,13 @@ def check_multiple_clusters_create(data, **kwargs):
         b.check_cluster_unique_name(cluster_name)
 
 
+def check_one_or_multiple_clusters_create(data, **kwargs):
+    if data.get('count', None) is not None:
+        check_multiple_clusters_create(data, **kwargs)
+    else:
+        check_cluster_create(data, **kwargs)
+
+
 def _check_cluster_create(data):
     plugin_version = 'hadoop_version'
     if data.get('plugin_version'):

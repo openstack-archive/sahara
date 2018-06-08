@@ -46,6 +46,12 @@ def _build_cluster_schema(api_version='v1'):
             "type": "string",
             "format": "uuid",
         }})
+
+    if api_version == 'v2':
+        cluster_schema['properties'].update({
+            "count": {
+                "type": "integer"
+            }})
     return cluster_schema
 
 
@@ -58,13 +64,6 @@ MULTIPLE_CLUSTER_SCHEMA['properties'].update({
         "type": "integer"
     }})
 MULTIPLE_CLUSTER_SCHEMA['required'].append('count')
-
-MULTIPLE_CLUSTER_SCHEMA_V2 = copy.deepcopy(CLUSTER_SCHEMA_V2)
-MULTIPLE_CLUSTER_SCHEMA_V2['properties'].update({
-    "count": {
-        "type": "integer"
-    }})
-MULTIPLE_CLUSTER_SCHEMA_V2['required'].append('count')
 
 CLUSTER_UPDATE_SCHEMA = {
     "type": "object",
