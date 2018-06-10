@@ -66,7 +66,7 @@ Here is an example:
 
 .. sourcecode:: console
 
-    $ git clone https://git.openstack.org/cgit/openstack/horizon/ {HORIZON_DIR}
+    $ git clone https://git.openstack.org/openstack/horizon/ {HORIZON_DIR}
 ..
 
 Then install the virtual environment:
@@ -105,7 +105,7 @@ creation, add the following parameter:
 
 .. sourcecode:: console
 
-    $ git clone https://git.openstack.org/cgit/openstack/sahara-dashboard/ \
+    $ git clone https://git.openstack.org/openstack/sahara-dashboard/ \
         {SAHARA_DASHBOARD_DIR}
 ..
 
