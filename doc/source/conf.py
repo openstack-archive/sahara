@@ -48,6 +48,21 @@ html_last_updated_fmt = '%Y-%m-%d %H:%M'
 config_generator_config_file = 'config-generator.conf'
 config_sample_basename = 'sahara'
 
+openstack_projects = [
+    'barbican',
+    'castellan',
+    'designate',
+    'devstack',
+    'ironic',
+    'keystone',
+    'keystoneauth',
+    'kolla-ansible',
+    'neutron',
+    'nova',
+    'oslo.middleware',
+    'tooz'
+]
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 

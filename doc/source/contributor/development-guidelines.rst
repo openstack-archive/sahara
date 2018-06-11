@@ -178,7 +178,7 @@ keystone ``Session`` and auth plugin objects (for example, ``Token`` and
 ``Password``). Sahara is migrating all clients to use this authentication
 methodology, where available. For more information on using sessions with
 keystone, please see
-https://docs.openstack.org/keystoneauth/latest/using-sessions.html
+:keystoneauth-doc:`the keystoneauth documentation <using-sessions.html>`
 
 Storing sensitive information
 -----------------------------
@@ -188,8 +188,8 @@ information (for example, login credentials) in the records for a cluster,
 job, or some other record. Storing secret information this way is **not**
 safe. To mitigate the risk of storing this information, sahara provides
 access to the OpenStack Key Manager service (implemented by the
-`barbican project <https://docs.openstack.org/barbican/latest/>`_) through
-the `castellan library <https://docs.openstack.org/castellan/latest/>`_.
+:barbican-doc:`barbican project <>`) through
+the :castellan-doc:`castellan library <>`.
 
 To utilize the external key manager, the functions in
 ``sahara.service.castellan.utils`` are provided as wrappers around the

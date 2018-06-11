@@ -9,10 +9,10 @@ from the bare metal performance with self-service resource provisioning.
 
 
 1. Create a new OpenStack environment using Devstack as described
-   in the `Devstack Guide <https://docs.openstack.org/devstack/latest/>`_
+   in the :devstack-doc:`Devstack Guide <>`
 
-2. Install Ironic as described in the `Ironic Installation Guide
-   <https://docs.openstack.org/ironic/latest/install/index.html>`_
+2. Install Ironic as described in the :ironic-doc:`Ironic Installation Guide
+   <install/>`
 
 3. Install Sahara as described in the `Sahara Installation Guide
    <../install/installation-guide.html>`_

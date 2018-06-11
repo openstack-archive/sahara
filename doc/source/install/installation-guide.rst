@@ -6,7 +6,7 @@ consistent state. We suggest the following options:
 
 * Install via `Fuel <http://fuel.mirantis.com/>`_
 
-* Install via `Kolla <https://docs.openstack.org/kolla-ansible/latest/>`_
+* Install via :kolla-ansible-doc:`Kolla <>`
 
 * Install via `RDO <https://www.rdoproject.org/>`_
 
@@ -26,8 +26,8 @@ To install with Fuel
 To install with Kolla
 ---------------------
 
-1. Start by following the `Kolla Quickstart
-   <https://docs.openstack.org/kolla-ansible/latest/user/quickstart.html>`_
+1. Start by following the :kolla-ansible-doc:`Kolla Quickstart
+   <user/quickstart.html>`
    to install and setup OpenStack.
 
 2. Enable the sahara service during installation.

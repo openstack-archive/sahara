@@ -58,10 +58,12 @@ displayed as hostnames instead of just ip addresses.
 
 You should configure DNS server with Designate. Designate service should be
 properly installed and registered in Keystone catalog. The detailed
-instructions about Designate configuration can be found here: `Designate manual
-installation`_ and here: `Configuring OpenStack Networking with Designate`_.
-Also if you use devstack you can just enable Designate plugin:
-`Designate devstack`_.
+instructions about Designate configuration can be found here:
+:designate-doc:`Designate manual installation <install/index.html>`
+and here: :neutron-doc:`Configuring OpenStack Networking with Designate
+<admin/config-dns-int.html#configuring-openstack-networking-for-integration-with-an-external-dns-service>`.
+Also if you use devstack you can just enable the
+:designate-doc:`Designate devstack plugin <contributor/devstack.html>`.
 
 When Designate is configured you should create domain(s) for hostname
 resolution. This can be done by using the Designate dashboard or by CLI. Also
@@ -93,10 +95,6 @@ In order to resolve hostnames from your local machine you should properly
 change your ``/etc/resolv.conf`` file by adding appropriate ip addresses of
 DNS servers (e.g. 1.1.1.1 and 2.2.2.2). Also the VMs with DNS servers should
 be available from your local machine.
-
-.. _Designate manual installation: https://docs.openstack.org/designate/latest/install/index.html
-.. _Configuring OpenStack Networking with Designate: https://docs.openstack.org/neutron/latest/admin/config-dns-int.html#configuring-openstack-networking-for-integration-with-an-external-dns-service
-.. _Designate devstack: https://docs.openstack.org/designate/latest/contributor/devstack.html
 
 .. _data_locality_configuration:
 
@@ -265,7 +263,8 @@ Distributed periodic tasks are based on Hash Ring implementation and the Tooz
 library that provides group membership support for a set of backends. In order
 to use periodic tasks distribution, the following steps are required:
 
-* One of the `supported backends <https://docs.openstack.org/tooz/latest/user/compatibility.html#driver-support>`_ should be configured and started.
+* One of the :tooz-doc:`supported backends <user/compatibility.html#driver-support>`
+  should be configured and started.
 * Backend URL should be set in the sahara configuration file with the
   ``periodic_coordinator_backend_url`` parameter. For example, if the
   ZooKeeper backend is being used:
@@ -324,7 +323,7 @@ within the stack.
 
 With a Key Manager service deployed on the stack, sahara must be configured
 to enable the external storage of secrets. Sahara uses the
-`castellan <https://docs.openstack.org/castellan/latest/>`_ library
+:castellan-doc:`castellan <>` library
 to interface with the OpenStack Key Manager service. This library provides
 configurable access to a key manager. To configure sahara to use barbican as
 the key manager, edit the sahara configuration file as follows:
@@ -485,9 +484,8 @@ users created by sahara. This domain must have an identity backend driver
 that allows for sahara to create new users. The default SQL engine is
 sufficient but if your keystone identity is backed by LDAP or similar
 then domain specific configurations should be used to ensure sahara's
-access. Please see the `Keystone documentation`_ for more information.
-
-.. _Keystone documentation: https://docs.openstack.org/keystone/latest/configuration.html#domain-specific-drivers
+access. Please see the :keystone-doc:`Keystone documentation
+<configuration.html#domain-specific-drivers>` for more information.
 
 With the domain created, sahara's configuration file should be updated to
 include the new domain name and any potential roles that will be needed. For
@@ -617,7 +615,8 @@ CORS (Cross Origin Resource Sharing) Configuration
 
 Sahara provides direct API access to user-agents (browsers) via the HTTP
 CORS protocol. Detailed documentation, as well as troubleshooting examples,
-may be found in the OpenStack `Administrator Guide`_.
+may be found in the :oslo.middleware-doc:`documentation of the oslo.db
+cross-project features <admin/cross-project-cors.html>`.
 
 To get started quickly, use the example configuration block below, replacing
 the :code:`allowed origin` field with the host(s) from which your API expects
@@ -639,7 +638,6 @@ access.
 For more information on Cross Origin Resource Sharing, please review the `W3C
 CORS specification`_.
 
-.. _Administrator Guide: https://docs.openstack.org/oslo.middleware/latest/admin/cross-project-cors.html
 .. _W3C CORS specification: http://www.w3.org/TR/cors/
 
 Cleanup time for incomplete clusters
