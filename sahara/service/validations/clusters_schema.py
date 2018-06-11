@@ -71,6 +71,9 @@ CLUSTER_UPDATE_SCHEMA = {
         "description": {
             "type": ["string", "null"]
         },
+        "update_keypair": {
+            "type": ["boolean", "null"]
+        },
         "name": {
             "type": "string",
             "minLength": 1,

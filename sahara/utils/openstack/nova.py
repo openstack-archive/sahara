@@ -56,3 +56,8 @@ def get_flavor(**kwargs):
 def get_instance_info(instance):
     return base.execute_with_retries(
         client().servers.get, instance.instance_id)
+
+
+def get_keypair(keypair_name):
+    return base.execute_with_retries(
+        client().keypairs.get, keypair_name)

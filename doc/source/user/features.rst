@@ -270,3 +270,11 @@ There are 2 types of string currently supported:
 After placeholders are replaced, the real URLs are stored in the
 ``data_source_urls`` field of the job execution object. This is used later to
 find objects created by a particular job run.
+
+Keypair replacement
+-------------------
+
+A cluster allows users to create a new keypair to access to the running cluster
+when the cluster's keypair is deleted. But the name of new keypair should be
+same as the deleted one, and the new keypair will be available for cluster
+scaling.

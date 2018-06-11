@@ -22,6 +22,7 @@ from sahara import conductor as cond
 from sahara import context
 from sahara import exceptions as exc
 from sahara.plugins import base as pl_base
+from sahara.plugins import utils as u
 from sahara.service import api as service_api
 from sahara.service.api.v2 import clusters as api
 from sahara.tests.unit import base
@@ -73,6 +74,21 @@ class FakeOps(object):
 
             conductor.node_group_update(context.ctx(), ng, {'count': count})
         conductor.cluster_update(context.ctx(), id, {'status': 'Scaled'})
+
+    def update_keypair(self, id):
+        self.calls_order.append('ops.update_keypair')
+        cluster = conductor.cluster_get(context.ctx(), id)
+        keypair_name = cluster.user_keypair_id
+        nova_p = mock.patch("sahara.utils.openstack.nova.client")
+        nova = nova_p.start()
+        key = nova.get_keypair(keypair_name)
+        nodes = u.get_instances(cluster)
+        for instance in nodes:
+            remote = mock.Mock()
+            remote.execute_command(
+                "echo {keypair} >> ~/.ssh/authorized_keys".format(
+                    keypair=key.public_key))
+            remote.reset_mock()
 
     def terminate_cluster(self, id, force):
         self.calls_order.append('ops.terminate_cluster')
@@ -249,3 +265,8 @@ class TestClusterApi(base.SaharaWithDbTestCase):
             updated_cluster = api.update_cluster(
                 cluster.id, {'description': 'Cluster'})
             self.assertEqual('Cluster', updated_cluster.description)
+
+    def test_cluster_keypair_update(self):
+        with mock.patch('sahara.service.quotas.check_cluster'):
+            cluster = api.create_cluster(api_base.SAMPLE_CLUSTER)
+            api.update_cluster(cluster.id, {'update_keypair': True})

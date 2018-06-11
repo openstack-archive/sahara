@@ -26,12 +26,14 @@ from sahara import context
 from sahara import exceptions
 from sahara.i18n import _
 from sahara.plugins import base as plugin_base
+from sahara.plugins import utils as u
 from sahara.service.edp import job_manager
 from sahara.service.edp.utils import shares
 from sahara.service.health import verification_base as ver_base
 from sahara.service import ntp_service
 from sahara.service import trusts
 from sahara.utils import cluster as c_u
+from sahara.utils.openstack import nova
 from sahara.utils import remote
 from sahara.utils import rpc as rpc_utils
 
@@ -96,6 +98,9 @@ class RemoteOps(rpc_utils.RPCClient):
     def provision_cluster(self, cluster_id):
         self.cast('provision_cluster', cluster_id=cluster_id)
 
+    def update_keypair(self, cluster_id):
+        self.cast('update_keypair', cluster_id=cluster_id)
+
     def provision_scaled_cluster(self, cluster_id, node_group_id_map,
                                  node_group_instance_map=None):
         self.cast('provision_scaled_cluster', cluster_id=cluster_id,
@@ -145,6 +150,10 @@ class OpsServer(rpc_utils.RPCServer):
     @request_context
     def provision_cluster(self, cluster_id):
         _provision_cluster(cluster_id)
+
+    @request_context
+    def update_keypair(self, cluster_id):
+        _update_keypair(cluster_id)
 
     @request_context
     def provision_scaled_cluster(self, cluster_id, node_group_id_map,
@@ -454,3 +463,16 @@ def _refresh_health_for_cluster(cluster_id):
 
 def _handle_verification(cluster_id, values):
     ver_base.handle_verification(cluster_id, values)
+
+
+def _update_keypair(cluster_id):
+    ctx = context.ctx()
+    cluster = conductor.cluster_get(ctx, cluster_id)
+    keypair_name = cluster.user_keypair_id
+    key = nova.get_keypair(keypair_name)
+    nodes = u.get_instances(cluster)
+    for node in nodes:
+        with node.remote() as r:
+            r.execute_command(
+                "echo {keypair} >> ~/.ssh/authorized_keys".
+                format(keypair=key.public_key))

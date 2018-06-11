@@ -162,6 +162,10 @@ def terminate_cluster(id, force=False):
 
 
 def update_cluster(id, values):
+    if "update_keypair" in values:
+        if values["update_keypair"]:
+            api.OPS.update_keypair(id)
+        values.pop("update_keypair")
     if verification_base.update_verification_required(values):
         api.OPS.handle_verification(id, values)
         return conductor.cluster_get(context.ctx(), id)
