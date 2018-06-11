@@ -8,12 +8,12 @@ How to build Oozie
 Download
 --------
 
-* Download tarball from `Apache mirror <http://apache-mirror.rbc.ru/pub/apache/oozie/4.0.1>`_
+* Download tarball from `Apache mirror <http://archive.apache.org/dist/oozie/4.3.1/>`_
 * Unpack it with
 
   .. sourcecode:: console
 
-      $ tar -xzvf oozie-4.0.1.tar.gz
+      $ tar -xzvf oozie-4.3.1.tar.gz
 
 Hadoop Versions
 ---------------
@@ -70,5 +70,5 @@ Also, the pig version can be passed as a maven property with the flag
 ``-D pig.version=x.x.x``.
 
 You can find similar instructions to build oozie.tar.gz here:
-http://oozie.apache.org/docs/4.0.0/DG_QuickStart.html#Building_Oozie
+http://oozie.apache.org/docs/4.3.1/DG_QuickStart.html#Building_Oozie
 
