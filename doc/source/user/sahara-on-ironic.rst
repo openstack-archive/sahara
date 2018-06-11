@@ -45,48 +45,13 @@ from the bare metal performance with self-service resource provisioning.
 
 - Add bare metal servers to your environment manually referencing their
   IPMI addresses (Ironic does not detect servers), for Ironic to manage
-  the servers power and network. For example:
+  the servers power and network. Also, configure the scheduling
+  information and add the required flavors. Please check the
+  :ironic-doc:`Enrollment section of the Ironic installation guide
+  <install/enrollment.html>`.
 
-.. code-block:: bash
 
-   $ ironic node-create -d pxe_ipmitool \
-     -i ipmi_address=$IP_ADDRESS \
-     -i ipmi_username=$USERNAME \
-     -i ipmi_password=$PASSWORD \
-     -i pxe_deploy_kernel=$deploy.kernel.id \
-     -i pxe_deploy_ramdisk=$deploy.ramfs.id
-
-   $ ironic port-create -n $NODE_ID -a "$MAC_eth1"
-..
-
-- Add the hardware information:
-
-.. code-block:: bash
-
-   $ ironic node-update $NODE_ID add properties/cpus=$CPU \
-     properties/memory_mb=$RAM properties/local_gb=$ROOT_GB \
-     properties/cpu_arch='x86_64'
-..
-
-7. Add a special flavor for the bare metal instances with an arch meta
-   parameter to match the virtual architecture of the server's CPU
-   with the metal one. For example:
-
-.. code-block:: bash
-
-   $ nova flavor-create baremetal auto $RAM $DISK_GB $CPU
-   $ nova flavor-key baremetal set cpu_arch=x86_64
-..
-
-Note:
-+++++
-The vCPU ad vRAM parameters (x86_64 in the example) will not be applied because
-the operating system has access to the real CPU cores and RAM. Only the root
-disk parameter is applied, and Ironic will resize the root disk partition.
-Ironic supports only a flat network topology for the bare metal provisioning,
-you must use Neutron to configure it.
-
-8. Launch your Sahara cluster on Ironic from the cluster template:
+7. Launch your Sahara cluster on Ironic from the cluster template:
 
    * Log in to Horizon.
 
@@ -111,9 +76,6 @@ Known limitations:
 ------------------
 
 * Security groups are not applied.
-* When booting a nova instance with a bare metal flavor, the user can not
-  provide a pre-created neutron port to ``nova boot`` command. `LP1544195
-  <https://bugs.launchpad.net/nova/+bug/1544195>`_
 * Nodes are not isolated by projects.
 * VM to Bare Metal network routing is not allowed.
 * The user has to specify the count of ironic nodes before Devstack deploys
