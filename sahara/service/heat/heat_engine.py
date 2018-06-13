@@ -19,6 +19,7 @@ from oslo_log import log as logging
 
 from sahara import conductor as c
 from sahara import context
+from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.service import engine as e
 from sahara.service.heat import commons as heat_common
@@ -194,7 +195,7 @@ class HeatEngine(e.Engine):
     def shutdown_cluster(self, cluster, force=False):
         """Shutdown specified cluster and all related resources."""
         if force:
-            heat_shutdown = heat.abandon_stack
+            heat_shutdown = heat.lazy_delete_stack
         else:
             heat_shutdown = heat.delete_stack
 
@@ -202,11 +203,11 @@ class HeatEngine(e.Engine):
             heat_shutdown(cluster)
         except heat_exc.HTTPNotFound:
             LOG.warning('Did not find stack for cluster.')
-        except heat_exc.BadRequest:
-            LOG.error("Can't force delete cluster.", exc_info=True)
-        finally:
-            self._clean_job_executions(cluster)
-            self._remove_db_objects(cluster)
+        except ex.HeatStackException:
+            raise
+
+        self._clean_job_executions(cluster)
+        self._remove_db_objects(cluster)
 
     @cpo.event_wrapper(
         True, step=_('Create Heat stack'), param=('cluster', 1))
