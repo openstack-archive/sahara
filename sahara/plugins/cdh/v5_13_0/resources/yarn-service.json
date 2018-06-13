@@ -1,0 +1,554 @@
+[
+    {
+        "desc": "The health test thresholds of the overall NodeManager health. The check returns \"Concerning\" health if the percentage of \"Healthy\" NodeManagers falls below the warning threshold. The check is unhealthy if the total percentage of \"Healthy\" and \"Concerning\" NodeManagers falls below the critical threshold.",
+        "display_name": "Healthy NodeManager Monitoring Thresholds",
+        "name": "yarn_nodemanagers_healthy_thresholds",
+        "value": "{\"critical\":\"90.0\",\"warning\":\"95.0\"}"
+    },
+    {
+        "desc": "Entries to add to the classpaths of YARN applications.",
+        "display_name": "YARN Application Classpath",
+        "name": "yarn_application_classpath",
+        "value": "$HADOOP_CLIENT_CONF_DIR,$HADOOP_CONF_DIR,$HADOOP_COMMON_HOME/*,$HADOOP_COMMON_HOME/lib/*,$HADOOP_HDFS_HOME/*,$HADOOP_HDFS_HOME/lib/*,$HADOOP_YARN_HOME/*,$HADOOP_YARN_HOME/lib/*"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HDFS Replication Advanced Configuration Snippet (Safety Valve) for yarn-site.xml parameter.",
+        "display_name": "Suppress Parameter Validation: HDFS Replication Advanced Configuration Snippet (Safety Valve) for yarn-site.xml",
+        "name": "service_config_suppression_yarn_service_replication_config_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "The user that this service's processes should run as. (Except the Job History Server, which has its own user)",
+        "display_name": "System User",
+        "name": "process_username",
+        "value": "yarn"
+    },
+    {
+        "desc": "Name of the HDFS service that this YARN service instance depends on",
+        "display_name": "HDFS Service",
+        "name": "hdfs_service",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress the results of the ResourceManager Health heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: ResourceManager Health",
+        "name": "service_health_suppression_yarn_resourcemanagers_health",
+        "value": "false"
+    },
+    {
+        "desc": "The tolerance window used in YARN service tests that depend on detection of the active ResourceManager.",
+        "display_name": "Active ResourceManager Detection Window",
+        "name": "yarn_active_resourcemanager_detecton_window",
+        "value": "3"
+    },
+    {
+        "desc": "The amount of time after ResourceManager(s) start that the lack of an active ResourceManager will be tolerated. This is an advanced option that does not often need to be changed.",
+        "display_name": "ResourceManager Activation Startup Tolerance",
+        "name": "yarn_resourcemanager_activation_startup_tolerance",
+        "value": "180"
+    },
+    {
+        "desc": "When computing the overall YARN service health, whether to consider the health of the standby ResourceManager.",
+        "display_name": "Standby ResourceManager Health Check",
+        "name": "yarn_standby_resourcemanager_health_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Whether users and groups specified in Admin ACL should be checked for authorization to perform admin operations.",
+        "display_name": "Enable ResourceManager ACLs",
+        "name": "yarn_acl_enable",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Hadoop TLS/SSL Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Hadoop TLS/SSL Validator",
+        "name": "service_config_suppression_hadoop_ssl_validator",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>hadoop-policy.xml</strong>. Applies to configurations of all roles in this service except client configuration.",
+        "display_name": "YARN Service Advanced Configuration Snippet (Safety Valve) for hadoop-policy.xml",
+        "name": "yarn_hadoop_policy_config_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the YARN Application Classpath parameter.",
+        "display_name": "Suppress Parameter Validation: YARN Application Classpath",
+        "name": "service_config_suppression_yarn_application_classpath",
+        "value": "false"
+    },
+    {
+        "desc": "When set, Cloudera Manager will send alerts when this entity's configuration changes.",
+        "display_name": "Enable Configuration Change Alerts",
+        "name": "enable_config_alerts",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the NodeManager Count Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: NodeManager Count Validator",
+        "name": "service_config_suppression_nodemanager_count_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Password for the TLS/SSL client truststore. Overrides the cluster-wide default truststore password set in HDFS.",
+        "display_name": "TLS/SSL Client Truststore File Password",
+        "name": "ssl_client_truststore_password",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Service Triggers parameter.",
+        "display_name": "Suppress Parameter Validation: Service Triggers",
+        "name": "service_config_suppression_service_triggers",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>core-site.xml</strong>. Applies to configurations of all roles in this service except client configuration.",
+        "display_name": "YARN Service Advanced Configuration Snippet (Safety Valve) for core-site.xml",
+        "name": "yarn_core_site_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "When set, each role identifies important log events and forwards them to Cloudera Manager.",
+        "display_name": "Enable Log Event Capture",
+        "name": "catch_events",
+        "value": "true"
+    },
+    {
+        "desc": "Path to the keystore file containing the server certificate and private key used for encrypted shuffle and encrypted web UIs. Applies to configurations of all daemon roles of this service.",
+        "display_name": "Hadoop TLS/SSL Server Keystore File Location",
+        "name": "ssl_server_keystore_location",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Gateway Count Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Gateway Count Validator",
+        "name": "service_config_suppression_gateway_count_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the System Group parameter.",
+        "display_name": "Suppress Parameter Validation: System Group",
+        "name": "service_config_suppression_process_groupname",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the HDFS Replication Advanced Configuration Snippet (Safety Valve) for mapred-site.xml parameter.",
+        "display_name": "Suppress Parameter Validation: HDFS Replication Advanced Configuration Snippet (Safety Valve) for mapred-site.xml",
+        "name": "service_config_suppression_mapreduce_service_replication_config_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the YARN (MR2 Included) Service Environment Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: YARN (MR2 Included) Service Environment Advanced Configuration Snippet (Safety Valve)",
+        "name": "service_config_suppression_yarn_service_env_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only, a list of derived configuration properties that will be used by the Service Monitor instead of the default ones.",
+        "display_name": "Service Monitor Derived Configs Advanced Configuration Snippet (Safety Valve)",
+        "name": "smon_derived_configs_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hadoop TLS/SSL Server Keystore File Location parameter.",
+        "display_name": "Suppress Parameter Validation: Hadoop TLS/SSL Server Keystore File Location",
+        "name": "service_config_suppression_ssl_server_keystore_location",
+        "value": "false"
+    },
+    {
+        "desc": "JSON representation of all the configurations that the Fair Scheduler can take on across all schedules.",
+        "display_name": "Fair Scheduler Allocations (Deployed)",
+        "name": "yarn_fs_scheduled_allocations",
+        "value": "{\"defaultFairSharePreemptionThreshold\":null,\"defaultFairSharePreemptionTimeout\":null,\"defaultMinSharePreemptionTimeout\":null,\"defaultQueueSchedulingPolicy\":null,\"queueMaxAMShareDefault\":null,\"queueMaxAppsDefault\":null,\"queuePlacementRules\":[{\"create\":true,\"name\":\"specified\",\"queue\":null,\"rules\":null},{\"create\":null,\"name\":\"nestedUserQueue\",\"queue\":null,\"rules\":[{\"create\":null,\"name\":\"default\",\"queue\":\"users\",\"rules\":null}]},{\"create\":true,\"name\":\"default\",\"queue\":null,\"rules\":null}],\"queues\":[{\"aclAdministerApps\":null,\"aclSubmitApps\":null,\"allowPreemptionFrom\":null,\"fairSharePreemptionThreshold\":null,\"fairSharePreemptionTimeout\":null,\"minSharePreemptionTimeout\":null,\"name\":\"root\",\"queues\":[{\"aclAdministerApps\":null,\"aclSubmitApps\":null,\"allowPreemptionFrom\":null,\"fairSharePreemptionThreshold\":null,\"fairSharePreemptionTimeout\":null,\"minSharePreemptionTimeout\":null,\"name\":\"default\",\"queues\":[],\"schedulablePropertiesList\":[{\"impalaDefaultQueryMemLimit\":null,\"impalaDefaultQueryOptions\":null,\"impalaMaxMemory\":null,\"impalaMaxQueuedQueries\":null,\"impalaMaxRunningQueries\":null,\"impalaQueueTimeout\":null,\"maxAMShare\":null,\"maxChildResources\":null,\"maxResources\":null,\"maxRunningApps\":null,\"minResources\":null,\"scheduleName\":\"default\",\"weight\":null}],\"schedulingPolicy\":\"drf\",\"type\":null},{\"aclAdministerApps\":null,\"aclSubmitApps\":null,\"allowPreemptionFrom\":null,\"fairSharePreemptionThreshold\":null,\"fairSharePreemptionTimeout\":null,\"minSharePreemptionTimeout\":null,\"name\":\"users\",\"queues\":[],\"schedulablePropertiesList\":[{\"impalaDefaultQueryMemLimit\":null,\"impalaDefaultQueryOptions\":null,\"impalaMaxMemory\":null,\"impalaMaxQueuedQueries\":null,\"impalaMaxRunningQueries\":null,\"impalaQueueTimeout\":null,\"maxAMShare\":null,\"maxChildResources\":null,\"maxResources\":null,\"maxRunningApps\":null,\"minResources\":null,\"scheduleName\":\"default\",\"weight\":null}],\"schedulingPolicy\":\"drf\",\"type\":\"parent\"}],\"schedulablePropertiesList\":[{\"impalaDefaultQueryMemLimit\":null,\"impalaDefaultQueryOptions\":null,\"impalaMaxMemory\":null,\"impalaMaxQueuedQueries\":null,\"impalaMaxRunningQueries\":null,\"impalaQueueTimeout\":null,\"maxAMShare\":null,\"maxChildResources\":null,\"maxResources\":null,\"maxRunningApps\":null,\"minResources\":null,\"scheduleName\":\"default\",\"weight\":null}],\"schedulingPolicy\":\"drf\",\"type\":null}],\"userMaxAppsDefault\":null,\"users\":[]}"
+    },
+    {
+        "desc": "Controls which applications non-admin users can see in the applications list view",
+        "display_name": "Non-Admin Users Applications List Visibility Settings",
+        "name": "user_application_list_settings",
+        "value": "ALL"
+    },
+    {
+        "desc": "When computing the overall YARN health, consider JobHistory Server's health",
+        "display_name": "JobHistory Server Role Health Test",
+        "name": "yarn_jobhistoryserver_health_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Password that protects the private key contained in the server keystore used for encrypted shuffle and encrypted web UIs. Applies to all configurations of daemon roles of this service.",
+        "display_name": "Hadoop TLS/SSL Server Keystore Key Password",
+        "name": "ssl_server_keystore_keypassword",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the YARN Service Advanced Configuration Snippet (Safety Valve) for hadoop-policy.xml parameter.",
+        "display_name": "Suppress Parameter Validation: YARN Service Advanced Configuration Snippet (Safety Valve) for hadoop-policy.xml",
+        "name": "service_config_suppression_yarn_hadoop_policy_config_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "A list specifying the rules to run to determine which Fair Scheduler configuration to use. Typically edited using the Rules configuration UI.",
+        "display_name": "Fair Scheduler Configuration Rules (Staged)",
+        "name": "yarn_fs_schedule_rules_draft",
+        "value": null
+    },
+    {
+        "desc": "Password for the server keystore file used for encrypted shuffle and encrypted web UIs. Applies to configurations of all daemon roles of this service.",
+        "display_name": "Hadoop TLS/SSL Server Keystore File Password",
+        "name": "ssl_server_keystore_password",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress the results of the JobHistory Server Health heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: JobHistory Server Health",
+        "name": "service_health_suppression_yarn_jobhistory_health",
+        "value": "false"
+    },
+    {
+        "desc": "Enables Kerberos authentication for Hadoop HTTP web consoles for all roles of this service using the SPNEGO protocol. <b>Note:</b> This is effective only if Kerberos is enabled for the HDFS service.",
+        "display_name": "Enable Kerberos Authentication for HTTP Web-Consoles",
+        "name": "hadoop_secure_web_ui",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the Secure Web UI Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: Secure Web UI Validator",
+        "name": "service_config_suppression_hadoop_secure_web_ui",
+        "value": "false"
+    },
+    {
+        "desc": "Path to the truststore file used when roles of this service act as TLS/SSL clients. Overrides the cluster-wide default truststore location set in HDFS. This truststore must be in JKS format. The truststore contains certificates of trusted servers, or of Certificate Authorities trusted to identify servers. The contents of the truststore can be modified without restarting any roles. By default, changes to its contents are picked up within ten seconds. If not set, the default Java truststore is used to verify certificates.",
+        "display_name": "TLS/SSL Client Truststore File Location",
+        "name": "ssl_client_truststore_location",
+        "value": null
+    },
+    {
+        "desc": "For advanced use only, a list of configuration properties that will be used by the Service Monitor instead of the current client configuration for the service.",
+        "display_name": "Service Monitor Client Config Overrides",
+        "name": "smon_client_config_overrides",
+        "value": "<property><name>mapreduce.output.fileoutputformat.compress</name><value>false</value></property><property><name>mapreduce.output.fileoutputformat.compress.codec</name><value>org.apache.hadoop.io.compress.DefaultCodec</value></property><property><name>io.compression.codecs</name><value>org.apache.hadoop.io.compress.DefaultCodec,org.apache.hadoop.io.compress.GzipCodec,org.apache.hadoop.io.compress.BZip2Codec,org.apache.hadoop.io.compress.DeflateCodec,org.apache.hadoop.io.compress.SnappyCodec,org.apache.hadoop.io.compress.Lz4Codec</value></property>"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>yarn-site.xml</strong>. Applies to configurations of all roles in this service except client configuration.",
+        "display_name": "YARN Service Advanced Configuration Snippet (Safety Valve) for yarn-site.xml",
+        "name": "yarn_service_config_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the System User parameter.",
+        "display_name": "Suppress Parameter Validation: System User",
+        "name": "service_config_suppression_process_username",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress the results of the YARN Container Usage Aggregation heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: YARN Container Usage Aggregation",
+        "name": "service_health_suppression_yarn_usage_aggregation_health",
+        "value": "false"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>yarn-site.xml</strong>. Applies to all HDFS Replication jobs.",
+        "display_name": "HDFS Replication Advanced Configuration Snippet (Safety Valve) for yarn-site.xml",
+        "name": "yarn_service_replication_config_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "For advanced use only, key-value pairs (one on each line) to be inserted into a role's environment. Applies to configurations of all roles in this service except client configuration.",
+        "display_name": "YARN (MR2 Included) Service Environment Advanced Configuration Snippet (Safety Valve)",
+        "name": "yarn_service_env_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to enable log aggregation",
+        "display_name": "Enable Log Aggregation",
+        "name": "yarn_log_aggregation_enable",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the YARN (MR2 Included) Service Advanced Configuration Snippet (Safety Valve) for ssl-client.xml parameter.",
+        "display_name": "Suppress Parameter Validation: YARN (MR2 Included) Service Advanced Configuration Snippet (Safety Valve) for ssl-client.xml",
+        "name": "service_config_suppression_yarn_ssl_client_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "ACL that determines which users and groups can submit and kill applications in any pool, and can issue commands on ResourceManager roles.",
+        "display_name": "Admin ACL",
+        "name": "yarn_admin_acl",
+        "value": "*"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the TLS/SSL Client Truststore File Password parameter.",
+        "display_name": "Suppress Parameter Validation: TLS/SSL Client Truststore File Password",
+        "name": "service_config_suppression_ssl_client_truststore_password",
+        "value": "false"
+    },
+    {
+        "desc": "Cluster ID used when ResourceManager is Highly Available.",
+        "display_name": "RM-HA Cluster ID",
+        "name": "yarn_rm_ha_cluster_id",
+        "value": "yarnRM"
+    },
+    {
+        "desc": "<p>The configured triggers for this service. This is a JSON-formatted list of triggers. These triggers are evaluated as part as the health system. Every trigger expression is parsed, and if the trigger condition is met, the list of actions provided in the trigger expression is executed.</p><p>Each trigger has the following fields:</p><ul><li><code>triggerName</code> <b>(mandatory)</b> - The name of the trigger. This value must be unique for the specific service. </li><li><code>triggerExpression</code> <b>(mandatory)</b> - A tsquery expression representing the trigger. </li><li><code>streamThreshold</code> <b>(optional)</b> - The maximum number of streams that can satisfy a condition of a trigger before the condition fires. By default set to 0, and any stream returned causes the condition to fire. </li><li><code>enabled</code> <b> (optional)</b> - By default set to 'true'. If set to 'false', the trigger is not evaluated.</li><li><code>expressionEditorConfig</code> <b> (optional)</b> - Metadata for the trigger editor. If present, the trigger should only be edited from the Edit Trigger page; editing the trigger here can lead to inconsistencies.</li></ul><p>For example, the followig JSON formatted trigger fires if there are more than 10 DataNodes with more than 500 file descriptors opened:</p><p><pre>[{\"triggerName\": \"sample-trigger\",\n  \"triggerExpression\": \"IF (SELECT fd_open WHERE roleType = DataNode and last(fd_open) > 500) DO health:bad\",\n  \"streamThreshold\": 10, \"enabled\": \"true\"}]</pre></p><p>See the trigger rules documentation for more details on how to write triggers using tsquery.</p><p>The JSON format is evolving and may change and, as a result, backward compatibility is not guaranteed between releases.</p>",
+        "display_name": "Service Triggers",
+        "name": "service_triggers",
+        "value": "[]"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Service Monitor Client Config Overrides parameter.",
+        "display_name": "Suppress Parameter Validation: Service Monitor Client Config Overrides",
+        "name": "service_config_suppression_smon_client_config_overrides",
+        "value": "false"
+    },
+    {
+        "desc": "This determines the user Linux container executor should run as on a non-secure cluster. If this value is set to true, then all containers will be launched as the user specified in yarn.nodemanager.linux-container-executor.nonsecure-mode.local-user. If this value is set to false, then containers will run as the user who submitted the application.",
+        "display_name": "Limit Nonsecure Container Executor Users",
+        "name": "yarn_nodemanager_linux_container_executor_nonsecure_mode_limit_users",
+        "value": "true"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>ssl-server.xml</strong>. Applies to configurations of all roles in this service except client configuration.",
+        "display_name": "YARN (MR2 Included) Service Advanced Configuration Snippet (Safety Valve) for ssl-server.xml",
+        "name": "yarn_ssl_server_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Llama Proxy User Hosts parameter.",
+        "display_name": "Suppress Parameter Validation: Llama Proxy User Hosts",
+        "name": "service_config_suppression_llama_proxy_user_hosts_list",
+        "value": "false"
+    },
+    {
+        "desc": "When set to <b>true</b>, pools specified in applications but not explicitly configured, are created at runtime with default settings. When set to <b>false</b>, applications specifying pools not explicitly configured run in a pool named <b>default</b>. This setting applies when an application explicitly specifies a pool and when the application runs in a pool named with the username associated with the application.",
+        "display_name": "Allow Undeclared Pools",
+        "name": "yarn_scheduler_fair_allow_undeclared_pools",
+        "value": "true"
+    },
+    {
+        "desc": "How long to keep aggregation logs before deleting them.",
+        "display_name": "Log Aggregation Retention Period",
+        "name": "yarn_log_aggregation_retain_seconds",
+        "value": "604800"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the YARN Service MapReduce Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: YARN Service MapReduce Advanced Configuration Snippet (Safety Valve)",
+        "name": "service_config_suppression_yarn_service_mapred_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the YARN (MR2 Included) Service Advanced Configuration Snippet (Safety Valve) for ssl-server.xml parameter.",
+        "display_name": "Suppress Parameter Validation: YARN (MR2 Included) Service Advanced Configuration Snippet (Safety Valve) for ssl-server.xml",
+        "name": "service_config_suppression_yarn_ssl_server_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Llama Proxy User Groups parameter.",
+        "display_name": "Suppress Parameter Validation: Llama Proxy User Groups",
+        "name": "service_config_suppression_llama_proxy_user_groups_list",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hadoop TLS/SSL Server Keystore File Password parameter.",
+        "display_name": "Suppress Parameter Validation: Hadoop TLS/SSL Server Keystore File Password",
+        "name": "service_config_suppression_ssl_server_keystore_password",
+        "value": "false"
+    },
+    {
+        "desc": "Whether YARN uses the Linux Container Executor both in secure (Kerberos) and insecure (not Kerberos) environments. Cgroups enforcement only works when the Linux Container Executor is used.",
+        "display_name": "Always Use Linux Container Executor",
+        "name": "yarn_service_lce_always",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to serve logs over HTTP from YARN web servers. This includes listing the logs directory at the /logs endpoint, which may be a security concern.",
+        "display_name": "Serve logs over HTTP",
+        "name": "http_logs_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the System User's Home Directory parameter.",
+        "display_name": "Suppress Parameter Validation: System User's Home Directory",
+        "name": "service_config_suppression_hdfs_user_home_dir",
+        "value": "false"
+    },
+    {
+        "desc": "UNIX user that containers run as when Linux-container-executor is used in nonsecure mode.",
+        "display_name": "UNIX User for Nonsecure Mode with Linux Container Executor",
+        "name": "yarn_nodemanager_linux_container_executor_nonsecure_mode_local_user",
+        "value": "nobody"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <b>mapred-site.xml</b>. Applies to configurations of all roles in this service except client configuration.",
+        "display_name": "YARN Service MapReduce Advanced Configuration Snippet (Safety Valve)",
+        "name": "yarn_service_mapred_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Comma-delimited list of hosts where you want to allow the Llama (AM for Impala) user to impersonate other users. The default '*' allows all hosts. To disable entirely, use a string that doesn't correspond to a host name, such as '_no_host'.",
+        "display_name": "Llama Proxy User Hosts",
+        "name": "llama_proxy_user_hosts_list",
+        "value": "*"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the ResourceManager Count Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: ResourceManager Count Validator",
+        "name": "service_config_suppression_resourcemanager_count_validator",
+        "value": "false"
+    },
+    {
+        "desc": "A list specifying the rules to run to determine which Fair Scheduler configuration to use.",
+        "display_name": "Fair Scheduler Configuration Rules (Deployed)",
+        "name": "yarn_fs_schedule_rules",
+        "value": "[]"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the JobHistory Server Count Validator configuration validator.",
+        "display_name": "Suppress Configuration Validator: JobHistory Server Count Validator",
+        "name": "service_config_suppression_jobhistory_count_validator",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the YARN Service Advanced Configuration Snippet (Safety Valve) for core-site.xml parameter.",
+        "display_name": "Suppress Parameter Validation: YARN Service Advanced Configuration Snippet (Safety Valve) for core-site.xml",
+        "name": "service_config_suppression_yarn_core_site_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "The home directory of the system user on the local filesystem. This setting must reflect the system's configured value - only changing it here will not change the actual home directory.",
+        "display_name": "System User's Home Directory",
+        "name": "hdfs_user_home_dir",
+        "value": "/var/lib/hadoop-yarn"
+    },
+    {
+        "desc": "Whether YARN creates a cgroup per container, thereby isolating the CPU usage of containers.  When set, <code>yarn.nodemanager.linux-container-executor.resources-handler.class</code> is configured to <code>org.apache.hadoop.yarn.server.nodemanager.util.CgroupsLCEResourcesHandler</code>. The host (in Cloudera Manager) must have cgroups enabled. The number of shares allocated to all YARN containers is configured by adjusting the CPU shares value of the Node Manager in the Resource Management configuration group.",
+        "display_name": "Use CGroups for Resource Management",
+        "name": "yarn_service_cgroups",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the UNIX User for Nonsecure Mode with Linux Container Executor parameter.",
+        "display_name": "Suppress Parameter Validation: UNIX User for Nonsecure Mode with Linux Container Executor",
+        "name": "service_config_suppression_yarn_nodemanager_linux_container_executor_nonsecure_mode_local_user",
+        "value": "false"
+    },
+    {
+        "desc": "JSON representation of all the configurations that the Fair Scheduler can take on across all schedules. Typically edited using the Pools configuration UI.",
+        "display_name": "Fair Scheduler Allocations (Staged)",
+        "name": "yarn_fs_scheduled_allocations_draft",
+        "value": null
+    },
+    {
+        "desc": "Name of the ZooKeeper service that this YARN service instance depends on",
+        "display_name": "ZooKeeper Service",
+        "name": "zookeeper_service",
+        "value": null
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>ssl-client.xml</strong>. Applies to configurations of all roles in this service except client configuration.",
+        "display_name": "YARN (MR2 Included) Service Advanced Configuration Snippet (Safety Valve) for ssl-client.xml",
+        "name": "yarn_ssl_client_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "When computing the overall YARN service health, whether to consider the active ResourceManager's health.",
+        "display_name": "Active ResourceManager Role Health Check",
+        "name": "yarn_resourcemanagers_health_enabled",
+        "value": "true"
+    },
+    {
+        "desc": "Kerberos principal short name used by all roles of this service.",
+        "display_name": "Kerberos Principal",
+        "name": "kerberos_princ_name",
+        "value": "yarn"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Kerberos Principal parameter.",
+        "display_name": "Suppress Parameter Validation: Kerberos Principal",
+        "name": "service_config_suppression_kerberos_princ_name",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the RM-HA Cluster ID parameter.",
+        "display_name": "Suppress Parameter Validation: RM-HA Cluster ID",
+        "name": "service_config_suppression_yarn_rm_ha_cluster_id",
+        "value": "false"
+    },
+    {
+        "desc": "The group that this service's processes should run as. (Except the Job History Server, which has its own group.)",
+        "display_name": "System Group",
+        "name": "process_groupname",
+        "value": "hadoop"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Admin ACL parameter.",
+        "display_name": "Suppress Parameter Validation: Admin ACL",
+        "name": "service_config_suppression_yarn_admin_acl",
+        "value": "false"
+    },
+    {
+        "desc": "The frequency in which the log4j event publication appender will retry sending undelivered log events to the Event server, in seconds",
+        "display_name": "Log Event Retry Frequency",
+        "name": "log_event_retry_frequency",
+        "value": "30"
+    },
+    {
+        "desc": "Controls which applications an admin user can see in the applications list view",
+        "display_name": "Admin Users Applications List Visibility Settings",
+        "name": "admin_application_list_settings",
+        "value": "ALL"
+    },
+    {
+        "desc": "When set, Cloudera Manager will send alerts when the health of this service reaches the threshold specified by the EventServer setting eventserver_health_events_alert_threshold",
+        "display_name": "Enable Service Level Health Alerts",
+        "name": "enable_alerts",
+        "value": "true"
+    },
+    {
+        "desc": "Comma-delimited list of groups that you want to allow the Llama (AM for Impala) user to impersonate. The default '*' allows all groups. To disable entirely, use a string that doesn't correspond to a group name, such as '_no_group_'.",
+        "display_name": "Llama Proxy User Groups",
+        "name": "llama_proxy_user_groups_list",
+        "value": "*"
+    },
+    {
+        "desc": "For advanced use only, a string to be inserted into <strong>mapred-site.xml</strong>. Applies to all HDFS Replication jobs.",
+        "display_name": "HDFS Replication Advanced Configuration Snippet (Safety Valve) for mapred-site.xml",
+        "name": "mapreduce_service_replication_config_safety_valve",
+        "value": null
+    },
+    {
+        "desc": "Whether to suppress the results of the NodeManager Health heath test. The results of suppressed health tests are ignored when computing the overall health of the associated host, role or service, so suppressed health tests will not generate alerts.",
+        "display_name": "Suppress Health Test: NodeManager Health",
+        "name": "service_health_suppression_yarn_node_managers_healthy",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the TLS/SSL Client Truststore File Location parameter.",
+        "display_name": "Suppress Parameter Validation: TLS/SSL Client Truststore File Location",
+        "name": "service_config_suppression_ssl_client_truststore_location",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the YARN Service Advanced Configuration Snippet (Safety Valve) for yarn-site.xml parameter.",
+        "display_name": "Suppress Parameter Validation: YARN Service Advanced Configuration Snippet (Safety Valve) for yarn-site.xml",
+        "name": "service_config_suppression_yarn_service_config_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Service Monitor Derived Configs Advanced Configuration Snippet (Safety Valve) parameter.",
+        "display_name": "Suppress Parameter Validation: Service Monitor Derived Configs Advanced Configuration Snippet (Safety Valve)",
+        "name": "service_config_suppression_smon_derived_configs_safety_valve",
+        "value": "false"
+    },
+    {
+        "desc": "This is the maximum time to wait for running containers and applications to complete before transition a DECOMMISSIONING node into DECOMMISSIONED. (-1 indicates infinite timeout, 0 indicates non-graceful)",
+        "display_name": "Node Manager Graceful Decommission Timeout",
+        "name": "yarn_resourcemanager_nodemanager_graceful_decommission_timeout_secs",
+        "value": "0"
+    },
+    {
+        "desc": "Whether to suppress configuration warnings produced by the built-in parameter validation for the Hadoop TLS/SSL Server Keystore Key Password parameter.",
+        "display_name": "Suppress Parameter Validation: Hadoop TLS/SSL Server Keystore Key Password",
+        "name": "service_config_suppression_ssl_server_keystore_keypassword",
+        "value": "false"
+    }
+]

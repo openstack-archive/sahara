@@ -291,6 +291,9 @@ class ConfigHelper(object):
         return self._get_config_value(cluster,
                                       self.ENABLE_HBASE_COMMON_LIB)
 
+    def is_keytrustee_available(self):
+        return True
+
     def get_swift_lib_url(self, cluster):
         return self._get_config_value(cluster, self.SWIFT_LIB_URL)
 
