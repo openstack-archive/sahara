@@ -69,14 +69,12 @@ class StormPluginTest(base.SaharaWithDbTestCase):
              'node_processes': ['zookeeper']}
         ]
 
-        cluster_data_092 = self._get_cluster('cluster_0.9.2', '0.9.2')
         cluster_data_101 = self._get_cluster('cluster_1.0.1', '1.0.1')
         cluster_data_110 = self._get_cluster('cluster_1.1.0', '1.1.0')
-        cluster_data_092['node_groups'] = data
         cluster_data_101['node_groups'] = data
         cluster_data_110['node_groups'] = data
 
-        clusters = [cluster_data_092, cluster_data_101, cluster_data_110]
+        clusters = [cluster_data_101, cluster_data_110]
 
         for cluster_data in clusters:
             cluster = conductor.cluster_create(context.ctx(), cluster_data)
@@ -90,7 +88,7 @@ class StormPluginTest(base.SaharaWithDbTestCase):
     @mock.patch("sahara.plugins.storm.plugin.utils")
     def test_validate(self, mock_utils):
 
-        cluster_data = self._get_cluster('cluster', '0.9.2')
+        cluster_data = self._get_cluster('cluster', '1.1.0')
         cluster = conductor.cluster_create(context.ctx(), cluster_data)
         plugin = pb.PLUGINS.get_plugin(cluster.plugin_name)
 
@@ -162,14 +160,12 @@ class StormPluginTest(base.SaharaWithDbTestCase):
              'node_processes': ['supervisor']}
         ]
 
-        cluster_data_092 = self._get_cluster('cluster_0.9.2', '0.9.2')
         cluster_data_101 = self._get_cluster('cluster_1.0.1', '1.0.1')
         cluster_data_110 = self._get_cluster('cluster_1.1.0', '1.1.0')
-        cluster_data_092['node_groups'] = data
         cluster_data_101['node_groups'] = data
         cluster_data_110['node_groups'] = data
 
-        clusters = [cluster_data_092, cluster_data_101, cluster_data_110]
+        clusters = [cluster_data_101, cluster_data_110]
 
         for cluster_data in clusters:
             cluster = conductor.cluster_create(context.ctx(), cluster_data)
@@ -196,14 +192,12 @@ class StormPluginTest(base.SaharaWithDbTestCase):
              'node_processes': ['zookeeper']}
         ]
 
-        cluster_data_092 = self._get_cluster('cluster_0.9.2', '0.9.2')
         cluster_data_101 = self._get_cluster('cluster_1.0.1', '1.0.1')
         cluster_data_110 = self._get_cluster('cluster_1.1.0', '1.1.0')
-        cluster_data_092['node_groups'] = data
         cluster_data_101['node_groups'] = data
         cluster_data_110['node_groups'] = data
 
-        clusters = [cluster_data_092, cluster_data_101, cluster_data_110]
+        clusters = [cluster_data_101, cluster_data_110]
 
         for cluster_data in clusters:
             cluster = conductor.cluster_create(context.ctx(), cluster_data)
@@ -234,14 +228,12 @@ class StormPluginTest(base.SaharaWithDbTestCase):
              'node_processes': ['nimbus']}
         ]
 
-        cluster_data_092 = self._get_cluster('cluster_0.9.2', '0.9.2')
         cluster_data_101 = self._get_cluster('cluster_1.0.1', '1.0.1')
         cluster_data_110 = self._get_cluster('cluster_1.1.0', '1.1.0')
-        cluster_data_092['node_groups'] = data
         cluster_data_101['node_groups'] = data
         cluster_data_110['node_groups'] = data
 
-        clusters = [cluster_data_092, cluster_data_101, cluster_data_110]
+        clusters = [cluster_data_101, cluster_data_110]
 
         for cluster_data in clusters:
             cluster = conductor.cluster_create(context.ctx(), cluster_data)
@@ -268,14 +260,6 @@ class StormPluginTest(base.SaharaWithDbTestCase):
         cluster = conductor.cluster_create(context.ctx(), cluster_dict)
         plugin = pb.PLUGINS.get_plugin(cluster.plugin_name)
         self.assertIsInstance(plugin.get_edp_engine(cluster, job_type), eng)
-
-    def test_plugin092_edp_storm_engine(self):
-        self._test_engine('0.9.2', edp.JOB_TYPE_STORM,
-                          engine.StormJobEngine)
-
-    def test_plugin092_edp_storm_pyleus_engine(self):
-        self._test_engine('0.9.2', edp.JOB_TYPE_PYLEUS,
-                          engine.StormJobEngine)
 
     def test_plugin101_edp_storm_engine(self):
         self._test_engine('1.0.1', edp.JOB_TYPE_STORM,

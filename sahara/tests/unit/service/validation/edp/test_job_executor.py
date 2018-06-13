@@ -188,7 +188,7 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
         ng = tu.make_ng_dict('master', 42, [], 1,
                              instances=[tu.make_inst_dict('id', 'name')])
         get_cluster.return_value = tu.create_cluster("cluster", "tenant1",
-                                                     "spark", "1.3.1", [ng])
+                                                     "spark", "2.2", [ng])
 
         # Everything is okay, spark cluster supports EDP by default
         # because cluster requires a master and slaves >= 1
@@ -252,7 +252,7 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
         ng = tu.make_ng_dict('master', 42, ['namenode'], 1,
                              instances=[tu.make_inst_dict('id', 'name')])
         cluster_get.return_value = tu.create_cluster("cluster", "tenant1",
-                                                     "spark", "1.3.1", [ng])
+                                                     "spark", "2.2", [ng])
 
         self._assert_create_object_validation(
             data={

@@ -58,13 +58,12 @@ class StormProvider(p.ProvisioningPluginBase):
         result = {'plugin_labels': copy.deepcopy(default)}
         result['version_labels'] = {
             '1.1.0': copy.deepcopy(default),
-            '1.0.1': copy.deepcopy(default),
-            '0.9.2': copy.deepcopy(deprecated),
+            '1.0.1': copy.deepcopy(deprecated),
         }
         return result
 
     def get_versions(self):
-        return ['0.9.2', '1.0.1', '1.1.0']
+        return ['1.0.1', '1.1.0']
 
     def get_configs(self, storm_version):
         return c_helper.get_plugin_configs()

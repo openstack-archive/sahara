@@ -41,8 +41,7 @@ class CDHPluginProvider(p.ProvisioningPluginBase):
             '5.13.0': copy.deepcopy(default),
             '5.11.0': copy.deepcopy(default),
             '5.9.0': copy.deepcopy(default),
-            '5.7.0': copy.deepcopy(default),
-            '5.5.0': copy.deepcopy(deprecated),
+            '5.7.0': copy.deepcopy(deprecated)
         }
         return result
 
