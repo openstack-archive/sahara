@@ -10,8 +10,7 @@ can launch Spark jobs on a Vanilla cluster.
 For cluster provisioning prepared images should be used. They already have
 Apache Hadoop 2.7.1 installed.
 
-You may build images by yourself using :doc:`vanilla-imagebuilder` or you could
-download prepared images from http://sahara-files.mirantis.com/images/upstream
+You may build images by yourself using :doc:`vanilla-imagebuilder`.
 
 Vanilla plugin requires an image to be tagged in Sahara Image Registry with
 two tags: 'vanilla' and '<hadoop version>' (e.g. '2.7.1').

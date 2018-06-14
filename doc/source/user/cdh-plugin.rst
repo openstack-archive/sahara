@@ -9,10 +9,7 @@ modify the Sahara configuration file (default /etc/sahara/sahara.conf) to
 explicitly enable or disable it in "plugins" line.
 
 You need to build images using :doc:`cdh-imagebuilder` to produce images used
-to provision cluster or you could download prepared images from
-http://sahara-files.mirantis.com/images/upstream/
-They already have Cloudera Express installed (version 5.0.0, 5.3.0, 5.4.0,
-5.5.0, 5.7.x and 5.9.x).
+to provision cluster.
 
 The cloudera plugin requires an image to be tagged in Sahara Image Registry
 with two tags: 'cdh' and '<cloudera version>' (e.g. '5', '5.3.0', '5.4.0',
