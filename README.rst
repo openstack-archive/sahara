@@ -26,6 +26,8 @@ Source: https://git.openstack.org/cgit/openstack/sahara
 
 Bugs and feature requests: https://storyboard.openstack.org/#!/project/935
 
+Release notes: https://docs.openstack.org/releasenotes/sahara/
+
 License
 -------
 
