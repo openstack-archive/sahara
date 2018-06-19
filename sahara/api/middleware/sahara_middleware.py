@@ -58,7 +58,7 @@ def build_app():
     make_json_error = _JSONErrorHandler()
 
     for code in six.iterkeys(werkzeug_exceptions.default_exceptions):
-        app.error_handler_spec[None][code] = make_json_error
+        app.register_error_handler(code, make_json_error)
 
     return app
 
