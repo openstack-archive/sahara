@@ -23,7 +23,6 @@ arguments:
     required: False
 
 validators:
-  - script: common/install_extjs
   - os_case:
       - redhat:
           - package: wget
@@ -97,6 +96,7 @@ validators:
   - script:
       common/install_cloudera:
         env_vars: [plugin_version]
+  - script: common/install_extjs
   - os_case:
     - redhat:
       - script: centos/turn_off_services
