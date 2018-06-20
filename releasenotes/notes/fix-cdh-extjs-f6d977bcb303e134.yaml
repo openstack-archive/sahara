@@ -1,0 +1,9 @@
+---
+fixes:
+  - |
+    Fixes `story 2002551`_ in which CDH cluster creation was stuck when the
+    image was generated using sahara-image-elements, and at the same time
+    extjs 2.2 was not injected inside the images generated using
+    sahara-image-pack.
+
+    .. _story 2002551: https://storyboard.openstack.org/#!/story/2002551
