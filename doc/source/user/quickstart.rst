@@ -39,26 +39,18 @@ whose password is ``nova``:
 ---------------------------------------
 
 You will need to upload a virtual machine image to the OpenStack Image
-service. You can download pre-built images with vanilla Apache Hadoop
-installed, or build the images yourself. This guide uses the latest available
-Ubuntu upstream image, referred to as ``sahara-vanilla-latest-ubuntu.qcow2``
+service. You can build the images yourself. This guide uses the latest
+generated Ubuntu vanilla image, referred to as
+``sahara-vanilla-latest-ubuntu.qcow2``,
 and the latest version of vanilla plugin as an example.
-Sample images are available here:
-
-`Sample Images <http://sahara-files.mirantis.com/images/upstream/>`_
 
 * Download a pre-built image
 
-**Note:** For the steps below, substitute ``<openstack_release>`` with the
-appropriate OpenStack release and ``<sahara_image>`` with the image of your
-choice.
+* Build the image using `sahara-image-elements
+  <https://git.openstack.org/cgit/openstack/sahara-image-elements/tree/README.rst>`_
 
-.. sourcecode:: console
 
-    $ ssh user@hostname
-    $ wget http://sahara-files.mirantis.com/images/upstream/<openstack_release>/<sahara_image>.qcow2
-
-Upload the image downloaded above into the OpenStack Image service:
+Upload the generated image into the OpenStack Image service:
 
 .. sourcecode:: console
 
@@ -86,10 +78,6 @@ Upload the image downloaded above into the OpenStack Image service:
     | updated_at       | 2016-02-29T10:15:41.000000           |
     | virtual_size     | None                                 |
     +------------------+--------------------------------------+
-
-OR
-
-* Build the image using: `diskimage-builder script <https://git.openstack.org/cgit/openstack/sahara-image-elements/tree/diskimage-create/README.rst>`_
 
 Remember the image name or save the image ID. This will be used during the
 image registration with sahara. You can get the image ID using the
