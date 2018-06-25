@@ -20,7 +20,7 @@ from sahara.service.edp.storm import engine as edp_engine
 
 class EdpStormEngine(edp_engine.StormJobEngine):
 
-    edp_base_version = "0.9.2"
+    edp_base_version = "1.0.1"
 
     @staticmethod
     def edp_supported(version):
@@ -37,7 +37,7 @@ class EdpStormEngine(edp_engine.StormJobEngine):
 
 class EdpPyleusEngine(edp_engine.StormPyleusJobEngine):
 
-    edp_base_version = "0.9.2"
+    edp_base_version = "1.0.1"
 
     @staticmethod
     def edp_supported(version):
