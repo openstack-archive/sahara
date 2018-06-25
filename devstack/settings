@@ -37,7 +37,7 @@ SAHARA_PERIODIC_COORDINATOR_URL=${SAHARA_PERIODIC_COORDINATOR_URL:-\
 memcached://127.0.0.1:11211}
 
 #Toggle for deploying Sahara API with Apache + mod_wsgi
-SAHARA_USE_MOD_WSGI=${SAHARA_USE_MOD_WSGI:-False}
+SAHARA_USE_MOD_WSGI=${SAHARA_USE_MOD_WSGI:-True}
 
 enable_service sahara-api sahara-eng
 enable_service heat h-eng h-api h-api-cfn h-api-cw
