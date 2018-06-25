@@ -21,17 +21,11 @@ from sahara.plugins.storm import plugin as s_plugin
 class TestStormConfigHelper(testcase.TestCase):
 
     def test_generate_storm_config(self):
-        STORM_092 = '0.9.2'
         STORM_101 = '1.0.1'
         STORM_110 = '1.1.0'
         tested_versions = []
         master_hostname = "s-master"
         zk_hostnames = ["s-zoo"]
-        configs_092 = s_config.generate_storm_config(
-            master_hostname, zk_hostnames, STORM_092)
-        self.assertIn('nimbus.host', configs_092.keys())
-        self.assertNotIn('nimbus.seeds', configs_092.keys())
-        tested_versions.append(STORM_092)
         configs_101 = s_config.generate_storm_config(
             master_hostname, zk_hostnames, STORM_101)
         self.assertNotIn('nimbus.host', configs_101.keys())

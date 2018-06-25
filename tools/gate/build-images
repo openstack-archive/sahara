@@ -65,7 +65,6 @@ setup_build_env
 
 case "$PLUGIN" in
     "cloudera")
-        build_images "cdh" "5.7.0" "centos7"
         build_images "cdh" "5.9.0" "centos7"
         build_images "cdh" "5.11.0" "centos7"
         build_images "cdh" "5.13.0" "centos7"

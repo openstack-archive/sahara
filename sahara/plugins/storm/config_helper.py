@@ -42,13 +42,8 @@ def get_plugin_configs():
 
 def generate_storm_config(master_hostname, zk_hostnames, version):
 
-    if version in ['1.0.1', '1.1.0']:
-        host_cfg = 'nimbus.seeds'
-        master_value = [master_hostname.encode('ascii', 'ignore')]
-
-    else:
-        host_cfg = 'nimbus.host'
-        master_value = master_hostname.encode('ascii', 'ignore')
+    host_cfg = 'nimbus.seeds'
+    master_value = [master_hostname.encode('ascii', 'ignore')]
 
     cfg = {
         host_cfg: master_value,

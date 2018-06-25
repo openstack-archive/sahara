@@ -63,7 +63,7 @@ class SparkProvider(p.ProvisioningPluginBase):
         deprecated = {'enabled': {'status': True},
                       'deprecated': {'status': True}}
         result = {'plugin_labels': copy.deepcopy(default)}
-        stable_versions = ['2.2', '2.1.0', '1.6.0']
+        stable_versions = ['2.2']
         result['version_labels'] = {
             version: copy.deepcopy(
                 default if version in stable_versions else deprecated
@@ -72,7 +72,7 @@ class SparkProvider(p.ProvisioningPluginBase):
         return result
 
     def get_versions(self):
-        return ['2.2', '2.1.0', '1.6.0', '1.3.1']
+        return ['2.2', '2.1.0', '1.6.0']
 
     def get_configs(self, hadoop_version):
         return c_helper.get_plugin_configs()

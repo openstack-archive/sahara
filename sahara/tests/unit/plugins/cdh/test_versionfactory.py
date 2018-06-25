@@ -40,4 +40,4 @@ class VersionFactoryTestCase(base.SaharaTestCase):
             self.assertIsInstance(hander, avh.AbstractVersionHandler)
 
     def get_support_versions(self):
-        return ['5.5.0', '5.7.0', '5.9.0', '5.11.0', '5.13.0']
+        return ['5.7.0', '5.9.0', '5.11.0', '5.13.0']
