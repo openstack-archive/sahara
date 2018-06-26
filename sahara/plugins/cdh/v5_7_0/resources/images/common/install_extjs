@@ -3,19 +3,27 @@
 EXTJS_DESTINATION_DIR="/var/lib/oozie"
 EXTJS_DOWNLOAD_URL="https://tarballs.openstack.org/sahara-extra/dist/common-artifacts/ext-2.2.zip"
 
-extjs_archive=/tmp/$(basename $EXTJS_DOWNLOAD_URL)
+extjs_basepath=$(basename ${EXTJS_DOWNLOAD_URL})
+extjs_archive=/tmp/${extjs_basepath}
+extjs_folder="${extjs_basepath%.*}"
 
-if [ ! -f "${EXTJS_DESTINATION_DIR}/${extjs_archive}" ]; then
-    if [ $test_only -eq 0 ]; then
-        wget -O $extjs_archive $EXTJS_DOWNLOAD_URL
+function setup_extjs {
+    wget -O $extjs_archive $EXTJS_DOWNLOAD_URL
+    mkdir -p $EXTJS_DESTINATION_DIR
+}
 
-        mkdir -p $EXTJS_DESTINATION_DIR
-        if [ -z "${EXTJS_NO_UNPACK:-}" ]; then
-            unzip -d "$EXTJS_DESTINATION_DIR" $extjs_archive
-            rm -f $extjs_archive
-        else
-            mv $extjs_archive $EXTJS_DESTINATION_DIR
-        fi
+if [ -z "${EXTJS_NO_UNPACK:-}" ]; then
+    if [ ! -d "${EXTJS_DESTINATION_DIR}/${extjs_folder}" ]; then
+        setup_extjs
+        unzip -o -d "$EXTJS_DESTINATION_DIR" $extjs_archive
+        rm -f $extjs_archive
+    else
+        exit 0
+    fi
+else
+    if [ ! -f "${EXTJS_DESTINATION_DIR}/${extjs_basepath}" ]; then
+        setup_extjs
+        mv $extjs_archive $EXTJS_DESTINATION_DIR
     else
         exit 0
     fi
