@@ -19,7 +19,7 @@ from oslo_config import cfg
 
 opts = [
     cfg.ListOpt('data_source_types',
-                default=['swift', 'hdfs', 'maprfs', 'manila'],
+                default=['swift', 'hdfs', 'maprfs', 'manila', 's3'],
                 help='List of data sources types to be loaded. Sahara '
                      'preserves the order of the list when returning it.'),
 ]

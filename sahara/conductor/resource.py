@@ -30,6 +30,7 @@ import six
 from sahara.conductor import objects
 from sahara import exceptions as ex
 from sahara.i18n import _
+from sahara.service.edp import s3_common
 from sahara.swift import swift_helper
 from sahara.utils import types
 
@@ -277,6 +278,11 @@ class JobExecution(Resource, objects.JobExecution):
                 configs[swift_helper.HADOOP_SWIFT_USERNAME] = ""
             if swift_helper.HADOOP_SWIFT_PASSWORD in configs:
                 configs[swift_helper.HADOOP_SWIFT_PASSWORD] = ""
+            if s3_common.S3_ACCESS_KEY_CONFIG in configs:
+                configs[s3_common.S3_ACCESS_KEY_CONFIG] = ""
+            if s3_common.S3_SECRET_KEY_CONFIG in configs:
+                configs[s3_common.S3_SECRET_KEY_CONFIG] = ""
+
         if 'trusts' in job_configs:
             del job_configs['trusts']
         if 'proxy_configs' in job_configs:

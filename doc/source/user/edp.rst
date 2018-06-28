@@ -19,6 +19,7 @@ of jobs on clusters created from sahara. EDP supports:
   + HDFS for all job types
   + swift for all types excluding Hive
   + manila (NFS shares only) for all types excluding Pig
+  + Any S3-like object store
 
 * configuration of jobs at submission time
 * execution of jobs on existing clusters or transient clusters
@@ -69,7 +70,8 @@ running in the same OpenStack installation referenced by sahara.
 Sahara requires the following credentials/configs to access files stored in an
 S3-like object store: ``accesskey``, ``secretkey``, ``endpoint``.
 These credentials are specified through the `extra` in the body of the request
-when creating a job binary or data source referencing S3.
+when creating a job binary referencing S3. The value of ``endpoint`` should
+include a protocol: *http* or *https*.
 
 To reference a binary file stored in manila, create the job binary with the
 URL ``manila://{share_id}/{path}``. This assumes that you have already stored
@@ -131,6 +133,19 @@ share as a data source, create the data source with the URL
 ``manila://{share_id}/{path}``. As in the case of job binaries, the specified
 share will be automatically mounted to your cluster's nodes as needed to
 access the data source.
+
+Finally, Sahara supports data sources referring to S3-like object stores. The
+URL should be of the form ``s3a://{bucket}/{path}``. Also, the following
+credentials/configs are understood: ``accesskey``, ``secretkey``,
+``endpoint``, ``bucket_in_path``, and ``ssl``. These credentials are specified
+through the ``credentials`` attribute of the body of the request when creating
+a data source referencing S3. The value of ``endpoint`` should **NOT** include
+a protocol (*http* or *https*), unlike when referencing an S3 job binary. It
+can also be noted that Sahara clusters can interact with S3-like stores even
+when not using EDP, i.e. when manually operating the cluster instead. Consult
+the `hadoop-aws documentation <https://hadoop.apache.org/docs/stable/hadoop-aws/tools/hadoop-aws/index.html>`_
+for more information. Also, be advised that hadoop-aws will only write a job's
+output into a bucket which already exists: it does not create new buckets.
 
 Some job types require the use of data source objects to specify input and
 output when a job is launched. For example, when running a Pig job the UI will
@@ -572,7 +587,8 @@ Spark jobs use some special configuration values:
 * ``edp.spark.adapt_for_swift`` (optional) If set to **True**, instructs
   sahara to modify the job's Hadoop configuration so that swift paths may be
   accessed. Without this configuration value, swift paths will not be
-  accessible to Spark jobs. The default is **False**.
+  accessible to Spark jobs. The default is **False**. Despite the name, the
+  same principle applies to jobs which reference paths in S3-like stores.
 
 * ``edp.spark.driver.classpath`` (optional) If set to empty string sahara
   will use default classpath for the cluster during job execution.
@@ -620,6 +636,9 @@ For job binaries only, S3 urls take the form:
 
 ``s3://bucket/path/to/object``
 
+For data sources, S3 urls take the standard Hadoop form:
+
+``s3a://bucket/path/to/object``
 
 EDP Requirements
 ================

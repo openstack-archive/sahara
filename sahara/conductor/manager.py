@@ -436,6 +436,10 @@ class ConductorManager(db_base.Base):
                 values['credentials'].get('password')):
             values['credentials']['password'] = key_manager.store_secret(
                 values['credentials']['password'], context)
+        if (values.get('credentials') and
+                values['credentials'].get('secretkey')):
+            values['credentials']['secretkey'] = key_manager.store_secret(
+                values['credentials']['secretkey'], context)
         return self.db.data_source_create(context, values)
 
     def data_source_destroy(self, context, data_source):
@@ -451,6 +455,11 @@ class ConductorManager(db_base.Base):
                     ds_record['credentials'].get('password')):
                 key_manager.delete_secret(
                     ds_record['credentials']['password'], context)
+        if CONF.use_barbican_key_manager:
+            if (ds_record.get('credentials') and
+                    ds_record['credentials'].get('secretkey')):
+                key_manager.delete_secret(
+                    ds_record['credentials']['secretkey'], context)
         return self.db.data_source_destroy(context, data_source)
 
     def data_source_update(self, context, id, values):
@@ -468,20 +477,31 @@ class ConductorManager(db_base.Base):
         # it should be noted that the jsonschema validation ensures that
         # if the proxy domain is not in use then credentials must be
         # sent with this record.
-        if (CONF.use_barbican_key_manager and not
-                CONF.use_domain_for_proxy_users):
-            # first we retrieve the original record to get the old key
-            # uuid, and delete it.
+
+        # first we retrieve the original record to get the old key
+        # uuid, and delete it.
+        # next we create the new key.
+
+        if CONF.use_barbican_key_manager:
             ds_record = self.data_source_get(context, id)
             if (ds_record.get('credentials') and
-                    ds_record['credentials'].get('password')):
+                    ds_record['credentials'].get('password') and
+                    not CONF.use_domain_for_proxy_users):
                 key_manager.delete_secret(
                     ds_record['credentials']['password'], context)
-            # next we create the new key.
             if (values.get('credentials') and
-                    values['credentials'].get('password')):
+                    values['credentials'].get('password') and
+                    not CONF.use_domain_for_proxy_users):
                 values['credentials']['password'] = key_manager.store_secret(
                     values['credentials']['password'], context)
+            if (ds_record.get('credentials') and
+                    ds_record['credentials'].get('secretkey')):
+                key_manager.delete_secret(
+                    ds_record['credentials']['secretkey'], context)
+            if (values.get('credentials') and
+                    values['credentials'].get('secretkey')):
+                values['credentials']['secretkey'] = key_manager.store_secret(
+                    values['credentials']['secretkey'], context)
         return self.db.data_source_update(context, values)
 
     # JobExecution ops
