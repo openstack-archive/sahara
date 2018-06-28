@@ -276,6 +276,9 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
 
     def pack_image(self, hadoop_version, remote,
                    test_only=False, image_arguments=None):
+        if hadoop_version == '2.3':
+            image_arguments['ambari_version'] = '2.4.3.0'
+
         self.validator.validate(remote, test_only=test_only,
                                 image_arguments=image_arguments)
 
