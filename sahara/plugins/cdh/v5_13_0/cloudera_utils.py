@@ -26,3 +26,9 @@ class ClouderaUtilsV5130(cu.ClouderaUtils):
         self.pu = pu.PluginUtilsV5130()
         self.validator = validation.ValidatorV5130
         self.c_helper = config_helper.ConfigHelperV5130()
+
+    def _load_version_specific_instance_configs(self, instance, default_conf):
+        if instance.node_group.node_configs.get('HIVEMETASTORE', {}).get(
+                'hive_enable_db_notification', None) is None:
+            default_conf['HIVEMETASTORE']['hive_enable_db_notification'] = (
+                'true')

@@ -159,7 +159,7 @@
         "desc": "Enable stored notifications of metadata changes. When enabled, each metadata change will be stored in NOTIFICATION_LOG.",
         "display_name": "Enable Stored Notifications in Database",
         "name": "hive_enable_db_notification",
-        "value": "false"
+        "value": "true"
     },
     {
         "desc": "When set, this role's process is automatically (and transparently) restarted in the event of an unexpected failure.",

@@ -627,6 +627,9 @@ class ClouderaUtils(object):
         yarn = cm_cluster.get_service(self.YARN_SERVICE_NAME)
         yield yarn.enable_rm_ha(new_rm_host_id=new_rm_host_name)
 
+    def _load_version_specific_instance_configs(self, instance, default_conf):
+        pass
+
     def _get_configs(self, service, cluster=None, instance=None):
         def get_hadoop_dirs(mount_points, suffix):
             return ','.join([x + suffix for x in mount_points])
@@ -822,6 +825,9 @@ class ClouderaUtils(object):
                         if snt_count else '')
                 }
             }
+
+            self._load_version_specific_instance_configs(
+                instance, instance_default_confs)
 
             ng_user_confs = self.pu.convert_process_configs(
                 instance.node_group.node_configs)
