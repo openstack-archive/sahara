@@ -20,7 +20,9 @@ import os
 import sys
 
 import oslo_i18n
+from oslo_log import log
 
+LOG = log.getLogger(__name__)
 
 # If ../sahara/__init__.py exists, add ../ to Python search path, so that
 # it will override what happens to be installed in /usr/(local/)lib/python...
@@ -52,5 +54,16 @@ def main():
     server.setup_auth_policy()
 
     launcher = server.get_process_launcher()
+    LOG.warning("""
+ __        __               _
+ \ \      / /_ _ _ __ _ __ (_)_ __   __ _
+  \ \ /\ / / _` | '__| '_ \| | '_ \ / _` |
+   \ V  V / (_| | |  | | | | | | | | (_| |
+    \_/\_/ \__,_|_|  |_| |_|_|_| |_|\__, |
+                                    |___/
+
+Using the sahara-all entry point is now deprecated. Please use the sahara-api
+and sahara-engine entry points instead.
+    """)
     server.launch_api_service(
         launcher, server.SaharaWSGIService("sahara-all", app))
