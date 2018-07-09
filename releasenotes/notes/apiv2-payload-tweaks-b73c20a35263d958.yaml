@@ -1,0 +1,9 @@
+---
+other:
+  - A few responses in the experimental (but nearly-stable) APIv2 have been
+    tweaked. To be specific, the key `hadoop_version` has been replaced with
+    `plugin_version`, the key `job` has been replaced with `job_template`, the
+    key `job_execution` has been replaced with `job`, and the key
+    `oozie_job_id` has been replaced with `engine_job_id`. In fact, these
+    changes were all previously partially implemented, and are now completely
+    implemented.

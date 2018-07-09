@@ -349,3 +349,8 @@ def to_wrapped_dict_no_render(func, id, *args, **kwargs):
 
         return not_found(e)
     return obj.to_wrapped_dict()
+
+
+def _replace_hadoop_version_plugin_version(obj):
+    dict.update(obj, {'plugin_version': obj['hadoop_version']})
+    dict.pop(obj, 'hadoop_version')

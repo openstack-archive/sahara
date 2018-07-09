@@ -32,6 +32,8 @@ rest = u.RestV2('node-group-templates', __name__)
             v.validate_sorting_node_group_templates)
 def node_group_templates_list():
     result = api.get_node_group_templates(**u.get_request_args().to_dict())
+    for ngt in result:
+        u._replace_hadoop_version_plugin_version(ngt)
     return u.render(res=result, name="node_group_templates")
 
 
@@ -44,15 +46,19 @@ def node_group_templates_create(data):
     # this can be removed once APIv1 is deprecated
     data['hadoop_version'] = data['plugin_version']
     del data['plugin_version']
-    return u.render(api.create_node_group_template(data).to_wrapped_dict())
+    result = api.create_node_group_template(data).to_wrapped_dict()
+    u._replace_hadoop_version_plugin_version(result['node_group_template'])
+    return u.render(result)
 
 
 @rest.get('/node-group-templates/<node_group_template_id>')
 @acl.enforce("data-processing:node-group-templates:get")
 @v.check_exists(api.get_node_group_template, 'node_group_template_id')
 def node_group_templates_get(node_group_template_id):
-    return u.to_wrapped_dict(
+    result = u.to_wrapped_dict_no_render(
         api.get_node_group_template, node_group_template_id)
+    u._replace_hadoop_version_plugin_version(result['node_group_template'])
+    return u.render(result)
 
 
 @rest.patch('/node-group-templates/<node_group_template_id>')
@@ -64,8 +70,10 @@ def node_group_templates_update(node_group_template_id, data):
     if data.get('plugin_version', None):
         data['hadoop_version'] = data['plugin_version']
         del data['plugin_version']
-    return u.to_wrapped_dict(
+    result = u.to_wrapped_dict_no_render(
         api.update_node_group_template, node_group_template_id, data)
+    u._replace_hadoop_version_plugin_version(result['node_group_template'])
+    return u.render(result)
 
 
 @rest.delete('/node-group-templates/<node_group_template_id>')
@@ -95,6 +103,7 @@ def _node_group_template_export_helper(template):
 def node_group_template_export(node_group_template_id):
     content = u.to_wrapped_dict_no_render(
         api.export_node_group_template, node_group_template_id)
+    u._replace_hadoop_version_plugin_version(content['node_group_template'])
     _node_group_template_export_helper(content['node_group_template'])
     res = u.render(content)
     res.headers.add('Content-Disposition', 'attachment',

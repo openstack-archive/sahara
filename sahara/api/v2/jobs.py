@@ -45,7 +45,11 @@ def jobs_list():
 @acl.enforce("data-processing:jobs:execute")
 @v.validate(v_j_e_schema.JOB_EXEC_SCHEMA_V2, v_j_e.check_job_execution)
 def jobs_execute(data):
-    return u.render(api.execute_job(data).to_wrapped_dict())
+    result = {'job': api.execute_job(data)}
+    dict.update(result['job'],
+                {'engine_job_id': result['job']['oozie_job_id']})
+    dict.pop(result['job'], 'oozie_job_id')
+    return u.render(result)
 
 
 @rest.get('/jobs/<job_id>')
@@ -55,12 +59,8 @@ def jobs_get(job_id):
     data = u.get_request_args()
     refresh_status = six.text_type(
         data.get('refresh_status', 'false')).lower() == 'true'
-    result = u.to_wrapped_dict_no_render(
-        api.get_job_execution, job_id, refresh_status)
-    result['job_execution']['engine_job_id'] = (
-        result['job_execution']['oozie_job_id']
-    )
-    del result['job_execution']['oozie_job_id']
+    result = {'job': api.get_job_execution(job_id, refresh_status)}
+    result['job'].pop('oozie_job_id', force=True)
     return u.render(result)
 
 
@@ -70,12 +70,8 @@ def jobs_get(job_id):
 @v.validate(
     v_j_e_schema.JOB_EXEC_UPDATE_SCHEMA, v_j_e.check_job_execution_update)
 def jobs_update(job_id, data):
-    result = u.to_wrapped_dict_no_render(
-        api.update_job_execution, job_id, data)
-    result['job_execution']['engine_job_id'] = (
-        result['job_execution']['oozie_job_id']
-    )
-    del result['job_execution']['oozie_job_id']
+    result = {'job': api.update_job_execution(job_id, data)}
+    result['job'].pop('oozie_job_id', force=True)
     return u.render(result)
 
 
