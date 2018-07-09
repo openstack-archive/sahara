@@ -1,0 +1,4 @@
+---
+deprecations:
+  - The `sahara-all` entry point is now deprecated. Please use the sahara-api
+    and sahara-engine entry points instead.
