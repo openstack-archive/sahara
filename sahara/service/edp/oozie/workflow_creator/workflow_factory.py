@@ -24,6 +24,7 @@ from sahara.service.edp.oozie.workflow_creator import java_workflow
 from sahara.service.edp.oozie.workflow_creator import mapreduce_workflow
 from sahara.service.edp.oozie.workflow_creator import pig_workflow
 from sahara.service.edp.oozie.workflow_creator import shell_workflow
+from sahara.service.edp import s3_common
 from sahara.swift import swift_helper as sw
 from sahara.swift import utils as su
 from sahara.utils import edp
@@ -116,6 +117,24 @@ class BaseFactory(object):
                 if "password" in src.credentials:
                     configs[sw.HADOOP_SWIFT_PASSWORD] = (
                         key_manager.get_secret(src.credentials['password']))
+                break
+        for src in (input_data, output_data):
+            if src.type == "s3" and hasattr(src, "credentials"):
+                if "accesskey" in src.credentials:
+                    configs[s3_common.S3_ACCESS_KEY_CONFIG] = (
+                        src.credentials['accesskey'])
+                if "secretkey" in src.credentials:
+                    configs[s3_common.S3_SECRET_KEY_CONFIG] = (
+                        key_manager.get_secret(src.credentials['secretkey']))
+                if "endpoint" in src.credentials:
+                    configs[s3_common.S3_ENDPOINT_CONFIG] = (
+                        src.credentials['endpoint'])
+                if "bucket_in_path" in src.credentials:
+                    configs[s3_common.S3_BUCKET_IN_PATH_CONFIG] = (
+                        src.credentials['bucket_in_path'])
+                if "ssl" in src.credentials:
+                    configs[s3_common.S3_SSL_CONFIG] = (
+                        src.credentials['ssl'])
                 break
         return configs
 
@@ -220,6 +239,7 @@ class JavaFactory(BaseFactory):
         return main_class, java_opts, args
 
     def get_configs(self, proxy_configs=None):
+        # TODO(jfreud): allow s3 and non-proxy swift configs here?
         configs = {}
 
         if proxy_configs:

@@ -22,6 +22,16 @@ from sahara.i18n import _
 from sahara.service.castellan import utils as key_manager
 
 S3_JB_PREFIX = "s3://"
+S3_ACCESS_KEY_CONFIG = "fs.s3a.access.key"
+S3_SECRET_KEY_CONFIG = "fs.s3a.secret.key"
+S3_ENDPOINT_CONFIG = "fs.s3a.endpoint"
+S3_BUCKET_IN_PATH_CONFIG = "fs.s3a.path.style.access"
+S3_SSL_CONFIG = "fs.s3a.connection.ssl.enabled"
+S3_DS_CONFIGS = [S3_ACCESS_KEY_CONFIG,
+                 S3_SECRET_KEY_CONFIG,
+                 S3_ENDPOINT_CONFIG,
+                 S3_BUCKET_IN_PATH_CONFIG,
+                 S3_SSL_CONFIG]
 CONF = cfg.CONF
 
 

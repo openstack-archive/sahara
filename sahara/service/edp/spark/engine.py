@@ -27,6 +27,7 @@ from sahara.service.castellan import utils as key_manager
 from sahara.service.edp import base_engine
 from sahara.service.edp.job_binaries import manager as jb_manager
 from sahara.service.edp import job_utils
+from sahara.service.edp import s3_common
 from sahara.service.validations.edp import job_execution as j
 from sahara.swift import swift_helper as sw
 from sahara.swift import utils as su
@@ -115,6 +116,7 @@ class SparkJobEngine(base_engine.JobEngine):
         xml_name = 'spark.xml'
         proxy_configs = job_configs.get('proxy_configs')
         configs = {}
+        cfgs = job_configs.get('configs', {})
         if proxy_configs:
             configs[sw.HADOOP_SWIFT_USERNAME] = proxy_configs.get(
                 'proxy_username')
@@ -124,9 +126,21 @@ class SparkJobEngine(base_engine.JobEngine):
                 'proxy_trust_id')
             configs[sw.HADOOP_SWIFT_DOMAIN_NAME] = CONF.proxy_user_domain_name
         else:
-            cfgs = job_configs.get('configs', {})
-            targets = [sw.HADOOP_SWIFT_USERNAME, sw.HADOOP_SWIFT_PASSWORD]
+            targets = [sw.HADOOP_SWIFT_USERNAME]
             configs = {k: cfgs[k] for k in targets if k in cfgs}
+            if sw.HADOOP_SWIFT_PASSWORD in cfgs:
+                configs[sw.HADOOP_SWIFT_PASSWORD] = (
+                    key_manager.get_secret(cfgs[sw.HADOOP_SWIFT_PASSWORD])
+                )
+
+        for s3_cfg_key in s3_common.S3_DS_CONFIGS:
+            if s3_cfg_key in cfgs:
+                if s3_cfg_key == s3_common.S3_SECRET_KEY_CONFIG:
+                    configs[s3_cfg_key] = (
+                        key_manager.get_secret(cfgs[s3_cfg_key])
+                    )
+                else:
+                    configs[s3_cfg_key] = cfgs[s3_cfg_key]
 
         content = xmlutils.create_hadoop_xml(configs)
         with remote.get_remote(where) as r:
