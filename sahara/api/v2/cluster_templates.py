@@ -31,6 +31,8 @@ rest = u.RestV2('cluster-templates', __name__)
             v.validate_sorting_cluster_templates)
 def cluster_templates_list():
     result = api.get_cluster_templates(**u.get_request_args().to_dict())
+    for ct in result:
+        u._replace_hadoop_version_plugin_version(ct)
     return u.render(res=result, name='cluster_templates')
 
 
@@ -43,14 +45,19 @@ def cluster_templates_create(data):
     # this can be removed once APIv1 is deprecated
     data['hadoop_version'] = data['plugin_version']
     del data['plugin_version']
-    return u.render(api.create_cluster_template(data).to_wrapped_dict())
+    result = api.create_cluster_template(data).to_wrapped_dict()
+    u._replace_hadoop_version_plugin_version(result['cluster_template'])
+    return u.render(result)
 
 
 @rest.get('/cluster-templates/<cluster_template_id>')
 @acl.enforce("data-processing:cluster-templates:get")
 @v.check_exists(api.get_cluster_template, 'cluster_template_id')
 def cluster_templates_get(cluster_template_id):
-    return u.to_wrapped_dict(api.get_cluster_template, cluster_template_id)
+    result = u.to_wrapped_dict_no_render(
+        api.get_cluster_template, cluster_template_id)
+    u._replace_hadoop_version_plugin_version(result['cluster_template'])
+    return u.render(result)
 
 
 @rest.patch('/cluster-templates/<cluster_template_id>')
@@ -62,8 +69,10 @@ def cluster_templates_update(cluster_template_id, data):
     if data.get('plugin_version', None):
         data['hadoop_version'] = data['plugin_version']
         del data['plugin_version']
-    return u.to_wrapped_dict(
+    result = u.to_wrapped_dict_no_render(
         api.update_cluster_template, cluster_template_id, data)
+    u._replace_hadoop_version_plugin_version(result['cluster_template'])
+    return u.render(result)
 
 
 @rest.delete('/cluster-templates/<cluster_template_id>')
@@ -91,6 +100,7 @@ def _cluster_template_export_helper(template):
 def cluster_template_export(cluster_template_id):
     content = u.to_wrapped_dict_no_render(
         api.export_cluster_template, cluster_template_id)
+    u._replace_hadoop_version_plugin_version(content['cluster_template'])
     _cluster_template_export_helper(content['cluster_template'])
     res = u.render(content)
     res.headers.add('Content-Disposition', 'attachment',

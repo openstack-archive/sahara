@@ -33,6 +33,8 @@ rest = u.RestV2('clusters', __name__)
 @v.validate(None, v.validate_pagination_limit)
 def clusters_list():
     result = api.get_clusters(**u.get_request_args().to_dict())
+    for c in result:
+        u._replace_hadoop_version_plugin_version(c)
     return u.render(res=result, name='clusters')
 
 
@@ -46,9 +48,14 @@ def clusters_create(data):
     data['hadoop_version'] = data['plugin_version']
     del data['plugin_version']
     if data.get('count', None) is not None:
-        return u.render(api.create_multiple_clusters(data))
+        result = api.create_multiple_clusters(data)
+        for c in result:
+            u._replace_hadoop_version_plugin_version(c['cluster'])
+        return u.render(result)
     else:
-        return u.render(api.create_cluster(data).to_wrapped_dict())
+        result = api.create_cluster(data).to_wrapped_dict()
+        u._replace_hadoop_version_plugin_version(c['cluster'])
+        return u.render(result)
 
 
 @rest.put('/clusters/<cluster_id>')
@@ -56,7 +63,10 @@ def clusters_create(data):
 @v.check_exists(api.get_cluster, 'cluster_id')
 @v.validate(v_c_schema.CLUSTER_SCALING_SCHEMA_V2, v_c_s.check_cluster_scaling)
 def clusters_scale(cluster_id, data):
-    return u.to_wrapped_dict(api.scale_cluster, cluster_id, data)
+    result = u.to_wrapped_dict_no_render(
+        api.scale_cluster, cluster_id, data)
+    u._replace_hadoop_version_plugin_version(result['cluster'])
+    return u.render(result)
 
 
 @rest.get('/clusters/<cluster_id>')
@@ -66,7 +76,10 @@ def clusters_get(cluster_id):
     data = u.get_request_args()
     show_events = six.text_type(
         data.get('show_progress', 'false')).lower() == 'true'
-    return u.to_wrapped_dict(api.get_cluster, cluster_id, show_events)
+    result = u.to_wrapped_dict_no_render(
+        api.get_cluster, cluster_id, show_events)
+    u._replace_hadoop_version_plugin_version(result['cluster'])
+    return u.render(result)
 
 
 @rest.patch('/clusters/<cluster_id>')
@@ -74,7 +87,10 @@ def clusters_get(cluster_id):
 @v.check_exists(api.get_cluster, 'cluster_id')
 @v.validate(v_c_schema.CLUSTER_UPDATE_SCHEMA, v_c.check_cluster_update)
 def clusters_update(cluster_id, data):
-    return u.to_wrapped_dict(api.update_cluster, cluster_id, data)
+    result = u.to_wrapped_dict_no_render(
+        api.update_cluster, cluster_id, data)
+    u._replace_hadoop_version_plugin_version(result['cluster'])
+    return u.render(result)
 
 
 @rest.delete('/clusters/<cluster_id>')
