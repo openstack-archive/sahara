@@ -13,14 +13,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import re
 import traceback
 
 import flask
+import microversion_parse
 from oslo_log import log as logging
 from oslo_middleware import request_id as oslo_req_id
 import six
 from werkzeug import datastructures
 
+from sahara.api import microversion as mv
 from sahara import context
 from sahara import exceptions as ex
 from sahara.i18n import _
@@ -114,7 +117,27 @@ class Rest(flask.Blueprint):
         return decorator
 
 
+def check_microversion_header():
+    requested_version = get_requested_microversion()
+    if not re.match(mv.VERSION_STRING_REGEX, requested_version):
+        bad_request_microversion(requested_version)
+    if requested_version not in mv.API_VERSIONS:
+        not_acceptable_microversion(requested_version)
+
+
+def add_vary_header(response):
+    response.headers[mv.VARY_HEADER] = mv.OPENSTACK_API_VERSION_HEADER
+    response.headers[mv.OPENSTACK_API_VERSION_HEADER] = "{} {}".format(
+        mv.SAHARA_SERVICE_TYPE, get_requested_microversion())
+    return response
+
+
 class RestV2(Rest):
+    def __init__(self, *args, **kwargs):
+        super(RestV2, self).__init__(*args, **kwargs)
+        self.before_request(check_microversion_header)
+        self.after_request(add_vary_header)
+
     def route(self, rule, **options):
         status = options.pop('status_code', None)
         file_upload = options.pop('file_upload', False)
@@ -266,6 +289,18 @@ def get_request_args():
     return flask.request.args
 
 
+def get_requested_microversion():
+    requested_version = microversion_parse.get_version(
+        flask.request.headers,
+        mv.SAHARA_SERVICE_TYPE
+    )
+    if requested_version is None:
+        requested_version = mv.MIN_API_VERSION
+    elif requested_version == mv.LATEST:
+        requested_version = mv.MAX_API_VERSION
+    return requested_version
+
+
 def abort_and_log(status_code, descr, exc=None):
     LOG.error("Request aborted with status code {code} and "
               "message '{message}'".format(code=status_code, message=descr))
@@ -276,17 +311,49 @@ def abort_and_log(status_code, descr, exc=None):
     flask.abort(status_code, description=descr)
 
 
-def render_error_message(error_code, error_message, error_name):
+def render_error_message(error_code, error_message, error_name, **msg_kwargs):
     message = {
         "error_code": error_code,
         "error_message": error_message,
         "error_name": error_name
     }
 
+    message.update(**msg_kwargs)
+
     resp = render(message)
     resp.status_code = error_code
 
     return resp
+
+
+def not_acceptable_microversion(requested_version):
+    message = ("Version {} is not supported by the API. "
+               "Minimum is {} and maximum is {}.".format(
+                   requested_version,
+                   mv.MIN_API_VERSION,
+                   mv.MAX_API_VERSION
+               ))
+    resp = render_error_message(
+        mv.NOT_ACCEPTABLE_STATUS_CODE,
+        message,
+        mv.NOT_ACCEPTABLE_STATUS_NAME,
+        max_version=mv.MAX_API_VERSION,
+        min_version=mv.MIN_API_VERSION
+    )
+    flask.abort(resp)
+
+
+def bad_request_microversion(requested_version):
+    message = ("API Version String {} is of invalid format. Must be of format"
+               " MajorNum.MinorNum.").format(requested_version)
+    resp = render_error_message(
+        mv.BAD_REQUEST_STATUS_CODE,
+        message,
+        mv.BAD_REQUEST_STATUS_NAME,
+        max_version=mv.MAX_API_VERSION,
+        min_version=mv.MIN_API_VERSION
+    )
+    flask.abort(resp)
 
 
 def invalid_param_error(status_code, descr, exc=None):

@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    Users of Sahara's APIv2 may request a microversion of that API, with
+    "OpenStack-API-Version: data-processing [version]" in the request headers.

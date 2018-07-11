@@ -20,6 +20,8 @@ from oslo_serialization import jsonutils
 import webob
 import webob.dec
 
+from sahara.api import microversion as mv
+
 
 class VersionResponseMiddlewareV1(base.Middleware):
 
@@ -67,7 +69,9 @@ class VersionResponseMiddlewareV2(VersionResponseMiddlewareV1):
         version_response["versions"].append(
             {"id": "v2",
              "status": "EXPERIMENTAL",
-             "links": self._get_links("2", req)
+             "links": self._get_links("2", req),
+             "min_version": mv.MIN_API_VERSION,
+             "max_version": mv.MAX_API_VERSION
              }
         )
         return version_response
