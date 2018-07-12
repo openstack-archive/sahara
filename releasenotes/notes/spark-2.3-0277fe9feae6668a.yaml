@@ -1,0 +1,3 @@
+---
+upgrade:
+  - Adding Spark 2.3 to supported plugins list.
