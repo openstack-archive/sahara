@@ -1,0 +1,8 @@
+---
+prelude: >
+  - Sahara APIv2 is reaching a point of maturity. Therefore, new deployments
+    should include an **unversioned** endpoint in the service catalog for the
+    "data-processing" service, for the purposes of more intuitive version
+    discovery. Eventually existing deployments should switch to an unversioned
+    endpoint, too, but only after time is given for the use of older clients
+    to be less likely.
