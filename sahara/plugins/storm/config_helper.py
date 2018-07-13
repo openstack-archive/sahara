@@ -56,12 +56,11 @@ def generate_storm_config(master_hostname, zk_hostnames, version):
         "storm.local.dir": "/app/storm"
     }
 
-    # Since pyleus is built using previous versions os Storm we need this
+    # Since pyleus is built using previous versions of Storm we need this
     # option to allow the cluster to be compatible with pyleus topologies as
     #  well as with topologies built using older versions of Storm
-    if version in ['1.0.1', '1.1.0']:
-        cfg['client.jartransformer.class'] = (
-            "org.apache.storm.hack.StormShadeTransformer")
+    cfg['client.jartransformer.class'] = (
+        "org.apache.storm.hack.StormShadeTransformer")
 
     return cfg
 

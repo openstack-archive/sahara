@@ -23,6 +23,7 @@ class TestStormConfigHelper(testcase.TestCase):
     def test_generate_storm_config(self):
         STORM_101 = '1.0.1'
         STORM_110 = '1.1.0'
+        STORM_120 = '1.2'
         tested_versions = []
         master_hostname = "s-master"
         zk_hostnames = ["s-zoo"]
@@ -42,5 +43,13 @@ class TestStormConfigHelper(testcase.TestCase):
         self.assertEqual(configs_110['client.jartransformer.class'],
                          'org.apache.storm.hack.StormShadeTransformer')
         tested_versions.append(STORM_110)
+        configs_120 = s_config.generate_storm_config(
+            master_hostname, zk_hostnames, STORM_120)
+        self.assertNotIn('nimbus.host', configs_120.keys())
+        self.assertIn('nimbus.seeds', configs_120.keys())
+        self.assertIn('client.jartransformer.class', configs_120.keys())
+        self.assertEqual(configs_120['client.jartransformer.class'],
+                         'org.apache.storm.hack.StormShadeTransformer')
+        tested_versions.append(STORM_120)
         storm = s_plugin.StormProvider()
         self.assertEqual(storm.get_versions(), tested_versions)

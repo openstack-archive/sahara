@@ -71,10 +71,12 @@ class StormPluginTest(base.SaharaWithDbTestCase):
 
         cluster_data_101 = self._get_cluster('cluster_1.0.1', '1.0.1')
         cluster_data_110 = self._get_cluster('cluster_1.1.0', '1.1.0')
+        cluster_data_120 = self._get_cluster('cluster_1.2.0', '1.2')
         cluster_data_101['node_groups'] = data
         cluster_data_110['node_groups'] = data
+        cluster_data_120['node_groups'] = data
 
-        clusters = [cluster_data_101, cluster_data_110]
+        clusters = [cluster_data_101, cluster_data_110, cluster_data_120]
 
         for cluster_data in clusters:
             cluster = conductor.cluster_create(context.ctx(), cluster_data)
@@ -162,10 +164,12 @@ class StormPluginTest(base.SaharaWithDbTestCase):
 
         cluster_data_101 = self._get_cluster('cluster_1.0.1', '1.0.1')
         cluster_data_110 = self._get_cluster('cluster_1.1.0', '1.1.0')
+        cluster_data_120 = self._get_cluster('cluster_1.2.0', '1.2')
         cluster_data_101['node_groups'] = data
         cluster_data_110['node_groups'] = data
+        cluster_data_120['node_groups'] = data
 
-        clusters = [cluster_data_101, cluster_data_110]
+        clusters = [cluster_data_101, cluster_data_110, cluster_data_120]
 
         for cluster_data in clusters:
             cluster = conductor.cluster_create(context.ctx(), cluster_data)
@@ -194,10 +198,12 @@ class StormPluginTest(base.SaharaWithDbTestCase):
 
         cluster_data_101 = self._get_cluster('cluster_1.0.1', '1.0.1')
         cluster_data_110 = self._get_cluster('cluster_1.1.0', '1.1.0')
+        cluster_data_120 = self._get_cluster('cluster_1.2.0', '1.2')
         cluster_data_101['node_groups'] = data
         cluster_data_110['node_groups'] = data
+        cluster_data_120['node_groups'] = data
 
-        clusters = [cluster_data_101, cluster_data_110]
+        clusters = [cluster_data_101, cluster_data_110, cluster_data_120]
 
         for cluster_data in clusters:
             cluster = conductor.cluster_create(context.ctx(), cluster_data)
@@ -230,10 +236,12 @@ class StormPluginTest(base.SaharaWithDbTestCase):
 
         cluster_data_101 = self._get_cluster('cluster_1.0.1', '1.0.1')
         cluster_data_110 = self._get_cluster('cluster_1.1.0', '1.1.0')
+        cluster_data_120 = self._get_cluster('cluster_1.2.0', '1.2')
         cluster_data_101['node_groups'] = data
         cluster_data_110['node_groups'] = data
+        cluster_data_120['node_groups'] = data
 
-        clusters = [cluster_data_101, cluster_data_110]
+        clusters = [cluster_data_101, cluster_data_110, cluster_data_120]
 
         for cluster_data in clusters:
             cluster = conductor.cluster_create(context.ctx(), cluster_data)
@@ -275,4 +283,12 @@ class StormPluginTest(base.SaharaWithDbTestCase):
 
     def test_plugin110_edp_storm_pyleus_engine(self):
         self._test_engine('1.1.0', edp.JOB_TYPE_PYLEUS,
+                          engine.StormJobEngine)
+
+    def test_plugin120_edp_storm_engine(self):
+        self._test_engine('1.2', edp.JOB_TYPE_STORM,
+                          engine.StormJobEngine)
+
+    def test_plugin120_edp_storm_pyleus_engine(self):
+        self._test_engine('1.2', edp.JOB_TYPE_PYLEUS,
                           engine.StormJobEngine)

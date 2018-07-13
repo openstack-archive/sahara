@@ -1,0 +1,4 @@
+---
+upgrade:
+  - Adding new versions of Storm, 1.2.0 and 1.2.1. Both will exist under the
+    same tag 1.2.
