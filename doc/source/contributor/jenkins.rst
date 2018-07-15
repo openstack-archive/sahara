@@ -4,9 +4,8 @@ Continuous Integration with Jenkins
 Each change made to Sahara core code is tested with unit and integration tests
 and style checks using flake8.
 
-Unit tests and style checks are performed on public `OpenStack Jenkins
-<https://jenkins.openstack.org/>`_ managed by `Zuul
-<http://status.openstack.org/zuul/>`_.
+Unit tests and style checks are performed on public `OpenStack Zuul
+<http://zuul.openstack.org/>`_ instance.
 
 Unit tests are checked using python 2.7.
 
