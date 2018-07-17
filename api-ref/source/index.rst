@@ -1,20 +1,12 @@
-:tocdepth: 2
+===================
+Data Processing API
+===================
 
-====================
- Data Processing API
-====================
+Contents:
 
-.. rest_expand_all::
+API content can be searched using the :ref:`search`.
 
-.. include:: cluster-templates.inc
-.. include:: clusters.inc
-.. include:: data-sources.inc
-.. include:: event-log.inc
-.. include:: image-registry.inc
-.. include:: job-binaries.inc
-.. include:: job-executions.inc
-.. include:: job-types.inc
-.. include:: job-binary-internals.inc
-.. include:: jobs.inc
-.. include:: node-group-templates.inc
-.. include:: plugins.inc
+.. toctree::
+    :maxdepth: 2
+
+    v1.1/index
