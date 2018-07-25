@@ -28,6 +28,7 @@ from sahara.utils import general as g
 from sahara.utils.openstack import base as b
 from sahara.utils.openstack import heat as h
 from sahara.utils.openstack import neutron
+from sahara.utils.openstack import nova
 
 CONF = cfg.CONF
 LOG = logging.getLogger(__name__)
@@ -509,10 +510,19 @@ class ClusterStack(object):
         properties.update({
             "name": inst_name,
             "flavor": six.text_type(ng.flavor_id),
-            "image": ng.get_image_id(),
             "admin_user": ng.image_username,
             "user_data": userdata
         })
+
+        if ng.boot_from_volume:
+            resources.update(self._get_bootable_volume(ng))
+            properties["block_device_mapping"] = [
+                {"device_name": "vda",
+                 "volume_id": {"get_resource": "bootable_volume"},
+                 "delete_on_termination": "true"}]
+
+        else:
+            properties.update({"image": ng.get_image_id()})
 
         resources.update({
             INSTANCE_RESOURCE_NAME: {
@@ -526,6 +536,20 @@ class ClusterStack(object):
         resources.update(self._serialize_volume(ng))
         resources.update(self._serialize_wait_condition(ng))
         return resources
+
+    def _get_bootable_volume(self, node_group):
+        node_group_flavor = nova.get_flavor(id=node_group.flavor_id)
+        image_size = node_group_flavor.disk
+
+        return {
+            "bootable_volume": {
+                "type": "OS::Cinder::Volume",
+                "properties": {
+                    "size": image_size,
+                    "image": node_group.get_image_id()
+                }
+            }
+        }
 
     def _serialize_wait_condition(self, ng):
         if not CONF.heat_enable_wait_condition:

@@ -117,6 +117,7 @@ class NodeGroup(mb.SaharaBase):
     volumes_availability_zone = sa.Column(sa.String(255))
     volume_mount_prefix = sa.Column(sa.String(80))
     volume_type = sa.Column(sa.String(255))
+    boot_from_volume = sa.Column(sa.Boolean(), default=False, nullable=False)
     count = sa.Column(sa.Integer, nullable=False)
     use_autoconfig = sa.Column(sa.Boolean(), default=True)
 
@@ -228,6 +229,7 @@ class NodeGroupTemplate(mb.SaharaBase):
     volumes_availability_zone = sa.Column(sa.String(255))
     volume_mount_prefix = sa.Column(sa.String(80))
     volume_type = sa.Column(sa.String(255))
+    boot_from_volume = sa.Column(sa.Boolean(), default=False, nullable=False)
     floating_ip_pool = sa.Column(sa.String(36))
     security_groups = sa.Column(st.JsonListType())
     auto_security_group = sa.Column(sa.Boolean())
@@ -261,6 +263,7 @@ class TemplatesRelation(mb.SaharaBase):
     volumes_availability_zone = sa.Column(sa.String(255))
     volume_mount_prefix = sa.Column(sa.String(80))
     volume_type = sa.Column(sa.String(255))
+    boot_from_volume = sa.Column(sa.Boolean(), default=False, nullable=False)
     count = sa.Column(sa.Integer, nullable=False)
     use_autoconfig = sa.Column(sa.Boolean(), default=True)
     cluster_template_id = sa.Column(sa.String(36),

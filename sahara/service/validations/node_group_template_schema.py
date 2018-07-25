@@ -119,6 +119,11 @@ NODE_GROUP_TEMPLATE_SCHEMA_V2["properties"].update({
         "type": "string",
     }})
 NODE_GROUP_TEMPLATE_SCHEMA_V2["required"].append("plugin_version")
+NODE_GROUP_TEMPLATE_SCHEMA_V2["properties"].update({
+    "boot_from_volume": {
+        "type": "boolean",
+    }})
+
 
 # For an update we do not require any fields but we want the given
 # fields to be validated

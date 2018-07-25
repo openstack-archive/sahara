@@ -198,6 +198,7 @@ Create a master node group template with the command:
     | Flavor id           | 2                                    |
     | Floating ip pool    | dbd8d1aa-6e8e-4a35-a77b-966c901464d5 |
     | Id                  | 0f066e14-9a73-4379-bbb4-9d9347633e31 |
+    | Is boot from volume | False                                |
     | Is default          | False                                |
     | Is protected        | False                                |
     | Is proxy gateway    | False                                |
@@ -227,6 +228,42 @@ Create a worker node group template with the command:
     | Flavor id           | 2                                    |
     | Floating ip pool    | dbd8d1aa-6e8e-4a35-a77b-966c901464d5 |
     | Id                  | 6546bf44-0590-4539-bfcb-99f8e2c11efc |
+    | Is boot from volume | False                                |
+    | Is default          | False                                |
+    | Is protected        | False                                |
+    | Is proxy gateway    | False                                |
+    | Is public           | False                                |
+    | Name                | vanilla-default-worker               |
+    | Node processes      | datanode, nodemanager                |
+    | Plugin name         | vanilla                              |
+    | Security groups     | None                                 |
+    | Use autoconfig      | False                                |
+    | Version             | <plugin_version>                     |
+    | Volumes per node    | 0                                    |
+    +---------------------+--------------------------------------+
+
+
+You can also create node group templates setting a flag --boot-from-volume.
+This will tell the node group to boot its instances from a volume instead of
+the image. This feature allows for easier live migrations and improved
+performance.
+
+.. sourcecode:: console
+
+    $ openstack dataprocessing node group template create \
+        --name vanilla-default-worker --plugin vanilla \
+        --plugin-version <plugin_version> --processes datanode nodemanager \
+        --flavor 2 --auto-security-group --floating-ip-pool <pool-id> \
+        --boot-from-volume
+    +---------------------+--------------------------------------+
+    | Field               | Value                                |
+    +---------------------+--------------------------------------+
+    | Auto security group | True                                 |
+    | Availability zone   | None                                 |
+    | Flavor id           | 2                                    |
+    | Floating ip pool    | dbd8d1aa-6e8e-4a35-a77b-966c901464d5 |
+    | Id                  | 6546bf44-0590-4539-bfcb-99f8e2c11efc |
+    | Is boot from volume | True                                 |
     | Is default          | False                                |
     | Is protected        | False                                |
     | Is proxy gateway    | False                                |
