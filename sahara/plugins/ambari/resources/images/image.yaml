@@ -1,11 +1,10 @@
 arguments:
   ambari_version:
-    description: The version of Ambari to install. Defaults to 2.4.3.0.
-    default: 2.4.3.0
+    description: The version of Ambari to install. Defaults to 2.6.2.0.
+    default: 2.6.2.0
     choices:
+      - 2.6.2.0  # HDP 2.6 / HDP 2.5 / HDP 2.4
       - 2.4.3.0  # HDP 2.5 / HDP 2.4 / HDP 2.3
-      - 2.2.0.0  # HDP 2.3
-      - 2.2.1.0  # HDP 2.4
   java_distro:
     default: openjdk
     description: The distribution of Java to install. Defaults to openjdk.
@@ -29,6 +28,11 @@ validators:
                - package: java-1.8.0-openjdk-devel
            oracle-java:
                - script: common/oracle_java
+  - argument_case:
+       argument_name: ambari_version
+       cases:
+           2.6.2.0:
+               - package: libtirpc-devel
   - os_case:
       - redhat:
           - script: centos/disable_selinux
@@ -67,6 +71,7 @@ validators:
               - mysql-client-5.5
               - mysql-server-5.5
               - libmysql-java
+  - script: common/mysql_connector_java_link
   - package: ambari-agent
   - script: common/fix_tls_ambari_agent
   - package:

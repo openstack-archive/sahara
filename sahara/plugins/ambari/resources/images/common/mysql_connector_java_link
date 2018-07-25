@@ -1,0 +1,14 @@
+#!/bin/bash -x
+
+# This is necessary due to the information on the link below
+# https://community.hortonworks.com/articles/170133/hive-start-failed-because-of-ambari-error-mysql-co.html
+
+if [ ! -L /var/lib/ambari-server/resources/mysql-connector-java.jar ]; then
+    if [ $test_only -eq 0 ]; then
+        ln -s /usr/share/java/mysql-connector-java.jar /var/lib/ambari-server/resources/mysql-connector-java.jar
+    else
+        exit 1
+    fi
+else
+    exit 0
+fi
