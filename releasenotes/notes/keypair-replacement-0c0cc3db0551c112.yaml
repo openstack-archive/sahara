@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    Use a new keypair to access to the running cluster when the cluster's
+    keypair is deleted.
