@@ -155,7 +155,7 @@ def _get_ops_driver(driver_name):
 
 
 def get_process_launcher():
-    return oslo_service.ProcessLauncher(CONF)
+    return oslo_service.ProcessLauncher(CONF, restart_method='mutate')
 
 
 def launch_api_service(launcher, service):
