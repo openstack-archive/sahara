@@ -171,8 +171,9 @@ class Engine(object):
             r.write_file_to('etc-hosts', hosts_file)
             r.write_file_to('etc-hostname', hostname)
             r.execute_command('sudo hostname %s' % hostname)
-            r.execute_command('sudo mv etc-hosts /etc/hosts')
-            r.execute_command('sudo mv etc-hostname /etc/hostname')
+            r.execute_command('sudo cp etc-hosts /etc/hosts')
+            r.execute_command('sudo cp etc-hostname /etc/hostname')
+            r.execute_command('sudo rm etc-hosts  etc-hostname')
             r.execute_command('sudo usermod -s /bin/bash $USER')
 
     def _configure_instance_resolve_conf(self, instance):
