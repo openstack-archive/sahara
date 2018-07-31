@@ -54,7 +54,7 @@ def clusters_create(data):
         return u.render(result)
     else:
         result = api.create_cluster(data).to_wrapped_dict()
-        u._replace_hadoop_version_plugin_version(c['cluster'])
+        u._replace_hadoop_version_plugin_version(result['cluster'])
         return u.render(result)
 
 
