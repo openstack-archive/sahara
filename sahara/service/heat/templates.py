@@ -253,8 +253,8 @@ class ClusterStack(object):
 
         if self.cluster.anti_affinity:
             # Creating server groups equal to the anti_affinity_ratio
-            for i in range(1, self.cluster.anti_affinity_ratio):
-                resources.update(self._serialize_aa_server_group(i))
+            for i in range(0, self.cluster.anti_affinity_ratio):
+                resources.update(self._serialize_aa_server_group(i + 1))
 
         for ng in self.cluster.node_groups:
             resources.update(self._serialize_ng_group(ng, outputs,
@@ -274,13 +274,16 @@ class ClusterStack(object):
         properties = {"instance_index": "%index%"}
 
         if ng.cluster.anti_affinity:
-            ng_count = ng.count
+            ng_count = self.node_groups_extra[ng.id]['node_count']
             # assuming instance_index also start from index 0
-            for i in range(0, ng_count - 1):
+            for i in range(0, ng_count):
                 server_group_name = self._get_server_group_name()
                 server_group_resource = {
                     "get_resource": server_group_name
                 }
+                if SERVER_GROUP_NAMES not in properties:
+                    properties[SERVER_GROUP_NAMES] = []
+
                 properties[SERVER_GROUP_NAMES].insert(i, server_group_resource)
 
         if ng.auto_security_group:
