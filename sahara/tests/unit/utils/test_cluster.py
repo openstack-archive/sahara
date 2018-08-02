@@ -170,3 +170,19 @@ class UtilsClusterTest(base.SaharaWithDbTestCase):
         expected = ("nameserver 1.1.1.1\n"
                     "nameserver 2.2.2.2\n")
         self.assertEqual(expected, value)
+
+    @mock.patch("socket.gethostbyname")
+    @mock.patch("sahara.utils.openstack.base.url_for")
+    def test_etc_hosts_entry_for_service_overrides(self, mock_url,
+                                                   mock_get_host):
+        self.override_config("object_store_ip_accessible", None)
+        mock_url.return_value = "http://swift.org"
+        mock_get_host.return_value = '1.1.1.1'
+
+        res = cluster_utils.etc_hosts_entry_for_service('object-store')
+        self.assertEqual('1.1.1.1 swift.org\n', res)
+
+        self.override_config("object_store_ip_accessible", '2.2.2.2')
+
+        res = cluster_utils.etc_hosts_entry_for_service('object-store')
+        self.assertEqual('2.2.2.2 swift.org\n', res)
