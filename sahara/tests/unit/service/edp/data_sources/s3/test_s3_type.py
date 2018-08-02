@@ -35,6 +35,9 @@ class TestSwiftType(base.SaharaTestCase):
         }
         self.s_type.validate(data)
 
+        data["url"] = "s3://mybucket/myobject"
+        self.s_type.validate(data)
+
         creds = {}
         data["credentials"] = creds
         self.s_type.validate(data)

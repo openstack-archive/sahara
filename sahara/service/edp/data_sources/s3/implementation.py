@@ -55,8 +55,9 @@ class S3Type(DataSourceType):
             raise ex.InvalidDataException(_("S3 url must not be empty"))
 
         url = urlparse.urlparse(url)
-        if url.scheme != "s3a":
-            raise ex.InvalidDataException(_("URL scheme must be 's3a'"))
+        if url.scheme not in ["s3", "s3a"]:
+            raise ex.InvalidDataException(
+                _("URL scheme must be 's3' or 's3a'"))
 
         if not url.hostname:
             raise ex.InvalidDataException(_("Bucket name must be present"))
@@ -80,3 +81,6 @@ class S3Type(DataSourceType):
                 if job_conf.get(s3a_cfg_name, None) is None:  # no overwrite
                     if creds.get(config_name, None) is not None:
                         job_conf[s3a_cfg_name] = creds[config_name]
+
+    def get_runtime_url(self, url, cluster):
+        return url.replace("s3://", "s3a://", 1)

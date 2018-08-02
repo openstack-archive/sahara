@@ -135,7 +135,7 @@ share will be automatically mounted to your cluster's nodes as needed to
 access the data source.
 
 Finally, Sahara supports data sources referring to S3-like object stores. The
-URL should be of the form ``s3a://{bucket}/{path}``. Also, the following
+URL should be of the form ``s3://{bucket}/{path}``. Also, the following
 credentials/configs are understood: ``accesskey``, ``secretkey``,
 ``endpoint``, ``bucket_in_path``, and ``ssl``. These credentials are specified
 through the ``credentials`` attribute of the body of the request when creating
@@ -632,13 +632,13 @@ Manila NFS filesystem reference URLS take the form:
 This format should be used when referring to a job binary or a data source
 stored in a manila NFS share.
 
-For job binaries only, S3 urls take the form:
+For both job binaries and data sources, S3 urls take the form:
 
 ``s3://bucket/path/to/object``
 
-For data sources, S3 urls take the standard Hadoop form:
-
-``s3a://bucket/path/to/object``
+Despite the above URL format, the current implementation of EDP will still
+use the Hadoop ``s3a`` driver to access data sources. Botocore is used to
+access job binaries.
 
 EDP Requirements
 ================
