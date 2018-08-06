@@ -49,7 +49,7 @@ def clusters_create(data):
     del data['plugin_version']
     if data.get('count', None) is not None:
         result = api.create_multiple_clusters(data)
-        for c in result:
+        for c in result['clusters']:
             u._replace_hadoop_version_plugin_version(c['cluster'])
         return u.render(result)
     else:
