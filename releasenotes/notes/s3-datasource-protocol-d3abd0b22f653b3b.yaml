@@ -1,0 +1,4 @@
+---
+other:
+  - |
+    The URL of an S3 data source may have `s3://` or `s3a://`, equivalently.
