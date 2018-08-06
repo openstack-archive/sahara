@@ -28,7 +28,7 @@ SAHARA_ENDPOINT_TYPE=${SAHARA_ENDPOINT_TYPE:-publicURL}
 SAHARA_AUTH_CACHE_DIR=${SAHARA_AUTH_CACHE_DIR:-/var/cache/sahara}
 
 SAHARA_ENABLED_PLUGINS=${SAHARA_ENABLED_PLUGINS:-\
-vanilla,cdh,mapr,spark,storm,fake}
+vanilla,ambari,cdh,mapr,spark,storm,fake}
 SAHARA_BIN_DIR=$(get_python_exec_prefix)
 
 SAHARA_ENABLE_DISTRIBUTED_PERIODICS=${SAHARA_ENABLE_DISTRIBUTED_PERIODICS:-\
