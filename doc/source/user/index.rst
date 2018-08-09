@@ -39,6 +39,7 @@ Elastic Data Processing
    :maxdepth: 2
 
    edp
+   edp-s3
 
 
 Guest Images
