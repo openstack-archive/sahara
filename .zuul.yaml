@@ -3,9 +3,9 @@
       - openstack-python-jobs
       - openstack-python35-jobs
       - periodic-stable-jobs
-      - publish-openstack-sphinx-docs
+      - publish-openstack-docs-pti
       - check-requirements
-      - release-notes-jobs
+      - release-notes-jobs-python3
     check:
       jobs:
         - openstack-tox-pylint:
