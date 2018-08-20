@@ -1,4 +1,11 @@
 - project:
+    templates:
+      - openstack-python-jobs
+      - openstack-python35-jobs
+      - periodic-stable-jobs
+      - publish-openstack-sphinx-docs
+      - check-requirements
+      - release-notes-jobs
     check:
       jobs:
         - openstack-tox-pylint:
@@ -7,7 +14,15 @@
         - sahara-tests-scenario-modwsgi:
             voting: false
         - sahara-tests-tempest
+        - openstack-tox-cover:
+            voting: false
+        - legacy-grenade-dsvm-sahara:
+            voting: false
+            irrelevant-files:
+              - ^(test-|)requirements.txt$
+              - ^setup.cfg$
     gate:
+      queue: sahara
       jobs:
         - sahara-tests-scenario
         - sahara-tests-tempest
@@ -15,6 +30,9 @@
       jobs:
         - sahara-buildimages-cloudera
         - sahara-tests-scenario-multinode-spark
+    post:
+      jobs:
+        - openstack-tox-cover
 
 - job:
     name: sahara-buildimages-base
