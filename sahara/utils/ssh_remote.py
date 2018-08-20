@@ -429,6 +429,13 @@ def _replace_remote_string(remote_file, old_str, new_str):
     _execute_command(cmd)
 
 
+def _replace_remote_line(remote_file, old_line_with_start_string, new_line):
+    search_string = old_line_with_start_string.replace("\'", "\''")
+    cmd = ("sudo sed -i  's/^%s.*/%s/' %s" % (search_string,
+                                              new_line, remote_file))
+    _execute_command(cmd)
+
+
 def _execute_on_vm_interactive(cmd, matcher):
     global _ssh
 
@@ -901,11 +908,27 @@ class InstanceInteropHelper(remote.Remote):
                               timeout=None):
         description = _('In file "%(file)s" replacing string '
                         '"%(old_string)s" with "%(new_string)s"') % {
-            "file": remote_file, "old_string": old_str, "new_string": new_str}
+            "file": remote_file,
+            "old_string": old_str, "new_string": new_str}
 
         self._log_command(description)
         self._run_s(_replace_remote_string, timeout, description,
                     remote_file, old_str, new_str)
+
+    def replace_remote_line(self, remote_file,
+                            old_line_with_start_string,
+                            new_line, timeout=None):
+        description = _('In file "%(file)s" replacing line'
+                        ' begining with string'
+                        '"%(old_line_with_start_string)s"'
+                        ' with "%(new_line)s"') % {
+            "file": remote_file,
+            "old_line_with_start_string": old_line_with_start_string,
+            "new_line": new_line}
+
+        self._log_command(description)
+        self._run_s(_replace_remote_line, timeout, description,
+                    remote_file, old_line_with_start_string, new_line)
 
     def execute_on_vm_interactive(self, cmd, matcher, timeout=None):
         """Runs given command and responds to prompts.
