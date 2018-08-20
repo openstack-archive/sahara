@@ -71,9 +71,14 @@ os_type_map = {
 def setup_ambari(cluster):
     LOG.debug("Set up Ambari management console")
     ambari = plugin_utils.get_instance(cluster, p_common.AMBARI_SERVER)
+    ambari_settings = ("agent.package.install.task.timeout=%s"
+                       % configs.get_ambari_pkg_install_timeout(cluster))
     with ambari.remote() as r:
         sudo = functools.partial(r.execute_command, run_as_root=True)
         sudo("rngd -r /dev/urandom -W 4096")
+        r.replace_remote_line("/etc/ambari-server/conf/ambari.properties",
+                              "agent.package.install.task.timeout=",
+                              ambari_settings)
         sudo("ambari-server setup -s -j"
              " `cut -f2 -d \"=\" /etc/profile.d/99-java.sh`", timeout=1800)
         redirect_file = "/tmp/%s" % uuidutils.generate_uuid()
