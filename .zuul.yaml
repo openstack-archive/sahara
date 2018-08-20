@@ -1,0 +1,24 @@
+- project:
+    templates:
+      - openstack-python-jobs
+      - openstack-python35-jobs
+      - periodic-stable-jobs
+      - publish-openstack-sphinx-docs
+      - check-requirements
+      - release-notes-jobs
+    check:
+      jobs:
+        - openstack-tox-pylint:
+            voting: false
+        - openstack-tox-cover:
+            voting: false
+        - legacy-grenade-dsvm-sahara:
+            voting: false
+            irrelevant-files:
+              - ^(test-|)requirements.txt$
+              - ^setup.cfg$
+    gate:
+      queue: sahara
+    post:
+      jobs:
+        - openstack-tox-cover
