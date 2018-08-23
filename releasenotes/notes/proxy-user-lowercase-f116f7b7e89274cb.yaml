@@ -1,0 +1,6 @@
+---
+upgrade:
+  - |
+    The default proxy role for Swift is now member instead of Member.
+    Keystone now creates the former by default,
+    even if the latter is recognized to be the same (case preserving).

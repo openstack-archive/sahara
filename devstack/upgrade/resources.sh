@@ -59,7 +59,7 @@ function create_user {
     resource_save sahara user_id $id
 
     # Workaround for bug: https://bugs.launchpad.net/keystone/+bug/1662911
-    openstack role add Member --user $id --project $project_id
+    openstack role add member --user $id --project $project_id
 }
 
 function create_keypair {

@@ -490,7 +490,7 @@ access. Please see the :keystone-doc:`Keystone documentation
 With the domain created, sahara's configuration file should be updated to
 include the new domain name and any potential roles that will be needed. For
 this example let's assume that the name of the proxy domain is
-``sahara_proxy`` and the roles needed by proxy users will be ``Member`` and
+``sahara_proxy`` and the roles needed by proxy users will be ``member`` and
 ``SwiftUser``.
 
 .. sourcecode:: cfg
@@ -498,7 +498,7 @@ this example let's assume that the name of the proxy domain is
     [DEFAULT]
     use_domain_for_proxy_users=true
     proxy_user_domain_name=sahara_proxy
-    proxy_user_role_names=Member,SwiftUser
+    proxy_user_role_names=member,SwiftUser
 
 A note on the use of roles. In the context of the proxy user, any roles
 specified here are roles intended to be delegated to the proxy user from the

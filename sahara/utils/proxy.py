@@ -47,7 +47,7 @@ opts = [
                help='The domain Sahara will use to create new proxy users '
                     'for Swift object access.'),
     cfg.ListOpt('proxy_user_role_names',
-                default=['Member'],
+                default=['member'],
                 help='A list of the role names that the proxy user should '
                      'assume through trust for Swift object access.')
 ]
