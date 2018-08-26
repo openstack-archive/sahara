@@ -229,7 +229,7 @@ def _confgure_hbase_site(cluster, blueprint):
     props["hbase.regionserver.global.memstore.lowerLimit"] = "0.38"
     props["hbase.regionserver.global.memstore.upperLimit"] = "0.4"
     props["hbase.regionserver.handler.count"] = "60"
-    props["hbase.regionserver.info.port"] = "60030"
+    props["hbase.regionserver.info.port"] = "16030"
     props["hbase.regionserver.storefile.refresh.period"] = "20"
 
     props["hbase.rootdir"] = "hdfs://hdfs-ha/apps/hbase/data"
