@@ -151,7 +151,7 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
                                                  p_common.HBASE_MASTER)
         if hbase_master:
             info[p_common.HBASE_MASTER] = {
-                "Web UI": "http://%s:60010" % hbase_master.get_ip_or_dns_name()
+                "Web UI": "http://%s:16010" % hbase_master.get_ip_or_dns_name()
             }
         falcon = plugin_utils.get_instance(cluster, p_common.FALCON_SERVER)
         if falcon:
@@ -239,8 +239,8 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
             p_common.DRPC_SERVER: [3772, 3773],
             p_common.FALCON_SERVER: [15000],
             p_common.FLUME_HANDLER: [8020, 41414],
-            p_common.HBASE_MASTER: [60000, 60010],
-            p_common.HBASE_REGIONSERVER: [60020, 60030],
+            p_common.HBASE_MASTER: [16000, 16010],
+            p_common.HBASE_REGIONSERVER: [16020, 16030],
             p_common.HISTORYSERVER: [10020, 19888],
             p_common.HIVE_METASTORE: [9933],
             p_common.HIVE_SERVER: [9999, 10000],
