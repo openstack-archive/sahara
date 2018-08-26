@@ -237,7 +237,7 @@ class HAHelperTestCase(base.SaharaTestCase):
                 "hbase.regionserver.global.memstore.lowerLimit": "0.38",
                 "hbase.regionserver.global.memstore.upperLimit": "0.4",
                 "hbase.regionserver.handler.count": "60",
-                "hbase.regionserver.info.port": "60030",
+                "hbase.regionserver.info.port": "16030",
                 "hbase.regionserver.storefile.refresh.period": "20",
                 "hbase.rootdir": "hdfs://hdfs-ha/apps/hbase/data",
                 "hbase.security.authentication": "simple",
