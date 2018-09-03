@@ -16,11 +16,7 @@
         - openstack-tox-lower-constraints
         - openstack-tox-cover:
             voting: false
-        - legacy-grenade-dsvm-sahara:
-            voting: false
-            irrelevant-files:
-              - ^(test-|)requirements.txt$
-              - ^setup.cfg$
+        - sahara-grenade
     gate:
       queue: sahara
       jobs:
@@ -37,6 +33,31 @@
     post:
       jobs:
         - openstack-tox-cover
+
+- job:
+    name: sahara-grenade
+    parent: legacy-dsvm-base
+    run: playbooks/sahara-grenade/run.yaml
+    post-run: playbooks/sahara-grenade/post.yaml
+    timeout: 10800
+    required-projects:
+      - openstack-dev/grenade
+      - openstack-infra/devstack-gate
+      - openstack/sahara
+      - openstack/python-saharaclient
+      - openstack/heat
+      - openstack/heat-tempest-plugin
+      - openstack/python-heatclient
+      - openstack/sahara-tests
+    irrelevant-files:
+      - ^(test-|)requirements.txt$
+      - ^.*\.rst$
+      - ^doc/.*$
+      - ^sahara/locale/.*$
+      - ^sahara/tests/unit/.*$
+      - ^releasenotes/.*$
+      - ^tools/.*$
+      - ^tox.ini$
 
 - job:
     name: sahara-buildimages-base
