@@ -38,6 +38,7 @@ set -o errexit
 
 # Get functions from current DevStack
 source $TARGET_DEVSTACK_DIR/stackrc
+source $TARGET_DEVSTACK_DIR/lib/apache
 source $TARGET_DEVSTACK_DIR/lib/tls
 source $(dirname $(dirname $BASH_SOURCE))/plugin.sh
 source $(dirname $(dirname $BASH_SOURCE))/settings
