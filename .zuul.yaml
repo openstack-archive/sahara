@@ -23,6 +23,7 @@
         - sahara-tests-scenario
         - sahara-tests-tempest
         - openstack-tox-lower-constraints
+        - sahara-grenade
     experimental:
       jobs:
         - sahara-buildimages-ambari
