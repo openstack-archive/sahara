@@ -49,7 +49,7 @@ repo_id_map = {
     },
     "2.5": {
         "HDP": "HDP-2.5",
-        "HDP-UTILS": "HDP-UTILS-1.1.0.20"
+        "HDP-UTILS": "HDP-UTILS-1.1.0.21"
     },
     "2.6": {
         "HDP": "HDP-2.6",
