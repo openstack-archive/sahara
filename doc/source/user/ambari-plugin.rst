@@ -26,7 +26,7 @@ Images
 The sahara Ambari plugin is using minimal (operating system only) images.
 
 For more information about Ambari images, refer to
-`<https://git.openstack.org/cgi/openstack/sahara-image-elements>`_.
+`<https://git.openstack.org/cgit/openstack/sahara-image-elements>`_.
 
 HDP plugin requires an image to be tagged in sahara Image Registry with two
 tags: 'ambari' and '<plugin version>' (e.g. '2.5').
