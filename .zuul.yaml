@@ -12,11 +12,6 @@
             voting: false
         - openstack-tox-cover:
             voting: false
-        - legacy-grenade-dsvm-sahara:
-            voting: false
-            irrelevant-files:
-              - ^(test-|)requirements.txt$
-              - ^setup.cfg$
     gate:
       queue: sahara
     post:
