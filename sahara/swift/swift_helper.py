@@ -17,7 +17,7 @@ from oslo_config import cfg
 from oslo_log import log as logging
 
 from sahara import context
-from sahara.swift import utils as su
+from sahara.plugins import swift_utils as su
 from sahara.utils import xmlutils as x
 
 

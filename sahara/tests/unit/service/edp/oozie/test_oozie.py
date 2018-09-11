@@ -28,6 +28,7 @@ from sahara.utils import edp
 class TestOozieEngine(base.SaharaTestCase):
     def setUp(self):
         super(TestOozieEngine, self).setUp()
+        self.override_config('plugins', ['fake'])
         pb.setup_plugins()
         jb_manager.setup_job_binaries()
         ds_manager.setup_data_sources()

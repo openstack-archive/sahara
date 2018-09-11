@@ -6,10 +6,29 @@
 # Set up default directories
 SAHARACLIENT_DIR=$DEST/python-saharaclient
 SAHARA_DIR=$DEST/sahara
+AMBARI_PLUGIN_DIR=$DEST/sahara-plugin-ambari
+CDH_PLUGIN_DIR=$DEST/sahara-plugin-cdh
+MAPR_PLUGIN_DIR=$DEST/sahara-plugin-mapr
+SPARK_PLUGIN_DIR=$DEST/sahara-plugin-spark
+STORM_PLUGIN_DIR=$DEST/sahara-plugin-storm
+VANILLA_PLUGIN_DIR=$DEST/sahara-plugin-vanilla
 
 SAHARACLIENT_REPO=${SAHARACLIENT_REPO:-\
 ${GIT_BASE}/openstack/python-saharaclient.git}
 SAHARACLIENT_BRANCH=${SAHARACLIENT_BRANCH:-master}
+AMBARI_PLUGIN_REPO=${AMBARI_PLUGIN_REPO:-http://git.openstack.org/cgit/openstack/sahara-plugin-ambari/}
+AMBARI_PLUGIN_BRANCH=${AMBARI_PLUGIN_BRANCH:-master}
+CDH_PLUGIN_REPO=${CDH_PLUGIN_REPO:-http://git.openstack.org/cgit/openstack/sahara-plugin-cdh/}
+CDH_PLUGIN_BRANCH=${CDH_PLUGIN_BRANCH:-master}
+MAPR_PLUGIN_REPO=${MAPR_PLUGIN_REPO:-http://git.openstack.org/cgit/openstack/sahara-plugin-mapr/}
+MAPR_PLUGIN_BRANCH=${MAPR_PLUGIN_BRANCH:-master}
+SPARK_PLUGIN_REPO=${SPARK_PLUGIN_REPO:-http://git.openstack.org/cgit/openstack/sahara-plugin-spark/}
+SPARK_PLUGIN_BRANCH=${SPARK_PLUGIN_BRANCH:-master}
+STORM_PLUGIN_REPO=${STORM_PLUGIN_REPO:-http://git.openstack.org/cgit/openstack/sahara-plugin-storm/}
+STORM_PLUGIN_BRANCH=${STORM_PLUGIN_BRANCH:-master}
+VANILLA_PLUGIN_REPO=${VANILLA_PLUGIN_REPO:-http://git.openstack.org/cgit/openstack/sahara-plugin-vanilla/}
+VANILLA_PLUGIN_BRANCH=${VANILLA_PLUGIN_BRANCH:-master}
+
 
 SAHARA_CONF_DIR=${SAHARA_CONF_DIR:-/etc/sahara}
 SAHARA_CONF_FILE=${SAHARA_CONF_DIR}/sahara.conf

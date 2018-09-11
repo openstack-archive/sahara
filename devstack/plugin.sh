@@ -206,6 +206,42 @@ function install_sahara {
     fi
 }
 
+# install_ambari() - Collect source and prepare
+function install_ambari {
+    git_clone $AMBARI_PLUGIN_REPO $AMBARI_PLUGIN_DIR $AMBARI_PLUGIN_BRANCH
+    setup_develop $AMBARI_PLUGIN_DIR
+}
+
+# install_cdh() - Collect source and prepare
+function install_cdh {
+    git_clone $CDH_PLUGIN_REPO $CDH_PLUGIN_DIR $CDH_PLUGIN_BRANCH
+    setup_develop $CDH_PLUGIN_DIR
+}
+
+# install_mapr() - Collect source and prepare
+function install_mapr {
+    git_clone $MAPR_PLUGIN_REPO $MAPR_PLUGIN_DIR $MAPR_PLUGIN_BRANCH
+    setup_develop $MAPR_PLUGIN_DIR
+}
+
+# install_spark() - Collect source and prepare
+function install_spark {
+    git_clone $SPARK_PLUGIN_REPO $SPARK_PLUGIN_DIR $SPARK_PLUGIN_BRANCH
+    setup_develop $SPARK_PLUGIN_DIR
+}
+
+# install_storm() - Collect source and prepare
+function install_storm {
+    git_clone $STORM_PLUGIN_REPO $STORM_PLUGIN_DIR $STORM_PLUGIN_BRANCH
+    setup_develop $STORM_PLUGIN_DIR
+}
+
+# install_vanilla() - Collect source and prepare
+function install_vanilla {
+    git_clone $VANILLA_PLUGIN_REPO $VANILLA_PLUGIN_DIR $VANILLA_PLUGIN_BRANCH
+    setup_develop $VANILLA_PLUGIN_DIR
+}
+
 # install_python_saharaclient() - Collect source and prepare
 function install_python_saharaclient {
     if use_library_from_git "python-saharaclient"; then
@@ -284,11 +320,37 @@ function is_sahara_enabled {
     fi
 }
 
+function is_plugin_enabled {
+    if [ "${SAHARA_ENABLED_PLUGINS/$1}" = "$SAHARA_ENABLED_PLUGINS" ] ; then
+        return 1
+    else
+        return 0
+    fi
+}
+
 # Dispatcher for Sahara plugin
 if is_service_enabled sahara; then
     if [[ "$1" == "stack" && "$2" == "install" ]]; then
         echo_summary "Installing sahara"
         install_sahara
+        if is_plugin_enabled ambari; then
+            install_ambari
+        fi
+        if is_plugin_enabled cdh; then
+            install_cdh
+        fi
+        if is_plugin_enabled mapr; then
+            install_mapr
+        fi
+        if is_plugin_enabled spark; then
+            install_spark
+        fi
+        if is_plugin_enabled storm; then
+            install_storm
+        fi
+        if is_plugin_enabled vanilla; then
+            install_vanilla
+        fi
         install_python_saharaclient
         cleanup_sahara
     elif [[ "$1" == "stack" && "$2" == "post-config" ]]; then

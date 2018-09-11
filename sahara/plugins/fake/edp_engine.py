@@ -14,6 +14,7 @@
 # limitations under the License.
 
 from sahara.service.edp import base_engine
+from sahara.service.validations.edp import job_execution as j
 from sahara.utils import edp
 
 
@@ -31,7 +32,19 @@ class FakeJobEngine(base_engine.JobEngine):
         pass
 
     def validate_job_execution(self, cluster, job, data):
-        pass
+        if job.type == edp.JOB_TYPE_SHELL:
+            return
+        # All other types except Java require input and output
+        # objects and Java require main class
+        if job.type in [edp.JOB_TYPE_JAVA, edp.JOB_TYPE_SPARK]:
+            j.check_main_class_present(data, job)
+        else:
+            j.check_data_sources(data, job)
+
+            job_type, subtype = edp.split_job_type(job.type)
+            if job_type == edp.JOB_TYPE_MAPREDUCE and (
+                    subtype == edp.JOB_SUBTYPE_STREAMING):
+                j.check_streaming_present(data, job)
 
     @staticmethod
     def get_possible_job_config(job_type):

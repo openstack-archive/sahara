@@ -19,7 +19,7 @@ import six
 from sahara import conductor
 from sahara import context
 from sahara import exceptions
-from sahara.service.health import health_check_base
+from sahara.plugins import health_check_base
 from sahara.service.health import verification_base
 from sahara.tests.unit import base
 from sahara.tests.unit.conductor import test_api
@@ -56,7 +56,7 @@ class TestVerifications(base.SaharaWithDbTestCase):
         cluster = self.api.cluster_create(ctx, test_api.SAMPLE_CLUSTER)
         return cluster
 
-    @mock.patch('sahara.service.health.health_check_base.get_health_checks')
+    @mock.patch('sahara.plugins.health_check_base.get_health_checks')
     def test_verification_start(self, get_health_checks):
         cluster = self._cluster_sample()
         get_health_checks.return_value = [Check]

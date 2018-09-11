@@ -193,3 +193,29 @@ class InvalidVolumeSizeException(e.SaharaException):
         self.code = "INVALID_CONFIGURATION"
 
         super(InvalidVolumeSizeException, self).__init__()
+
+
+class PluginInvalidDataException(e.InvalidDataException):
+
+    code = "INVALID_DATA"
+    message = _("Data is invalid")
+
+
+class PluginConfigurationError(e.ConfigurationError):
+    code = "CONFIGURATION_ERROR"
+    message = _("The configuration has failed")
+
+
+class PluginNotFoundException(e.NotFoundException):
+    code = "NOT_FOUND"
+    message_template = _("Object '%s' is not found")
+
+
+class SaharaPluginException(e.SaharaException):
+    code = "Sahara Plugin Exception"
+    message = ""
+
+
+class PluginRemoteCommandException(e.RemoteCommandException):
+    code = "REMOTE_COMMAND_FAILED"
+    message_template = _("Error during command execution: \"%s\"")

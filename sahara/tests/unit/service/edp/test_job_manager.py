@@ -46,6 +46,7 @@ class TestJobManager(base.SaharaWithDbTestCase):
     def setUp(self):
         super(TestJobManager, self).setUp()
         p.patch_minidom_writexml()
+        self.override_config('plugins', ['fake'])
         pb.setup_plugins()
         castellan.validate_config()
         ds_manager.setup_data_sources()
@@ -535,7 +536,7 @@ class TestJobManager(base.SaharaWithDbTestCase):
 
     def test_get_plugin(self):
         plugin = job_utils.get_plugin(u.create_cluster())
-        self.assertEqual("vanilla", plugin.name)
+        self.assertEqual("fake", plugin.name)
 
     @mock.patch('sahara.conductor.API.job_get')
     def test_job_type_supported(self, job_get):

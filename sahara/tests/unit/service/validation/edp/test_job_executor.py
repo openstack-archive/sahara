@@ -21,7 +21,6 @@ from oslo_utils import uuidutils
 import testtools
 
 from sahara import exceptions as ex
-from sahara import main
 from sahara.service.api import v10 as api
 from sahara.service.validations.edp import job_execution as je
 from sahara.service.validations.edp import job_execution_schema as je_schema
@@ -40,10 +39,6 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
         super(TestJobExecCreateValidation, self).setUp()
         self._create_object_fun = wrap_it
         self.scheme = je_schema.JOB_EXEC_SCHEMA
-        # Make sure that the spark plugin is loaded
-        if 'spark' not in main.CONF['plugins']:
-            self.override_config('plugins', main.CONF['plugins'] + ['spark',
-                                                                    'vanilla'])
         api.plugin_base.setup_plugins()
 
     @mock.patch('sahara.conductor.api.LocalApi.cluster_get')
@@ -66,7 +61,7 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
         ng = tu.make_ng_dict('master', 42, ['oozie'], 1,
                              instances=[tu.make_inst_dict('id', 'name')])
         get_cluster.return_value = tu.create_cluster("cluster", "tenant1",
-                                                     "vanilla", "2.7.1", [ng])
+                                                     "fake", "0.1", [ng])
 
         self._assert_create_object_validation(
             data={
@@ -117,7 +112,7 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
         ng = tu.make_ng_dict('master', 42, ['oozie'], 1,
                              instances=[tu.make_inst_dict('id', 'name')])
         get_cluster.return_value = tu.create_cluster("cluster", "tenant1",
-                                                     "vanilla", "2.7.1", [ng])
+                                                     "fake", "0.1", [ng])
 
         self._assert_create_object_validation(
             data={
@@ -155,27 +150,6 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
 
     @mock.patch('sahara.conductor.api.LocalApi.cluster_get')
     @mock.patch('sahara.conductor.api.LocalApi.job_get')
-    def test_check_edp_no_oozie(self, get_job, get_cluster):
-        get_job.return_value = mock.Mock(type=edp.JOB_TYPE_PIG, libs=[],
-                                         interface=[])
-
-        ng = tu.make_ng_dict('master', 42, ['namenode'], 1,
-                             instances=[tu.make_inst_dict('id', 'name')])
-        get_cluster.return_value = tu.create_cluster("cluster", "tenant1",
-                                                     "vanilla", "2.7.1", [ng])
-
-        self._assert_create_object_validation(
-            data={
-                "cluster_id": uuidutils.generate_uuid(),
-                "input_id": uuidutils.generate_uuid(),
-                "output_id": uuidutils.generate_uuid()
-            },
-            bad_req_i=(1, "INVALID_COMPONENT_COUNT",
-                       "Hadoop cluster should contain 1 oozie component(s). "
-                       "Actual oozie count is 0"))
-
-    @mock.patch('sahara.conductor.api.LocalApi.cluster_get')
-    @mock.patch('sahara.conductor.api.LocalApi.job_get')
     def test_check_edp_job_support_spark(self, get_job, get_cluster):
         # utils.start_patch will construct a vanilla cluster as a
         # default for get_cluster, but we want a Spark cluster.
@@ -188,7 +162,7 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
         ng = tu.make_ng_dict('master', 42, [], 1,
                              instances=[tu.make_inst_dict('id', 'name')])
         get_cluster.return_value = tu.create_cluster("cluster", "tenant1",
-                                                     "spark", "2.2", [ng])
+                                                     "fake", "0.1", [ng])
 
         # Everything is okay, spark cluster supports EDP by default
         # because cluster requires a master and slaves >= 1
@@ -205,7 +179,7 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
         ng = tu.make_ng_dict('master', 42, ['namenode', 'oozie'], 1,
                              instances=[tu.make_inst_dict('id', 'name')])
         cluster_get.return_value = tu.create_cluster("cluster", "tenant1",
-                                                     "vanilla", "2.7.1", [ng])
+                                                     "fake", "0.1", [ng])
 
         self._assert_create_object_validation(
             data={
@@ -252,7 +226,7 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
         ng = tu.make_ng_dict('master', 42, ['namenode'], 1,
                              instances=[tu.make_inst_dict('id', 'name')])
         cluster_get.return_value = tu.create_cluster("cluster", "tenant1",
-                                                     "spark", "2.2", [ng])
+                                                     "fake", "0.1", [ng])
 
         self._assert_create_object_validation(
             data={

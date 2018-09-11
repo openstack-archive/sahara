@@ -2,6 +2,7 @@
 *.egg[s]
 *.log
 *.py[co]
+*.un~
 .coverage
 .testrepository
 .tox

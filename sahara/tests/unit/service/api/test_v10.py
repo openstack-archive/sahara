@@ -163,6 +163,7 @@ class TestApi(base.SaharaWithDbTestCase):
     def setUp(self):
         super(TestApi, self).setUp()
         self.calls_order = []
+        self.override_config('plugins', ['fake'])
         pl_base.PLUGINS = FakePluginManager(self.calls_order)
         service_api.setup_api(FakeOps(self.calls_order))
         oslo_messaging.notify.notifier.Notifier.info = mock.Mock()

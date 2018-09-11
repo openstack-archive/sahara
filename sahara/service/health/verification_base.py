@@ -22,8 +22,8 @@ from sahara import conductor
 from sahara import context
 from sahara import exceptions
 from sahara.i18n import _
+from sahara.plugins import health_check_base
 from sahara.service.health import common
-from sahara.service.health import health_check_base
 from sahara.utils import cluster as cluster_utils
 
 

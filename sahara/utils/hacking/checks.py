@@ -46,12 +46,13 @@ def _any_in(line, *sublines):
 
 
 def import_db_only_in_conductor(logical_line, filename):
-    """Check that db calls are only in conductor module and in tests.
+    """Check that db calls are only in conductor, plugins module and in tests.
 
     S361
     """
     if _any_in(filename,
                "sahara/conductor",
+               "sahara/plugins",
                "sahara/tests",
                "sahara/db"):
         return

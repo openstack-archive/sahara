@@ -124,11 +124,9 @@ EXPECTED_SCHEMA = {
 
 class TestPluginLabels(unit_base.SaharaWithDbTestCase):
     def test_validate_default_labels_load(self):
-        all_plugins = ['cdh', 'ambari', 'fake', 'storm', 'mapr', 'spark',
-                       'vanilla']
-        self.override_config('plugins', all_plugins)
+        self.override_config('plugins', 'fake')
         manager = base.PluginManager()
-        for plugin in all_plugins:
+        for plugin in ['fake']:
             data = manager.label_handler.get_label_details(plugin)
             self.assertIsNotNone(data)
             # order doesn't play a role
@@ -173,7 +171,7 @@ class TestPluginLabels(unit_base.SaharaWithDbTestCase):
             lh.validate_plugin_update(plugin_name, values)
 
         values = {'plugin_labels': {'enabled': {'status': False}}}
-        self.override_config('plugins', ['fake', 'spark'])
+        self.override_config('plugins', ['fake'])
         lh = base.PluginManager()
         validator = api_validator.ApiValidator(
             lh.get_plugin_update_validation_jsonschema())
@@ -192,27 +190,8 @@ class TestPluginLabels(unit_base.SaharaWithDbTestCase):
         with testtools.ExpectedException(json_exc.ValidationError):
             validate('fake', values, validator, lh)
 
-        values = {'plugin_labels': {'hidden': {'status': True}}}
-
-        with testtools.ExpectedException(ex.InvalidDataException):
-            # valid under schema, but not valid under validator
-            # hidden is not available to spark
-            validate('spark', values, validator, lh)
-
-        values = {'plugin_labels': {'enabled': {'mutable': False}}}
-        with testtools.ExpectedException(json_exc.ValidationError):
-            validate('spark', values, validator, lh)
-
-        values = {'version_labels': {'enabled': {'status': False}}}
-        with testtools.ExpectedException(json_exc.ValidationError):
-            validate('spark', values, validator, lh)
-
         values = {'version_labels': {'0.1': {'enabled': {'status': False}}}}
         validate('fake', values, validator, lh)
-
-        values = {'version_labels': {'0.1': {'enabled': {'status': False}}}}
-        with testtools.ExpectedException(ex.InvalidDataException):
-            validate('spark', values, validator, lh)
 
         values = {'version_labels': {'0.1': {'hidden': {'status': True}}}}
         with testtools.ExpectedException(ex.InvalidDataException):

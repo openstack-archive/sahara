@@ -18,13 +18,11 @@ import xml.dom.minidom as xml
 
 import pkg_resources as pkg
 
-from sahara import version
-
 
 # hadoop.xml related utils
 
-def load_hadoop_xml_defaults(file_name):
-    doc = load_xml_document(file_name)
+def load_hadoop_xml_defaults(file_name, package='sahara'):
+    doc = load_xml_document(file_name, package=package)
     configs = []
     prop = doc.getElementsByTagName('property')
     for elements in prop:
@@ -92,9 +90,8 @@ def create_elements_xml(configs):
 
 # basic utils
 
-def load_xml_document(file_name, strip=False):
-    fname = pkg.resource_filename(
-        version.version_info.package, file_name)
+def load_xml_document(file_name, strip=False, package='sahara'):
+    fname = pkg.resource_filename(package, file_name)
     if strip:
         with open(fname, "r") as f:
             doc = "".join(line.strip() for line in f)

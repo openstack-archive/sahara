@@ -106,6 +106,7 @@ class TestClusterApi(base.SaharaWithDbTestCase):
     def setUp(self):
         super(TestClusterApi, self).setUp()
         self.calls_order = []
+        self.override_config('plugins', ['fake'])
         pl_base.PLUGINS = api_base.FakePluginManager(self.calls_order)
         service_api.setup_api(FakeOps(self.calls_order))
         oslo_messaging.notify.notifier.Notifier.info = mock.Mock()

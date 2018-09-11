@@ -1,4 +1,4 @@
-# Copyright (c) 2013 Mirantis Inc.
+# Copyright (c) 2018 Red Hat, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,19 +13,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import testtools
 
-from sahara import main
-from sahara.plugins import base as pb
+from sahara.topology import topology_helper as t_helper
+
+TOPOLOGY_CONFIG = t_helper.TOPOLOGY_CONFIG
 
 
-class BasePluginsSupportTest(testtools.TestCase):
+def is_data_locality_enabled(**kwargs):
+    return t_helper.is_data_locality_enabled()
 
-    def setUp(self):
-        super(BasePluginsSupportTest, self).setUp()
-        main.CONF.set_override('plugins', ['fake'])
-        pb.setup_plugins()
 
-    def test_plugins_loaded(self):
-        plugins = [p.name for p in pb.PLUGINS.get_plugins()]
-        self.assertIn('fake', plugins)
+def generate_topology_map(cluster, is_node_awareness, **kwargs):
+    return t_helper.generate_topology_map(cluster, is_node_awareness)
+
+
+def vm_awareness_core_config(**kwargs):
+    return t_helper.vm_awareness_core_config()

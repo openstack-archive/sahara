@@ -1,4 +1,4 @@
-# Copyright (c) 2013 Mirantis Inc.
+# Copyright (c) 2018 Red Hat, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,19 +13,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import testtools
 
-from sahara import main
-from sahara.plugins import base as pb
+from sahara.service.castellan import utils as castellan_utils
 
 
-class BasePluginsSupportTest(testtools.TestCase):
+def delete_secret(id, ctx=None, **kwargs):
+    castellan_utils.delete_secret(id, ctx=ctx)
 
-    def setUp(self):
-        super(BasePluginsSupportTest, self).setUp()
-        main.CONF.set_override('plugins', ['fake'])
-        pb.setup_plugins()
 
-    def test_plugins_loaded(self):
-        plugins = [p.name for p in pb.PLUGINS.get_plugins()]
-        self.assertIn('fake', plugins)
+def get_secret(id, ctx=None, **kwargs):
+    return castellan_utils.get_secret(id, ctx=ctx)
+
+
+def store_secret(secret, ctx=None, **kwargs):
+    return castellan_utils.store_secret(secret)

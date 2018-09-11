@@ -12,17 +12,48 @@
       jobs:
         - openstack-tox-pylint:
             voting: false
-        - sahara-tests-scenario
-        - sahara-tests-tempest
+        - sahara-tests-scenario:
+            required-projects:
+              - openstack/sahara-plugin-ambari
+              - openstack/sahara-plugin-cdh
+              - openstack/sahara-plugin-mapr
+              - openstack/sahara-plugin-spark
+              - openstack/sahara-plugin-storm
+              - openstack/sahara-plugin-vanilla
+        - sahara-tests-tempest:
+            required-projects:
+              - openstack/sahara-plugin-ambari
+              - openstack/sahara-plugin-cdh
+              - openstack/sahara-plugin-mapr
+              - openstack/sahara-plugin-spark
+              - openstack/sahara-plugin-storm
+              - openstack/sahara-plugin-vanilla
         - openstack-tox-cover:
             voting: false
-        - sahara-grenade
+        - sahara-grenade:
+            voting: false
     gate:
       queue: sahara
       jobs:
-        - sahara-tests-scenario
-        - sahara-tests-tempest
-        - sahara-grenade
+        - sahara-tests-scenario:
+            required-projects:
+              - openstack/sahara-plugin-ambari
+              - openstack/sahara-plugin-cdh
+              - openstack/sahara-plugin-mapr
+              - openstack/sahara-plugin-spark
+              - openstack/sahara-plugin-storm
+              - openstack/sahara-plugin-vanilla
+        - sahara-tests-tempest:
+            required-projects:
+              - openstack/sahara-plugin-ambari
+              - openstack/sahara-plugin-cdh
+              - openstack/sahara-plugin-mapr
+              - openstack/sahara-plugin-spark
+              - openstack/sahara-plugin-storm
+              - openstack/sahara-plugin-vanilla
+        - sahara-grenade:
+            voting: false
+
     experimental:
       jobs:
         - sahara-buildimages-ambari
@@ -61,6 +92,13 @@
     nodeset: centos-7
     run: playbooks/buildimages/run.yaml
     timeout: 7200
+    required-projects:
+      - openstack/sahara-plugin-ambari
+      - openstack/sahara-plugin-cdh
+      - openstack/sahara-plugin-mapr
+      - openstack/sahara-plugin-spark
+      - openstack/sahara-plugin-storm
+      - openstack/sahara-plugin-vanilla
 
 - job:
     name: sahara-buildimages-ambari

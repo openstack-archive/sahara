@@ -20,9 +20,9 @@ import pkg_resources as pkg
 from sahara import version
 
 
-def get_file_text(file_name):
+def get_file_text(file_name, package='sahara'):
     full_name = pkg.resource_filename(
-        version.version_info.package, file_name)
+        package, file_name)
     return open(full_name).read()
 
 
@@ -32,9 +32,9 @@ def get_file_binary(file_name):
     return open(full_name, "rb").read()
 
 
-def try_get_file_text(file_name):
+def try_get_file_text(file_name, package='sahara'):
     full_name = pkg.resource_filename(
-        version.version_info.package, file_name)
+        package, file_name)
     return (
         open(full_name, "rb").read()
         if path.isfile(full_name) else False)

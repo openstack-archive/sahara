@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    In an effort to improve Sahara's usuability and manutenability we are
+    splitting the plugins from Sahara core into their own repositories.

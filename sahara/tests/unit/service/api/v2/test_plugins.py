@@ -24,6 +24,7 @@ class TestPluginApi(base.SaharaWithDbTestCase):
     def setUp(self):
         super(TestPluginApi, self).setUp()
         self.calls_order = []
+        self.override_config('plugins', ['fake'])
         pl_base.PLUGINS = api_base.FakePluginManager(self.calls_order)
 
     def test_get_plugin(self):

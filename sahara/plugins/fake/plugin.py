@@ -117,7 +117,8 @@ class FakePluginProvider(p.ProvisioningPluginBase):
         self._check_ops(instance)
 
     def get_edp_engine(self, cluster, job_type):
-        return edp_engine.FakeJobEngine()
+        if job_type in edp_engine.FakeJobEngine.get_supported_job_types():
+            return edp_engine.FakeJobEngine()
 
     def get_edp_job_types(self, versions=None):
         res = {}

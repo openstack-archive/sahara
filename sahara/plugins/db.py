@@ -1,4 +1,4 @@
-# Copyright (c) 2013 Mirantis Inc.
+# Copyright (c) 2018 Red Hat, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,19 +13,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import testtools
 
-from sahara import main
-from sahara.plugins import base as pb
+from sahara.db import api as db_api
 
 
-class BasePluginsSupportTest(testtools.TestCase):
+def setup_db(**kwargs):
+    db_api.setup_db()
 
-    def setUp(self):
-        super(BasePluginsSupportTest, self).setUp()
-        main.CONF.set_override('plugins', ['fake'])
-        pb.setup_plugins()
 
-    def test_plugins_loaded(self):
-        plugins = [p.name for p in pb.PLUGINS.get_plugins()]
-        self.assertIn('fake', plugins)
+def drop_db(**kwargs):
+    db_api.drop_db()
+
+
+def create_facade_lazily(**kwargs):
+    return db_api._create_facade_lazily()

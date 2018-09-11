@@ -29,7 +29,7 @@ import yaml
 from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.plugins import exceptions as p_ex
-from sahara.utils import files
+from sahara.plugins import utils
 
 
 def transform_exception(from_type, to_type, transform_func=None):
@@ -215,7 +215,8 @@ class SaharaImageValidatorBase(ImageValidator):
         return default_validator_map
 
     @classmethod
-    def from_yaml(cls, yaml_path, validator_map=None, resource_roots=None):
+    def from_yaml(cls, yaml_path, validator_map=None, resource_roots=None,
+                  package='sahara'):
         """Constructs and returns a validator from the provided yaml file.
 
         :param yaml_path: The relative path to a yaml file.
@@ -227,13 +228,13 @@ class SaharaImageValidatorBase(ImageValidator):
         """
         validator_map = validator_map or {}
         resource_roots = resource_roots or []
-        file_text = files.get_file_text(yaml_path)
+        file_text = utils.get_file_text(yaml_path, package)
         spec = yaml.safe_load(file_text)
         validator_map = cls.get_validator_map(validator_map)
-        return cls.from_spec(spec, validator_map, resource_roots)
+        return cls.from_spec(spec, validator_map, resource_roots, package)
 
     @classmethod
-    def from_spec(cls, spec, validator_map, resource_roots):
+    def from_spec(cls, spec, validator_map, resource_roots, package='sahara'):
         """Constructs and returns a validator from a specification object.
 
         :param spec: The specification for the validator.
@@ -246,7 +247,8 @@ class SaharaImageValidatorBase(ImageValidator):
         pass
 
     @classmethod
-    def from_spec_list(cls, specs, validator_map, resource_roots):
+    def from_spec_list(cls, specs, validator_map, resource_roots,
+                       package='sahara'):
         """Constructs a list of validators from a list of specifications.
 
         :param specs: A list of validator specifications, each of which
@@ -263,7 +265,7 @@ class SaharaImageValidatorBase(ImageValidator):
             validator_class, validator_spec = cls.get_class_from_spec(
                 spec, validator_map)
             validators.append(validator_class.from_spec(
-                validator_spec, validator_map, resource_roots))
+                validator_spec, validator_map, resource_roots, package))
         return validators
 
     @classmethod
@@ -341,7 +343,7 @@ class SaharaImageValidator(SaharaImageValidatorBase):
                 in six.iteritems(self.arguments)]
 
     @classmethod
-    def from_spec(cls, spec, validator_map, resource_roots):
+    def from_spec(cls, spec, validator_map, resource_roots, package='sahara'):
         """Constructs and returns a validator from a specification object.
 
         :param spec: The specification for the validator: a dict containing
@@ -358,7 +360,7 @@ class SaharaImageValidator(SaharaImageValidatorBase):
         arguments = ImageArgument.from_spec(arguments_spec)
         validators_spec = spec['validators']
         validator = SaharaAllValidator.from_spec(
-            validators_spec, validator_map, resource_roots)
+            validators_spec, validator_map, resource_roots, package)
         return cls(validator, arguments)
 
     def __init__(self, validator, arguments):
@@ -475,7 +477,7 @@ class SaharaPackageValidator(SaharaImageValidatorBase):
             return cls.Package(package, version)
 
     @classmethod
-    def from_spec(cls, spec, validator_map, resource_roots):
+    def from_spec(cls, spec, validator_map, resource_roots, package='sahara'):
         """Builds a package validator from a specification.
 
         :param spec: May be a string, a single-length dictionary of name to
@@ -601,7 +603,7 @@ class SaharaScriptValidator(SaharaImageValidatorBase):
     }
 
     @classmethod
-    def from_spec(cls, spec, validator_map, resource_roots):
+    def from_spec(cls, spec, validator_map, resource_roots, package='sahara'):
         """Builds a script validator from a specification.
 
         :param spec: May be a string or a single-length dictionary of name to
@@ -631,7 +633,7 @@ class SaharaScriptValidator(SaharaImageValidatorBase):
         if not script_contents:
             for root in resource_roots:
                 file_path = path.join(root, script_path)
-                script_contents = files.try_get_file_text(file_path)
+                script_contents = utils.try_get_file_text(file_path, package)
                 if script_contents:
                     break
 
@@ -722,7 +724,7 @@ class SaharaCopyScriptValidator(SaharaImageValidatorBase):
     }
 
     @classmethod
-    def from_spec(cls, spec, validator_map, resource_roots):
+    def from_spec(cls, spec, validator_map, resource_roots, package='sahara'):
         """Builds a copy script validator from a specification.
 
         :param spec: May be a string or a single-length dictionary of name to
@@ -751,7 +753,7 @@ class SaharaCopyScriptValidator(SaharaImageValidatorBase):
         if not script_contents:
             for root in resource_roots:
                 file_path = path.join(root, script_path)
-                script_contents = files.try_get_file_text(file_path)
+                script_contents = utils.try_get_file_text(file_path, package)
                 if script_contents:
                     break
         script_name = script_path.split('/')[2]
@@ -809,7 +811,7 @@ class SaharaAggregateValidator(SaharaImageValidatorBase):
     SPEC_SCHEMA = SaharaImageValidator.ORDERED_VALIDATORS_SCHEMA
 
     @classmethod
-    def from_spec(cls, spec, validator_map, resource_roots):
+    def from_spec(cls, spec, validator_map, resource_roots, package='sahara'):
         """Builds the aggregate validator from a specification.
 
         :param spec: A list of validator definitions, each of which is a
@@ -821,7 +823,8 @@ class SaharaAggregateValidator(SaharaImageValidatorBase):
         :return: An aggregate validator.
         """
         jsonschema.validate(spec, cls.SPEC_SCHEMA)
-        validators = cls.from_spec_list(spec, validator_map, resource_roots)
+        validators = cls.from_spec_list(spec, validator_map, resource_roots,
+                                        package)
         return cls(validators)
 
     def __init__(self, validators):
@@ -910,7 +913,7 @@ class SaharaOSCaseValidator(SaharaImageValidatorBase):
     }
 
     @classmethod
-    def from_spec(cls, spec, validator_map, resource_roots):
+    def from_spec(cls, spec, validator_map, resource_roots, package='sahara'):
         """Builds an os_case validator from a specification.
 
         :param spec: A list of single-length dictionaries. The key of each is
@@ -927,7 +930,7 @@ class SaharaOSCaseValidator(SaharaImageValidatorBase):
                                     for distro_spec in spec))
         distros = [
             cls._distro_tuple(key, SaharaAllValidator.from_spec(
-                value, validator_map, resource_roots))
+                value, validator_map, resource_roots, package))
             for (key, value) in distros]
         return cls(distros)
 
@@ -989,7 +992,7 @@ class SaharaArgumentCaseValidator(SaharaImageValidatorBase):
     }
 
     @classmethod
-    def from_spec(cls, spec, validator_map, resource_roots):
+    def from_spec(cls, spec, validator_map, resource_roots, package='sahara'):
         """Builds an argument_case validator from a specification.
 
         :param spec: A dictionary with two items: "argument_name", containing
@@ -1006,7 +1009,7 @@ class SaharaArgumentCaseValidator(SaharaImageValidatorBase):
         jsonschema.validate(spec, cls.SPEC_SCHEMA)
         argument_name = spec['argument_name']
         cases = {key: SaharaAllValidator.from_spec(
-                 value, validator_map, resource_roots)
+                 value, validator_map, resource_roots, package)
                  for key, value in six.iteritems(spec['cases'])}
 
         return cls(argument_name, cases)
@@ -1065,7 +1068,7 @@ class SaharaArgumentSetterValidator(SaharaImageValidatorBase):
     }
 
     @classmethod
-    def from_spec(cls, spec, validator_map, resource_roots):
+    def from_spec(cls, spec, validator_map, resource_roots, package='sahara'):
         """Builds an argument_set validator from a specification.
 
         :param spec: A dictionary with two items: "argument_name", containing
