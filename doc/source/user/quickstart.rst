@@ -101,16 +101,8 @@ machine image in the sahara image registry.
 Register the image with the username ``ubuntu``.
 
 .. note::
-    The username will vary depending on the source image used, as follows:
-    Ubuntu: ``ubuntu``
-    CentOS 7: ``centos``
-    CentOS 6: ``cloud-user``
-    Fedora: ``fedora``
-    Note that the Sahara team recommends using CentOS 7 instead of CentOS 6 as
-    a base OS wherever possible; it is better supported throughout OpenStack
-    image maintenance infrastructure and its more modern filesystem is much
-    more appropriate for large-scale data processing. For more please see
-    :doc:`../user/vanilla-plugin`
+    The username will vary depending on the source image used.
+    For more information, refer to the :doc:`registering-image` section.
 
 .. sourcecode:: console
 

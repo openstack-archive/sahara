@@ -16,29 +16,8 @@ with two tags: 'cdh' and '<cloudera version>' (e.g. '5', '5.3.0', '5.4.0',
 '5.5.0', '5.7.0', '5.9.0' or '5.9.1', here '5' stands for '5.0.0').
 
 The default username specified for these images is different for each
-distribution:
-
-for 5.0.0, 5.3.0 and 5.4.0 version:
-
-+--------------+------------+
-| OS           | username   |
-+==============+============+
-| Ubuntu 12.04 | ubuntu     |
-+--------------+------------+
-| CentOS 6.6   | cloud-user |
-+--------------+------------+
-
-for 5.5.0 and higher versions:
-
-+--------------+------------+
-| OS           | username   |
-+==============+============+
-| Ubuntu 14.04 | ubuntu     |
-+--------------+------------+
-| CentOS 6.6   | cloud-user |
-+--------------+------------+
-| CentOS 7     | centos     |
-+--------------+------------+
+distribution. For more information, refer to the
+:doc:`registering-image` section.
 
 Services Supported
 ------------------
