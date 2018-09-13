@@ -18,8 +18,8 @@ sahara-image-elements:
 The Storm plugin requires an image to be tagged in the sahara image registry
 with two tags: 'storm' and '<Storm version>' (e.g. '1.1.0').
 
-Also you should specify the username of the default cloud-user used in the
-image.
+The image requires a username. For more information, refer to the
+:doc:`registering-image` section.
 
 Note that the Storm cluster is deployed using the scripts available in the
 Storm distribution, which allow the user to start all services (nimbus,

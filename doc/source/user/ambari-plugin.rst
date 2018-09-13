@@ -31,9 +31,8 @@ For more information about Ambari images, refer to
 HDP plugin requires an image to be tagged in sahara Image Registry with two
 tags: 'ambari' and '<plugin version>' (e.g. '2.5').
 
-Also in the Image Registry you will need to specify username for an image.
-The username specified should be 'cloud-user' in case of CentOS 6.x image,
-'centos' for CentOS 7 images and 'ubuntu' for Ubuntu images.
+The image requires a username. For more information, refer to the
+:doc:`registering-image` section.
 
 High Availability for HDFS and YARN
 -----------------------------------

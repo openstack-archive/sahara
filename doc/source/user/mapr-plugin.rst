@@ -41,17 +41,8 @@ MapR plugin needs an image to be tagged in Sahara Image Registry with
 two tags: 'mapr' and '<MapR version>' (e.g. '5.2.0.mrv2').
 
 The default username specified for these images is different for each
-distribution:
-
-+--------------+------------+
-| OS           | username   |
-+==============+============+
-| Ubuntu 14    | ubuntu     |
-+--------------+------------+
-| CentOS 6     | cloud-user |
-+--------------+------------+
-| CentOS 7     | centos     |
-+--------------+------------+
+distribution. For more information, refer to the
+:doc:`registering-image` section.
 
 Hadoop Version Support
 ----------------------

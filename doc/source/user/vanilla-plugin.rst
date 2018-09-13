@@ -15,20 +15,8 @@ You may build images by yourself using :doc:`vanilla-imagebuilder`.
 Vanilla plugin requires an image to be tagged in Sahara Image Registry with
 two tags: 'vanilla' and '<hadoop version>' (e.g. '2.7.1').
 
-The default username specified for these images is different
-for each distribution:
-
-+--------------+------------+
-| OS           | username   |
-+==============+============+
-| Ubuntu 14    | ubuntu     |
-+--------------+------------+
-| Fedora 20    | fedora     |
-+--------------+------------+
-| CentOS 6     | cloud-user |
-+--------------+------------+
-| CentOS 7     | centos     |
-+--------------+------------+
+The image requires a username. For more information, refer to the
+:doc:`registering-image` section.
 
 Cluster Validation
 ------------------

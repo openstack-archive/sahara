@@ -21,10 +21,9 @@ Elements for building vanilla images are stored in the
 
    Sahara requires images with cloud-init package installed:
 
-   * `For Fedora <http://pkgs.fedoraproject.org/cgit/cloud-init.git/>`_
-   * `For Ubuntu 14 <http://packages.ubuntu.com/trusty/cloud-init>`_
-   * `For CentOS 6 <http://mirror.centos.org/centos/6/extras/x86_64/Packages/cloud-init-0.7.5-10.el6.centos.2.x86_64.rpm>`_
-   * `For CentOS 7 <http://mirror.centos.org/centos/7/extras/x86_64/Packages/cloud-init-0.7.5-10.el7.centos.1.x86_64.rpm>`_
+   * `For Ubuntu 16.04 <http://packages.ubuntu.com/xenial/cloud-init>`_
+   * `For CentOS 7 <http://mirror.centos.org/centos/7/os/x86_64/Packages/cloud-init-0.7.9-24.el7.centos.x86_64.rpm>`_
+   * `For Fedora <https://src.fedoraproject.org/rpms/cloud-init>`_
 
 To create vanilla images follow these steps:
 

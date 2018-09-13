@@ -21,13 +21,11 @@ for each distribution:
 +--------------+------------+
 | OS           | username   |
 +==============+============+
-| Ubuntu 12.04 | ubuntu     |
-+--------------+------------+
 | Ubuntu 14.04 | ubuntu     |
 +--------------+------------+
-| Fedora       | fedora     |
+| Ubuntu 16.04 | ubuntu     |
 +--------------+------------+
-| CentOS 6.x   | cloud-user |
+| Fedora       | fedora     |
 +--------------+------------+
 | CentOS 7.x   | centos     |
 +--------------+------------+
