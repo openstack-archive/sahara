@@ -65,7 +65,7 @@ $SAHARA_BIN_DIR/sahara-db-manage --config-file $SAHARA_CONF_FILE \
 start_sahara
 
 # Don't succeed unless the service come up
-ensure_services_started sahara
+ensure_services_started sahara-eng
 
 set +o xtrace
 echo "*********************************************************************"
