@@ -91,3 +91,19 @@ complete a few steps below.
   like ``oozie``, ``hdfs`` and ``spark`` so that you will not have to
   perform additional auth operations to execute your jobs on top of the
   cluster.
+
+Adjusting Ambari Agent Package Installation timeout Parameter
+-------------------------------------------------------------
+
+For a cluster with large number of nodes or slow connectivity to HDP repo
+server, a Sahara HDP Cluster creation  may fail due to ambari agent
+reaching the timeout threshold while installing the packages in the nodes.
+
+Such failures will occur during the "cluster start"  stage which can be
+monitored from Cluster Events tab of Sahara Dashboard. The timeout error will
+be visible from the Ambari Dashboard as well.
+
+* To avoid the package installation timeout by ambari agent you need to change
+  the default value of ``Ambari Agent Package Install timeout`` parameter which
+  can be found in the ``General Parameters`` section of the cluster template
+  configuration.

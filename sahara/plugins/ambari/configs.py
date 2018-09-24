@@ -129,6 +129,9 @@ autoconfigs_strategy = provisioning.Config(
         'NEVER_APPLY', 'ALWAYS_APPLY', 'ONLY_STACK_DEFAULTS_APPLY',
     ]],
 )
+ambari_pkg_install_timeout = provisioning.Config(
+    "Ambari Agent Package Install timeout", "general", "cluster",
+    priority=1, default_value="1800")
 
 
 def _get_service_name(service):
@@ -193,7 +196,7 @@ def load_configs(version):
     vanilla_cfg = jsonutils.loads(files.get_file_text(cfg_path))
     CONFIGS[version] = vanilla_cfg
     sahara_cfg = [hdp_repo_cfg, hdp_utils_repo_cfg, use_base_repos_cfg,
-                  autoconfigs_strategy]
+                  autoconfigs_strategy, ambari_pkg_install_timeout]
     for service, confs in vanilla_cfg.items():
         for k, v in confs.items():
             sahara_cfg.append(provisioning.Config(
@@ -224,6 +227,10 @@ def get_hdp_utils_repo_url(cluster):
 
 def get_auto_configuration_strategy(cluster):
     return _get_config_value(cluster, autoconfigs_strategy)
+
+
+def get_ambari_pkg_install_timeout(cluster):
+    return _get_config_value(cluster, ambari_pkg_install_timeout)
 
 
 def _serialize_ambari_configs(configs):
