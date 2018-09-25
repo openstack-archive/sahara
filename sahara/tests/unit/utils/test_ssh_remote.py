@@ -451,9 +451,25 @@ class TestInstanceInteropHelper(base.SaharaTestCase):
 
     @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._run_s')
     @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._log_command')
-    def test_execute_on_vm_interactive(self, p_log_command, p_run_s):
+    def test_replace_remote_line(self, p_log_command, p_run_s):
         instance = FakeInstance('inst13', '123',
                                 '10.0.0.13', '10.0.0.13', 'user13', 'key13')
+        remote = ssh_remote.InstanceInteropHelper(instance)
+        description = ('In file "file" replacing line begining with string'
+                       '"str" with "newline"')
+
+        remote.replace_remote_line("file", "str", "newline")
+        p_run_s.assert_called_once_with(ssh_remote._replace_remote_line,
+                                        None, description, "file", "str",
+                                                                   "newline")
+
+        p_log_command.assert_called_with(description)
+
+    @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._run_s')
+    @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._log_command')
+    def test_execute_on_vm_interactive(self, p_log_command, p_run_s):
+        instance = FakeInstance('inst14', '123',
+                                '10.0.0.14', '10.0.0.14', 'user14', 'key14')
         remote = ssh_remote.InstanceInteropHelper(instance)
         description = 'Executing interactively "factor 42"'
 
