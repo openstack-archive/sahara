@@ -36,10 +36,14 @@ def generate_key_pair(key_length=2048):
     """
     with tempfiles.tempdir() as tmpdir:
         keyfile = os.path.join(tmpdir, 'tempkey')
+        # The key is generated in the old PEM format, instead of the native
+        # format of OpenSSH >=6.5, because paramiko does not support it:
+        # https://github.com/paramiko/paramiko/issues/602
         args = [
             'ssh-keygen',
             '-q',  # quiet
             '-N', '',  # w/o passphrase
+            '-m', 'PEM',  # old PEM format
             '-t', 'rsa',  # create key of rsa type
             '-f', keyfile,  # filename of the key file
             '-C', 'Generated-by-Sahara'  # key comment
