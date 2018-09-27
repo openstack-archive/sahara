@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 hadoop="2.6.0"
 
@@ -12,7 +12,7 @@ if [ $test_only -eq 0 ]; then
     wget -O $hdfs_lib_dir/$HADOOP_SWIFT_JAR_NAME $SWIFT_LIB_URI
 
     if [ $? -ne 0 ]; then
-        echo -e "Could not download Swift Hadoop FS implementation.\nAborting"
+        printf "Could not download Swift Hadoop FS implementation.\nAborting\n"
         exit 1
     fi
 
