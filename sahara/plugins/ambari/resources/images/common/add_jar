@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/sh
 
 hadoop="2.7.1"
 
@@ -16,7 +16,7 @@ if [ ! -f $HDFS_LIB_DIR/$HADOOP_SWIFT_JAR_NAME ]; then
         fi
 
         if [ $? -ne 0 ]; then
-            echo -e "Could not download Swift Hadoop FS implementation.\nAborting"
+            printf "Could not download Swift Hadoop FS implementation.\nAborting\n"
             exit 1
         fi
 

@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/sh
 
 AMBARI_AGENT_INI="/etc/ambari-agent/conf/ambari-agent.ini"
 FORCE_HTTPS_CONF="force_https_protocol=PROTOCOL_TLSv1_2"
@@ -9,7 +9,7 @@ if [ $test_only -eq 0 ]; then
             sed -i '/^\[security\]/a\'${FORCE_HTTPS_CONF} ${AMBARI_AGENT_INI}
         fi
     else
-        echo -e "[security]\n${FORCE_HTTPS_CONF}" >>${AMBARI_AGENT_INI}
+        printf "[security]\n${FORCE_HTTPS_CONF}\n" >>${AMBARI_AGENT_INI}
     fi
 else
     grep -q "${FORCE_HTTPS_CONF}" ${AMBARI_AGENT_INI}
