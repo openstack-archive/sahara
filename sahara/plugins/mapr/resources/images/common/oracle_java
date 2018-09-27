@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 
 # NOTE: $(dirname $0) is read-only, use space under $TARGET_ROOT
@@ -25,7 +25,7 @@ if [ ! -d $JAVA_LOCATION ]; then
         cd $JAVA_LOCATION
 
         echo "Decompressing Java archive"
-        echo -e "\n" | tar -zxf $JAVA_FILE
+        printf "\n\n" | tar -zxf $JAVA_FILE
         echo "Setting up $JAVA_NAME"
         chown -R root:root $JAVA_LOCATION
         JAVA_DIR=`ls -1 $JAVA_LOCATION | grep -v tar.gz`

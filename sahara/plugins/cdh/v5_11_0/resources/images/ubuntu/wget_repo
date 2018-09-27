@@ -1,10 +1,10 @@
-#!/bin/bash
+#!/bin/sh
 
 if [ ! -f /etc/apt/sources.list.d/cdh5.list ]; then
     if [ $test_only -eq 0 ]; then
         # Add repository with postgresql package (it's dependency of cloudera packages)
         # Base image doesn't contain this repo
-        echo -e 'deb http://nova.clouds.archive.ubuntu.com/ubuntu/ xenial universe multiverse main' >> /etc/apt/sources.list
+        echo 'deb http://nova.clouds.archive.ubuntu.com/ubuntu/ xenial universe multiverse main' >> /etc/apt/sources.list
 
         # Cloudera repositories
         echo "deb [arch=amd64] http://archive.cloudera.com/cdh5/ubuntu/xenial/amd64/cdh xenial-cdh$plugin_version contrib" > /etc/apt/sources.list.d/cdh5.list
@@ -21,11 +21,11 @@ if [ ! -f /etc/apt/sources.list.d/cdh5.list ]; then
         wget -qO - http://archive.cloudera.com/navigator-keytrustee5/ubuntu/xenial/amd64/navigator-keytrustee/archive.key | apt-key add -
 
         # add Kafka repository
-        echo -e 'deb http://archive.cloudera.com/kafka/ubuntu/xenial/amd64/kafka/ xenial-kafka2.2.0 contrib' >> /etc/apt/sources.list
+        echo 'deb http://archive.cloudera.com/kafka/ubuntu/xenial/amd64/kafka/ xenial-kafka2.2.0 contrib' >> /etc/apt/sources.list
         wget -qO - https://archive.cloudera.com/kafka/ubuntu/xenial/amd64/kafka/archive.key | apt-key add -
 
         #change repository priority
-        echo -e 'Package: zookeeper\nPin: origin "archive.cloudera.com"\nPin-Priority: 1001' > /etc/apt/preferences.d/cloudera-pin
+        printf 'Package: zookeeper\nPin: origin "archive.cloudera.com"\nPin-Priority: 1001\n' > /etc/apt/preferences.d/cloudera-pin
 
         apt-get update
     else

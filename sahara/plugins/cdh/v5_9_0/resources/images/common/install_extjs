@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 EXTJS_DESTINATION_DIR="/var/lib/oozie"
 EXTJS_DOWNLOAD_URL="https://tarballs.openstack.org/sahara-extra/dist/common-artifacts/ext-2.2.zip"
@@ -7,7 +7,7 @@ extjs_basepath=$(basename ${EXTJS_DOWNLOAD_URL})
 extjs_archive=/tmp/${extjs_basepath}
 extjs_folder="${extjs_basepath%.*}"
 
-function setup_extjs {
+setup_extjs() {
     wget -O $extjs_archive $EXTJS_DOWNLOAD_URL
     mkdir -p $EXTJS_DESTINATION_DIR
 }
