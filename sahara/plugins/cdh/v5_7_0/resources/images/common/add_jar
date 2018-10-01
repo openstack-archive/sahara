@@ -9,7 +9,7 @@ SWIFT_LIB_URI="$HADOOP_SWIFT_BUILD_LOCATION/hadoop-openstack-${hadoop}.jar"
 HADOOP_SWIFT_JAR_NAME="hadoop-openstack.jar"
 
 if [ $test_only -eq 0 ]; then
-    wget -O $hdfs_lib_dir/$HADOOP_SWIFT_JAR_NAME $SWIFT_LIB_URI
+    curl -sS -o $hdfs_lib_dir/$HADOOP_SWIFT_JAR_NAME $SWIFT_LIB_URI
 
     if [ $? -ne 0 ]; then
         printf "Could not download Swift Hadoop FS implementation.\nAborting\n"
