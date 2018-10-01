@@ -10,9 +10,9 @@ HADOOP_SWIFT_JAR_NAME=hadoop-openstack.jar
 if [ ! -f $HDFS_LIB_DIR/$HADOOP_SWIFT_JAR_NAME ]; then
     if [ $test_only -eq 0 ]; then
         if [ -z "${swift_url:-}" ]; then
-            wget -O $HDFS_LIB_DIR/$HADOOP_SWIFT_JAR_NAME $SWIFT_LIB_URI
+            curl -sS -o $HDFS_LIB_DIR/$HADOOP_SWIFT_JAR_NAME $SWIFT_LIB_URI
         else
-            wget -O $HDFS_LIB_DIR/$HADOOP_SWIFT_JAR_NAME $swift_url
+            curl -sS -o $HDFS_LIB_DIR/$HADOOP_SWIFT_JAR_NAME $swift_url
         fi
 
         if [ $? -ne 0 ]; then
