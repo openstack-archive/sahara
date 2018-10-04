@@ -324,7 +324,7 @@ class StormProvider(p.ProvisioningPluginBase):
         if st_master:
             port = "8080"
 
-            info['Strom'] = {
+            info['Storm'] = {
                 'Web UI': 'http://%s:%s' % (
                     st_master.get_ip_or_dns_name(), port)
             }
