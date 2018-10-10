@@ -284,6 +284,10 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
 
     def validate_images(self, cluster, test_only=False, image_arguments=None):
         image_arguments = self.get_image_arguments(cluster['hadoop_version'])
+        if cluster['hadoop_version'] == '2.3':
+            for arguments in image_arguments:
+                if arguments.name == 'ambari_version':
+                    arguments.default = '2.4.3.0'
         if not test_only:
             instances = plugin_utils.get_instances(cluster)
         else:
