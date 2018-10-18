@@ -512,7 +512,7 @@ sahara have the latest version of the Hadoop swift filesystem plugin
 installed. The sources for this plugin can be found in the
 `sahara extra repository`_. For more information on images or swift
 integration see the sahara documentation sections
-:ref:`diskimage-builder-label` and :ref:`swift-integration-label`.
+:ref:`building-guest-images-label` and :ref:`swift-integration-label`.
 
 .. _Sahara extra repository: http://git.openstack.org/cgit/openstack/sahara-extra
 
