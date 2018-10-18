@@ -44,11 +44,9 @@ generated Ubuntu vanilla image, referred to as
 ``sahara-vanilla-latest-ubuntu.qcow2``,
 and the latest version of vanilla plugin as an example.
 
-* Download a pre-built image
-
-* Build the image using `sahara-image-elements
-  <https://git.openstack.org/cgit/openstack/sahara-image-elements/tree/README.rst>`_
-
+Build an image which works for the specific plugin.
+Please refer to :ref:`building-guest-images-label` and
+to the plugin-specific documentation.
 
 Upload the generated image into the OpenStack Image service:
 

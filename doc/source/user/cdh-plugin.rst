@@ -8,16 +8,69 @@ The Cloudera plugin is enabled in Sahara by default. You can manually
 modify the Sahara configuration file (default /etc/sahara/sahara.conf) to
 explicitly enable or disable it in "plugins" line.
 
-You need to build images using :doc:`cdh-imagebuilder` to produce images used
-to provision cluster.
+Images
+------
+
+For cluster provisioning, prepared images should be used.
+
+.. list-table:: Support matrix for the `vanilla` plugin
+   :widths: 15 15 20 15 35
+   :header-rows: 1
+
+   * - Version
+       (image tag)
+     - Distribution
+     - Build method
+     - Version
+       (build parameter)
+     - Notes
+
+   * - 5.13.0
+     - Ubuntu 16.04, CentOS 7
+     - sahara-image-pack
+     - 5.13.0
+     -
+
+   * - 5.11.0
+     - Ubuntu 16.04, CentOS 7
+     - sahara-image-pack, sahara-image-create
+     - 5.11.0
+     -
+
+   * - 5.9.0
+     - Ubuntu 14.04, CentOS 7
+     - sahara-image-pack, sahara-image-create
+     - 5.9.0
+     -
+
+   * - 5.7.0
+     - Ubuntu 14.04, CentOS 7
+     - sahara-image-pack, sahara-image-create
+     - 5.7.0
+     -
+
+For more information about building image, refer to
+:doc:`building-guest-images`.
 
 The cloudera plugin requires an image to be tagged in Sahara Image Registry
-with two tags: 'cdh' and '<cloudera version>' (e.g. '5', '5.3.0', '5.4.0',
-'5.5.0', '5.7.0', '5.9.0' or '5.9.1', here '5' stands for '5.0.0').
+with two tags: 'cdh' and '<cloudera version>' (e.g. '5.13.0', '5.11.0',
+'5.9.0', etc).
 
 The default username specified for these images is different for each
 distribution. For more information, refer to the
 :doc:`registering-image` section.
+
+Build settings
+~~~~~~~~~~~~~~
+
+It is possible to specify minor versions of CDH when ``sahara-image-create``
+is used.
+If you want to use a minor versions, export ``DIB_CDH_MINOR_VERSION``
+before starting the build command, e.g.:
+
+   .. sourcecode:: console
+
+      export DIB_CDH_MINOR_VERSION=5.7.1
 
 Services Supported
 ------------------

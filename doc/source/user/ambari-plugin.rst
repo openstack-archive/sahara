@@ -23,16 +23,68 @@ variety of environments.
 
 Images
 ------
-The sahara Ambari plugin is using minimal (operating system only) images.
 
-For more information about Ambari images, refer to
-`<https://git.openstack.org/cgit/openstack/sahara-image-elements>`_.
+For cluster provisioning, prepared images should be used.
+
+.. list-table:: Support matrix for the `ambari` plugin
+   :widths: 15 15 20 15 35
+   :header-rows: 1
+
+   * - Version
+       (image tag)
+     - Distribution
+     - Build method
+     - Version
+       (build parameter)
+     - Notes
+
+   * - 2.6
+     - Ubuntu 16.04, CentOS 7
+     - sahara-image-pack
+     - 2.6
+     - uses Ambari 2.6
+
+   * - 2.5
+     - Ubuntu 16.04, CentOS 7
+     - sahara-image-pack
+     - 2.5
+     - uses Ambari 2.6
+
+   * - 2.4
+     - Ubuntu 14.04, CentOS 7
+     - sahara-image-pack
+     - 2.4
+     - uses Ambari 2.6
+
+   * - 2.4
+     - Ubuntu 14.04, CentOS 7
+     - sahara-image-create
+     - 2.4
+     - uses Ambari 2.2.1.0
+
+   * - 2.3
+     - Ubuntu 14.04, CentOS 7
+     - sahara-image-pack
+     - 2.3
+     - uses Ambari 2.4
+
+   * - 2.3
+     - Ubuntu 14.04, CentOS 7
+     - sahara-image-create
+     - 2.3
+     - uses Ambari 2.2.0.0
+
+For more information about building image, refer to
+:doc:`building-guest-images`.
 
 HDP plugin requires an image to be tagged in sahara Image Registry with two
 tags: 'ambari' and '<plugin version>' (e.g. '2.5').
 
 The image requires a username. For more information, refer to the
 :doc:`registering-image` section.
+
+To speed up provisioning, the HDP packages can be pre-installed on the image
+used. The packages' versions depend on the HDP version required.
 
 High Availability for HDFS and YARN
 -----------------------------------

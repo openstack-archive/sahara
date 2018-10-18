@@ -48,7 +48,5 @@ Guest Images
 .. toctree::
    :maxdepth: 2
 
-   guest-requirements
+   building-guest-images
    hadoop-swift
-   vanilla-imagebuilder
-   cdh-imagebuilder

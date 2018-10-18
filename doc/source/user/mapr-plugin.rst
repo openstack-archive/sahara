@@ -30,12 +30,33 @@ spent in the provisioning cycle. In addition, provisioning large clusters will
 put a burden on the network as packages for all nodes need to be downloaded
 from the package repository.
 
-For more information about MapR images, refer to
-`<https://git.openstack.org/cgit/openstack/sahara-image-elements>`_.
 
-There are VM images provided for use with the MapR Plugin, that can also be
-built using the tools available in sahara-image-elements:
-https://s3-us-west-2.amazonaws.com/sahara-images/index.html
+.. list-table:: Support matrix for the `mapr` plugin
+   :widths: 15 15 20 15 35
+   :header-rows: 1
+
+   * - Version
+       (image tag)
+     - Distribution
+     - Build method
+     - Version
+       (build parameter)
+     - Notes
+
+   * - 5.2.0.mrv2
+     - Ubuntu 14.04, CentOS 7
+     - sahara-image-pack
+     - 5.2.0.mrv2
+     -
+
+   * - 5.2.0.mrv2
+     - Ubuntu 14.04, CentOS 7
+     - sahara-image-create
+     - 5.2.0
+     -
+
+For more information about building image, refer to
+:doc:`building-guest-images`.
 
 MapR plugin needs an image to be tagged in Sahara Image Registry with
 two tags: 'mapr' and '<MapR version>' (e.g. '5.2.0.mrv2').
