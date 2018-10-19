@@ -42,6 +42,15 @@ User Guide
    user/index
 
 
+CLI Guide
+---------
+
+.. toctree::
+   :maxdepth: 2
+
+   cli/index
+
+
 Operator Documentation
 ----------------------
 
