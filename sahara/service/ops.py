@@ -318,10 +318,27 @@ def _provision_cluster(cluster_id):
     _refresh_health_for_cluster(cluster_id)
 
 
+def _specific_inst_to_delete(node_group, node_group_instance_map=None):
+    if node_group_instance_map:
+        if node_group.id in node_group_instance_map:
+            return True
+    return False
+
+
 @ops_error_handler(
     _("Scaling cluster failed for the following reason(s): {reason}"))
 def _provision_scaled_cluster(cluster_id, node_group_id_map,
                               node_group_instance_map=None):
+    """Provision scaled cluster.
+
+    :param cluster_id: Id of cluster to be scaled.
+
+    :param node_group_id_map: Dictionary in the format
+                   node_group_id: number of instances.
+
+    :param node_group_instance_map: Specifies the instances to be removed in
+                   each node group.
+    """
     ctx, cluster, plugin = _prepare_provisioning(cluster_id)
 
     # Decommissioning surplus nodes with the plugin
@@ -331,19 +348,25 @@ def _provision_scaled_cluster(cluster_id, node_group_id_map,
     try:
         instances_to_delete = []
         for node_group in cluster.node_groups:
+            ng_inst_to_delete_count = 0
+            # new_count is the new number of instance on the current node group
             new_count = node_group_id_map[node_group.id]
             if new_count < node_group.count:
-                if (node_group_instance_map and
-                        node_group.id in node_group_instance_map):
-                        for instance_ref in node_group_instance_map[
-                                node_group.id]:
-                            instance = _get_instance_obj(node_group.instances,
-                                                         instance_ref)
-                            instances_to_delete.append(instance)
+                # Adding selected instances to delete to the list
+                if _specific_inst_to_delete(node_group,
+                                            node_group_instance_map):
+                    for instance_ref in node_group_instance_map[node_group.id]:
+                        instances_to_delete.append(_get_instance_obj(
+                            node_group.instances, instance_ref))
+                        ng_inst_to_delete_count += 1
 
-                while node_group.count - new_count > len(instances_to_delete):
+                # Adding random instances to the list when the number of
+                # specific instances does not equals the difference between the
+                # current count and the new count of instances.
+                while node_group.count - new_count > ng_inst_to_delete_count:
                     instances_to_delete.append(_get_random_instance_from_ng(
                         node_group.instances, instances_to_delete))
+                    ng_inst_to_delete_count += 1
 
         if instances_to_delete:
             context.set_step_type(_("Plugin: decommission cluster"))

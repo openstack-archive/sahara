@@ -85,7 +85,7 @@ SCALE_DATA_SPECIFIC_INSTANCE = {
         },
         {
             'name': 'ng_2',
-            'count': 2,
+            'count': 1,
             'instances': ['ng_2_0']
         }
     ],
