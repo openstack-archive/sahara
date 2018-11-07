@@ -244,6 +244,37 @@ class TestClusterApi(base.SaharaWithDbTestCase):
              'ops.provision_scaled_cluster',
              'ops.terminate_cluster'], self.calls_order)
 
+    @mock.patch('sahara.service.quotas.check_cluster', return_value=None)
+    @mock.patch('sahara.service.quotas.check_scaling', return_value=None)
+    def test_scale_cluster_specific_and_non_specific(self, check_scaling,
+                                                     check_cluster):
+        cluster = api.create_cluster(api_base.SAMPLE_CLUSTER)
+        cluster = api.get_cluster(cluster.id)
+        api.scale_cluster(cluster.id, api_base.SCALE_DATA_SPECIFIC_INSTANCE)
+        result_cluster = api.get_cluster(cluster.id)
+        self.assertEqual('Scaled', result_cluster.status)
+        expected_count = {
+            'ng_1': 3,
+            'ng_2': 1,
+            'ng_3': 1,
+        }
+        ng_count = 0
+        for ng in result_cluster.node_groups:
+            self.assertEqual(expected_count[ng.name], ng.count)
+            ng_count += 1
+        self.assertEqual(1, result_cluster.node_groups[1].count)
+        self.assertNotIn('ng_2_0',
+                         self._get_instances_ids(
+                             result_cluster.node_groups[1]))
+        self.assertEqual(3, ng_count)
+        api.terminate_cluster(result_cluster.id)
+        self.assertEqual(
+            ['get_open_ports', 'recommend_configs', 'validate',
+             'ops.provision_cluster', 'get_open_ports',
+             'recommend_configs', 'validate_scaling',
+             'ops.provision_scaled_cluster',
+             'ops.terminate_cluster'], self.calls_order)
+
     def _get_instances_ids(self, node_group):
         instance_ids = []
         for instance in node_group.instances:
