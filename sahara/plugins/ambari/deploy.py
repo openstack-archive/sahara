@@ -81,6 +81,11 @@ def setup_ambari(cluster):
                               ambari_settings)
         sudo("ambari-server setup -s -j"
              " `cut -f2 -d \"=\" /etc/profile.d/99-java.sh`", timeout=1800)
+        # the following change must be after ambari-setup, or it would be
+        # overwritten (probably because it's not part of the base set of
+        # keywords/values handled by ambari-setup).
+        r.append_to_file("/etc/ambari-server/conf/ambari.properties",
+                         "server.startup.web.timeout=180", run_as_root=True)
         redirect_file = "/tmp/%s" % uuidutils.generate_uuid()
         sudo("service ambari-server start >{rfile} && "
              "cat {rfile} && rm {rfile}".format(rfile=redirect_file))
