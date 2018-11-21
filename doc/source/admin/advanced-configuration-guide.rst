@@ -514,7 +514,7 @@ installed. The sources for this plugin can be found in the
 integration see the sahara documentation sections
 :ref:`building-guest-images-label` and :ref:`swift-integration-label`.
 
-.. _Sahara extra repository: http://git.openstack.org/cgit/openstack/sahara-extra
+.. _Sahara extra repository: https://git.openstack.org/cgit/openstack/sahara-extra
 
 .. _volume_instance_locality_configuration:
 
