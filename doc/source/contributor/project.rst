@@ -18,7 +18,7 @@ OpenStack-related sites. These sites include:
 Mailing list
 ------------
 
-The mailing list email is ``openstack-dev@lists.openstack.org``; use the
+The mailing list email is ``openstack-discuss@lists.openstack.org``; use the
 subject prefix ``[sahara]`` to address the team. To participate in the
 mailing list subscribe to the list at
 http://lists.openstack.org/cgi-bin/mailman/listinfo
