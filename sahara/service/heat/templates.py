@@ -448,7 +448,7 @@ class ClusterStack(object):
             EXTERNAL_DESIGNATE_REV_REC: {
                 'type': 'OS::Designate::Record',
                 'properties': {
-                    'name':  _generate_reversed_ip(
+                    'name': _generate_reversed_ip(
                         {'get_attr': ['floating_ip', 'ip']}),
                     'type': 'PTR',
                     'data': hostname,

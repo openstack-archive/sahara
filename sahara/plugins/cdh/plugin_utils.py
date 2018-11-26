@@ -365,7 +365,7 @@ class AbstractPluginUtils(object):
             if r.execute_command('ls %s/ext-2.2' % extjs_vm_location_dir,
                                  raise_when_error=False)[0] != 0:
                 r.execute_command('curl -L -o \'%s\' %s' % (
-                    extjs_vm_location_path,  extjs_remote_location),
+                    extjs_vm_location_path, extjs_remote_location),
                     run_as_root=True)
                 r.execute_command('unzip %s -d %s' % (
                     extjs_vm_location_path, extjs_vm_location_dir),
