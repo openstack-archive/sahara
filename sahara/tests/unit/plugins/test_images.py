@@ -262,9 +262,9 @@ class TestImages(b.SaharaTestCase):
         except p_ex.ImageValidationError as e:
             self.assertIn("So bad!", e.message)
         self.assertEqual(remote.execute_command.call_count, 2)
-        calls = [mock.call("dpkg -s java-8 hadoop",
-                           run_as_root=True),
-                 mock.call("apt-get -y install java-8 hadoop",
+        calls = [mock.call("dpkg -s java-8 hadoop", run_as_root=True),
+                 mock.call("DEBIAN_FRONTEND=noninteractive " +
+                           "apt-get -y install java-8 hadoop",
                            run_as_root=True)]
         remote.execute_command.assert_has_calls(calls)
 
