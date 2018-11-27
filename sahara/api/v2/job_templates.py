@@ -31,6 +31,8 @@ rest = u.RestV2('job-templates', __name__)
             v.validate_sorting_jobs)
 def job_templates_list():
     result = api.get_job_templates(**u.get_request_args().to_dict())
+    for jt in result:
+        u._replace_tenant_id_project_id(jt)
     return u.render(res=result, name='job_templates')
 
 
@@ -38,15 +40,19 @@ def job_templates_list():
 @acl.enforce("data-processing:job-templates:create")
 @v.validate(v_j_schema.JOB_SCHEMA, v_j.check_mains_libs, v_j.check_interface)
 def job_templates_create(data):
-    return u.render({'job_template': api.create_job_template(data).to_dict()})
+    result = {'job_template': api.create_job_template(data).to_dict()}
+    u._replace_tenant_id_project_id(result['job_template'])
+    return u.render(result)
 
 
 @rest.get('/job-templates/<job_templates_id>')
 @acl.enforce("data-processing:job-templates:get")
 @v.check_exists(api.get_job_templates, id='job_templates_id')
 def job_templates_get(job_templates_id):
-    return u.render({'job_template': api.get_job_template(
-        job_templates_id).to_dict()})
+    result = {'job_template': api.get_job_template(
+        job_templates_id).to_dict()}
+    u._replace_tenant_id_project_id(result['job_template'])
+    return u.render(result)
 
 
 @rest.patch('/job-templates/<job_templates_id>')
@@ -54,8 +60,10 @@ def job_templates_get(job_templates_id):
 @v.check_exists(api.get_job_templates, id='job_templates_id')
 @v.validate(v_j_schema.JOB_UPDATE_SCHEMA)
 def job_templates_update(job_templates_id, data):
-    return u.render({'job_template': api.update_job_template(
-        job_templates_id, data).to_dict()})
+    result = {'job_template': api.update_job_template(
+        job_templates_id, data).to_dict()}
+    u._replace_tenant_id_project_id(result['job_template'])
+    return u.render(result)
 
 
 @rest.delete('/job-templates/<job_templates_id>')

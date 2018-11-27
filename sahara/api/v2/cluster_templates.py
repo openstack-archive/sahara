@@ -33,6 +33,7 @@ def cluster_templates_list():
     result = api.get_cluster_templates(**u.get_request_args().to_dict())
     for ct in result:
         u._replace_hadoop_version_plugin_version(ct)
+        u._replace_tenant_id_project_id(ct)
     return u.render(res=result, name='cluster_templates')
 
 
@@ -47,6 +48,7 @@ def cluster_templates_create(data):
     del data['plugin_version']
     result = api.create_cluster_template(data).to_wrapped_dict()
     u._replace_hadoop_version_plugin_version(result['cluster_template'])
+    u._replace_tenant_id_project_id(result['cluster_template'])
     return u.render(result)
 
 
@@ -57,6 +59,7 @@ def cluster_templates_get(cluster_template_id):
     result = u.to_wrapped_dict_no_render(
         api.get_cluster_template, cluster_template_id)
     u._replace_hadoop_version_plugin_version(result['cluster_template'])
+    u._replace_tenant_id_project_id(result['cluster_template'])
     return u.render(result)
 
 
@@ -72,6 +75,7 @@ def cluster_templates_update(cluster_template_id, data):
     result = u.to_wrapped_dict_no_render(
         api.update_cluster_template, cluster_template_id, data)
     u._replace_hadoop_version_plugin_version(result['cluster_template'])
+    u._replace_tenant_id_project_id(result['cluster_template'])
     return u.render(result)
 
 
@@ -88,7 +92,7 @@ def _cluster_template_export_helper(template):
     template.pop('id')
     template.pop('updated_at')
     template.pop('created_at')
-    template.pop('tenant_id')
+    template.pop('project_id')
     template.pop('is_default')
     template['default_image_id'] = '{default_image_id}'
     template['node_groups'] = '{node_groups}'
@@ -101,6 +105,7 @@ def cluster_template_export(cluster_template_id):
     content = u.to_wrapped_dict_no_render(
         api.export_cluster_template, cluster_template_id)
     u._replace_hadoop_version_plugin_version(content['cluster_template'])
+    u._replace_tenant_id_project_id(content['cluster_template'])
     _cluster_template_export_helper(content['cluster_template'])
     res = u.render(content)
     res.headers.add('Content-Disposition', 'attachment',

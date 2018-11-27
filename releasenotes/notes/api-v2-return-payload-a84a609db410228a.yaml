@@ -1,0 +1,4 @@
+---
+other:
+  - As part of the APIv2 work we changed all tenant_id references
+    to project_id on the return payload of REST calls.
