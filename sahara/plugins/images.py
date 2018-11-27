@@ -549,7 +549,7 @@ class SaharaPackageValidator(SaharaImageValidatorBase):
 
     def _apt_install(self, remote):
         install_cmd = (
-            "apt-get -y install %s" %
+            "DEBIAN_FRONTEND=noninteractive apt-get -y install %s" %
             " ".join(str(package) for package in self.packages))
         return _sudo(remote, install_cmd)
 
