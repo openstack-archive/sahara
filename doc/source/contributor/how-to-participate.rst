@@ -12,7 +12,7 @@ Getting started
 
 * Subscribe to `OpenStack general mail-list <http://lists.openstack.org/cgi-bin/mailman/listinfo/openstack>`_
 
-* Subscribe to `OpenStack development mail-list <http://lists.openstack.org/cgi-bin/mailman/listinfo/openstack-dev>`_
+* Subscribe to `OpenStack development mail-list <http://lists.openstack.org/cgi-bin/mailman/listinfo/openstack-discuss>`_
 
 * Create `OpenStack profile <https://www.openstack.org/profile/>`_
 
@@ -33,17 +33,16 @@ How to stay in touch with the community
 ---------------------------------------
 
 * If you have something to discuss use
-  `OpenStack development mail-list <http://lists.openstack.org/cgi-bin/mailman/listinfo/openstack-dev>`_.
-  Prefix the mail subject with ``[Sahara]``
+  `OpenStack development mail-list <http://lists.openstack.org/cgi-bin/mailman/listinfo/openstack-discuss>`_.
+  Prefix the mail subject with ``[sahara]``
 
 * Join ``#openstack-sahara`` IRC channel on `freenode <http://freenode.net/>`_
 
 * Attend Sahara team meetings
 
-  * Weekly on Thursdays at 1400 UTC and 1800 UTC (on alternate weeks)
+  * Weekly on Thursdays at 1400 UTC
 
-  * IRC channel: ``#openstack-meeting-alt`` (1800UTC) or
-    ``#openstack-meeting-3`` (1400UTC)
+  * IRC channel: ``#openstack-meeting-3``
 
   * See agenda at https://wiki.openstack.org/wiki/Meetings/SaharaAgenda
 
