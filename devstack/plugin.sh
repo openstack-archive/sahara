@@ -35,9 +35,9 @@ function create_sahara_accounts {
     get_or_create_service "sahara" "data-processing" "Sahara Data Processing"
     get_or_create_endpoint "data-processing" \
         "$REGION_NAME" \
-        "$SAHARA_SERVICE_PROTOCOL://$SAHARA_SERVICE_HOST:$SAHARA_SERVICE_PORT/v1.1/\$(tenant_id)s" \
-        "$SAHARA_SERVICE_PROTOCOL://$SAHARA_SERVICE_HOST:$SAHARA_SERVICE_PORT/v1.1/\$(tenant_id)s" \
-        "$SAHARA_SERVICE_PROTOCOL://$SAHARA_SERVICE_HOST:$SAHARA_SERVICE_PORT/v1.1/\$(tenant_id)s"
+        "$SAHARA_SERVICE_PROTOCOL://$SAHARA_SERVICE_HOST:$SAHARA_SERVICE_PORT" \
+        "$SAHARA_SERVICE_PROTOCOL://$SAHARA_SERVICE_HOST:$SAHARA_SERVICE_PORT" \
+        "$SAHARA_SERVICE_PROTOCOL://$SAHARA_SERVICE_HOST:$SAHARA_SERVICE_PORT"
 }
 
 # cleanup_sahara() - Remove residual data files, anything left over from
