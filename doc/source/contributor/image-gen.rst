@@ -186,8 +186,8 @@ as well:
             output: OUTPUT_VAR
       - script:
           store_nfs_version:            # Because inline is set, this is just a friendly name
-            - inline: rpm -q nfs-utils  # Runs this text directly, rather than reading a file
-            - output: nfs-version       # Places the stdout of this script into an argument
+            inline: rpm -q nfs-utils    # Runs this text directly, rather than reading a file
+            output: nfs-version         # Places the stdout of this script into an argument
                                         # for future scripts to consume; if none exists, the
                                         # argument is created
 
