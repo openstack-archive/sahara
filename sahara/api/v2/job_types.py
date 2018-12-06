@@ -15,6 +15,7 @@
 
 from sahara.api import acl
 from sahara.service.api.v2 import job_types as api
+from sahara.service import validation as v
 import sahara.utils.api as u
 
 
@@ -23,6 +24,7 @@ rest = u.RestV2('job-types', __name__)
 
 @rest.get('/job-types')
 @acl.enforce("data-processing:job-types:get_all")
+@v.validate_request_params(['type', 'plugin_name', 'hadoop_version'])
 def job_types_get():
     # We want to use flat=False with to_dict() so that
     # the value of each arg is given as a list. This supports

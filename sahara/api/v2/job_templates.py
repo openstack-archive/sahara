@@ -29,6 +29,7 @@ rest = u.RestV2('job-templates', __name__)
 @v.check_exists(api.get_job_templates, 'marker')
 @v.validate(None, v.validate_pagination_limit,
             v.validate_sorting_jobs)
+@v.validate_request_params(['type', 'name'])
 def job_templates_list():
     result = api.get_job_templates(**u.get_request_args().to_dict())
     return u.render(res=result, name='job_templates')
@@ -37,6 +38,7 @@ def job_templates_list():
 @rest.post('/job-templates')
 @acl.enforce("data-processing:job-templates:create")
 @v.validate(v_j_schema.JOB_SCHEMA, v_j.check_mains_libs, v_j.check_interface)
+@v.validate_request_params([])
 def job_templates_create(data):
     return u.render({'job_template': api.create_job_template(data).to_dict()})
 
@@ -44,6 +46,7 @@ def job_templates_create(data):
 @rest.get('/job-templates/<job_templates_id>')
 @acl.enforce("data-processing:job-templates:get")
 @v.check_exists(api.get_job_templates, id='job_templates_id')
+@v.validate_request_params([])
 def job_templates_get(job_templates_id):
     return u.render({'job_template': api.get_job_template(
         job_templates_id).to_dict()})
@@ -53,6 +56,7 @@ def job_templates_get(job_templates_id):
 @acl.enforce("data-processing:jobs:modify")
 @v.check_exists(api.get_job_templates, id='job_templates_id')
 @v.validate(v_j_schema.JOB_UPDATE_SCHEMA)
+@v.validate_request_params([])
 def job_templates_update(job_templates_id, data):
     return u.render({'job_template': api.update_job_template(
         job_templates_id, data).to_dict()})
@@ -61,6 +65,7 @@ def job_templates_update(job_templates_id, data):
 @rest.delete('/job-templates/<job_templates_id>')
 @acl.enforce("data-processing:jobs:delete")
 @v.check_exists(api.get_job_templates, id='job_templates_id')
+@v.validate_request_params([])
 def job_templates_delete(job_templates_id):
     api.delete_job_template(job_templates_id)
     return u.render()
@@ -69,5 +74,6 @@ def job_templates_delete(job_templates_id):
 @rest.get('/job-templates/config-hints/<job_type>')
 @acl.enforce("data-processing:jobs:get_config_hints")
 @v.check_exists(api.get_job_config_hints, job_type='job_type')
+@v.validate_request_params([])
 def job_config_hints_get(job_type):
     return u.render(api.get_job_config_hints(job_type))

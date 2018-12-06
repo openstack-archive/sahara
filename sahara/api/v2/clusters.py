@@ -31,6 +31,7 @@ rest = u.RestV2('clusters', __name__)
 @acl.enforce("data-processing:clusters:get_all")
 @v.check_exists(api.get_cluster, 'marker')
 @v.validate(None, v.validate_pagination_limit)
+@v.validate_request_params(['plugin_name', 'hadoop_version', 'name'])
 def clusters_list():
     result = api.get_clusters(**u.get_request_args().to_dict())
     for c in result:
@@ -42,6 +43,7 @@ def clusters_list():
 @acl.enforce("data-processing:clusters:create")
 @v.validate(v_c_schema.CLUSTER_SCHEMA_V2,
             v_c.check_one_or_multiple_clusters_create)
+@v.validate_request_params([])
 def clusters_create(data):
     # renaming hadoop_version -> plugin_version
     # this can be removed once APIv1 is deprecated
@@ -62,6 +64,7 @@ def clusters_create(data):
 @acl.enforce("data-processing:clusters:scale")
 @v.check_exists(api.get_cluster, 'cluster_id')
 @v.validate(v_c_schema.CLUSTER_SCALING_SCHEMA_V2, v_c_s.check_cluster_scaling)
+@v.validate_request_params([])
 def clusters_scale(cluster_id, data):
     result = u.to_wrapped_dict_no_render(
         api.scale_cluster, cluster_id, data)
@@ -72,6 +75,7 @@ def clusters_scale(cluster_id, data):
 @rest.get('/clusters/<cluster_id>')
 @acl.enforce("data-processing:clusters:get")
 @v.check_exists(api.get_cluster, 'cluster_id')
+@v.validate_request_params([])
 def clusters_get(cluster_id):
     data = u.get_request_args()
     show_events = six.text_type(
@@ -86,6 +90,7 @@ def clusters_get(cluster_id):
 @acl.enforce("data-processing:clusters:modify")
 @v.check_exists(api.get_cluster, 'cluster_id')
 @v.validate(v_c_schema.CLUSTER_UPDATE_SCHEMA, v_c.check_cluster_update)
+@v.validate_request_params([])
 def clusters_update(cluster_id, data):
     result = u.to_wrapped_dict_no_render(
         api.update_cluster, cluster_id, data)
@@ -97,6 +102,7 @@ def clusters_update(cluster_id, data):
 @acl.enforce("data-processing:clusters:delete")
 @v.check_exists(api.get_cluster, 'cluster_id')
 @v.validate(v_c_schema.CLUSTER_DELETE_SCHEMA_V2, v_c.check_cluster_delete)
+@v.validate_request_params([])
 def clusters_delete(cluster_id):
     data = u.request_data()
     force = data.get('force', False)

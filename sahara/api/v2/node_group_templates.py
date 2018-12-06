@@ -30,6 +30,7 @@ rest = u.RestV2('node-group-templates', __name__)
 @v.check_exists(api.get_node_group_template, 'marker')
 @v.validate(None, v.validate_pagination_limit,
             v.validate_sorting_node_group_templates)
+@v.validate_request_params(['plugin_name', 'hadoop_version', 'name'])
 def node_group_templates_list():
     result = api.get_node_group_templates(**u.get_request_args().to_dict())
     for ngt in result:
@@ -41,6 +42,7 @@ def node_group_templates_list():
 @acl.enforce("data-processing:node-group-templates:create")
 @v.validate(ngt_schema.NODE_GROUP_TEMPLATE_SCHEMA_V2,
             v_ngt.check_node_group_template_create)
+@v.validate_request_params([])
 def node_group_templates_create(data):
     # renaming hadoop_version -> plugin_version
     # this can be removed once APIv1 is deprecated
@@ -54,6 +56,7 @@ def node_group_templates_create(data):
 @rest.get('/node-group-templates/<node_group_template_id>')
 @acl.enforce("data-processing:node-group-templates:get")
 @v.check_exists(api.get_node_group_template, 'node_group_template_id')
+@v.validate_request_params([])
 def node_group_templates_get(node_group_template_id):
     result = u.to_wrapped_dict_no_render(
         api.get_node_group_template, node_group_template_id)
@@ -66,6 +69,7 @@ def node_group_templates_get(node_group_template_id):
 @v.check_exists(api.get_node_group_template, 'node_group_template_id')
 @v.validate(ngt_schema.NODE_GROUP_TEMPLATE_UPDATE_SCHEMA_V2,
             v_ngt.check_node_group_template_update)
+@v.validate_request_params([])
 def node_group_templates_update(node_group_template_id, data):
     if data.get('plugin_version', None):
         data['hadoop_version'] = data['plugin_version']
@@ -80,6 +84,7 @@ def node_group_templates_update(node_group_template_id, data):
 @acl.enforce("data-processing:node-group-templates:delete")
 @v.check_exists(api.get_node_group_template, 'node_group_template_id')
 @v.validate(None, v_ngt.check_node_group_template_usage)
+@v.validate_request_params([])
 def node_group_templates_delete(node_group_template_id):
     api.terminate_node_group_template(node_group_template_id)
     return u.render()
@@ -100,6 +105,7 @@ def _node_group_template_export_helper(template):
 @rest.get('/node-group-templates/<node_group_template_id>/export')
 @acl.enforce("data-processing:node-group-templates:get")
 @v.check_exists(api.get_node_group_template, 'node_group_template_id')
+@v.validate_request_params([])
 def node_group_template_export(node_group_template_id):
     content = u.to_wrapped_dict_no_render(
         api.export_node_group_template, node_group_template_id)

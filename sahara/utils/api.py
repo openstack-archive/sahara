@@ -288,6 +288,18 @@ def render_error_message(error_code, error_message, error_name):
     return resp
 
 
+def invalid_param_error(status_code, descr, exc=None):
+    LOG.error("Request aborted with status code {code} and "
+              "message '{message}'".format(code=status_code, message=descr))
+
+    if exc is not None:
+        LOG.error(traceback.format_exc())
+
+    error_code = "INVALID_PARAMS_ON_REQUEST"
+
+    return render_error_message(status_code, descr, error_code)
+
+
 def internal_error(status_code, descr, exc=None):
     LOG.error("Request aborted with status code {code} and "
               "message '{message}'".format(code=status_code, message=descr))

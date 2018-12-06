@@ -29,6 +29,7 @@ rest = u.RestV2('cluster-templates', __name__)
 @v.check_exists(api.get_cluster_template, 'marker')
 @v.validate(None, v.validate_pagination_limit,
             v.validate_sorting_cluster_templates)
+@v.validate_request_params(['plugin_name', 'hadoop_version', 'name'])
 def cluster_templates_list():
     result = api.get_cluster_templates(**u.get_request_args().to_dict())
     for ct in result:
@@ -40,6 +41,7 @@ def cluster_templates_list():
 @acl.enforce("data-processing:cluster-templates:create")
 @v.validate(ct_schema.CLUSTER_TEMPLATE_SCHEMA_V2,
             v_ct.check_cluster_template_create)
+@v.validate_request_params([])
 def cluster_templates_create(data):
     # renaming hadoop_version -> plugin_version
     # this can be removed once APIv1 is deprecated
@@ -53,6 +55,7 @@ def cluster_templates_create(data):
 @rest.get('/cluster-templates/<cluster_template_id>')
 @acl.enforce("data-processing:cluster-templates:get")
 @v.check_exists(api.get_cluster_template, 'cluster_template_id')
+@v.validate_request_params([])
 def cluster_templates_get(cluster_template_id):
     result = u.to_wrapped_dict_no_render(
         api.get_cluster_template, cluster_template_id)
@@ -65,6 +68,7 @@ def cluster_templates_get(cluster_template_id):
 @v.check_exists(api.get_cluster_template, 'cluster_template_id')
 @v.validate(ct_schema.CLUSTER_TEMPLATE_UPDATE_SCHEMA_V2,
             v_ct.check_cluster_template_update)
+@v.validate_request_params([])
 def cluster_templates_update(cluster_template_id, data):
     if data.get('plugin_version', None):
         data['hadoop_version'] = data['plugin_version']
@@ -79,6 +83,7 @@ def cluster_templates_update(cluster_template_id, data):
 @acl.enforce("data-processing:cluster-templates:delete")
 @v.check_exists(api.get_cluster_template, 'cluster_template_id')
 @v.validate(None, v_ct.check_cluster_template_usage)
+@v.validate_request_params([])
 def cluster_templates_delete(cluster_template_id):
     api.terminate_cluster_template(cluster_template_id)
     return u.render()
@@ -97,6 +102,7 @@ def _cluster_template_export_helper(template):
 @rest.get('/cluster-templates/<cluster_template_id>/export')
 @acl.enforce("data-processing:cluster-templates:get")
 @v.check_exists(api.get_cluster_template, 'cluster_template_id')
+@v.validate_request_params([])
 def cluster_template_export(cluster_template_id):
     content = u.to_wrapped_dict_no_render(
         api.export_cluster_template, cluster_template_id)
