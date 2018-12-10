@@ -10,3 +10,4 @@ API content can be searched using the :ref:`search`.
     :maxdepth: 2
 
     v1.1/index
+    v2/index

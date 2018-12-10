@@ -1,0 +1,1183 @@
+# variables in header
+Content-Length:
+  description: |
+    The length of the data, in bytes.
+  in: header
+  required: true
+  type: string
+
+# variables in path
+hints:
+  description: |
+    Includes configuration hints in the response.
+  in: path
+  required: false
+  type: boolean
+job_binary_id:
+  description: |
+    The UUID of the job binary.
+  in: path
+  required: true
+  type: string
+limit:
+  description: |
+    Maximum number of objects in response data.
+  in: path
+  required: false
+  type: integer
+marker:
+  description: |
+    ID of the last element on the list which
+    won't be in response.
+  in: path
+  required: false
+  type: string
+plugin:
+  description: |
+    Filters the response by a plugin name.
+  in: path
+  required: false
+  type: string
+sort_by_cluster_templates:
+  description: |
+    The field for sorting cluster templates.
+    this parameter accepts the following values:
+    ``name``, ``plugin_name``, ``plugin_version``,
+    ``created_at``, ``updated_at``, ``id``. Also
+    this values can started with ``-`` prefix for
+    descending sort. For example: ``-name``.
+  in: path
+  required: false
+  type: string
+
+sort_by_clusters:
+  description: |
+    The field for sorting clusters.
+    this parameter accepts the following values:
+    ``name``, ``plugin_name``, ``plugin_version``,
+    ``status``, ``id``. Also this values can
+    started with ``-`` prefix for descending sort.
+    For example: ``-name``.
+  in: path
+  required: false
+  type: string
+
+sort_by_data_sources:
+    description: |
+      The field for sorting data sources.
+      this parameter accepts the following values:
+      ``id``, ``name``, ``type``, ``created_at``,
+      ``updated_at``. Also this values can started
+      with ``-`` prefix for descending sort.
+      For example: ``-name``.
+    in: path
+    required: false
+    type: string
+
+sort_by_job:
+    description: |
+      The field for sorting job executions.
+      this parameter accepts the following values:
+      ``id``, ``job_template``, ``cluster``,
+      ``status``. Also this values can started
+      with ``-`` prefix for descending sort.
+      For example: ``-cluster``.
+    in: path
+    required: false
+    type: string
+
+sort_by_job_binary:
+  description: |
+    The field for sorting job binaries.
+    this parameter accepts the following values:
+    ``id``, ``name``, ``created_at``, ``updated_at``.
+    Also this values can started with ``-`` prefix
+    for descending sort. For example: ``-name``.
+  in: path
+  required: false
+  type: string
+
+sort_by_job_binary_internals:
+    description: |
+      The field for sorting job binary internals.
+      this parameter accepts the following values:
+      ``id``, ``name``, ``created_at``, ``updated_at``.
+      Also this values can started with ``-`` prefix
+      for descending sort. For example: ``-name``.
+    in: path
+    required: false
+    type: string
+
+sort_by_job_templates:
+    description: |
+      The field for sorting jobs.
+      this parameter accepts the following values:
+      ``id``, ``name``, ``type``, ``created_at``,
+      ``updated_at``. Also this values can started
+      with ``-`` prefix for descending sort.
+      For example: ``-name``.
+    in: path
+    required: false
+    type: string
+
+sort_by_node_group_templates:
+  description: |
+    The field for sorting node group templates.
+    this parameter accepts the following values:
+    ``name``, ``plugin_name``, ``plugin_version``,
+    ``created_at``, ``updated_at``, ``id``. Also
+    this values can started with ``-`` prefix for
+    descending sort. For example: ``-name``.
+  in: path
+  required: false
+  type: string
+
+type_2:
+  description: |
+    Filters the response by a job type.
+  in: path
+  required: false
+  type: string
+url_cluster_id:
+  description: |
+    The ID of the cluster
+  in: path
+  required: true
+  type: string
+url_cluster_template_id:
+  description: |
+    The unique identifier of the cluster template.
+  in: path
+  required: true
+  type: string
+url_data_source_id:
+  description: |
+    The UUID of the data source.
+  in: path
+  required: true
+  type: string
+url_image_id:
+  description: |
+    The UUID of the image.
+  in: path
+  required: true
+  type: string
+url_job_binary_id:
+  description: |
+    The UUID of the job binary.
+  in: path
+  required: true
+  type: string
+url_job_binary_internals_id:
+  description: |
+    The UUID of the job binary internal.
+  in: path
+  required: true
+  type: string
+url_job_binary_internals_name:
+  description: |
+    The name of the job binary internal.
+  in: path
+  required: true
+  type: string
+url_job_id:
+  description: |
+    The UUID of the job.
+  in: path
+  required: true
+  type: string
+url_job_template_id:
+  description: |
+    The UUID of the template job.
+  in: path
+  required: true
+  type: string
+url_job_type:
+  description: |
+    The job type.
+  in: path
+  required: true
+  type: string
+url_node_group_template_id:
+  description: |
+    The UUID of the node group template.
+  in: path
+  required: true
+  type: string
+url_plugin_name:
+  description: |
+    Name of the plugin.
+  in: path
+  required: true
+  type: string
+url_project_id:
+  description: |
+    UUID of the project.
+  in: path
+  required: true
+  type: string
+version:
+  description: |
+    Filters the response by a plugin version.
+  in: path
+  required: true
+  type: string
+version_1:
+  description: |
+    Version of the plugin.
+  in: path
+  required: false
+  type: string
+
+
+# variables in body
+args:
+  description: |
+    The list of arguments.
+  in: body
+  required: true
+  type: array
+auto_security_group:
+  description: |
+    If set to ``True``, the cluster group is
+    automatically secured.
+  in: body
+  required: true
+  type: boolean
+availability_zone:
+  description: |
+    The availability of the node in the cluster.
+  in: body
+  required: true
+  type: string
+binaries:
+  description: |
+    The list of job binary internal objects.
+  in: body
+  required: true
+  type: array
+cluster_configs:
+  description: |
+    A set of key and value pairs that contain the
+    cluster configuration.
+  in: body
+  required: true
+  type: object
+cluster_id:
+  description: |
+    The UUID of the cluster.
+  in: body
+  required: true
+  type: string
+cluster_template_description:
+  description: |
+    Description of the cluster template
+  in: body
+  required: false
+  type: string
+cluster_template_id:
+  description: |
+    The UUID of the cluster template.
+  in: body
+  required: true
+  type: string
+cluster_template_name:
+  description: |
+    The name of the cluster template.
+  in: body
+  required: true
+  type: string
+clusters:
+  description: |
+    The list of clusters.
+  in: body
+  required: true
+  type: array
+configs:
+  description: |
+    The mappings of the job tasks.
+  in: body
+  required: true
+  type: object
+count:
+  description: |
+    The number of nodes in the cluster.
+  in: body
+  required: true
+  type: integer
+created:
+  description: |
+    The date and time when the image was created.
+
+    The date and time stamp format is `ISO 8601
+    <https://en.wikipedia.org/wiki/ISO_8601>`_:
+
+    ::
+
+       CCYY-MM-DDThh:mm:ss±hh:mm
+
+    For example, ``2015-08-27T09:49:58-05:00``.
+
+    The ``±hh:mm`` value, if included, is the time zone as an offset
+    from UTC.
+  in: body
+  required: true
+  type: string
+created_at:
+  description: |
+    The date and time when the cluster was created.
+
+    The date and time stamp format is `ISO 8601
+    <https://en.wikipedia.org/wiki/ISO_8601>`_:
+
+    ::
+
+       CCYY-MM-DDThh:mm:ss±hh:mm
+
+    The ``±hh:mm`` value, if included, returns the time zone as an
+    offset from UTC.
+
+    For example, ``2015-08-27T09:49:58-05:00``.
+  in: body
+  required: true
+  type: string
+created_at_1:
+  description: |
+    The date and time when the object was created.
+
+    The date and time stamp format is `ISO 8601
+    <https://en.wikipedia.org/wiki/ISO_8601>`_:
+
+    ::
+
+       CCYY-MM-DDThh:mm:ss±hh:mm
+
+    The ``±hh:mm`` value, if included, returns the time zone as an
+    offset from UTC.
+
+    For example, ``2015-08-27T09:49:58-05:00``.
+  in: body
+  required: true
+  type: string
+created_at_2:
+  description: |
+    The date and time when the node was created in the cluster.
+
+    The date and time stamp format is `ISO 8601
+    <https://en.wikipedia.org/wiki/ISO_8601>`_:
+
+    ::
+
+       CCYY-MM-DDThh:mm:ss±hh:mm
+
+    The ``±hh:mm`` value, if included, returns the time zone as an
+    offset from UTC.
+
+    For example, ``2015-08-27T09:49:58-05:00``.
+  in: body
+  required: true
+  type: string
+created_at_3:
+  description: |
+    The date and time when the job execution object was created.
+
+    The date and time stamp format is `ISO 8601
+    <https://en.wikipedia.org/wiki/ISO_8601>`_:
+
+    ::
+
+       CCYY-MM-DDThh:mm:ss±hh:mm
+
+    The ``±hh:mm`` value, if included, returns the time zone as an
+    offset from UTC.
+
+    For example, ``2015-08-27T09:49:58-05:00``.
+  in: body
+  required: true
+  type: string
+data_source_description:
+  description: |
+    The description of the data source object.
+  in: body
+  required: true
+  type: string
+data_source_id:
+  description: |
+    The UUID of the data source.
+  in: body
+  required: true
+  type: string
+data_source_name:
+  description: |
+    The name of the data source.
+  in: body
+  required: true
+  type: string
+data_source_urls:
+  description: |
+    The data source URLs.
+  in: body
+  required: true
+  type: object
+datasize:
+  description: |
+    The size of the data stored in the internal
+    database.
+  in: body
+  required: true
+  type: integer
+default_image_id:
+  description: |
+    The default ID of the image.
+  in: body
+  required: true
+  type: string
+description:
+  description: |
+    The description of the cluster.
+  in: body
+  required: true
+  type: string
+description_3:
+  description: |
+    The description of the node in the cluster.
+  in: body
+  required: true
+  type: string
+description_7:
+  description: |
+    Description of the image.
+  in: body
+  required: false
+  type: string
+description_plugin:
+  description: |
+    The full description of the plugin.
+  in: body
+  required: true
+  type: string
+domain_name:
+  description: |
+    Domain name for internal and external hostname resolution.
+    Required if DNS service is enabled.
+  in: body
+  required: false
+  type: string
+end_time:
+  description: |
+    The end date and time of the job execution.
+
+    The date and time when the job completed execution.
+
+    The date and time stamp format is `ISO 8601
+    <https://en.wikipedia.org/wiki/ISO_8601>`_:
+
+    ::
+
+       CCYY-MM-DDThh:mm:ss±hh:mm
+
+    The ``±hh:mm`` value, if included, returns the time zone as an
+    offset from UTC.
+
+    For example, ``2015-08-27T09:49:58-05:00``.
+  in: body
+  required: true
+  type: string
+flavor_id:
+  description: |
+    The ID of the flavor.
+  in: body
+  required: true
+  type: string
+floating_ip_pool:
+  description: |
+    The UUID of the pool in the template.
+  in: body
+  required: true
+  type: string
+force:
+  description: |
+    If set to ``true``, Sahara will force cluster deletion.
+  in: body
+  required: false
+  type: boolean
+id:
+  description: |
+    The UUID of the cluster.
+  in: body
+  required: true
+  type: string
+id_1:
+  description: |
+    The ID of the object.
+  in: body
+  required: true
+  type: string
+image:
+  description: |
+    A set of key and value pairs that contain image
+    properties.
+  in: body
+  required: true
+  type: object
+image_description:
+  description: |
+    The description of the image.
+  in: body
+  required: true
+  type: string
+image_id:
+  description: |
+    The UUID of the image.
+  in: body
+  required: true
+  type: string
+image_name:
+  description: |
+    The name of the operating system image.
+  in: body
+  required: true
+  type: string
+images:
+  description: |
+    The list of images and their properties.
+  in: body
+  required: true
+  type: array
+info:
+  description: |
+    A set of key and value pairs that contain cluster
+    information.
+  in: body
+  required: true
+  type: object
+info_1:
+  description: |
+    The report of the executed job objects.
+  in: body
+  required: true
+  type: object
+input_id:
+  description: |
+    The UUID of the input.
+  in: body
+  required: true
+  type: string
+interface:
+  description: |
+    The interfaces of the job object.
+  in: body
+  required: true
+  type: array
+is_default:
+  description: |
+    If set to ``true``, the cluster is the default
+    cluster.
+  in: body
+  required: true
+  type: boolean
+is_protected:
+  description: |
+    If set to ``true``, the cluster is protected.
+  in: body
+  required: true
+  type: boolean
+is_protected_2:
+  description: |
+    If set to ``true``, the node is protected.
+  in: body
+  required: true
+  type: boolean
+is_protected_3:
+  description: |
+    If set to ``true``, the job execution object is
+    protected.
+  in: body
+  required: true
+  type: boolean
+is_proxy_gateway:
+  description: |
+    If set to ``true``, the node is the proxy
+    gateway.
+  in: body
+  required: true
+  type: boolean
+is_public:
+  description: |
+    If set to ``true``, the cluster is public.
+  in: body
+  required: true
+  type: boolean
+is_transient:
+  description: |
+    If set to ``true``, the cluster is transient.
+  in: body
+  required: true
+  type: boolean
+job:
+  description: |
+    A set of key and value pairs that contain the job
+    object.
+  in: body
+  required: true
+  type: object
+job_binary_description:
+  description: |
+    The description of the job binary object.
+  in: body
+  required: true
+  type: string
+job_binary_internals_id:
+  description: |
+    The UUID of the job binary internal.
+  in: body
+  required: true
+  type: string
+job_binary_internals_name:
+  description: |
+    The name of the job binary internal.
+  in: body
+  required: true
+  type: string
+job_binary_name:
+  description: |
+    The name of the object.
+  in: body
+  required: true
+  type: string
+job_config:
+  description: |
+    The job configuration.
+  in: body
+  required: true
+  type: string
+job_description:
+  description: |
+    The description of the job object.
+  in: body
+  required: true
+  type: string
+job_id:
+  description: |
+    The UUID of the job object.
+  in: body
+  required: true
+  type: string
+job_is_public:
+  description: |
+    If set to ``true``, the job object is
+    public.
+  in: body
+  required: true
+  type: boolean
+job_name:
+  description: |
+    The name of the job object.
+  in: body
+  required: true
+  type: string
+job_template_id:
+  description: |
+    The UUID of the job template object.
+  in: body
+  required: true
+  type: string
+job_template_name:
+  description: |
+    The name of the job template object.
+  in: body
+  required: true
+  type: string
+job_templates:
+  description: |
+    The list of the job templates.
+  in: body
+  required: true
+  type: array
+job_types:
+  description: |
+    The list of plugins and their job types.
+  in: body
+  required: true
+  type: array
+jobs:
+  description: |
+    The list of job objects.
+  in: body
+  required: true
+  type: array
+libs:
+  description: |
+    The list of the job object properties.
+  in: body
+  required: true
+  type: array
+mains:
+  description: |
+    The list of the job object and their properties.
+  in: body
+  required: true
+  type: array
+management_public_key:
+  description: |
+    The SSH key for the management network.
+  in: body
+  required: true
+  type: string
+markers:
+  description: |
+    The markers of previous and following pages of data.
+    This field exists only if ``limit`` is passed to
+    request.
+  in: body
+  required: false
+  type: object
+metadata:
+  description: |
+    A set of key and value pairs that contain image
+    metadata.
+  in: body
+  required: true
+  type: object
+minDisk:
+  description: |
+    The minimum disk space, in GB.
+  in: body
+  required: true
+  type: integer
+minRam:
+  description: |
+    The minimum amount of random access memory (RAM)
+    for the image, in GB.
+  in: body
+  required: true
+  type: integer
+name:
+  description: |
+    The name of the cluster.
+  in: body
+  required: true
+  type: string
+name_1:
+  description: |
+    The name of the object.
+  in: body
+  required: true
+  type: string
+neutron_management_network:
+  description: |
+    The UUID of the neutron management network.
+  in: body
+  required: true
+  type: string
+next:
+  description: |
+    The marker of next page of list data.
+  in: body
+  required: false
+  type: string
+node_configs:
+  description: |
+    A set of key and value pairs that contain the
+    node configuration in the cluster.
+  in: body
+  required: true
+  type: object
+node_group_template_description:
+  description: |
+    Description of the node group template
+  in: body
+  required: false
+  type: string
+node_group_template_id:
+  description: |
+    The UUID of the node group template.
+  in: body
+  required: true
+  type: string
+node_group_template_name:
+  description: |
+    The name of the node group template.
+  in: body
+  required: true
+  type: string
+node_groups:
+  description: |
+    The detail properties of the node in key-value
+    pairs.
+  in: body
+  required: true
+  type: object
+node_processes:
+  description: |
+    The list of the processes performed by the node.
+  in: body
+  required: true
+  type: array
+object_is_protected:
+  description: |
+    If set to ``true``, the object is protected.
+  in: body
+  required: true
+  type: boolean
+object_is_public:
+  description: |
+    If set to ``true``, the object is public.
+  in: body
+  required: true
+  type: boolean
+object_shares:
+  description: |
+    The sharing of resources in the cluster.
+  in: body
+  required: true
+  type: string
+oozie_job_id:
+  description: |
+    The UUID of the ``oozie_job``.
+  in: body
+  required: true
+  type: string
+output_id:
+  description: |
+    The UUID of the output of job execution object.
+  in: body
+  required: true
+  type: string
+params:
+  description: |
+    The mappings of values to the parameters.
+  in: body
+  required: true
+  type: object
+plugin_name:
+  description: |
+    The name of the plugin.
+  in: body
+  required: true
+  type: string
+plugin_version:
+  description: |
+    The version of the Plugin used in the cluster.
+  in: body
+  required: true
+  type: string
+plugin_version_1:
+  description: |
+    The version of the Plugin.
+  in: body
+  required: true
+  type: string
+plugins:
+  description: |
+    The list of plugins.
+  in: body
+  required: true
+  type: array
+prev:
+  description: |
+    The marker of previous page. May be ``null`` if
+    previous page is first or if current page is first.
+  in: body
+  required: false
+  type: string
+progress:
+  description: |
+    A progress indicator, as a percentage value, for
+    the amount of image content that has been processed.
+  in: body
+  required: true
+  type: integer
+project_id:
+  description: |
+    The UUID of the project.
+  in: body
+  required: true
+  type: string
+provision_progress:
+  description: |
+    A list of the cluster progresses.
+  in: body
+  required: true
+  type: array
+return_code:
+  description: |
+    The code returned after job has executed.
+  in: body
+  required: true
+  type: string
+security_groups:
+  description: |
+    The security groups of the node.
+  in: body
+  required: true
+  type: string
+shares:
+  description: |
+    The shares of the cluster.
+  in: body
+  required: true
+  type: string
+start_time:
+  description: |
+    The date and time when the job started.
+
+    The date and time stamp format is `ISO 8601
+    <https://en.wikipedia.org/wiki/ISO_8601>`_:
+
+    ::
+
+       CCYY-MM-DDThh:mm:ss±hh:mm
+
+    The ``±hh:mm`` value, if included, returns the time zone as an
+    offset from UTC.
+
+    For example, ``2015-08-27T09:49:58-05:00``.
+  in: body
+  required: true
+  type: string
+status:
+  description: |
+    The status of the cluster.
+  in: body
+  required: true
+  type: string
+status_1:
+  description: |
+    The current status of the image.
+  in: body
+  required: true
+  type: string
+status_description:
+  description: |
+    The description of the cluster status.
+  in: body
+  required: true
+  type: string
+tags:
+  description: |
+    List of tags to add.
+  in: body
+  required: true
+  type: array
+tags_1:
+  description: |
+    Lists images only with specific tag. Can be used
+    multiple times.
+  in: body
+  required: false
+  type: string
+tags_2:
+  description: |
+    One or more image tags.
+  in: body
+  required: true
+  type: array
+tags_3:
+  description: |
+    List of tags to remove.
+  in: body
+  required: true
+  type: array
+tenant_id:
+  description: |
+    The UUID of the tenant.
+  in: body
+  required: true
+  type: string
+title:
+  description: |
+    The title of the plugin.
+  in: body
+  required: true
+  type: string
+trust_id:
+  description: |
+    The id of the trust.
+  in: body
+  required: true
+  type: integer
+type:
+  description: |
+    The type of the data source object.
+  in: body
+  required: true
+  type: string
+type_1:
+  description: |
+    The type of the job object.
+  in: body
+  required: true
+  type: string
+updated:
+  description: |
+    The date and time when the image was updated.
+
+    The date and time stamp format is `ISO 8601
+    <https://en.wikipedia.org/wiki/ISO_8601>`_:
+
+    ::
+
+       CCYY-MM-DDThh:mm:ss±hh:mm
+
+    For example, ``2015-08-27T09:49:58-05:00``.
+
+    The ``±hh:mm`` value, if included, is the time zone as an offset
+    from UTC.
+  in: body
+  required: true
+  type: string
+updated_at:
+  description: |
+    The date and time when the cluster was updated.
+
+    The date and time stamp format is `ISO 8601
+    <https://en.wikipedia.org/wiki/ISO_8601>`_:
+
+    ::
+
+       CCYY-MM-DDThh:mm:ss±hh:mm
+
+    The ``±hh:mm`` value, if included, returns the time zone as an
+    offset from UTC.
+
+    For example, ``2015-08-27T09:49:58-05:00``.
+  in: body
+  required: true
+  type: string
+updated_at_1:
+  description: |
+    The date and time when the object was updated.
+
+    The date and time stamp format is `ISO 8601
+    <https://en.wikipedia.org/wiki/ISO_8601>`_:
+
+    ::
+
+       CCYY-MM-DDThh:mm:ss±hh:mm
+
+    The ``±hh:mm`` value, if included, returns the time zone as an
+    offset from UTC.
+
+    For example, ``2015-08-27T09:49:58-05:00``.
+  in: body
+  required: true
+  type: string
+updated_at_2:
+  description: |
+    The date and time when the node was updated.
+
+    The date and time stamp format is `ISO 8601
+    <https://en.wikipedia.org/wiki/ISO_8601>`_:
+
+    ::
+
+       CCYY-MM-DDThh:mm:ss±hh:mm
+
+    The ``±hh:mm`` value, if included, returns the time zone as an
+    offset from UTC.
+
+    For example, ``2015-08-27T09:49:58-05:00``.
+  in: body
+  required: true
+  type: string
+updated_at_3:
+  description: |
+    The date and time when the job execution object was updated.
+
+    The date and time stamp format is `ISO 8601
+    <https://en.wikipedia.org/wiki/ISO_8601>`_:
+
+    ::
+
+       CCYY-MM-DDThh:mm:ss±hh:mm
+
+    The ``±hh:mm`` value, if included, returns the time zone as an
+    offset from UTC.
+
+    For example, ``2015-08-27T09:49:58-05:00``.
+  in: body
+  required: true
+  type: string
+url:
+  description: |
+    The url of the data source object.
+  in: body
+  required: true
+  type: string
+url_1:
+  description: |
+    The url of the job binary object.
+  in: body
+  required: true
+  type: string
+use_autoconfig:
+  description: |
+    If set to ``true``, the cluster is auto
+    configured.
+  in: body
+  required: true
+  type: boolean
+use_autoconfig_1:
+  description: |
+    If set to ``true``, the node is auto configured.
+  in: body
+  required: true
+  type: boolean
+username:
+  description: |
+    The name of the user for the image.
+  in: body
+  required: true
+  type: string
+username_1:
+  description: |
+    The user name to log in to an instance operating
+    system for remote operations execution.
+  in: body
+  required: true
+  type: string
+versions:
+  description: |
+    The list of plugin versions.
+  in: body
+  required: true
+  type: array
+volume_local_to_instance:
+  description: |
+    If set to ``true``, the volume is local to the
+    instance.
+  in: body
+  required: true
+  type: boolean
+volume_mount_prefix:
+  description: |
+    The mount point of the node.
+  in: body
+  required: true
+  type: string
+volume_type:
+  description: |
+    The type of volume in a node.
+  in: body
+  required: true
+  type: string
+volumes_availability_zone:
+  description: |
+    The availability zone of the volumes.
+  in: body
+  required: true
+  type: string
+volumes_per_node:
+  description: |
+    The number of volumes for the node.
+  in: body
+  required: true
+  type: integer
+volumes_size:
+  description: |
+    The size of the volumes in a node.
+  in: body
+  required: true
+  type: integer
+
