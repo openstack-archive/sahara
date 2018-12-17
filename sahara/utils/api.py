@@ -18,6 +18,7 @@ import traceback
 import flask
 from oslo_log import log as logging
 from oslo_middleware import request_id as oslo_req_id
+import six
 from werkzeug import datastructures
 
 from sahara import context
@@ -53,7 +54,7 @@ class Rest(flask.Blueprint):
         return self._mroute('PATCH', rule, status_code)
 
     def _mroute(self, methods, rule, status_code=None, **kw):
-        if type(methods) is str:
+        if isinstance(methods, six.string_types):
             methods = [methods]
         return self.route(rule, methods=methods, status_code=status_code, **kw)
 
