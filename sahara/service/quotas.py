@@ -152,7 +152,7 @@ def _get_neutron_limits():
 
     # tmckay-fp here we would just get the limits all the time
     usage_fip = b.execute_with_retries(
-        neutron.list_floatingips,  tenant_id=tenant_id)['floatingips']
+        neutron.list_floatingips, tenant_id=tenant_id)['floatingips']
     limits['floatingips'] = _sub_limit(total_lim['floatingip'],
                                        len(usage_fip))
 

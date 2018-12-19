@@ -105,7 +105,7 @@ class Validator(object):
 
         if oo_count > 1:
             raise ex.InvalidComponentCountException(
-                'OOZIE_SERVER', _('0 or 1'),       oo_count)
+                'OOZIE_SERVER', _('0 or 1'), oo_count)
 
         if oo_count == 1:
             if dn_count < 1:
@@ -148,7 +148,7 @@ class Validator(object):
         hue_count = cls.get_inst_count(cluster, 'HUE_SERVER')
         if hue_count > 1:
             raise ex.InvalidComponentCountException(
-                'HUE_SERVER', _('0 or 1'),      hue_count)
+                'HUE_SERVER', _('0 or 1'), hue_count)
 
         shs_count = cls.get_inst_count(cluster, 'SPARK_YARN_HISTORY_SERVER')
         hms_count = cls.get_inst_count(cluster, 'HIVE_METASTORE')

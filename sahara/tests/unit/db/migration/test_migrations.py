@@ -348,7 +348,7 @@ class SaharaMigrationsCheckers(object):
         desc = 'magic'
         t = db_utils.get_table(engine, 'clusters')
         engine.execute(t.insert(), id='123', name='name', plugin_name='pname',
-                       hadoop_version='1',  management_private_key='2',
+                       hadoop_version='1', management_private_key='2',
                        management_public_key='3', status_description=desc)
 
     def _check_007(self, engine, data):

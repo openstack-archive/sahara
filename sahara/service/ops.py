@@ -279,7 +279,7 @@ def _update_sahara_info(ctx, cluster):
         'remote': remote.get_remote_type_and_version()}
 
     return conductor.cluster_update(
-        ctx, cluster,  {'sahara_info': sahara_info})
+        ctx, cluster, {'sahara_info': sahara_info})
 
 
 @ops_error_handler(

@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pep8
+import pycodestyle
 
 import re
 import tokenize
@@ -106,7 +106,7 @@ def use_jsonutils(logical_line, filename):
 
     S375
     """
-    if pep8.noqa(logical_line):
+    if pycodestyle.noqa(logical_line):
         return
     if (RE_USE_JSONUTILS_INVALID_LINE.match(logical_line) and
             not RE_USE_JSONUTILS_VALID_LINE.match(logical_line)):

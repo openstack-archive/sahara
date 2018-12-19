@@ -61,7 +61,7 @@ def check_cluster_template_usage(cluster_template_id, **kwargs):
         raise ex.InvalidReferenceException(
             _("Cluster template %(id)s in use by %(clusters)s") %
             {'id': cluster_template_id,
-             'clusters':  ', '.join(users)})
+             'clusters': ', '.join(users)})
 
 
 def check_cluster_template_update(cluster_template_id, data, **kwargs):
