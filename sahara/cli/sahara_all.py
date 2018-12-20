@@ -19,7 +19,6 @@ patches.patch_all()
 import os
 import sys
 
-import oslo_i18n
 from oslo_log import log
 
 LOG = log.getLogger(__name__)
@@ -33,12 +32,6 @@ if os.path.exists(os.path.join(possible_topdir,
                                'sahara',
                                '__init__.py')):
     sys.path.insert(0, possible_topdir)
-
-
-# NOTE(slukjanov): i18n.enable_lazy() must be called before
-#                  sahara.utils.i18n._() is called to ensure it has the desired
-#                  lazy lookup behavior.
-oslo_i18n.enable_lazy()
 
 
 import sahara.main as server

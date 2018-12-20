@@ -15,10 +15,3 @@
 
 from sahara.utils import patches
 patches.patch_all()
-
-import oslo_i18n
-
-# NOTE(slukjanov): i18n.enable_lazy() must be called before
-#                  sahara.utils.i18n._() is called to ensure it has the desired
-#                  lazy lookup behavior.
-oslo_i18n.enable_lazy()

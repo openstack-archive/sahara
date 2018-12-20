@@ -19,8 +19,6 @@ patches.patch_minidom_writexml()
 import os
 import sys
 
-import oslo_i18n
-
 # If ../sahara/__init__.py exists, add ../ to Python search path, so that
 # it will override what happens to be installed in /usr/(local/)lib/python...
 possible_topdir = os.path.normpath(os.path.join(os.path.abspath(sys.argv[0]),
@@ -30,12 +28,6 @@ if os.path.exists(os.path.join(possible_topdir,
                                'sahara',
                                '__init__.py')):
     sys.path.insert(0, possible_topdir)
-
-
-# NOTE(slukjanov): i18n.enable_lazy() must be called before
-#                  sahara.utils.i18n._() is called to ensure it has the desired
-#                  lazy lookup behavior.
-oslo_i18n.enable_lazy()
 
 
 import sahara.main as server
