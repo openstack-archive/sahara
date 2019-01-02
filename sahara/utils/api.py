@@ -355,3 +355,8 @@ def to_wrapped_dict_no_render(func, id, *args, **kwargs):
 def _replace_hadoop_version_plugin_version(obj):
     dict.update(obj, {'plugin_version': obj['hadoop_version']})
     dict.pop(obj, 'hadoop_version')
+
+
+def _replace_tenant_id_project_id(obj):
+    dict.update(obj, {'project_id': obj['tenant_id']})
+    dict.pop(obj, 'tenant_id')

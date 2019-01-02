@@ -35,6 +35,7 @@ def clusters_list():
     result = api.get_clusters(**u.get_request_args().to_dict())
     for c in result:
         u._replace_hadoop_version_plugin_version(c)
+        u._replace_tenant_id_project_id(c)
     return u.render(res=result, name='clusters')
 
 
@@ -51,10 +52,12 @@ def clusters_create(data):
         result = api.create_multiple_clusters(data)
         for c in result['clusters']:
             u._replace_hadoop_version_plugin_version(c['cluster'])
+            u._replace_tenant_id_project_id(c['cluster'])
         return u.render(result)
     else:
         result = api.create_cluster(data).to_wrapped_dict()
         u._replace_hadoop_version_plugin_version(result['cluster'])
+        u._replace_tenant_id_project_id(c['cluster'])
         return u.render(result)
 
 
@@ -66,6 +69,7 @@ def clusters_scale(cluster_id, data):
     result = u.to_wrapped_dict_no_render(
         api.scale_cluster, cluster_id, data)
     u._replace_hadoop_version_plugin_version(result['cluster'])
+    u._replace_tenant_id_project_id(result['cluster'])
     return u.render(result)
 
 
@@ -79,6 +83,7 @@ def clusters_get(cluster_id):
     result = u.to_wrapped_dict_no_render(
         api.get_cluster, cluster_id, show_events)
     u._replace_hadoop_version_plugin_version(result['cluster'])
+    u._replace_tenant_id_project_id(result['cluster'])
     return u.render(result)
 
 
@@ -90,6 +95,7 @@ def clusters_update(cluster_id, data):
     result = u.to_wrapped_dict_no_render(
         api.update_cluster, cluster_id, data)
     u._replace_hadoop_version_plugin_version(result['cluster'])
+    u._replace_tenant_id_project_id(result['cluster'])
     return u.render(result)
 
 

@@ -38,6 +38,7 @@ def jobs_list():
     # removed
     for je in result:
         je.pop('oozie_job_id', force=True)
+        u._replace_tenant_id_project_id(je)
     return u.render(res=result, name='jobs')
 
 
@@ -49,6 +50,7 @@ def jobs_execute(data):
     dict.update(result['job'],
                 {'engine_job_id': result['job']['oozie_job_id']})
     dict.pop(result['job'], 'oozie_job_id')
+    u._replace_tenant_id_project_id(result['job'])
     return u.render(result)
 
 
@@ -61,6 +63,7 @@ def jobs_get(job_id):
         data.get('refresh_status', 'false')).lower() == 'true'
     result = {'job': api.get_job_execution(job_id, refresh_status)}
     result['job'].pop('oozie_job_id', force=True)
+    u._replace_tenant_id_project_id(result['job'])
     return u.render(result)
 
 
@@ -72,6 +75,7 @@ def jobs_get(job_id):
 def jobs_update(job_id, data):
     result = {'job': api.update_job_execution(job_id, data)}
     result['job'].pop('oozie_job_id', force=True)
+    u._replace_tenant_id_project_id(result['job'])
     return u.render(result)
 
 

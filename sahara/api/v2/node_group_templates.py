@@ -34,6 +34,7 @@ def node_group_templates_list():
     result = api.get_node_group_templates(**u.get_request_args().to_dict())
     for ngt in result:
         u._replace_hadoop_version_plugin_version(ngt)
+        u._replace_tenant_id_project_id(ngt)
     return u.render(res=result, name="node_group_templates")
 
 
@@ -48,6 +49,7 @@ def node_group_templates_create(data):
     del data['plugin_version']
     result = api.create_node_group_template(data).to_wrapped_dict()
     u._replace_hadoop_version_plugin_version(result['node_group_template'])
+    u._replace_tenant_id_project_id(result['node_group_template'])
     return u.render(result)
 
 
@@ -58,6 +60,7 @@ def node_group_templates_get(node_group_template_id):
     result = u.to_wrapped_dict_no_render(
         api.get_node_group_template, node_group_template_id)
     u._replace_hadoop_version_plugin_version(result['node_group_template'])
+    u._replace_tenant_id_project_id(result['node_group_template'])
     return u.render(result)
 
 
@@ -73,6 +76,7 @@ def node_group_templates_update(node_group_template_id, data):
     result = u.to_wrapped_dict_no_render(
         api.update_node_group_template, node_group_template_id, data)
     u._replace_hadoop_version_plugin_version(result['node_group_template'])
+    u._replace_tenant_id_project_id(result['node_group_template'])
     return u.render(result)
 
 
@@ -89,7 +93,7 @@ def _node_group_template_export_helper(template):
     template.pop('id')
     template.pop('updated_at')
     template.pop('created_at')
-    template.pop('tenant_id')
+    template.pop('project_id')
     template.pop('is_default')
     template['flavor_id'] = '{flavor_id}'
     template['security_groups'] = '{security_groups}'
@@ -104,6 +108,7 @@ def node_group_template_export(node_group_template_id):
     content = u.to_wrapped_dict_no_render(
         api.export_node_group_template, node_group_template_id)
     u._replace_hadoop_version_plugin_version(content['node_group_template'])
+    u._replace_tenant_id_project_id(content['node_group_template'])
     _node_group_template_export_helper(content['node_group_template'])
     res = u.render(content)
     res.headers.add('Content-Disposition', 'attachment',
