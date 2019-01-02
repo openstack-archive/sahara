@@ -32,7 +32,7 @@ def check_job_binary_internal(data, **kwargs):
     if not is_internal_db_enabled():
         raise e.BadJobBinaryInternalException(
             _("Sahara internal db is disabled for storing job binaries."))
-    if not (isinstance(data, six.string_types) and len(data) > 0):
+    if not (isinstance(data, six.binary_type) and len(data) > 0):
         raise e.BadJobBinaryInternalException()
     if "name" in kwargs:
         name = kwargs["name"]

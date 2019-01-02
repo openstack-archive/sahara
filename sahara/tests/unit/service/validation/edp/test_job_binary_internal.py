@@ -30,7 +30,7 @@ class TestJobBinaryInternalCreateValidation(u.ValidationTestCase):
         jb_manager.setup_job_binaries()
 
     def test_job_binary_internal_create(self):
-        self._assert_create_object_validation(data='text')
+        self._assert_create_object_validation(data=b'text')
 
         self._assert_create_object_validation(
             data='',
