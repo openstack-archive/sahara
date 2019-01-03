@@ -18,42 +18,42 @@ from sahara.common.policies import base
 
 job_binaries_policies = [
     policy.DocumentedRuleDefault(
-        name=base.DATA_PROCESSING_JOB_BINARIES % 'get_all',
+        name=base.DATA_PROCESSING_JOB_BINARY % 'list',
         check_str=base.UNPROTECTED,
         description='List job binaries.',
-        operations=[{'path': '/v1.1/{project_id}/job-binaries',
+        operations=[{'path': '/v2/job-binaries',
                      'method': 'GET'}]),
     policy.DocumentedRuleDefault(
-        name=base.DATA_PROCESSING_JOB_BINARIES % 'create',
+        name=base.DATA_PROCESSING_JOB_BINARY % 'create',
         check_str=base.UNPROTECTED,
         description='Create job binary.',
-        operations=[{'path': '/v1.1/{project_id}/job-binaries',
+        operations=[{'path': '/v2/job-binaries',
                      'method': 'POST'}]),
     policy.DocumentedRuleDefault(
-        name=base.DATA_PROCESSING_JOB_BINARIES % 'get_data',
+        name=base.DATA_PROCESSING_JOB_BINARY % 'get-data',
         check_str=base.UNPROTECTED,
         description='Show job binary data.',
         operations=[
-            {'path': '/v1.1/{project_id}/job-binaries/{job-binary_id}/data',
+            {'path': '/v2/job-binaries/{job_binary_id}/data',
              'method': 'POST'}]),
     policy.DocumentedRuleDefault(
-        name=base.DATA_PROCESSING_JOB_BINARIES % 'modify',
+        name=base.DATA_PROCESSING_JOB_BINARY % 'update',
         check_str=base.UNPROTECTED,
         description='Update job binary.',
         operations=[
-            {'path': '/v1.1/{project_id}/job-binaries/{job-binary_id}',
-             'method': 'PUT'}]),
+            {'path': '/v2/job-binaries/{job_binary_id}',
+             'method': 'PATCH'}]),
     policy.DocumentedRuleDefault(
-        name=base.DATA_PROCESSING_JOB_BINARIES % 'get',
+        name=base.DATA_PROCESSING_JOB_BINARY % 'get',
         check_str=base.UNPROTECTED,
         description='Show job binary details.',
-        operations=[{'path': '/v1.1/{project_id}/job-binaries/{job_binary_id}',
+        operations=[{'path': '/v2/job-binaries/{job_binary_id}',
                      'method': 'GET'}]),
     policy.DocumentedRuleDefault(
-        name=base.DATA_PROCESSING_JOB_BINARIES % 'delete',
+        name=base.DATA_PROCESSING_JOB_BINARY % 'delete',
         check_str=base.UNPROTECTED,
         description='Delete job binary.',
-        operations=[{'path': '/v1.1/{project_id}/job-binaries/{job_binary_id}',
+        operations=[{'path': '/v2/job-binaries/{job_binary_id}',
                      'method': 'DELETE'}]),
 ]
 

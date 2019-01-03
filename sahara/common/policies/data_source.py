@@ -18,37 +18,37 @@ from sahara.common.policies import base
 
 data_sources_policies = [
     policy.DocumentedRuleDefault(
-        name=base.DATA_PROCESSING_DATA_SOURCES % 'get_all',
+        name=base.DATA_PROCESSING_DATA_SOURCE % 'list',
         check_str=base.UNPROTECTED,
         description='List data sources.',
-        operations=[{'path': '/v1.1/{project_id}/data-sources',
+        operations=[{'path': '/v2/data-sources',
                      'method': 'GET'}]),
     policy.DocumentedRuleDefault(
-        name=base.DATA_PROCESSING_DATA_SOURCES % 'get',
+        name=base.DATA_PROCESSING_DATA_SOURCE % 'get',
         check_str=base.UNPROTECTED,
         description='Show data source details.',
         operations=[
-            {'path': '/v1.1/{project_id}/data-sources/{data_source_id}',
+            {'path': '/v2/data-sources/{data_source_id}',
              'method': 'GET'}]),
     policy.DocumentedRuleDefault(
-        name=base.DATA_PROCESSING_DATA_SOURCES % 'register',
+        name=base.DATA_PROCESSING_DATA_SOURCE % 'register',
         check_str=base.UNPROTECTED,
         description='Create data source.',
-        operations=[{'path': '/v1.1/{project_id}/data-sources',
+        operations=[{'path': '/v2/data-sources',
                      'method': 'POST'}]),
     policy.DocumentedRuleDefault(
-        name=base.DATA_PROCESSING_DATA_SOURCES % 'modify',
+        name=base.DATA_PROCESSING_DATA_SOURCE % 'update',
         check_str=base.UNPROTECTED,
         description='Update data source.',
         operations=[
-            {'path': '/v1.1/{project_id}/data-sources/{data_source_id}',
-             'method': 'PUT'}]),
+            {'path': '/v2/data-sources/{data_source_id}',
+             'method': 'PATCH'}]),
     policy.DocumentedRuleDefault(
-        name=base.DATA_PROCESSING_DATA_SOURCES % 'delete',
+        name=base.DATA_PROCESSING_DATA_SOURCE % 'delete',
         check_str=base.UNPROTECTED,
         description='Delete data source.',
         operations=[
-            {'path': '/v1.1/{project_id}/data-sources/{data_source_id}',
+            {'path': '/v2/data-sources/{data_source_id}',
              'method': 'DELETE'}]),
 ]
 

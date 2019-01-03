@@ -18,40 +18,46 @@ from sahara.common.policies import base
 
 images_policies = [
     policy.DocumentedRuleDefault(
-        name=base.DATA_PROCESSING_IMAGES % 'add_tags',
+        name=base.DATA_PROCESSING_IMAGE % 'set-tags',
         check_str=base.UNPROTECTED,
         description='Add tags to image.',
-        operations=[{'path': '/v1.1/{project_id}/images/{image_id}/tag',
-                     'method': 'POST'}]),
+        operations=[{'path': '/v2/images/{image_id}/tags',
+                     'method': 'PUT'}]),
     policy.DocumentedRuleDefault(
-        name=base.DATA_PROCESSING_IMAGES % 'register',
+        name=base.DATA_PROCESSING_IMAGE % 'register',
         check_str=base.UNPROTECTED,
         description='Register image.',
-        operations=[{'path': '/v1.1/{project_id}/images/{image_id}',
+        operations=[{'path': '/v2/images/{image_id}',
                      'method': 'POST'}]),
     policy.DocumentedRuleDefault(
-        name=base.DATA_PROCESSING_IMAGES % 'get_all',
+        name=base.DATA_PROCESSING_IMAGE % 'list',
         check_str=base.UNPROTECTED,
         description='List images.',
-        operations=[{'path': '/v1.1/{project_id}/images', 'method': 'GET'}]),
+        operations=[{'path': '/v2/images', 'method': 'GET'}]),
     policy.DocumentedRuleDefault(
-        name=base.DATA_PROCESSING_IMAGES % 'unregister',
+        name=base.DATA_PROCESSING_IMAGE % 'unregister',
         check_str=base.UNPROTECTED,
         description='Unregister image.',
-        operations=[{'path': '/v1.1/{project_id}/images/{image_id}',
-                     'method': 'POST'}]),
+        operations=[{'path': '/v2/images/{image_id}',
+                     'method': 'DELETE'}]),
     policy.DocumentedRuleDefault(
-        name=base.DATA_PROCESSING_IMAGES % 'get',
+        name=base.DATA_PROCESSING_IMAGE % 'get',
         check_str=base.UNPROTECTED,
         description='Show image details.',
-        operations=[{'path': '/v1.1/{project_id}/images/{image_id}',
+        operations=[{'path': '/v2/images/{image_id}',
                      'method': 'GET'}]),
     policy.DocumentedRuleDefault(
-        name=base.DATA_PROCESSING_IMAGES % 'remove_tags',
+        name=base.DATA_PROCESSING_IMAGE % 'remove-tags',
         check_str=base.UNPROTECTED,
         description='Remove tags from image.',
-        operations=[{'path': '/v1.1/{project_id}/images/{image_id}/untag',
-                     'method': 'POST'}]),
+        operations=[{'path': '/v2/images/{image_id}/tags',
+                     'method': 'DELETE'}]),
+    policy.DocumentedRuleDefault(
+        name=base.DATA_PROCESSING_IMAGE % 'get-tags',
+        check_str=base.UNPROTECTED,
+        description='List tags on an image.',
+        operations=[{'path': '/v2/images/{image_id}/tags',
+                     'method': 'GET'}]),
 ]
 
 

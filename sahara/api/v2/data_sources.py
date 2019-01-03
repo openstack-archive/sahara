@@ -25,7 +25,7 @@ rest = u.RestV2('data-sources', __name__)
 
 
 @rest.get('/data-sources')
-@acl.enforce("data-processing:data-sources:get_all")
+@acl.enforce("data-processing:data-source:list")
 @v.check_exists(api.get_data_source, 'marker')
 @v.validate(None, v.validate_pagination_limit,
             v.validate_sorting_data_sources)
@@ -38,7 +38,7 @@ def data_sources_list():
 
 
 @rest.post('/data-sources')
-@acl.enforce("data-processing:data-sources:register")
+@acl.enforce("data-processing:data-source:register")
 @v.validate(v_d_s_schema.DATA_SOURCE_SCHEMA, v_d_s.check_data_source_create)
 @v.validate_request_params([])
 def data_source_register(data):
@@ -48,7 +48,7 @@ def data_source_register(data):
 
 
 @rest.get('/data-sources/<data_source_id>')
-@acl.enforce("data-processing:data-sources:get")
+@acl.enforce("data-processing:data-source:get")
 @v.check_exists(api.get_data_source, 'data_source_id')
 @v.validate_request_params([])
 def data_source_get(data_source_id):
@@ -58,7 +58,7 @@ def data_source_get(data_source_id):
 
 
 @rest.delete('/data-sources/<data_source_id>')
-@acl.enforce("data-processing:data-sources:delete")
+@acl.enforce("data-processing:data-source:delete")
 @v.check_exists(api.get_data_source, 'data_source_id')
 @v.validate_request_params([])
 def data_source_delete(data_source_id):
@@ -67,7 +67,7 @@ def data_source_delete(data_source_id):
 
 
 @rest.patch('/data-sources/<data_source_id>')
-@acl.enforce("data-processing:data-sources:modify")
+@acl.enforce("data-processing:data-source:update")
 @v.check_exists(api.get_data_source, 'data_source_id')
 @v.validate(v_d_s_schema.DATA_SOURCE_UPDATE_SCHEMA)
 @v.validate_request_params([])

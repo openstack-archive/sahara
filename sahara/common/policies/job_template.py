@@ -16,45 +16,46 @@ from oslo_policy import policy
 from sahara.common.policies import base
 
 
-clusters_policies = [
+job_templates_policies = [
     policy.DocumentedRuleDefault(
-        name=base.DATA_PROCESSING_CLUSTERS % 'scale',
+        name=base.DATA_PROCESSING_JOB_TEMPLATE % 'get',
         check_str=base.UNPROTECTED,
-        description='Scale cluster.',
-        operations=[{'path': '/v1.1/{project_id}/clusters/{cluster_id}',
-                     'method': 'PUT'}]),
-    policy.DocumentedRuleDefault(
-        name=base.DATA_PROCESSING_CLUSTERS % 'get_all',
-        check_str=base.UNPROTECTED,
-        description='List available clusters',
-        operations=[{'path': '/v1.1/{project_id}/clusters',
+        description='Show job template details.',
+        operations=[{'path': '/v2/job-templates/{job_temp_id}',
                      'method': 'GET'}]),
     policy.DocumentedRuleDefault(
-        name=base.DATA_PROCESSING_CLUSTERS % 'create',
+        name=base.DATA_PROCESSING_JOB_TEMPLATE % 'create',
         check_str=base.UNPROTECTED,
-        description='Create cluster.',
-        operations=[{'path': '/v1.1/{project_id}/clusters',
+        description='Create job templates.',
+        operations=[{'path': '/v2/job-templates',
                      'method': 'POST'}]),
     policy.DocumentedRuleDefault(
-        name=base.DATA_PROCESSING_CLUSTERS % 'get',
+        name=base.DATA_PROCESSING_JOB_TEMPLATE % 'list',
         check_str=base.UNPROTECTED,
-        description='Show details of a cluster.',
-        operations=[{'path': '/v1.1/{project_id}/clusters/{cluster_id}',
+        description='List job templates.',
+        operations=[{'path': '/v2/job-templates',
                      'method': 'GET'}]),
     policy.DocumentedRuleDefault(
-        name=base.DATA_PROCESSING_CLUSTERS % 'modify',
+        name=base.DATA_PROCESSING_JOB_TEMPLATE % 'update',
         check_str=base.UNPROTECTED,
-        description='Modify a cluster.',
-        operations=[{'path': '/v1.1/{project_id}/clusters/{cluster_id}',
+        description='Update job template.',
+        operations=[{'path': '/v2/job-templates/{job_temp_id}',
                      'method': 'PATCH'}]),
     policy.DocumentedRuleDefault(
-        name=base.DATA_PROCESSING_CLUSTERS % 'delete',
+        name=base.DATA_PROCESSING_JOB_TEMPLATE % 'get-config-hints',
         check_str=base.UNPROTECTED,
-        description='Delete a cluster.',
-        operations=[{'path': '/v1.1/{project_id}/clusters/{cluster_id}',
+        description='Get job template config hints.',
+        operations=[
+            {'path': '/v2/job-templates/config-hints/{job_type}',
+             'method': 'GET'}]),
+    policy.DocumentedRuleDefault(
+        name=base.DATA_PROCESSING_JOB_TEMPLATE % 'delete',
+        check_str=base.UNPROTECTED,
+        description='Remove job template.',
+        operations=[{'path': '/v2/job-templates/{job_temp_id}',
                      'method': 'DELETE'}]),
 ]
 
 
 def list_rules():
-    return clusters_policies
+    return job_templates_policies

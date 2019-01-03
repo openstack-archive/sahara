@@ -25,7 +25,7 @@ rest = u.RestV2('job-binaries', __name__)
 
 
 @rest.post('/job-binaries')
-@acl.enforce("data-processing:job-binaries:create")
+@acl.enforce("data-processing:job-binary:create")
 @v.validate(v_j_b_schema.JOB_BINARY_SCHEMA, v_j_b.check_job_binary)
 @v.validate_request_params([])
 def job_binary_create(data):
@@ -35,7 +35,7 @@ def job_binary_create(data):
 
 
 @rest.get('/job-binaries')
-@acl.enforce("data-processing:job-binaries:get_all")
+@acl.enforce("data-processing:job-binary:list")
 @v.check_exists(api.get_job_binary, 'marker')
 @v.validate(None, v.validate_pagination_limit,
             v.validate_sorting_job_binaries)
@@ -48,7 +48,7 @@ def job_binary_list():
 
 
 @rest.get('/job-binaries/<job_binary_id>')
-@acl.enforce("data-processing:job-binaries:get")
+@acl.enforce("data-processing:job-binary:get")
 @v.check_exists(api.get_job_binary, 'job_binary_id')
 @v.validate_request_params([])
 def job_binary_get(job_binary_id):
@@ -58,7 +58,7 @@ def job_binary_get(job_binary_id):
 
 
 @rest.delete('/job-binaries/<job_binary_id>')
-@acl.enforce("data-processing:job-binaries:delete")
+@acl.enforce("data-processing:job-binary:delete")
 @v.check_exists(api.get_job_binary, id='job_binary_id')
 @v.validate_request_params([])
 def job_binary_delete(job_binary_id):
@@ -67,7 +67,7 @@ def job_binary_delete(job_binary_id):
 
 
 @rest.get('/job-binaries/<job_binary_id>/data')
-@acl.enforce("data-processing:job-binaries:get_data")
+@acl.enforce("data-processing:job-binary:get-data")
 @v.check_exists(api.get_job_binary, 'job_binary_id')
 @v.validate_request_params([])
 def job_binary_data(job_binary_id):
@@ -78,7 +78,7 @@ def job_binary_data(job_binary_id):
 
 
 @rest.patch('/job-binaries/<job_binary_id>')
-@acl.enforce("data-processing:job-binaries:modify")
+@acl.enforce("data-processing:job-binary:update")
 @v.validate(v_j_b_schema.JOB_BINARY_UPDATE_SCHEMA, v_j_b.check_job_binary)
 @v.validate_request_params([])
 def job_binary_update(job_binary_id, data):

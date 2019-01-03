@@ -26,7 +26,7 @@ rest = u.RestV2('node-group-templates', __name__)
 
 
 @rest.get('/node-group-templates')
-@acl.enforce("data-processing:node-group-templates:get_all")
+@acl.enforce("data-processing:node-group-template:list")
 @v.check_exists(api.get_node_group_template, 'marker')
 @v.validate(None, v.validate_pagination_limit,
             v.validate_sorting_node_group_templates)
@@ -44,7 +44,7 @@ def node_group_templates_list():
 
 
 @rest.post('/node-group-templates')
-@acl.enforce("data-processing:node-group-templates:create")
+@acl.enforce("data-processing:node-group-template:create")
 @v.validate(ngt_schema.NODE_GROUP_TEMPLATE_SCHEMA_V2,
             v_ngt.check_node_group_template_create)
 @v.validate_request_params([])
@@ -60,7 +60,7 @@ def node_group_templates_create(data):
 
 
 @rest.get('/node-group-templates/<node_group_template_id>')
-@acl.enforce("data-processing:node-group-templates:get")
+@acl.enforce("data-processing:node-group-template:get")
 @v.check_exists(api.get_node_group_template, 'node_group_template_id')
 @v.validate_request_params([])
 def node_group_templates_get(node_group_template_id):
@@ -72,7 +72,7 @@ def node_group_templates_get(node_group_template_id):
 
 
 @rest.patch('/node-group-templates/<node_group_template_id>')
-@acl.enforce("data-processing:node-group-templates:modify")
+@acl.enforce("data-processing:node-group-template:update")
 @v.check_exists(api.get_node_group_template, 'node_group_template_id')
 @v.validate(ngt_schema.NODE_GROUP_TEMPLATE_UPDATE_SCHEMA_V2,
             v_ngt.check_node_group_template_update)
@@ -89,7 +89,7 @@ def node_group_templates_update(node_group_template_id, data):
 
 
 @rest.delete('/node-group-templates/<node_group_template_id>')
-@acl.enforce("data-processing:node-group-templates:delete")
+@acl.enforce("data-processing:node-group-template:delete")
 @v.check_exists(api.get_node_group_template, 'node_group_template_id')
 @v.validate(None, v_ngt.check_node_group_template_usage)
 @v.validate_request_params([])
@@ -111,7 +111,7 @@ def _node_group_template_export_helper(template):
 
 
 @rest.get('/node-group-templates/<node_group_template_id>/export')
-@acl.enforce("data-processing:node-group-templates:get")
+@acl.enforce("data-processing:node-group-template:get")
 @v.check_exists(api.get_node_group_template, 'node_group_template_id')
 @v.validate_request_params([])
 def node_group_template_export(node_group_template_id):

@@ -18,40 +18,37 @@ from sahara.common.policies import base
 
 node_group_templates_policies = [
     policy.DocumentedRuleDefault(
-        name=base.DATA_PROCESSING_NODE_GROUP_TEMPLATES % 'get_all',
+        name=base.DATA_PROCESSING_NODE_GROUP_TEMPLATE % 'list',
         check_str=base.UNPROTECTED,
         description='List node group templates.',
-        operations=[{'path': '/v1.1/{project_id}/node-group-templates',
+        operations=[{'path': '/v2/node-group-templates',
                      'method': 'GET'}]),
     policy.DocumentedRuleDefault(
-        name=base.DATA_PROCESSING_NODE_GROUP_TEMPLATES % 'create',
+        name=base.DATA_PROCESSING_NODE_GROUP_TEMPLATE % 'create',
         check_str=base.UNPROTECTED,
         description='Create node group template.',
-        operations=[{'path': '/v1.1/{project_id}/node-group-templates',
+        operations=[{'path': '/v2/node-group-templates',
                      'method': 'POST'}]),
     policy.DocumentedRuleDefault(
-        name=base.DATA_PROCESSING_NODE_GROUP_TEMPLATES % 'get',
+        name=base.DATA_PROCESSING_NODE_GROUP_TEMPLATE % 'get',
         check_str=base.UNPROTECTED,
         description='Show node group template details.',
         operations=[
-            {'path':
-             '/v1.1/{project_id}/node-group-templates/{node_group_temp_id}',
+            {'path': '/v2/node-group-templates/{node_group_temp_id}',
              'method': 'GET'}]),
     policy.DocumentedRuleDefault(
-        name=base.DATA_PROCESSING_NODE_GROUP_TEMPLATES % 'modify',
+        name=base.DATA_PROCESSING_NODE_GROUP_TEMPLATE % 'update',
         check_str=base.UNPROTECTED,
         description='Update node group template.',
         operations=[
-            {'path':
-             '/v1.1/{project_id}/node-group-templates/{node_group_temp_id}',
-             'method': 'PUT'}]),
+            {'path': '/v2/node-group-templates/{node_group_temp_id}',
+             'method': 'PATCH'}]),
     policy.DocumentedRuleDefault(
-        name=base.DATA_PROCESSING_NODE_GROUP_TEMPLATES % 'delete',
+        name=base.DATA_PROCESSING_NODE_GROUP_TEMPLATE % 'delete',
         check_str=base.UNPROTECTED,
         description='Delete node group template.',
         operations=[
-            {'path':
-             '/v1.1/{project_id}/node-group-templates/{node_group_temp_id}',
+            {'path': '/v2/node-group-templates/{node_group_temp_id}',
              'method': 'DELETE'}]),
 ]
 

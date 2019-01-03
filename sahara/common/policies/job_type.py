@@ -18,10 +18,10 @@ from sahara.common.policies import base
 
 job_types_policies = [
     policy.DocumentedRuleDefault(
-        name=base.DATA_PROCESSING_JOB_TYPES % 'get_all',
+        name=base.DATA_PROCESSING_JOB_TYPE % 'list',
         check_str=base.UNPROTECTED,
         description='List job types.',
-        operations=[{'path': '/v1.1/{project_id}/job-types',
+        operations=[{'path': '/v2/job-types',
                      'method': 'GET'}]),
 ]
 

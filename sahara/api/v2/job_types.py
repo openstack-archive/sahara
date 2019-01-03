@@ -23,7 +23,7 @@ rest = u.RestV2('job-types', __name__)
 
 
 @rest.get('/job-types')
-@acl.enforce("data-processing:job-types:get_all")
+@acl.enforce("data-processing:job-type:list")
 @v.validate_request_params(['type', 'plugin_name', 'plugin_version'])
 def job_types_get():
     # We want to use flat=False with to_dict() so that

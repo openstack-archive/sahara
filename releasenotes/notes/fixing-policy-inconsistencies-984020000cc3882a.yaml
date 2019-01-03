@@ -1,0 +1,12 @@
+---
+fixes:
+  - |
+    With APIv2 we detected some inconsistencies on the policies. This patch
+    updates the policy to fix those incosistencies.
+other:
+  - |
+    All APIv2 policy names have been changed to the recommended format: specifically,
+    changes to resource names (now _singular_, whereas previously they may have been
+    _plural_, or otherwise inconsistent), action verbs (now fully independent of HTTP
+    semantics) and overall formatting (hyphens replace underscores).
+    Eventually, the remaining non-conforming policy names will be deprecated too.

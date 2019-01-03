@@ -18,37 +18,29 @@ from sahara.common.policies import base
 
 plugins_policies = [
     policy.DocumentedRuleDefault(
-        name=base.DATA_PROCESSING_PLUGINS % 'get_all',
+        name=base.DATA_PROCESSING_PLUGIN % 'list',
         check_str=base.UNPROTECTED,
         description='List plugins.',
-        operations=[{'path': '/v1.1/{project_id}/plugins',
+        operations=[{'path': '/v2/plugins',
                      'method': 'GET'}]),
     policy.DocumentedRuleDefault(
-        name=base.DATA_PROCESSING_PLUGINS % 'get_version',
+        name=base.DATA_PROCESSING_PLUGIN % 'get-version',
         check_str=base.UNPROTECTED,
         description='Show plugins version details.',
         operations=[
-            {'path': '/v1.1/{project_id}/plugins/{plugin_name}/{version}',
+            {'path': '/v2/plugins/{plugin_name}/{version}',
              'method': 'GET'}]),
     policy.DocumentedRuleDefault(
-        name=base.DATA_PROCESSING_PLUGINS % 'get',
+        name=base.DATA_PROCESSING_PLUGIN % 'get',
         check_str=base.UNPROTECTED,
         description='Show plugin details.',
-        operations=[{'path': '/v1.1/{project_id}/plugins/{plugin_name}',
+        operations=[{'path': '/v2/plugins/{plugin_name}',
                      'method': 'GET'}]),
     policy.DocumentedRuleDefault(
-        name=base.DATA_PROCESSING_PLUGINS % 'convert_config',
-        check_str=base.UNPROTECTED,
-        description='Convert plugins to cluster template',
-        operations=[
-            {'path': ('/v1.1/{project_id}/plugins/{plugin_name}/'
-                      '{version}/convert-config/{name}'),
-             'method': 'POST'}]),
-    policy.DocumentedRuleDefault(
-        name=base.DATA_PROCESSING_PLUGINS % 'patch',
+        name=base.DATA_PROCESSING_PLUGIN % 'update',
         check_str=base.ROLE_ADMIN,
         description='Update plugin details.',
-        operations=[{'path': '/v1.1/{project_id}/plugins/{plugin_name}',
+        operations=[{'path': '/v2/plugins/{plugin_name}',
                      'method': 'PATCH'}]),
 ]
 

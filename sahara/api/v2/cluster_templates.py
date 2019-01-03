@@ -25,7 +25,7 @@ rest = u.RestV2('cluster-templates', __name__)
 
 
 @rest.get('/cluster-templates')
-@acl.enforce("data-processing:cluster-templates:get_all")
+@acl.enforce("data-processing:cluster-template:list")
 @v.check_exists(api.get_cluster_template, 'marker')
 @v.validate(None, v.validate_pagination_limit,
             v.validate_sorting_cluster_templates)
@@ -43,7 +43,7 @@ def cluster_templates_list():
 
 
 @rest.post('/cluster-templates')
-@acl.enforce("data-processing:cluster-templates:create")
+@acl.enforce("data-processing:cluster-template:create")
 @v.validate(ct_schema.CLUSTER_TEMPLATE_SCHEMA_V2,
             v_ct.check_cluster_template_create)
 @v.validate_request_params([])
@@ -59,7 +59,7 @@ def cluster_templates_create(data):
 
 
 @rest.get('/cluster-templates/<cluster_template_id>')
-@acl.enforce("data-processing:cluster-templates:get")
+@acl.enforce("data-processing:cluster-template:get")
 @v.check_exists(api.get_cluster_template, 'cluster_template_id')
 @v.validate_request_params([])
 def cluster_templates_get(cluster_template_id):
@@ -71,7 +71,7 @@ def cluster_templates_get(cluster_template_id):
 
 
 @rest.patch('/cluster-templates/<cluster_template_id>')
-@acl.enforce("data-processing:cluster-templates:modify")
+@acl.enforce("data-processing:cluster-template:update")
 @v.check_exists(api.get_cluster_template, 'cluster_template_id')
 @v.validate(ct_schema.CLUSTER_TEMPLATE_UPDATE_SCHEMA_V2,
             v_ct.check_cluster_template_update)
@@ -88,7 +88,7 @@ def cluster_templates_update(cluster_template_id, data):
 
 
 @rest.delete('/cluster-templates/<cluster_template_id>')
-@acl.enforce("data-processing:cluster-templates:delete")
+@acl.enforce("data-processing:cluster-template:delete")
 @v.check_exists(api.get_cluster_template, 'cluster_template_id')
 @v.validate(None, v_ct.check_cluster_template_usage)
 @v.validate_request_params([])
@@ -108,7 +108,7 @@ def _cluster_template_export_helper(template):
 
 
 @rest.get('/cluster-templates/<cluster_template_id>/export')
-@acl.enforce("data-processing:cluster-templates:get")
+@acl.enforce("data-processing:cluster-template:get")
 @v.check_exists(api.get_cluster_template, 'cluster_template_id')
 @v.validate_request_params([])
 def cluster_template_export(cluster_template_id):
