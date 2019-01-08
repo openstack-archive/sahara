@@ -1,0 +1,6 @@
+---
+features:
+  - In Sahara APIv2, the type, availability zone, and locality of boot volumes
+    may be expressed explicitly through the `boot_volume_type`,
+    `boot_volume_availability_zone`, and `boot_volume_local_to_instance`
+    parameters.

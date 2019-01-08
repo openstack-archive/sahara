@@ -544,13 +544,26 @@ class ClusterStack(object):
         node_group_flavor = nova.get_flavor(id=node_group.flavor_id)
         image_size = node_group_flavor.disk
 
+        properties = {}
+        properties["size"] = image_size
+        properties["image"] = node_group.get_image_id()
+
+        if node_group.boot_volume_type:
+            properties["volume_type"] = node_group.boot_volume_type
+
+        if node_group.boot_volume_availability_zone:
+            properties["availability_zone"] = (
+                node_group.boot_volume_availability_zone
+            )
+
+        if node_group.boot_volume_local_to_instance:
+            properties["scheduler_hints"] = {
+                "local_to_instance": {"get_param": "instance"}}
+
         return {
             "bootable_volume": {
                 "type": "OS::Cinder::Volume",
-                "properties": {
-                    "size": image_size,
-                    "image": node_group.get_image_id()
-                }
+                "properties": properties
             }
         }
 

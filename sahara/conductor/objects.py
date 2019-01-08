@@ -112,6 +112,12 @@ class NodeGroup(object):
     volume_type
     boot_from_volume - If set to True, the base image will be converted to a
                        bootable volume.
+    boot_volume_type
+    boot_volume_availability_zone - name of Cinder availability zone for
+                                    spawning bootable volume.
+    boot_volume_local_to_instance - indicates if boot volume and instance
+                                    should be c reated on the same physical
+                                    host.
     floating_ip_pool - Floating IP Pool name used to assign Floating IPs to
                        instances in this Node Group
     security_groups - List of security groups for instances in this Node Group
@@ -234,6 +240,9 @@ class NodeGroupTemplate(object):
     volume_mount_prefix
     volume_type
     boot_from_volume
+    boot_volume_type
+    boot_volume_availability_zone
+    boot_volume_local_to_instance
     floating_ip_pool
     security_groups
     auto_security_group

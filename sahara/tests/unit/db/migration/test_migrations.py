@@ -634,6 +634,14 @@ class SaharaMigrationsCheckers(object):
         self.assertColumnExists(engine, 'templates_relations',
                                 'boot_from_volume')
 
+    def _check_035(self, engine, data):
+        for col in ['boot_volume_type',
+                    'boot_volume_availability_zone',
+                    'boot_volume_local_to_instance']:
+            self.assertColumnExists(engine, 'node_groups', col)
+            self.assertColumnExists(engine, 'node_group_templates', col)
+            self.assertColumnExists(engine, 'templates_relations', col)
+
 
 class TestMigrationsMySQL(SaharaMigrationsCheckers,
                           base.BaseWalkMigrationTestCase,

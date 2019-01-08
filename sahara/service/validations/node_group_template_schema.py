@@ -122,6 +122,15 @@ NODE_GROUP_TEMPLATE_SCHEMA_V2["required"].append("plugin_version")
 NODE_GROUP_TEMPLATE_SCHEMA_V2["properties"].update({
     "boot_from_volume": {
         "type": "boolean",
+    },
+    "boot_volume_type": {
+        "type": "string",
+    },
+    "boot_volume_availability_zone": {
+        "type": "string",
+    },
+    "boot_volume_local_to_instance": {
+        "type": "boolean",
     }})
 
 
