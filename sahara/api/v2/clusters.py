@@ -59,7 +59,7 @@ def clusters_create(data):
     else:
         result = api.create_cluster(data).to_wrapped_dict()
         u._replace_hadoop_version_plugin_version(result['cluster'])
-        u._replace_tenant_id_project_id(c['cluster'])
+        u._replace_tenant_id_project_id(result['cluster'])
         return u.render(result)
 
 
