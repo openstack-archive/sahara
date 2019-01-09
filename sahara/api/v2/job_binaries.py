@@ -27,6 +27,7 @@ rest = u.RestV2('job-binaries', __name__)
 @rest.post('/job-binaries')
 @acl.enforce("data-processing:job-binaries:create")
 @v.validate(v_j_b_schema.JOB_BINARY_SCHEMA, v_j_b.check_job_binary)
+@v.validate_request_params([])
 def job_binary_create(data):
     result = api.create_job_binary(data).to_wrapped_dict()
     u._replace_tenant_id_project_id(result['job_binary'])
@@ -38,6 +39,7 @@ def job_binary_create(data):
 @v.check_exists(api.get_job_binary, 'marker')
 @v.validate(None, v.validate_pagination_limit,
             v.validate_sorting_job_binaries)
+@v.validate_request_params(['name'])
 def job_binary_list():
     result = api.get_job_binaries(**u.get_request_args().to_dict())
     for jb in result:
@@ -48,6 +50,7 @@ def job_binary_list():
 @rest.get('/job-binaries/<job_binary_id>')
 @acl.enforce("data-processing:job-binaries:get")
 @v.check_exists(api.get_job_binary, 'job_binary_id')
+@v.validate_request_params([])
 def job_binary_get(job_binary_id):
     result = api.get_job_binary(job_binary_id).to_wrapped_dict()
     u._replace_tenant_id_project_id(result['job_binary'])
@@ -57,6 +60,7 @@ def job_binary_get(job_binary_id):
 @rest.delete('/job-binaries/<job_binary_id>')
 @acl.enforce("data-processing:job-binaries:delete")
 @v.check_exists(api.get_job_binary, id='job_binary_id')
+@v.validate_request_params([])
 def job_binary_delete(job_binary_id):
     api.delete_job_binary(job_binary_id)
     return u.render()
@@ -65,6 +69,7 @@ def job_binary_delete(job_binary_id):
 @rest.get('/job-binaries/<job_binary_id>/data')
 @acl.enforce("data-processing:job-binaries:get_data")
 @v.check_exists(api.get_job_binary, 'job_binary_id')
+@v.validate_request_params([])
 def job_binary_data(job_binary_id):
     data = api.get_job_binary_data(job_binary_id)
     if type(data) == dict:
@@ -75,6 +80,7 @@ def job_binary_data(job_binary_id):
 @rest.patch('/job-binaries/<job_binary_id>')
 @acl.enforce("data-processing:job-binaries:modify")
 @v.validate(v_j_b_schema.JOB_BINARY_UPDATE_SCHEMA, v_j_b.check_job_binary)
+@v.validate_request_params([])
 def job_binary_update(job_binary_id, data):
     result = api.update_job_binary(job_binary_id, data).to_wrapped_dict()
     u._replace_tenant_id_project_id(result['job_binary'])

@@ -198,3 +198,22 @@ def check_exists(get_func, *id_prop, **get_args):
         return handler
 
     return decorator
+
+
+def validate_request_params(supported_params):
+    def decorator(func):
+        @functools.wraps(func)
+        def handler(*args, **kwargs):
+            pagination_params = ['marker', 'limit', 'sort_by']
+            func_name = func.__name__
+            params = u.get_request_args()
+            for param in params.keys():
+                if (param not in supported_params and
+                        param not in pagination_params):
+                    return u.invalid_param_error(
+                        400,
+                        'The only valid params for %s are %s and %s' % (
+                            func_name, supported_params, pagination_params))
+            return func(*args, **kwargs)
+        return handler
+    return decorator

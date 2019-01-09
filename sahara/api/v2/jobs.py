@@ -31,6 +31,7 @@ rest = u.RestV2('jobs', __name__)
 @v.check_exists(api.get_job_execution, 'marker')
 @v.validate(None, v.validate_pagination_limit,
             v.validate_sorting_job_executions)
+@v.validate_request_params(['status'])
 def jobs_list():
     result = api.job_execution_list(**u.get_request_args().to_dict())
     # APIv2: renaming oozie_job_id -> engine_job_id
@@ -45,6 +46,7 @@ def jobs_list():
 @rest.post('/jobs')
 @acl.enforce("data-processing:jobs:execute")
 @v.validate(v_j_e_schema.JOB_EXEC_SCHEMA_V2, v_j_e.check_job_execution)
+@v.validate_request_params([])
 def jobs_execute(data):
     result = {'job': api.execute_job(data)}
     dict.update(result['job'],
@@ -57,6 +59,7 @@ def jobs_execute(data):
 @rest.get('/jobs/<job_id>')
 @acl.enforce("data-processing:job-executions:get")
 @v.check_exists(api.get_job_execution, id='job_id')
+@v.validate_request_params([])
 def jobs_get(job_id):
     data = u.get_request_args()
     refresh_status = six.text_type(
@@ -72,6 +75,7 @@ def jobs_get(job_id):
 @v.check_exists(api.get_job_execution, id='job_id')
 @v.validate(
     v_j_e_schema.JOB_EXEC_UPDATE_SCHEMA, v_j_e.check_job_execution_update)
+@v.validate_request_params([])
 def jobs_update(job_id, data):
     result = {'job': api.update_job_execution(job_id, data)}
     result['job'].pop('oozie_job_id', force=True)
@@ -83,6 +87,7 @@ def jobs_update(job_id, data):
 @acl.enforce("data-processing:job-executions:delete")
 @v.check_exists(api.get_job_execution, id='job_id')
 @v.validate(None, v_j_e.check_job_execution_delete)
+@v.validate_request_params([])
 def jobs_delete(job_id):
     api.delete_job_execution(job_id)
     return u.render()
