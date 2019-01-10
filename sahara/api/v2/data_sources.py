@@ -52,9 +52,9 @@ def data_source_register(data):
 @v.check_exists(api.get_data_source, 'data_source_id')
 @v.validate_request_params([])
 def data_source_get(data_source_id):
-    result = u.to_wrapped_dict(api.get_data_source, data_source_id)
+    result = api.get_data_source(data_source_id).to_wrapped_dict()
     u._replace_tenant_id_project_id(result['data_source'])
-    return result
+    return u.render(result)
 
 
 @rest.delete('/data-sources/<data_source_id>')
@@ -72,6 +72,6 @@ def data_source_delete(data_source_id):
 @v.validate(v_d_s_schema.DATA_SOURCE_UPDATE_SCHEMA)
 @v.validate_request_params([])
 def data_source_update(data_source_id, data):
-    result = u.to_wrapped_dict(api.data_source_update, data_source_id, data)
+    result = api.data_source_update(data_source_id, data).to_wrapped_dict()
     u._replace_tenant_id_project_id(result['data_source'])
-    return result
+    return u.render(result)

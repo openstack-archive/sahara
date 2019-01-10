@@ -24,10 +24,13 @@ rest = u.RestV2('job-types', __name__)
 
 @rest.get('/job-types')
 @acl.enforce("data-processing:job-types:get_all")
-@v.validate_request_params(['type', 'plugin_name', 'hadoop_version'])
+@v.validate_request_params(['type', 'plugin_name', 'plugin_version'])
 def job_types_get():
     # We want to use flat=False with to_dict() so that
     # the value of each arg is given as a list. This supports
     # filters of the form ?type=Pig&type=Java, etc.
-    return u.render(job_types=api.get_job_types(
-        **u.get_request_args().to_dict(flat=False)))
+    request_args = u.get_request_args().to_dict(flat=False)
+    if 'plugin_version' in request_args:
+        request_args['hadoop_version'] = request_args['plugin_version']
+        del request_args['plugin_version']
+    return u.render(job_types=api.get_job_types(**request_args))

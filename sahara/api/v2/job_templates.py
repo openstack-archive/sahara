@@ -24,9 +24,15 @@ import sahara.utils.api as u
 rest = u.RestV2('job-templates', __name__)
 
 
+def _replace_tenant_id_project_id_job_binary(jb_list):
+    for jb_obj in jb_list:
+        dict.update(jb_obj, {'project_id': jb_obj['tenant_id']})
+        dict.pop(jb_obj, 'tenant_id')
+
+
 @rest.get('/job-templates')
 @acl.enforce("data-processing:job-templates:get_all")
-@v.check_exists(api.get_job_templates, 'marker')
+@v.check_exists(api.get_job_template, 'marker')
 @v.validate(None, v.validate_pagination_limit,
             v.validate_sorting_jobs)
 @v.validate_request_params(['type', 'name'])
@@ -34,6 +40,8 @@ def job_templates_list():
     result = api.get_job_templates(**u.get_request_args().to_dict())
     for jt in result:
         u._replace_tenant_id_project_id(jt)
+        _replace_tenant_id_project_id_job_binary(jt['mains'])
+        _replace_tenant_id_project_id_job_binary(jt['libs'])
     return u.render(res=result, name='job_templates')
 
 
@@ -44,35 +52,41 @@ def job_templates_list():
 def job_templates_create(data):
     result = {'job_template': api.create_job_template(data).to_dict()}
     u._replace_tenant_id_project_id(result['job_template'])
+    _replace_tenant_id_project_id_job_binary(result['job_template']['mains'])
+    _replace_tenant_id_project_id_job_binary(result['job_template']['libs'])
     return u.render(result)
 
 
 @rest.get('/job-templates/<job_templates_id>')
 @acl.enforce("data-processing:job-templates:get")
-@v.check_exists(api.get_job_templates, id='job_templates_id')
+@v.check_exists(api.get_job_template, id='job_templates_id')
 @v.validate_request_params([])
 def job_templates_get(job_templates_id):
     result = {'job_template': api.get_job_template(
         job_templates_id).to_dict()}
     u._replace_tenant_id_project_id(result['job_template'])
+    _replace_tenant_id_project_id_job_binary(result['job_template']['mains'])
+    _replace_tenant_id_project_id_job_binary(result['job_template']['libs'])
     return u.render(result)
 
 
 @rest.patch('/job-templates/<job_templates_id>')
 @acl.enforce("data-processing:jobs:modify")
-@v.check_exists(api.get_job_templates, id='job_templates_id')
+@v.check_exists(api.get_job_template, id='job_templates_id')
 @v.validate(v_j_schema.JOB_UPDATE_SCHEMA)
 @v.validate_request_params([])
 def job_templates_update(job_templates_id, data):
     result = {'job_template': api.update_job_template(
         job_templates_id, data).to_dict()}
     u._replace_tenant_id_project_id(result['job_template'])
+    _replace_tenant_id_project_id_job_binary(result['job_template']['mains'])
+    _replace_tenant_id_project_id_job_binary(result['job_template']['libs'])
     return u.render(result)
 
 
 @rest.delete('/job-templates/<job_templates_id>')
 @acl.enforce("data-processing:jobs:delete")
-@v.check_exists(api.get_job_templates, id='job_templates_id')
+@v.check_exists(api.get_job_template, id='job_templates_id')
 @v.validate_request_params([])
 def job_templates_delete(job_templates_id):
     api.delete_job_template(job_templates_id)

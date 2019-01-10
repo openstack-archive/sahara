@@ -27,16 +27,28 @@ import sahara.utils.api as u
 rest = u.RestV2('clusters', __name__)
 
 
+def _replace_tenant_id_project_id_provision_steps(c):
+    if 'provision_progress' in c:
+        for step in c['provision_progress']:
+            dict.update(step, {'project_id': step['tenant_id']})
+            dict.pop(step, 'tenant_id')
+
+
 @rest.get('/clusters')
 @acl.enforce("data-processing:clusters:get_all")
 @v.check_exists(api.get_cluster, 'marker')
 @v.validate(None, v.validate_pagination_limit)
-@v.validate_request_params(['plugin_name', 'hadoop_version', 'name'])
+@v.validate_request_params(['plugin_name', 'plugin_version', 'name'])
 def clusters_list():
-    result = api.get_clusters(**u.get_request_args().to_dict())
+    request_args = u.get_request_args().to_dict()
+    if 'plugin_version' in request_args:
+        request_args['hadoop_version'] = request_args['plugin_version']
+        del request_args['plugin_version']
+    result = api.get_clusters(**request_args)
     for c in result:
         u._replace_hadoop_version_plugin_version(c)
         u._replace_tenant_id_project_id(c)
+        _replace_tenant_id_project_id_provision_steps(c)
     return u.render(res=result, name='clusters')
 
 
@@ -73,13 +85,14 @@ def clusters_scale(cluster_id, data):
         api.scale_cluster, cluster_id, data)
     u._replace_hadoop_version_plugin_version(result['cluster'])
     u._replace_tenant_id_project_id(result['cluster'])
+    _replace_tenant_id_project_id_provision_steps(result['cluster'])
     return u.render(result)
 
 
 @rest.get('/clusters/<cluster_id>')
 @acl.enforce("data-processing:clusters:get")
 @v.check_exists(api.get_cluster, 'cluster_id')
-@v.validate_request_params([])
+@v.validate_request_params(['show_progress'])
 def clusters_get(cluster_id):
     data = u.get_request_args()
     show_events = six.text_type(
@@ -88,19 +101,21 @@ def clusters_get(cluster_id):
         api.get_cluster, cluster_id, show_events)
     u._replace_hadoop_version_plugin_version(result['cluster'])
     u._replace_tenant_id_project_id(result['cluster'])
+    _replace_tenant_id_project_id_provision_steps(result['cluster'])
     return u.render(result)
 
 
 @rest.patch('/clusters/<cluster_id>')
 @acl.enforce("data-processing:clusters:modify")
 @v.check_exists(api.get_cluster, 'cluster_id')
-@v.validate(v_c_schema.CLUSTER_UPDATE_SCHEMA, v_c.check_cluster_update)
+@v.validate(v_c_schema.CLUSTER_UPDATE_SCHEMA_V2, v_c.check_cluster_update)
 @v.validate_request_params([])
 def clusters_update(cluster_id, data):
     result = u.to_wrapped_dict_no_render(
         api.update_cluster, cluster_id, data)
     u._replace_hadoop_version_plugin_version(result['cluster'])
     u._replace_tenant_id_project_id(result['cluster'])
+    _replace_tenant_id_project_id_provision_steps(result['cluster'])
     return u.render(result)
 
 

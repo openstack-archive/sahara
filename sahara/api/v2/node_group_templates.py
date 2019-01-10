@@ -30,9 +30,13 @@ rest = u.RestV2('node-group-templates', __name__)
 @v.check_exists(api.get_node_group_template, 'marker')
 @v.validate(None, v.validate_pagination_limit,
             v.validate_sorting_node_group_templates)
-@v.validate_request_params(['plugin_name', 'hadoop_version', 'name'])
+@v.validate_request_params(['plugin_name', 'plugin_version', 'name'])
 def node_group_templates_list():
-    result = api.get_node_group_templates(**u.get_request_args().to_dict())
+    request_args = u.get_request_args().to_dict()
+    if 'plugin_version' in request_args:
+        request_args['hadoop_version'] = request_args['plugin_version']
+        del request_args['plugin_version']
+    result = api.get_node_group_templates(**request_args)
     for ngt in result:
         u._replace_hadoop_version_plugin_version(ngt)
         u._replace_tenant_id_project_id(ngt)

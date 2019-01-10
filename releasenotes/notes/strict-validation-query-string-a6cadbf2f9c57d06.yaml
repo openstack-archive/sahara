@@ -1,0 +1,5 @@
+---
+other:
+  - In APIv2 there is now strict checking of parameters in the query string.
+    This means that unexpected values in the query string will give a 400
+    error (as opposed to previously being ignored, or causing a 500 error).
