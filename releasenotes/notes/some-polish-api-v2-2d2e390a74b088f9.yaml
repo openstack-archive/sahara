@@ -1,0 +1,12 @@
+---
+other:
+  - Some polishings to APIv2 have been made in an effort to bring it from
+    experimental (and therefore, evolving and unpredictable) to stable. More
+    instances of `tenant_id` have been changed to `project_id`, in the
+    cluster and job template APIs. `job_id` was changed to `job_template_id`
+    in the job API. The newly-minted query string validation feature has been
+    fixed to allow `show_progress` as a parameter on cluster GET; on a similar
+    note some APIv2 endpoints which previously could be filtered by
+    `hadoop_version` are now filtered by `plugin_version` instead. Also, the
+    schema for cluster PATCH in APIv1.1 now no longer includes the key
+    `update_keypair`; its prior inclusion was a mistake.

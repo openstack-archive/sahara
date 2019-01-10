@@ -71,9 +71,6 @@ CLUSTER_UPDATE_SCHEMA = {
         "description": {
             "type": ["string", "null"]
         },
-        "update_keypair": {
-            "type": ["boolean", "null"]
-        },
         "name": {
             "type": "string",
             "minLength": 1,
@@ -99,6 +96,11 @@ CLUSTER_UPDATE_SCHEMA = {
     "additionalProperties": False,
     "required": []
 }
+CLUSTER_UPDATE_SCHEMA_V2 = copy.deepcopy(CLUSTER_UPDATE_SCHEMA)
+CLUSTER_UPDATE_SCHEMA_V2['properties'].update({
+    "update_keypair": {
+        "type": ["boolean", "null"]
+    }})
 
 CLUSTER_SCALING_SCHEMA = {
     "type": "object",

@@ -26,6 +26,11 @@ import sahara.utils.api as u
 rest = u.RestV2('jobs', __name__)
 
 
+def _replace_job_id_job_template_id(job_obj):
+    dict.update(job_obj, {'job_template_id': job_obj['job_id']})
+    dict.pop(job_obj, 'job_id')
+
+
 @rest.get('/jobs')
 @acl.enforce("data-processing:job-executions:get_all")
 @v.check_exists(api.get_job_execution, 'marker')
@@ -40,6 +45,7 @@ def jobs_list():
     for je in result:
         je.pop('oozie_job_id', force=True)
         u._replace_tenant_id_project_id(je)
+        _replace_job_id_job_template_id(je)
     return u.render(res=result, name='jobs')
 
 
@@ -53,6 +59,7 @@ def jobs_execute(data):
                 {'engine_job_id': result['job']['oozie_job_id']})
     dict.pop(result['job'], 'oozie_job_id')
     u._replace_tenant_id_project_id(result['job'])
+    _replace_job_id_job_template_id(result['job'])
     return u.render(result)
 
 
@@ -67,6 +74,7 @@ def jobs_get(job_id):
     result = {'job': api.get_job_execution(job_id, refresh_status)}
     result['job'].pop('oozie_job_id', force=True)
     u._replace_tenant_id_project_id(result['job'])
+    _replace_job_id_job_template_id(result['job'])
     return u.render(result)
 
 
@@ -80,6 +88,7 @@ def jobs_update(job_id, data):
     result = {'job': api.update_job_execution(job_id, data)}
     result['job'].pop('oozie_job_id', force=True)
     u._replace_tenant_id_project_id(result['job'])
+    _replace_job_id_job_template_id(result['job'])
     return u.render(result)
 
 
