@@ -32,7 +32,7 @@ class VersionResponseMiddlewareV1(base.Middleware):
         if re.match(r"^/*$", path):
             response = webob.Response(request=req, status=300,
                                       content_type="application/json")
-            response.body = jsonutils.dumps(self._get_versions(req))
+            response.body = jsonutils.dump_as_bytes(self._get_versions(req))
             return response
         else:
             return self.application
