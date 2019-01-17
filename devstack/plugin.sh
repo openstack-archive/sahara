@@ -291,7 +291,7 @@ function start_sahara {
 function configure_tempest_for_sahara {
     if is_service_enabled tempest; then
         iniset $TEMPEST_CONFIG service_available sahara True
-        iniset $TEMPEST_CONFIG data-processing-feature-enabled plugins $SAHARA_ENABLED_PLUGINS
+        iniset $TEMPEST_CONFIG data-processing-feature-enabled plugins $SAHARA_INSTALLED_PLUGINS
     fi
 }
 
@@ -320,8 +320,8 @@ function is_sahara_enabled {
     fi
 }
 
-function is_plugin_enabled {
-    if [ "${SAHARA_ENABLED_PLUGINS/$1}" = "$SAHARA_ENABLED_PLUGINS" ] ; then
+function is_plugin_required {
+    if [ "${SAHARA_INSTALLED_PLUGINS/$1}" = "$SAHARA_INSTALLED_PLUGINS" ] ; then
         return 1
     else
         return 0
@@ -333,22 +333,22 @@ if is_service_enabled sahara; then
     if [[ "$1" == "stack" && "$2" == "install" ]]; then
         echo_summary "Installing sahara"
         install_sahara
-        if is_plugin_enabled ambari; then
+        if is_plugin_required ambari; then
             install_ambari
         fi
-        if is_plugin_enabled cdh; then
+        if is_plugin_required cdh; then
             install_cdh
         fi
-        if is_plugin_enabled mapr; then
+        if is_plugin_required mapr; then
             install_mapr
         fi
-        if is_plugin_enabled spark; then
+        if is_plugin_required spark; then
             install_spark
         fi
-        if is_plugin_enabled storm; then
+        if is_plugin_required storm; then
             install_storm
         fi
-        if is_plugin_enabled vanilla; then
+        if is_plugin_required vanilla; then
             install_vanilla
         fi
         install_python_saharaclient

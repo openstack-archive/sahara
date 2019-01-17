@@ -62,7 +62,7 @@ for extra_opt in ["log-exchange", "host", "port"]:
 
 def add_plugin_parsers(subparsers):
     api.setup_plugins()
-    for plugin in CONF.plugins:
+    for plugin in api.get_loaded_plugins():
         args_by_version = api.get_plugin_arguments(plugin)
         if all(args is NotImplemented for version, args
                in six.iteritems(args_by_version)):
