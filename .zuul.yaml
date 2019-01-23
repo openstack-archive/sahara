@@ -59,6 +59,7 @@
         - sahara-buildimages-ambari
         - sahara-buildimages-cloudera
         - sahara-buildimages-mapr
+        - sahara-buildimages-spark
         - sahara-tests-scenario-multinode-spark
         - sahara-tests-scenario-py3
 
@@ -117,3 +118,9 @@
     parent: sahara-buildimages-base
     vars:
       sahara_plugin: mapr
+
+- job:
+    name: sahara-buildimages-spark
+    parent: sahara-buildimages-base
+    vars:
+      sahara_plugin: spark
