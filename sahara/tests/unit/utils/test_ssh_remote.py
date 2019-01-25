@@ -455,7 +455,7 @@ class TestInstanceInteropHelper(base.SaharaTestCase):
         instance = FakeInstance('inst13', '123',
                                 '10.0.0.13', '10.0.0.13', 'user13', 'key13')
         remote = ssh_remote.InstanceInteropHelper(instance)
-        description = ('In file "file" replacing line begining with string'
+        description = ('In file "file" replacing line begining with string '
                        '"str" with "newline"')
 
         remote.replace_remote_line("file", "str", "newline")

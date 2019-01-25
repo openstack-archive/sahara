@@ -36,7 +36,7 @@ CONF.register_cli_opts([
         'root-filesystem',
         dest='root_fs',
         required=False,
-        help=_("The filesystem to mount as the root volume on the image. No"
+        help=_("The filesystem to mount as the root volume on the image. No "
                "value is required if only one filesystem is detected.")),
     cfg.BoolOpt(
         'test-only',

@@ -110,7 +110,7 @@ class TestShareValidations(u.ValidationTestCase):
                 }],
             bad_req_i=(
                 1, 'INVALID_DATA',
-                'Paths must be absolute Linux paths starting with "/"'
+                'Paths must be absolute Linux paths starting with "/" '
                 'and may not contain nulls.'))
 
         self._assert_create_object_validation(
@@ -121,7 +121,7 @@ class TestShareValidations(u.ValidationTestCase):
                 }],
             bad_req_i=(
                 1, 'INVALID_DATA',
-                'Paths must be absolute Linux paths starting with "/"'
+                'Paths must be absolute Linux paths starting with "/" '
                 'and may not contain nulls.'))
 
         self.assertEqual(0, f_client.call_count)

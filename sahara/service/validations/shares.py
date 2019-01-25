@@ -58,7 +58,7 @@ def check_shares(data):
     for path in paths:
         if not path.startswith('/') or '\x00' in path:
             raise ex.InvalidDataException(
-                _('Paths must be absolute Linux paths starting with "/"'
+                _('Paths must be absolute Linux paths starting with "/" '
                   'and may not contain nulls.'))
 
     client = manila.client()
