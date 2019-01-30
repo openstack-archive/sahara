@@ -202,6 +202,7 @@ class TestJobInterfaceValidation(u.ValidationTestCase):
         self._assert_create_object_validation(data=job)
         assert param['value_type'] == j_i.DEFAULT_DATA_TYPE
 
+
 int_arg = collections.namedtuple("int_arg",
                                  ["name", "mapping_type", "location",
                                   "value_type", "required", "default"])

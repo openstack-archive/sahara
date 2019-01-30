@@ -79,14 +79,14 @@ class TestImages(base.SaharaTestCase):
     @mock.patch('sahara.utils.openstack.images.SaharaImageManager.get')
     @mock.patch('sahara.utils.openstack.images.SaharaImageManager.delete_meta')
     def test_unset_image_info(self, delete_meta, get_image):
-            manager = sahara_images.image_manager()
-            image = mock.MagicMock()
-            image.tags = ['fake', 'fake_2.0']
-            image.username = 'ubuntu'
-            image.description = 'some description'
-            get_image.return_value = image
-            manager.unset_image_info('id')
-            self.assertEqual(
-                ('id', ['_sahara_tag_fake', '_sahara_tag_fake_2.0',
-                        '_sahara_description', '_sahara_username']),
-                delete_meta.call_args[0])
+        manager = sahara_images.image_manager()
+        image = mock.MagicMock()
+        image.tags = ['fake', 'fake_2.0']
+        image.username = 'ubuntu'
+        image.description = 'some description'
+        get_image.return_value = image
+        manager.unset_image_info('id')
+        self.assertEqual(
+            ('id', ['_sahara_tag_fake', '_sahara_tag_fake_2.0',
+                    '_sahara_description', '_sahara_username']),
+            delete_meta.call_args[0])

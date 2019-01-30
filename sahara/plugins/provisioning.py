@@ -319,6 +319,7 @@ class ValidationError(object):
     def __repr__(self):
         return "<ValidationError %s>" % self.config.name
 
+
 # COMMON FOR ALL PLUGINS CONFIGS
 
 XFS_ENABLED = Config(

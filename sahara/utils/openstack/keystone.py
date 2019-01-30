@@ -71,6 +71,7 @@ deprecated. Please add the trustee credentials you need to the [trustee]
 section of your sahara.conf file.
     """)
 
+
 opts = [
     # TODO(alazarev) Move to [keystone] section
     cfg.BoolOpt('use_identity_api_v3',

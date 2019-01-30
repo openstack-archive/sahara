@@ -54,6 +54,7 @@ def parse_env_vars():
 
     return env_vars, sys.argv[index:]
 
+
 log.info("Running %s" % ' '.join(sys.argv[1:]))
 
 try:

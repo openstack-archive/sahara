@@ -21,10 +21,10 @@ def _find_module(module, path=None):
     mod_base = module
     parent_path = None
     while '.' in mod_base:
-            first, _, mod_base = mod_base.partition('.')
-            parent_path = path
-            _, path, _ = imp.find_module(first, path)
-            path = [path]
+        first, _, mod_base = mod_base.partition('.')
+        parent_path = path
+        _, path, _ = imp.find_module(first, path)
+        path = [path]
     try:
         _, path, _ = imp.find_module(mod_base, path)
     except ImportError:
@@ -45,6 +45,7 @@ def _find_module(module, path=None):
             raise
         raise
     return path
+
 
 module_cache = dict()
 

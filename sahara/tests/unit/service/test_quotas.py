@@ -110,6 +110,7 @@ class FakeNodeGroup(object):
         self.open_ports = ports
         self.id = uuidutils.generate_uuid()
 
+
 nova_limits = {
     'absolute': {
         'maxTotalRAMSize': 10,
