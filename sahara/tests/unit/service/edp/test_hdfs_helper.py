@@ -40,7 +40,7 @@ class HDFSHelperTestCase(base.SaharaTestCase):
             mock.call(('sudo su - -c "hdfs dfs -mkdir -p '
                        '/user/sahara-hbase-lib" hdfs')),
             mock.call('hbase classpath'),
-            mock.call(('sudo su - -c "hdfs fs -put -p may.jar '
+            mock.call(('sudo su - -c "hdfs dfs -put -p may.jar '
                       '/user/sahara-hbase-lib" hdfs'))]
         self.cluster.execute_command.assert_has_calls(calls)
 
