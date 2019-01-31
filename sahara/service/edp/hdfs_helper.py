@@ -39,7 +39,7 @@ def create_hbase_common_lib(r):
         paths = stdout.split(':')
         for p in paths:
             if p.endswith(".jar"):
-                r.execute_command('sudo su - -c "hdfs fs -put -p %s %s" hdfs'
+                r.execute_command('sudo su - -c "hdfs dfs -put -p %s %s" hdfs'
                                   % (p, HBASE_COMMON_LIB_PATH))
     else:
         raise ex.RequiredServiceMissingException('hbase')
