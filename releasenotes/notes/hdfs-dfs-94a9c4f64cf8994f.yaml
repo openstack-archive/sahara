@@ -1,0 +1,5 @@
+---
+fixes:
+  - |
+    The command hdfs fs has been deprecated in favor of hdfs fs. This
+    fixes will allow the use of Hbase service.
