@@ -10,8 +10,12 @@
       jobs:
         - openstack-tox-pylint:
             voting: false
-        - sahara-tests-scenario
+        - sahara-tests-scenario:
+            vars:
+              sahara_scenario_tox_env: venv-py2
         - sahara-tests-scenario-modwsgi:
+            vars:
+              sahara_scenario_tox_env: venv-py2
             voting: false
         - sahara-tests-tempest
         - openstack-tox-cover:
@@ -20,7 +24,9 @@
     gate:
       queue: sahara
       jobs:
-        - sahara-tests-scenario
+        - sahara-tests-scenario:
+            vars:
+              sahara_scenario_tox_env: venv-py2
         - sahara-tests-tempest
         - sahara-grenade
     experimental:
@@ -29,7 +35,6 @@
         - sahara-buildimages-cloudera
         - sahara-buildimages-mapr
         - sahara-tests-scenario-multinode-spark
-        - sahara-tests-scenario-py3
     post:
       jobs:
         - openstack-tox-cover
