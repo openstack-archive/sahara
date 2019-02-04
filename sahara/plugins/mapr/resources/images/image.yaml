@@ -156,6 +156,7 @@ validators:
   - script: common/configure_extjs
   - os_case:
       - redhat:
+          - script: centos/configure_hue
           - copy_script: common/resources/package_utils.sh
           - copy_script: common/resources/packages.json
           - copy_script: common/resources/spec_5.1.0.json

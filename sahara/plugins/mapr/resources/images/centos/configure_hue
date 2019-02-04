@@ -1,0 +1,7 @@
+#!/bin/bash
+
+echo "Installing mysql compat"
+
+MARIADB_VERSION=$(rpm -qa mariadb | cut -d- -f2)
+
+rpm -ivh --nodeps http://yum.mariadb.org/$MARIADB_VERSION/rhel7-amd64/rpms/MariaDB-$MARIADB_VERSION-centos73-x86_64-compat.rpm
