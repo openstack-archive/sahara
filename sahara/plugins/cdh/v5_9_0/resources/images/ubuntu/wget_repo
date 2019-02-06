@@ -10,12 +10,12 @@ if [ ! -f /etc/apt/sources.list.d/cdh5.list ]; then
         echo "deb [arch=amd64] http://archive.cloudera.com/cdh5/ubuntu/trusty/amd64/cdh trusty-cdh$plugin_version contrib" > /etc/apt/sources.list.d/cdh5.list
         echo "deb-src http://archive.cloudera.com/cdh5/ubuntu/trusty/amd64/cdh trusty-cdh$plugin_version contrib" >> /etc/apt/sources.list.d/cdh5.list
 
-        wget -qO - http://archive-primary.cloudera.com/cdh5/ubuntu/trusty/amd64/cdh/archive.key | apt-key add -
+        wget -qO - http://archive.cloudera.com/cdh5/ubuntu/trusty/amd64/cdh/archive.key | apt-key add -
 
         echo "deb [arch=amd64] http://archive.cloudera.com/cm5/ubuntu/trusty/amd64/cm trusty-cm$plugin_version contrib" > /etc/apt/sources.list.d/cm5.list
         echo "deb-src http://archive.cloudera.com/cm5/ubuntu/trusty/amd64/cm trusty-cm$plugin_version contrib" >> /etc/apt/sources.list.d/cm5.list
 
-        wget -qO - http://archive-primary.cloudera.com/cm5/ubuntu/trusty/amd64/cm/archive.key | apt-key add -
+        wget -qO - http://archive.cloudera.com/cm5/ubuntu/trusty/amd64/cm/archive.key | apt-key add -
 
         wget -O /etc/apt/sources.list.d/kms.list http://archive.cloudera.com/navigator-keytrustee5/ubuntu/trusty/amd64/navigator-keytrustee/cloudera.list
         wget -qO - http://archive.cloudera.com/navigator-keytrustee5/ubuntu/trusty/amd64/navigator-keytrustee/archive.key | apt-key add -
