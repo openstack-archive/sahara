@@ -23,7 +23,7 @@ class BasePluginsSupportTest(testtools.TestCase):
 
     def setUp(self):
         super(BasePluginsSupportTest, self).setUp()
-        main.CONF.set_override('plugins', ['fake'])
+        main.CONF.set_override('plugins', ['fake', 'cdh', 'spark'])
         pb.setup_plugins()
 
     def test_plugins_loaded(self):

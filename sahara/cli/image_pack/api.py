@@ -111,6 +111,10 @@ def setup_plugins():
     plugins_base.setup_plugins()
 
 
+def get_loaded_plugins():
+    return plugins_base.PLUGINS.plugins
+
+
 def get_plugin_arguments(plugin_name):
     """Gets plugin arguments, as a dict of version to argument list."""
     plugin = plugins_base.PLUGINS.get_plugin(plugin_name)

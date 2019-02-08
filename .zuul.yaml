@@ -110,7 +110,7 @@
     name: sahara-buildimages-cloudera
     parent: sahara-buildimages-base
     vars:
-      sahara_plugin: cloudera
+      sahara_plugin: cdh
 
 - job:
     name: sahara-buildimages-mapr
