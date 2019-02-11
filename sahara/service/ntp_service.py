@@ -78,8 +78,8 @@ def _configure_ntp_on_instance(instance, url):
                 LOG.warning("Unable to configure NTP service")
                 return
 
-            r.append_to_file(
-                "/etc/ntp.conf", "server {url}".format(url=url),
+            r.prepend_to_file(
+                "/etc/ntp.conf", "server {url} iburst\n".format(url=url),
                 run_as_root=True)
             _restart_ntp(r)
             try:

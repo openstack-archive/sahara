@@ -289,6 +289,7 @@ def _provision_cluster(cluster_id):
     cluster = conductor.cluster_get(ctx, cluster_id)
     context.set_step_type(_("Engine: create cluster"))
     INFRA.create_cluster(cluster)
+    ntp_service.configure_ntp(cluster_id)
 
     # configure cluster
     cluster = c_u.change_cluster_status(
@@ -300,7 +301,6 @@ def _provision_cluster(cluster_id):
     plugin.configure_cluster(cluster)
 
     # starting prepared and configured cluster
-    ntp_service.configure_ntp(cluster_id)
     cluster = c_u.change_cluster_status(
         cluster, c_u.CLUSTER_STATUS_STARTING)
 

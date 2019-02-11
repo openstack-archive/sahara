@@ -302,6 +302,19 @@ def _append_file(sftp, remote_file, data, run_as_root):
         _append_fl(sftp, remote_file, data)
 
 
+def _prepend_file(sftp, remote_file, data, run_as_root):
+    if run_as_root:
+        temp_file = 'temp-file-%s' % uuidutils.generate_uuid()
+        temp_remote_file = 'temp-remote-file-%s' % uuidutils.generate_uuid()
+        _write_fl(sftp, temp_file, data)
+        _execute_command(
+            'cat %s > %s' % (remote_file, temp_remote_file))
+        _execute_command(
+            'cat %s %s > %s' % (
+                temp_file, temp_remote_file, remote_file), run_as_root=True)
+        _execute_command('rm -f %s %s' % (temp_file, temp_remote_file))
+
+
 def _write_file_to(remote_file, data, run_as_root=False):
     global _ssh
 
@@ -330,6 +343,21 @@ def _append_to_files(files, run_as_root=False):
 
     for fl, data in six.iteritems(files):
         _append_file(sftp, fl, data, run_as_root)
+
+
+def _prepend_to_file(remote_file, data, run_as_root=False):
+    global _ssh
+
+    _prepend_file(_ssh.open_sftp(), remote_file, data, run_as_root)
+
+
+def _prepend_to_files(files, run_as_root=False):
+    global _ssh
+
+    sftp = _ssh.open_sftp()
+
+    for fl, data in six.iteritems(files):
+        _prepend_file(sftp, fl, data, run_as_root)
 
 
 def _read_file(sftp, remote_file):
@@ -871,6 +899,12 @@ class InstanceInteropHelper(remote.Remote):
         description = _('Appending to files "%s"') % list(files)
         self._log_command(description)
         self._run_s(_append_to_files, timeout, description, files, run_as_root)
+
+    def prepend_to_file(self, r_file, data, run_as_root=False, timeout=None):
+        description = _('Prepending to file "%s"') % r_file
+        self._log_command(description)
+        self._run_s(_prepend_to_file, timeout, description,
+                    r_file, data, run_as_root)
 
     def read_file_from(self, remote_file, run_as_root=False, timeout=None):
         description = _('Reading file "%s"') % remote_file
