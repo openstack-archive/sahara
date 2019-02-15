@@ -21,18 +21,37 @@ arguments:
     required: False
 
 validators:
+  - os_case:
+       - ubuntu:
+           - script:
+               apt_update:
+                   inline: apt-get update
   - argument_case:
        argument_name: java_distro
        cases:
            openjdk:
-               - package: java-1.8.0-openjdk-devel
+               - os_case:
+                   - redhat:
+                       - package: java-1.8.0-openjdk-devel
+                   - ubuntu:
+                       - argument_case:
+                            argument_name: ambari_version
+                            cases:
+                                2.6.2.0:
+                                    - package: openjdk-8-jdk
+                                2.4.3.0:
+                                    - package: openjdk-7-jdk
            oracle-java:
                - script: common/oracle_java
   - argument_case:
        argument_name: ambari_version
        cases:
            2.6.2.0:
-               - package: libtirpc-devel
+               - os_case:
+                   - redhat:
+                       - package: libtirpc-devel
+                   - ubuntu:
+                       - package: libtirpc-dev
   - os_case:
       - redhat:
           - script: centos/disable_selinux
@@ -59,17 +78,28 @@ validators:
           - package: nmap-ncat
           - package: fuse-libs
           - package: snappy-devel
+          - package: iptables-services
       - ubuntu:
           - script:
               ubuntu/wget_repo:
                 env_vars: [ambari_version]
+          - script:
+              ubuntu/setup_java_home:
+                env_vars: [java_distro]
           - package:
               - ambari-metrics-assembly
+              - ambari-server
+              - ambari-logsearch-portal
+              - ambari-logsearch-logfeeder
+              - ambari-infra-solr-client
+              - ambari-infra-solr
               - netcat
+              - iptables
+              - iptables-persistent
           - package: fuse
           - package:
-              - mysql-client-5.5
-              - mysql-server-5.5
+              - mysql-client
+              - mysql-server
               - libmysql-java
   - script: common/mysql_connector_java_link
   - package: ambari-agent
@@ -81,7 +111,6 @@ validators:
       - tar
       - rpcbind
       - rng-tools
-      - iptables-services
   - os_case:
       - redhat:
           - script: centos/disable_ambari

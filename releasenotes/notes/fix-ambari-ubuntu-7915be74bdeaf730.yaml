@@ -1,0 +1,5 @@
+---
+fixes:
+  - |
+    Fixed several bugs which prevented sahara-image-pack from generating
+    Ambari-based Ubuntu images.
