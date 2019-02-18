@@ -75,6 +75,9 @@ case "$PLUGIN" in
     "mapr")
         build_images "mapr" "5.2.0.mrv2" "centos7"
         ;;
+    "spark")
+        build_images "spark" "2.3" "centos7"
+        ;;
     *)
         echo "Invalid version"
         ;;
