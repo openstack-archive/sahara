@@ -1,0 +1,6 @@
+---
+fixes:
+  - |
+    This fixes the issue with NTP configuration where a prefered server
+    provided by the user is added to the end of the file and the defaults
+    are not deleted. Here we add the prefered server to the top of the file.
