@@ -31,6 +31,7 @@ def _get_sub_executable():
 def start_subprocess():
     return subprocess.Popen((sys.executable, _get_sub_executable()),
                             close_fds=True,
+                            bufsize=0,
                             stdin=subprocess.PIPE,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
@@ -39,12 +40,13 @@ def start_subprocess():
 def run_in_subprocess(proc, func, args=None, kwargs=None, interactive=False):
     args = args or ()
     kwargs = kwargs or {}
+
     try:
         # TODO(elmiko) these pickle usages should be reinvestigated to
         # determine a more secure manner to deploy remote commands.
-        pickle.dump(func, proc.stdin)  # nosec
-        pickle.dump(args, proc.stdin)  # nosec
-        pickle.dump(kwargs, proc.stdin)  # nosec
+        pickle.dump(func, proc.stdin, protocol=2)  # nosec
+        pickle.dump(args, proc.stdin, protocol=2)  # nosec
+        pickle.dump(kwargs, proc.stdin, protocol=2)  # nosec
         proc.stdin.flush()
 
         if not interactive:

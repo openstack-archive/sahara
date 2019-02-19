@@ -152,9 +152,9 @@ def _cleanup():
 
 
 def _read_paramimko_stream(recv_func):
-    result = ''
+    result = b''
     buf = recv_func(1024)
-    while buf != '':
+    while buf != b'':
         result += buf
         buf = recv_func(1024)
 
@@ -181,6 +181,12 @@ def _execute_command(cmd, run_as_root=False, get_stderr=False,
     # TODO(dmitryme): that could hang if stderr buffer overflows
     stdout = _read_paramimko_stream(chan.recv)
     stderr = _read_paramimko_stream(chan.recv_stderr)
+
+    if type(stdout) == bytes:
+        stdout = stdout.decode('utf-8')
+
+    if type(stderr) == bytes:
+        stderr = stderr.decode('utf-8')
 
     ret_code = chan.recv_exit_status()
 
@@ -363,7 +369,10 @@ def _read_file(sftp, remote_file):
     fl = sftp.file(remote_file, 'r')
     data = fl.read()
     fl.close()
-    return data
+    try:
+        return data.decode('utf-8')
+    except Exception:
+        return data
 
 
 def _read_file_from(remote_file, run_as_root=False):

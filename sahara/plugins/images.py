@@ -684,7 +684,7 @@ class SaharaScriptValidator(SaharaImageValidatorBase):
                              in six.iteritems(arguments)
                              if key in self.env_vars)
         script = script % {"env_vars": env_vars,
-                           "script": self.script_contents}
+                           "script": self.script_contents.decode('utf-8')}
         path = '/tmp/%s.sh' % uuidutils.generate_uuid()
         remote.write_file_to(path, script, run_as_root=True)
         _sudo(remote, 'chmod +x %s' % path)

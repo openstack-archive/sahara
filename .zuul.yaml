@@ -20,6 +20,7 @@
         - openstack-tox-cover:
             voting: false
         - sahara-grenade
+        - sahara-tests-scenario-py3
     gate:
       queue: sahara
       jobs:
@@ -28,6 +29,8 @@
         - sahara-tests-tempest
         - sahara-tests-tempest-v2
         - sahara-grenade
+        - sahara-tests-scenario-py3
+
     experimental:
       jobs:
         - sahara-buildimages-ambari
@@ -35,7 +38,6 @@
         - sahara-buildimages-mapr
         - sahara-buildimages-spark
         - sahara-tests-scenario-multinode-spark
-        - sahara-tests-scenario-py3
 
 - job:
     name: sahara-grenade

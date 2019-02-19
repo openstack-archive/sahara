@@ -274,7 +274,7 @@ class TestImages(b.SaharaTestCase):
         uuidutils.generate_uuid.return_value = hash_value
         cls = images.SaharaScriptValidator
         image_arguments = {"distro": 'centos'}
-        cmd = "It's dangerous to go alone. Run this."
+        cmd = b"It's dangerous to go alone. Run this."
         validator = cls(cmd, env_vars=image_arguments.keys(),
                         output_var="distro")
 
