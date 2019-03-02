@@ -152,6 +152,7 @@ def list_opts():
     from sahara.service.edp import job_utils
     from sahara.service.heat import heat_engine
     from sahara.service.heat import templates
+    from sahara.service import ntp_service
     from sahara.service import periodic
     from sahara.swift import swift_helper
     from sahara.utils import cluster_progress_ops as cpo
@@ -182,6 +183,7 @@ def list_opts():
                          job_utils.opts,
                          periodic.periodic_opts,
                          coordinator.coordinator_opts,
+                         ntp_service.ntp_opts,
                          proxy.opts,
                          cpo.event_log_opts,
                          base.opts,
