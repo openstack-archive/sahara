@@ -43,6 +43,7 @@ def set_conf(conf):
     global CONF
     CONF = conf
 
+
 ng_validator = api_validator.ApiValidator(ngt.NODE_GROUP_TEMPLATE_SCHEMA)
 ct_validator = api_validator.ApiValidator(clt.CLUSTER_TEMPLATE_SCHEMA)
 

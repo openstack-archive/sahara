@@ -26,12 +26,12 @@ class _FakeJobBinary(jb_base.JobBinaryType):
 
 class JobBinaryManagerSupportTest(base.SaharaTestCase):
 
-        def setUp(self):
-            super(JobBinaryManagerSupportTest, self).setUp()
-            self.job_binary = _FakeJobBinary()
+    def setUp(self):
+        super(JobBinaryManagerSupportTest, self).setUp()
+        self.job_binary = _FakeJobBinary()
 
-        def test_generate_valid_path(self):
-            jb = mock.Mock()
-            jb.name = 'jb_name.jar'
-            res = self.job_binary._generate_valid_path(jb)
-            self.assertEqual('/tmp/jb_name.jar', res)
+    def test_generate_valid_path(self):
+        jb = mock.Mock()
+        jb.name = 'jb_name.jar'
+        res = self.job_binary._generate_valid_path(jb)
+        self.assertEqual('/tmp/jb_name.jar', res)

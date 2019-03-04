@@ -289,4 +289,4 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
         )
 
     def test_cluster_create_v_default_image_required_tags(self):
-            self._assert_cluster_default_image_tags_validation()
+        self._assert_cluster_default_image_tags_validation()

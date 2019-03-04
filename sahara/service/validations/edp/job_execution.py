@@ -156,10 +156,10 @@ def check_job_execution_cancel(job_id, **kwargs):
     je = conductor.job_execution_get(ctx, job_id)
 
     if je.tenant_id != ctx.tenant_id:
-            raise ex.CancelingFailed(
-                _("Job execution with id '%s' cannot be canceled "
-                  "because it wasn't created in this tenant")
-                % job_id)
+        raise ex.CancelingFailed(
+            _("Job execution with id '%s' cannot be canceled "
+              "because it wasn't created in this tenant")
+            % job_id)
 
     if je.is_protected:
         raise ex.CancelingFailed(

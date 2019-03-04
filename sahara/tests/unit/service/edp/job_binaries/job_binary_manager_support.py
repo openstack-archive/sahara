@@ -22,48 +22,48 @@ from sahara.tests.unit import base
 
 class JobBinaryManagerSupportTest(base.SaharaTestCase):
 
-        def setUp(self):
-            super(JobBinaryManagerSupportTest, self).setUp()
-            jb_manager.setup_job_binaries()
+    def setUp(self):
+        super(JobBinaryManagerSupportTest, self).setUp()
+        jb_manager.setup_job_binaries()
 
-        def test_job_binaries_loaded(self):
-            jb_types = [jb.name for jb in
-                        jb_manager.JOB_BINARIES.get_job_binaries()]
+    def test_job_binaries_loaded(self):
+        jb_types = [jb.name for jb in
+                    jb_manager.JOB_BINARIES.get_job_binaries()]
 
-            self.assertIn('internal-db', jb_types)
-            self.assertIn('manila', jb_types)
-            self.assertIn('swift', jb_types)
+        self.assertIn('internal-db', jb_types)
+        self.assertIn('manila', jb_types)
+        self.assertIn('swift', jb_types)
 
-        def test_get_job_binary_by_url(self):
+    def test_get_job_binary_by_url(self):
 
-            with testtools.ExpectedException(ex.InvalidDataException):
-                jb_manager.JOB_BINARIES.get_job_binary_by_url('')
+        with testtools.ExpectedException(ex.InvalidDataException):
+            jb_manager.JOB_BINARIES.get_job_binary_by_url('')
 
-            with testtools.ExpectedException(ex.InvalidDataException):
-                jb_manager.JOB_BINARIES.get_job_binary_by_url('internal-db')
+        with testtools.ExpectedException(ex.InvalidDataException):
+            jb_manager.JOB_BINARIES.get_job_binary_by_url('internal-db')
 
-            self.assertEqual('internal-db', jb_manager.JOB_BINARIES
-                             .get_job_binary_by_url('internal-db://').name)
+        self.assertEqual('internal-db', jb_manager.JOB_BINARIES
+                         .get_job_binary_by_url('internal-db://').name)
 
-            self.assertEqual('manila', jb_manager.JOB_BINARIES
-                             .get_job_binary_by_url('manila://').name)
+        self.assertEqual('manila', jb_manager.JOB_BINARIES
+                         .get_job_binary_by_url('manila://').name)
 
-            self.assertEqual('swift', jb_manager.JOB_BINARIES
-                             .get_job_binary_by_url('swift://').name)
+        self.assertEqual('swift', jb_manager.JOB_BINARIES
+                         .get_job_binary_by_url('swift://').name)
 
-        def test_get_job_binary(self):
+    def test_get_job_binary(self):
 
-            with testtools.ExpectedException(ex.InvalidDataException):
-                jb_manager.JOB_BINARIES.get_job_binary('')
+        with testtools.ExpectedException(ex.InvalidDataException):
+            jb_manager.JOB_BINARIES.get_job_binary('')
 
-            with testtools.ExpectedException(ex.InvalidDataException):
-                jb_manager.JOB_BINARIES.get_job_binary('internaldb')
+        with testtools.ExpectedException(ex.InvalidDataException):
+            jb_manager.JOB_BINARIES.get_job_binary('internaldb')
 
-            self.assertEqual('internal-db', jb_manager.JOB_BINARIES
-                             .get_job_binary('internal-db').name)
+        self.assertEqual('internal-db', jb_manager.JOB_BINARIES
+                         .get_job_binary('internal-db').name)
 
-            self.assertEqual('manila', jb_manager.JOB_BINARIES
-                             .get_job_binary('manila').name)
+        self.assertEqual('manila', jb_manager.JOB_BINARIES
+                         .get_job_binary('manila').name)
 
-            self.assertEqual('swift', jb_manager.JOB_BINARIES
-                             .get_job_binary('swift').name)
+        self.assertEqual('swift', jb_manager.JOB_BINARIES
+                         .get_job_binary('swift').name)
