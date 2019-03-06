@@ -22,16 +22,12 @@ jobs_policies = [
         check_str=base.UNPROTECTED,
         description='Run job.',
         operations=[{'path': '/v1.1/{project_id}/jobs/{job_id}/execute',
-                     'method': 'POST'},
-                    {'path': '/v2/jobs',
                      'method': 'POST'}]),
     policy.DocumentedRuleDefault(
         name=base.DATA_PROCESSING_JOBS % 'get',
         check_str=base.UNPROTECTED,
         description='Show job details.',
         operations=[{'path': '/v1.1/{project_id}/jobs/{job_id}',
-                     'method': 'GET'},
-                    {'path': '/v2/jobs/{job_id}',
                      'method': 'GET'}]),
     policy.DocumentedRuleDefault(
         name=base.DATA_PROCESSING_JOBS % 'create',
@@ -42,15 +38,12 @@ jobs_policies = [
         name=base.DATA_PROCESSING_JOBS % 'get_all',
         check_str=base.UNPROTECTED,
         description='List jobs.',
-        operations=[{'path': '/v1.1/{project_id}/jobs', 'method': 'GET'},
-                    {'path': '/v2/jobs', 'method': 'GET'}]),
+        operations=[{'path': '/v1.1/{project_id}/jobs', 'method': 'GET'}]),
     policy.DocumentedRuleDefault(
         name=base.DATA_PROCESSING_JOBS % 'modify',
         check_str=base.UNPROTECTED,
         description='Update job object.',
         operations=[{'path': '/v1.1/{project_id}/jobs/{job_id}',
-                     'method': 'PATCH'},
-                    {'path': '/v2/jobs/{job_id}',
                      'method': 'PATCH'}]),
     policy.DocumentedRuleDefault(
         name=base.DATA_PROCESSING_JOBS % 'get_config_hints',
@@ -64,8 +57,6 @@ jobs_policies = [
         check_str=base.UNPROTECTED,
         description='Remove job.',
         operations=[{'path': '/v1.1/{project_id}/jobs/{job_id}',
-                     'method': 'DELETE'},
-                    {'path': '/v2/jobs/{job_id}',
                      'method': 'DELETE'}]),
 ]
 

@@ -24,7 +24,7 @@ rest = u.RestV2('images', __name__)
 
 
 @rest.get('/images')
-@acl.enforce("data-processing:images:get_all")
+@acl.enforce("data-processing:image:list")
 @v.validate_request_params(['name', 'tags', 'username'])
 def images_list():
     tags = u.get_request_args().getlist('tags')
@@ -33,7 +33,7 @@ def images_list():
 
 
 @rest.get('/images/<image_id>')
-@acl.enforce("data-processing:images:get")
+@acl.enforce("data-processing:image:get")
 @v.check_exists(api.get_image, id='image_id')
 @v.validate_request_params([])
 def images_get(image_id):
@@ -41,7 +41,7 @@ def images_get(image_id):
 
 
 @rest.post('/images/<image_id>')
-@acl.enforce("data-processing:images:register")
+@acl.enforce("data-processing:image:register")
 @v.check_exists(api.get_image, id='image_id')
 @v.validate(v_images.image_register_schema, v_images.check_image_register)
 @v.validate_request_params([])
@@ -50,7 +50,7 @@ def images_set(image_id, data):
 
 
 @rest.delete('/images/<image_id>')
-@acl.enforce("data-processing:images:unregister")
+@acl.enforce("data-processing:image:unregister")
 @v.check_exists(api.get_image, id='image_id')
 @v.validate_request_params([])
 def images_unset(image_id):
@@ -59,7 +59,7 @@ def images_unset(image_id):
 
 
 @rest.get('/images/<image_id>/tags')
-@acl.enforce("data-processing:images:get_tags")
+@acl.enforce("data-processing:image:get-tags")
 @v.check_exists(api.get_image, id='image_id')
 @v.validate_request_params([])
 def image_tags_get(image_id):
@@ -67,7 +67,7 @@ def image_tags_get(image_id):
 
 
 @rest.put('/images/<image_id>/tags', status_code=200)
-@acl.enforce("data-processing:images:set_tags")
+@acl.enforce("data-processing:image:set-tags")
 @v.check_exists(api.get_image, id='image_id')
 @v.validate(v_images.image_tags_schema, v_images.check_tags)
 @v.validate_request_params([])
@@ -76,7 +76,7 @@ def image_tags_update(image_id, data):
 
 
 @rest.delete('/images/<image_id>/tags')
-@acl.enforce("data-processing:images:remove_tags")
+@acl.enforce("data-processing:image:remove-tags")
 @v.check_exists(api.get_image, id='image_id')
 @v.validate_request_params([])
 def image_tags_delete(image_id):

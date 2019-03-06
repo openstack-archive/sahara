@@ -35,7 +35,7 @@ def _replace_tenant_id_project_id_provision_steps(c):
 
 
 @rest.get('/clusters')
-@acl.enforce("data-processing:clusters:get_all")
+@acl.enforce("data-processing:cluster:list")
 @v.check_exists(api.get_cluster, 'marker')
 @v.validate(None, v.validate_pagination_limit)
 @v.validate_request_params(['plugin_name', 'plugin_version', 'name'])
@@ -53,7 +53,7 @@ def clusters_list():
 
 
 @rest.post('/clusters')
-@acl.enforce("data-processing:clusters:create")
+@acl.enforce("data-processing:cluster:create")
 @v.validate(v_c_schema.CLUSTER_SCHEMA_V2,
             v_c.check_one_or_multiple_clusters_create)
 @v.validate_request_params([])
@@ -76,7 +76,7 @@ def clusters_create(data):
 
 
 @rest.put('/clusters/<cluster_id>')
-@acl.enforce("data-processing:clusters:scale")
+@acl.enforce("data-processing:cluster:scale")
 @v.check_exists(api.get_cluster, 'cluster_id')
 @v.validate(v_c_schema.CLUSTER_SCALING_SCHEMA_V2, v_c_s.check_cluster_scaling)
 @v.validate_request_params([])
@@ -90,7 +90,7 @@ def clusters_scale(cluster_id, data):
 
 
 @rest.get('/clusters/<cluster_id>')
-@acl.enforce("data-processing:clusters:get")
+@acl.enforce("data-processing:cluster:get")
 @v.check_exists(api.get_cluster, 'cluster_id')
 @v.validate_request_params(['show_progress'])
 def clusters_get(cluster_id):
@@ -106,7 +106,7 @@ def clusters_get(cluster_id):
 
 
 @rest.patch('/clusters/<cluster_id>')
-@acl.enforce("data-processing:clusters:modify")
+@acl.enforce("data-processing:cluster:update")
 @v.check_exists(api.get_cluster, 'cluster_id')
 @v.validate(v_c_schema.CLUSTER_UPDATE_SCHEMA_V2, v_c.check_cluster_update)
 @v.validate_request_params([])
@@ -120,7 +120,7 @@ def clusters_update(cluster_id, data):
 
 
 @rest.delete('/clusters/<cluster_id>')
-@acl.enforce("data-processing:clusters:delete")
+@acl.enforce("data-processing:cluster:delete")
 @v.check_exists(api.get_cluster, 'cluster_id')
 @v.validate(v_c_schema.CLUSTER_DELETE_SCHEMA_V2, v_c.check_cluster_delete)
 @v.validate_request_params([])

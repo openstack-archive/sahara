@@ -24,14 +24,14 @@ rest = u.RestV2('plugins', __name__)
 
 
 @rest.get('/plugins')
-@acl.enforce("data-processing:plugins:get_all")
+@acl.enforce("data-processing:plugin:list")
 @v.validate_request_params([])
 def plugins_list():
     return u.render(plugins=[p.dict for p in api.get_plugins()])
 
 
 @rest.get('/plugins/<plugin_name>')
-@acl.enforce("data-processing:plugins:get")
+@acl.enforce("data-processing:plugin:get")
 @v.check_exists(api.get_plugin, plugin_name='plugin_name')
 @v.validate_request_params([])
 def plugins_get(plugin_name):
@@ -39,7 +39,7 @@ def plugins_get(plugin_name):
 
 
 @rest.get('/plugins/<plugin_name>/<version>')
-@acl.enforce("data-processing:plugins:get_version")
+@acl.enforce("data-processing:plugin:get-version")
 @v.check_exists(api.get_plugin, plugin_name='plugin_name', version='version')
 @v.validate_request_params([])
 def plugins_get_version(plugin_name, version):
@@ -47,7 +47,7 @@ def plugins_get_version(plugin_name, version):
 
 
 @rest.patch('/plugins/<plugin_name>')
-@acl.enforce("data-processing:plugins:patch")
+@acl.enforce("data-processing:plugin:update")
 @v.check_exists(api.get_plugin, plugin_name='plugin_name')
 @v.validate(v_p.plugin_update_validation_jsonschema(), v_p.check_plugin_update)
 @v.validate_request_params([])

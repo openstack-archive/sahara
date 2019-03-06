@@ -31,7 +31,7 @@ def _replace_tenant_id_project_id_job_binary(jb_list):
 
 
 @rest.get('/job-templates')
-@acl.enforce("data-processing:job-templates:get_all")
+@acl.enforce("data-processing:job-template:list")
 @v.check_exists(api.get_job_template, 'marker')
 @v.validate(None, v.validate_pagination_limit,
             v.validate_sorting_jobs)
@@ -46,7 +46,7 @@ def job_templates_list():
 
 
 @rest.post('/job-templates')
-@acl.enforce("data-processing:job-templates:create")
+@acl.enforce("data-processing:job-template:create")
 @v.validate(v_j_schema.JOB_SCHEMA, v_j.check_mains_libs, v_j.check_interface)
 @v.validate_request_params([])
 def job_templates_create(data):
@@ -58,7 +58,7 @@ def job_templates_create(data):
 
 
 @rest.get('/job-templates/<job_templates_id>')
-@acl.enforce("data-processing:job-templates:get")
+@acl.enforce("data-processing:job-template:get")
 @v.check_exists(api.get_job_template, id='job_templates_id')
 @v.validate_request_params([])
 def job_templates_get(job_templates_id):
@@ -71,7 +71,7 @@ def job_templates_get(job_templates_id):
 
 
 @rest.patch('/job-templates/<job_templates_id>')
-@acl.enforce("data-processing:jobs:modify")
+@acl.enforce("data-processing:job-template:update")
 @v.check_exists(api.get_job_template, id='job_templates_id')
 @v.validate(v_j_schema.JOB_UPDATE_SCHEMA)
 @v.validate_request_params([])
@@ -85,7 +85,7 @@ def job_templates_update(job_templates_id, data):
 
 
 @rest.delete('/job-templates/<job_templates_id>')
-@acl.enforce("data-processing:jobs:delete")
+@acl.enforce("data-processing:job-template:delete")
 @v.check_exists(api.get_job_template, id='job_templates_id')
 @v.validate_request_params([])
 def job_templates_delete(job_templates_id):
@@ -94,7 +94,7 @@ def job_templates_delete(job_templates_id):
 
 
 @rest.get('/job-templates/config-hints/<job_type>')
-@acl.enforce("data-processing:jobs:get_config_hints")
+@acl.enforce("data-processing:job-template:get-config-hints")
 @v.check_exists(api.get_job_config_hints, job_type='job_type')
 @v.validate_request_params([])
 def job_config_hints_get(job_type):

@@ -32,7 +32,7 @@ def _replace_job_id_job_template_id(job_obj):
 
 
 @rest.get('/jobs')
-@acl.enforce("data-processing:job-executions:get_all")
+@acl.enforce("data-processing:job:list")
 @v.check_exists(api.get_job_execution, 'marker')
 @v.validate(None, v.validate_pagination_limit,
             v.validate_sorting_job_executions)
@@ -50,7 +50,7 @@ def jobs_list():
 
 
 @rest.post('/jobs')
-@acl.enforce("data-processing:jobs:execute")
+@acl.enforce("data-processing:job:execute")
 @v.validate(v_j_e_schema.JOB_EXEC_SCHEMA_V2, v_j_e.check_job_execution)
 @v.validate_request_params([])
 def jobs_execute(data):
@@ -64,7 +64,7 @@ def jobs_execute(data):
 
 
 @rest.get('/jobs/<job_id>')
-@acl.enforce("data-processing:job-executions:get")
+@acl.enforce("data-processing:job:get")
 @v.check_exists(api.get_job_execution, id='job_id')
 @v.validate_request_params([])
 def jobs_get(job_id):
@@ -79,7 +79,7 @@ def jobs_get(job_id):
 
 
 @rest.patch('/jobs/<job_id>')
-@acl.enforce("data-processing:job-executions:modify")
+@acl.enforce("data-processing:job:update")
 @v.check_exists(api.get_job_execution, id='job_id')
 @v.validate(
     v_j_e_schema.JOB_EXEC_UPDATE_SCHEMA, v_j_e.check_job_execution_update)
@@ -93,7 +93,7 @@ def jobs_update(job_id, data):
 
 
 @rest.delete('/jobs/<job_id>')
-@acl.enforce("data-processing:job-executions:delete")
+@acl.enforce("data-processing:job:delete")
 @v.check_exists(api.get_job_execution, id='job_id')
 @v.validate(None, v_j_e.check_job_execution_delete)
 @v.validate_request_params([])
