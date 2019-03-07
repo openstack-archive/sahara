@@ -13,22 +13,10 @@
       jobs:
         - openstack-tox-pylint:
             voting: false
-        - sahara-tests-scenario:
-            required-projects:
-              - openstack/sahara-plugin-ambari
-              - openstack/sahara-plugin-cdh
-              - openstack/sahara-plugin-mapr
-              - openstack/sahara-plugin-spark
-              - openstack/sahara-plugin-storm
-              - openstack/sahara-plugin-vanilla
-        - sahara-tests-tempest:
-            required-projects:
-              - openstack/sahara-plugin-ambari
-              - openstack/sahara-plugin-cdh
-              - openstack/sahara-plugin-mapr
-              - openstack/sahara-plugin-spark
-              - openstack/sahara-plugin-storm
-              - openstack/sahara-plugin-vanilla
+        - sahara-tests-scenario
+        - sahara-tests-scenario-v2
+        - sahara-tests-tempest
+        - sahara-tests-tempest-v2
         - openstack-tox-cover:
             voting: false
         - sahara-grenade:
@@ -36,22 +24,10 @@
     gate:
       queue: sahara
       jobs:
-        - sahara-tests-scenario:
-            required-projects:
-              - openstack/sahara-plugin-ambari
-              - openstack/sahara-plugin-cdh
-              - openstack/sahara-plugin-mapr
-              - openstack/sahara-plugin-spark
-              - openstack/sahara-plugin-storm
-              - openstack/sahara-plugin-vanilla
-        - sahara-tests-tempest:
-            required-projects:
-              - openstack/sahara-plugin-ambari
-              - openstack/sahara-plugin-cdh
-              - openstack/sahara-plugin-mapr
-              - openstack/sahara-plugin-spark
-              - openstack/sahara-plugin-storm
-              - openstack/sahara-plugin-vanilla
+        - sahara-tests-scenario
+        - sahara-tests-scenario-v2
+        - sahara-tests-tempest
+        - sahara-tests-tempest-v2
         - sahara-grenade:
             voting: false
 
@@ -92,9 +68,12 @@
 - job:
     name: sahara-buildimages-base
     nodeset: centos-7
+    vars:
+      sahara_src_dir: src/git.openstack.org/openstack/sahara
     run: playbooks/buildimages/run.yaml
     timeout: 7200
     required-projects:
+      - openstack/sahara
       - openstack/sahara-plugin-ambari
       - openstack/sahara-plugin-cdh
       - openstack/sahara-plugin-mapr
