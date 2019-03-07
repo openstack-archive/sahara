@@ -66,9 +66,10 @@ class VersionResponseMiddlewareV2(VersionResponseMiddlewareV1):
         version_response = (
             super(VersionResponseMiddlewareV2, self)._get_versions(req)
         )
+        version_response["versions"][1]["status"] = "SUPPORTED"  # v1.1
         version_response["versions"].append(
             {"id": "v2",
-             "status": "EXPERIMENTAL",
+             "status": "CURRENT",
              "links": self._get_links("2", req),
              "min_version": mv.MIN_API_VERSION,
              "max_version": mv.MAX_API_VERSION
