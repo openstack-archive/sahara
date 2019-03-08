@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# ``upgrade-sahara``
+
+function configure_sahara_upgrade {
+    XTRACE=$(set +o | grep xtrace)
+    set -o xtrace
+
+    install_ambari
+    install_cdh
+    install_mapr
+    install_spark
+    install_storm
+    install_vanilla
+
+    # reset to previous state
+    $XTRACE
+}

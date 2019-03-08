@@ -45,11 +45,18 @@
           export PROJECTS="openstack/heat-tempest-plugin $PROJECTS"
           export PROJECTS="openstack/python-heatclient $PROJECTS"
           export PROJECTS="openstack/sahara-tests $PROJECTS"
+          export PROJECTS="openstack/sahara-plugin-ambari $PROJECTS"
+          export PROJECTS="openstack/sahara-plugin-cdh $PROJECTS"
+          export PROJECTS="openstack/sahara-plugin-mapr $PROJECTS"
+          export PROJECTS="openstack/sahara-plugin-spark $PROJECTS"
+          export PROJECTS="openstack/sahara-plugin-storm $PROJECTS"
+          export PROJECTS="openstack/sahara-plugin-vanilla $PROJECTS"
           export PYTHONUNBUFFERED=true
           export GRENADE_PLUGINRC="enable_grenade_plugin sahara https://git.openstack.org/openstack/sahara"
           export GRENADE_PLUGINRC+=$'\n'"enable_grenade_plugin heat https://git.openstack.org/openstack/heat"
 
           export DEVSTACK_GATE_NEUTRON=1
+          export RUN_HEAT_INTEGRATION_TESTS=False
           export DEVSTACK_GATE_TEMPEST=1
           export DEVSTACK_GATE_TEMPEST_REGEX="sahara_tempest_plugin.tests.api"
           export DEVSTACK_GATE_GRENADE=pullup

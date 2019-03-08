@@ -19,8 +19,7 @@
         - sahara-tests-tempest-v2
         - openstack-tox-cover:
             voting: false
-        - sahara-grenade:
-            voting: false
+        - sahara-grenade
     gate:
       queue: sahara
       jobs:
@@ -28,9 +27,7 @@
         - sahara-tests-scenario-v2
         - sahara-tests-tempest
         - sahara-tests-tempest-v2
-        - sahara-grenade:
-            voting: false
-
+        - sahara-grenade
     experimental:
       jobs:
         - sahara-buildimages-ambari
@@ -55,6 +52,12 @@
       - openstack/heat-tempest-plugin
       - openstack/python-heatclient
       - openstack/sahara-tests
+      - openstack/sahara-plugin-ambari
+      - openstack/sahara-plugin-cdh
+      - openstack/sahara-plugin-mapr
+      - openstack/sahara-plugin-spark
+      - openstack/sahara-plugin-storm
+      - openstack/sahara-plugin-vanilla
     irrelevant-files:
       - ^(test-|)requirements.txt$
       - ^.*\.rst$

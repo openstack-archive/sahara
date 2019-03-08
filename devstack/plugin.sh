@@ -264,8 +264,6 @@ function start_sahara {
         restart_apache_server
         tail_log sahara-api /var/log/$APACHE_NAME/sahara-api.log
     else
-        run_process sahara-all "$SAHARA_BIN_DIR/sahara-all \
-            --config-file $SAHARA_CONF_FILE"
         run_process sahara-api "$SAHARA_BIN_DIR/sahara-api \
             --config-file $SAHARA_CONF_FILE"
     fi
@@ -312,8 +310,7 @@ function stop_sahara {
 # correctly throughout devstack.
 function is_sahara_enabled {
     if is_service_enabled sahara-api || \
-        is_service_enabled sahara-eng || \
-        is_service_enabled sahara-all; then
+        is_service_enabled sahara-eng; then
         return 0
     else
         return 1
