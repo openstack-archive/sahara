@@ -39,8 +39,8 @@ def enforce(rule):
         @functools.wraps(func)
         def handler(*args, **kwargs):
             ctx = context.ctx()
-            ENFORCER.enforce(rule, {}, ctx.to_dict(), do_raise=True,
-                             exc=exceptions.Forbidden)
+            ENFORCER.authorize(rule, {}, ctx.to_dict(), do_raise=True,
+                               exc=exceptions.Forbidden)
 
             return func(*args, **kwargs)
         return handler
