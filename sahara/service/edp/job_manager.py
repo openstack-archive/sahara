@@ -260,5 +260,5 @@ def suspend_job(job_execution_id):
     conductor.job_execution_update(
         ctx, job_execution_id, {'info': {
             'status': edp.JOB_STATUS_SUSPEND_FAILED}})
-    raise e.SuspendingFailed(_("Failed to suspend job execution"
+    raise e.SuspendingFailed(_("Failed to suspend job execution "
                                "{jid}")).format(jid=job_execution_id)
