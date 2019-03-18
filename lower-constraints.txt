@@ -95,7 +95,7 @@ pbr==2.0.0
 pika-pool==0.1.3
 pika==0.10.0
 prettytable==0.7.2
-psycopg2==2.6.2
+psycopg2==2.7.3
 pyasn1==0.4.2
 pycadf==2.7.0
 pycparser==2.18
