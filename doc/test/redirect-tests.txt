@@ -5,3 +5,5 @@
 /sahara/latest/user/cdh-imagebuilder.html 301 /sahara/latest/user/cdh-plugin.html
 /sahara/latest/user/guest-requirements.html 301 /sahara/latest/user/building-guest-images.html
 /sahara/rocky/user/guest-requirements.html 301 /sahara/rocky/user/building-guest-images.html
+/sahara/latest/user/vanilla-plugin.html 301 /sahara-plugin-vanilla/latest/
+/sahara/stein/user/storm-plugin.html 301 /sahara-plugin-storm/stein/

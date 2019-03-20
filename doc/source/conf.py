@@ -60,6 +60,12 @@ openstack_projects = [
     'neutron',
     'nova',
     'oslo.middleware',
+    'sahara-plugin-ambari',
+    'sahara-plugin-cdh',
+    'sahara-plugin-mapr',
+    'sahara-plugin-spark',
+    'sahara-plugin-storm',
+    'sahara-plugin-vanilla',
     'tooz'
 ]
 

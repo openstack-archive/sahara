@@ -24,12 +24,6 @@ Plugins
    :maxdepth: 2
 
    plugins
-   vanilla-plugin
-   ambari-plugin
-   spark-plugin
-   storm-plugin
-   cdh-plugin
-   mapr-plugin
 
 
 Elastic Data Processing

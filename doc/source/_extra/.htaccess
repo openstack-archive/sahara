@@ -4,3 +4,4 @@ redirectmatch 301 ^/sahara/([^/]+)/contributor/launchpad.html$ /sahara/$1/contri
 redirectmatch 301 ^/sahara/(?!ocata|pike|queens)([^/]+)/user/vanilla-imagebuilder.html$ /sahara/$1/user/vanilla-plugin.html
 redirectmatch 301 ^/sahara/(?!ocata|pike|queens)([^/]+)/user/cdh-imagebuilder.html$ /sahara/$1/user/cdh-plugin.html
 redirectmatch 301 ^/sahara/(?!ocata|pike|queens)([^/]+)/user/guest-requirements.html$ /sahara/$1/user/building-guest-images.html
+redirectmatch 301 ^/sahara/([^/]+)/user/([^-]+)-plugin.html$ /sahara-plugin-$2/$1/

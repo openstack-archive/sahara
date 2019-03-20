@@ -6,12 +6,20 @@ enables sahara to deploy a specific data processing framework (for example,
 Hadoop) or distribution, and allows configuration of topology and
 management/monitoring tools.
 
-* :doc:`vanilla-plugin` - deploys Vanilla Apache Hadoop
-* :doc:`ambari-plugin` - deploys Hortonworks Data Platform
-* :doc:`spark-plugin` - deploys Apache Spark with Cloudera HDFS
-* :doc:`storm-plugin` - deploys Apache Storm
-* :doc:`mapr-plugin` - deploys MapR plugin with MapR File System
-* :doc:`cdh-plugin` - deploys Cloudera Hadoop
+The plugins currently developed as part of the official Sahara project are:
+
+* :sahara-plugin-ambari-doc:`Ambari Plugin <>` -
+  deploys Hortonworks Data Platform
+* :sahara-plugin-cdh-doc:`CDH Plugin <>` -
+  deploys Cloudera Hadoop
+* :sahara-plugin-mapr-doc:`MapR Plugin <>` -
+  deploys MapR plugin with MapR File System
+* :sahara-plugin-spark-doc:`Spark Plugin <>` -
+  deploys Apache Spark with Cloudera HDFS
+* :sahara-plugin-storm-doc:`Storm Plugin <>` -
+  deploys Apache Storm
+* :sahara-plugin-vanilla-doc:`Vanilla Plugin <>` -
+  deploys Vanilla Apache Hadoop
 
 Managing plugins
 ----------------
