@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sahara VERSION\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/openstack-i18n/\n"
-"POT-Creation-Date: 2018-03-02 15:05+0000\n"
+"POT-Creation-Date: 2019-03-21 18:56+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -52,30 +52,8 @@ msgid "%(message)s and following timeout was violated: %(timeout_name)s"
 msgstr "%(message)s und folgendes Timeout wurde verletzt: %(timeout_name)s"
 
 #, python-format
-msgid "%(message)s, required by %(required_by)s"
-msgstr "%(message)s, benötigt von %(required_by)s"
-
-#, python-format
 msgid "%(message)s, required by service: %(required_by)s"
 msgstr "%(message)s, wird vom Dienst benötigt: %(required_by)s"
-
-#, python-format
-msgid "%(problem)s, reason: %(reason)s"
-msgstr "%(problem)s, Grund: %(reason)s"
-
-#, python-format
-msgid "%(problem)s. %(description)s"
-msgstr "%(problem)s. %(description)s"
-
-#, python-format
-msgid "%(problem)s: %(description)s"
-msgstr "%(problem)s: %(description)s"
-
-#, python-format
-msgid "%(service)s service cannot be installed alongside %(package)s package"
-msgstr ""
-"Der Dienst %(service)s kann nicht zusammen mit dem Paket %(package)s "
-"installiert werden"
 
 #, python-format
 msgid "%s flow does not use mains"
@@ -90,16 +68,8 @@ msgid "%s flow requires main script"
 msgstr "%s flow benötigt Hauptscript"
 
 #, python-format
-msgid "%s is in running state"
-msgstr "%s befindet sich im aktiven Zustand"
-
-#, python-format
 msgid "%s is not a valid name"
 msgstr "%s ist kein gültiger Name"
-
-#, python-format
-msgid "%s is not in running state"
-msgstr "%s befindet sich nicht im aktiven Zustand"
 
 #, python-format
 msgid "%s job must specify edp.java.main_class"
@@ -122,14 +92,6 @@ msgid "%s job requires main application jar"
 msgstr "%s Job benötigt Hauptanwendung jar"
 
 #, python-format
-msgid "%s must have at least 1 volume or ephemeral drive"
-msgstr "%s muss mindestens 1 Datenträger oder ephemeres Laufwerk haben"
-
-#, python-format
-msgid "%s or more"
-msgstr "%s oder mehr"
-
-#, python-format
 msgid "'%(operation)s' timed out after %(timeout)i second(s)"
 msgstr ""
 "'%(operation)s' hat eine Zeitüberschreitung nach %(timeout)i Sekunde(n)"
@@ -137,9 +99,6 @@ msgstr ""
 #, python-format
 msgid "'%s' field is not found"
 msgstr "'%s' Feld wurde nicht gefunden"
-
-msgid "'cluster' or 'instance' argument missed"
-msgstr "Argument 'Cluster' oder 'Instanz' fehlt"
 
 msgid "'limit' must be positive integer"
 msgstr "'limit' muss eine positive Ganzzahl sein"
@@ -149,22 +108,6 @@ msgstr "'mains' und 'libs' überschneiden sich"
 
 msgid "0 or 1"
 msgstr "0 oder 1"
-
-msgid "1 or more"
-msgstr "1 oder mehr"
-
-msgid "3 or more. Odd number"
-msgstr "3 oder mehr. Ungerade Zahl"
-
-#, python-format
-msgid "API version %(minv)s is required but %(acv)s is in use."
-msgstr "API-Version %(minv)s ist erforderlich, aber %(acv)s wird verwendet."
-
-msgid "Add Hadoop Swift jar to instances"
-msgstr "Fügen Sie Hadoop Swift-Jar zu Instanzen hinzu"
-
-msgid "Add new hosts"
-msgstr "Fügen Sie neue Hosts hinzu"
 
 msgid "Admin principal for existing KDC server"
 msgstr "Admin-Prinzipal für den vorhandenen KDC-Server"
@@ -181,36 +124,6 @@ msgstr "Alle Validierungen sind fehlgeschlagen:%s"
 
 msgid "All verifications are disabled"
 msgstr "Alle Überprüfungen sind deaktiviert"
-
-#, python-format
-msgid "Ambari Monitor has responded that cluster has %(red)d critical alert(s)"
-msgstr ""
-"Ambari Monitor hat geantwortet, dass der Cluster %(red)d kritische Alarme hat"
-
-#, python-format
-msgid ""
-"Ambari Monitor has responded that cluster has %(red)d critical and "
-"%(yellow)d warning alert(s)"
-msgstr ""
-"Ambari Monitor hat geantwortet, dass der Cluster %(red)d kritisch und "
-"%(yellow)d Warnmeldung(en) hat"
-
-#, python-format
-msgid "Ambari Monitor has responded that cluster has %d warning alert(s)"
-msgstr ""
-"Ambari Monitor hat geantwortet, dass der Cluster %d-Warnmeldung(en) enthält"
-
-msgid "Ambari Monitor is healthy"
-msgstr "Ambari Monitor ist gesund"
-
-msgid "Ambari plugin of {base} or higher required to run {type} jobs"
-msgstr ""
-"Ambari-Plugin von {base} oder höher, das zum Ausführen von {type} Jobs "
-"erforderlich ist"
-
-#, python-format
-msgid "Ambari request in %s state"
-msgstr "Ambari Anfrage in %s Zustand"
 
 msgid "An error has occurred while performing a request to S3"
 msgstr "Beim Ausführen einer Anfrage an S3 ist ein Fehler aufgetreten"
@@ -283,79 +196,14 @@ msgstr ""
 msgid "Assign IPs"
 msgstr "Weisen Sie IPs zu"
 
-msgid "At least 3 JournalNodes are required for HA"
-msgstr "Mindestens 3 JournalNodes sind für HA erforderlich"
-
-msgid "At least 3 ZooKeepers are required for HA"
-msgstr "Für HA sind mindestens 3 ZooKeeper erforderlich"
-
-#, python-format
-msgid "Attribute %(attname)s of class %(classname)s is read only."
-msgstr "Attribut %(attname)s der Klasse %(classname)s ist schreibgeschützt."
-
 msgid "Available plugins"
 msgstr "Verfügbare Plugins"
 
 msgid "Available versions"
 msgstr "Verfügbare Versionen"
 
-#, python-format
-msgid "Await %s start up"
-msgstr "Warte auf %s starte"
-
-msgid "Await Cloudera agents"
-msgstr "Erwarten Sie Cloudera-Agenten"
-
-msgid "Await DataNodes start up"
-msgstr "Warten, bis DataNodes gestartet wird"
-
-msgid "Await agents"
-msgstr "Erwarten Agenten"
-
 msgid "Await for volume become detached"
 msgstr "Warten das Datenträger gelöst werden"
-
-msgid "Await starting Cloudera Manager"
-msgstr "Warte auf den Cloudera Manager"
-
-#, python-format
-msgid "CDH %s health check"
-msgstr "CDH %s Gesundheitscheck"
-
-msgid ""
-"CDH plugin cannot scale node group with processes which have no master-"
-"processes run in cluster"
-msgstr ""
-"Das CDH-Plug-in kann Knotengruppen nicht mit Prozessen skalieren, für die "
-"keine Masterprozesse im Cluster ausgeführt werden"
-
-#, python-format
-msgid "CDH plugin cannot scale nodegroup with processes: %(processes)s"
-msgstr ""
-"Das CDH-Plugin kann Knotengruppen nicht mit Prozessen skalieren: "
-"%(processes)s"
-
-msgid "CLDB failed to start"
-msgstr "CLDB konnte nicht gestartet werden"
-
-#, python-format
-msgid "CM API attribute error: %s"
-msgstr "CM-API-Attributfehler:%s"
-
-#, python-format
-msgid "CM API error: %s"
-msgstr "CM-API-Fehler:%s"
-
-#, python-format
-msgid "CM API value error: %s"
-msgstr "CM-API-Wertfehler:%s"
-
-#, python-format
-msgid "CM API version not meet requirement: %s"
-msgstr "CM API-Version erfüllt nicht die Anforderung:%s"
-
-msgid "Can not map service"
-msgstr "Der Dienst kann nicht zugeordnet werden"
 
 #, python-format
 msgid "Can't add new nodegroup. Cluster already has nodegroup with name '%s'"
@@ -373,12 +221,6 @@ msgstr ""
 #, python-format
 msgid "Can't find config '%(config_name)s' in '%(applicable_target)s'"
 msgstr "Konnte '%(config_name)s' in '%(applicable_target)s' nicht finden"
-
-msgid "Can't get response from Ambari Monitor"
-msgstr "Antwort von Ambari Monitor nicht möglich"
-
-msgid "Can't get response from Cloudera Manager"
-msgstr "Kann keine Antwort von Cloudera Manager erhalten"
 
 msgid "Can't update verification with other updates"
 msgstr "Die Überprüfung mit anderen Updates kann nicht aktualisiert werden"
@@ -408,37 +250,12 @@ msgid "Cinder is not supported"
 msgstr "Cinder wird nicht unterstützt"
 
 #, python-format
-msgid ""
-"Class %(class1)s does not derive from %(class2)s; cannot update attributes."
-msgstr ""
-"Die Klasse %(class1)s wird nicht von %(class2)s abgeleitet. Attribute können "
-"nicht aktualisiert werden."
-
-#, python-format
 msgid "Class %s is immutable!"
 msgstr "Klasse %s ist unveränderlich!"
-
-msgid "Cleanup config groups"
-msgstr "Konfigurationsgruppen bereinigen"
 
 #, python-format
 msgid "Closing HTTP session for %(host)s:%(port)s"
 msgstr "Schließen der HTTP-Sitzung für %(host)s:%(port)s"
-
-#, python-format
-msgid "Cloudera Manager has responded that service is in the %s state"
-msgstr ""
-"Cloudera Manager hat geantwortet, dass der Dienst sich im Status '%s' "
-"befindet"
-
-msgid "Cloudera Manager health check"
-msgstr "Cloudera Manager-Systemdiagnose"
-
-msgid "Cloudera Manager is Active"
-msgstr "Cloudera Manager ist Aktiv"
-
-msgid "Cloudera {base} or higher required to run {type}jobs"
-msgstr "Cloudera {base} oder höher erforderlich, um {type} Jobs auszuführen"
 
 #, python-format
 msgid "Cluster %(cluster_name)s cannot be scaled : %(reason)s"
@@ -539,10 +356,6 @@ msgid "Cluster with name '%s' already exists"
 msgstr "Cluster mit dem Namen '%s' existiert bereits"
 
 #, python-format
-msgid "Command %(method)s %(path)s failed: %(msg)s"
-msgstr "Befehl %(method)s %(path)s fehlgeschlagen: %(msg)s"
-
-#, python-format
 msgid ""
 "Composite hostname %(host)s in provisioned cluster exceeds maximum limit "
 "%(limit)s characters"
@@ -550,44 +363,13 @@ msgstr ""
 "Zusammengesetzter Hostname %(host)s im bereitgestellten Cluster "
 "überschreitet die maximale Anzahl der Zeichen %(limit)s"
 
-#, python-format
-msgid "Config '%s' missing 'value'"
-msgstr "Config '%s' fehlender 'value'"
-
-msgid "Config missing 'name'"
-msgstr "Config fehlender 'name'"
-
 msgid "Configs 'accesskey', 'secretkey', and 'endpoint' must be provided."
 msgstr ""
 "Configs 'accesskey', 'secretkey' und 'endpoint' müssen zur Verfügung "
 "gestellt werden."
 
-msgid "Configure OS"
-msgstr "Konfiguriere das Betriebssystem"
-
-msgid "Configure SSH connection"
-msgstr "Konfiguriere SSH-Verbindung"
-
-msgid "Configure Swift"
-msgstr "Konfiguriere Swift"
-
-msgid "Configure cluster topology"
-msgstr "Konfiguriere Cluster-Topologie"
-
-msgid "Configure database"
-msgstr "Datenbank konfigurieren"
-
 msgid "Configure instances"
 msgstr "Konfigurieren Sie Instanzen"
-
-msgid "Configure rack awareness"
-msgstr "Rack-Erkennung konfigurieren"
-
-msgid "Configure services"
-msgstr "Konfigurieren Sie Dienste"
-
-msgid "Configure topology data"
-msgstr "Konfigurieren Sie Topologiedaten"
 
 #, python-format
 msgid "Content type '%s' isn't supported"
@@ -599,20 +381,8 @@ msgstr "Kontext ist hier nicht verfügbar"
 msgid "Couldn't read '/etc/resolv.conf' on instances: {}."
 msgstr "'/etc/resolv.conf' konnte nicht in Instanzen gelesen werden: '{}'."
 
-msgid "Create Ambari blueprint"
-msgstr "Erstellen Sie Ambari Blueprint"
-
 msgid "Create Heat stack"
 msgstr "Erstelle einen Heat-Stapel"
-
-msgid "Create Sentry role for Hive"
-msgstr "Erstelle Sentror-Rolle für Hive"
-
-msgid "Create mgmt service"
-msgstr "Erstellen Sie einen Verwaltungsdienst"
-
-msgid "Create services"
-msgstr "Erstellen Sie Dienste"
 
 msgid "Creating cluster failed for the following reason(s): {reason}"
 msgstr ""
@@ -673,24 +443,8 @@ msgstr "DataSource mit der ID '%s' existiert nicht"
 msgid "Database object already exists"
 msgstr "Datenbankobjekt existiert bereits"
 
-#, python-format
-msgid "Decommission %s"
-msgstr "Außerkraftsetzung%s"
-
-msgid "Decommission NodeManagers and DataNodes"
-msgstr "NodeManagers und DataNodes außer Betrieb setzen"
-
-msgid "Decommission nodes"
-msgstr "Ausschussknoten"
-
-msgid "Delete instances"
-msgstr "Instanzen löschen"
-
 msgid "Deploy KDC server"
 msgstr "Stellen Sie den KDC-Server bereit"
-
-msgid "Deploy configs"
-msgstr "Stellen Sie Konfigurationen bereit"
 
 #, python-format
 msgid "Duplicate entry for Cluster: %s"
@@ -741,18 +495,6 @@ msgstr "Duplikate in Knotengruppennamen werden erkannt: %s"
 msgid "Duplicates in node processes have been detected: %s"
 msgstr "Duplikate in Knotenprozessen wurden erkannt: %s"
 
-msgid "Either 'version' or 'fullVersion' must be specified"
-msgstr "Entweder 'version' oder 'fullVersion' muss angegeben werden"
-
-msgid "Enable HBase RegionServer HA"
-msgstr "Aktivieren Sie HBase RegionServer HA"
-
-msgid "Enable NameNode HA"
-msgstr "Aktivieren Sie NameNode HA"
-
-msgid "Enable ResourceManager HA"
-msgstr "Aktivieren Sie ResourceManager HA"
-
 msgid "Engine doesn't support suspending job feature"
 msgstr "Die Engine unterstützt das Aussetzen der Jobfunktion nicht"
 
@@ -774,9 +516,6 @@ msgstr "Fehler bei der Ausführung des Befehls: '%s'"
 
 msgid "Error during suspending of job execution: {error}"
 msgstr "Fehler beim Aussetzen der Jobausführung: {error}"
-
-msgid "Execute configure.sh"
-msgstr "Führe configure.sh aus"
 
 #, python-format
 msgid "Executing \"%s\""
@@ -823,40 +562,19 @@ msgstr "Der Benutzer%s konnte nicht gefunden werden"
 msgid "Failed to perform Oozie request"
 msgstr "Oozie-Anfrage konnte nicht ausgeführt werden"
 
-msgid "Failed to suspend job execution{jid}"
-msgstr "Die Ausführung des Jobs konnte nicht angehalten werden {jid}"
-
 #, python-format
 msgid "Feature '%s' is not implemented"
 msgstr "Feature '%s' ist nicht implementiert"
 
-msgid "Finish cluster starting"
-msgstr "Beenden Sie den Clusterstart"
-
-msgid "First run cluster"
-msgstr "Erster Lauf-Cluster"
-
 #, python-format
 msgid "Floating IP pool %s not found"
 msgstr "Der Floating-IP-Pool %s wurde nicht gefunden"
-
-msgid "Generate config groups"
-msgstr "Generieren Sie Konfigurationsgruppen"
-
-msgid "Get retry max time reached."
-msgstr "Maximale Wiederholungszeit erreicht."
 
 msgid "HDFS url is incorrect, cannot determine a hostname"
 msgstr "HDFS-URL ist falsch, kann keinen Hostnamen ermitteln"
 
 msgid "HDFS url must not be empty"
 msgstr "Die HDFS-URL darf nicht leer sein"
-
-msgid "HDFS_NAMENODE should be enabled in anti_affinity."
-msgstr "HDFS_NAMENODE sollte in anti_affinity aktiviert sein."
-
-msgid "HDFS_SECONDARYNAMENODE should be enabled in anti_affinity."
-msgstr "HDFS_SECONDARYNAMENODE sollte in anti_affinity aktiviert werden."
 
 #, python-format
 msgid ""
@@ -865,32 +583,6 @@ msgid ""
 msgstr ""
 "Hadoop-Cluster sollte %(expected_count)s %(component)s-Komponente(n) "
 "enthalten. Die tatsächliche %(component)s Anzahl ist %(count)s"
-
-#, python-format
-msgid ""
-"Hadoop cluster should contain at least %(expected_count)d %(component)s "
-"component(s). Actual %(component)s count is %(actual_count)d"
-msgstr ""
-"Hadoop-Cluster sollte mindestens %(expected_count)d %(component)s-"
-"Komponente(n) enthalten. Tatsächliche %(component)s Anzahl ist "
-"%(actual_count)d"
-
-#, python-format
-msgid ""
-"Hadoop cluster should contain at most %(expected_count)d %(component)s "
-"component(s). Actual %(component)s count is %(actual_count)d"
-msgstr ""
-"Hadoop-Cluster sollte höchstens %(expected_count)d %(component)s "
-"Komponente(n) enthalten. Tatsächliche %(component)s Anzahl ist "
-"%(actual_count)d"
-
-#, python-format
-msgid ""
-"Hadoop cluster should contain odd number of %(component)s but "
-"%(actual_count)s found."
-msgstr ""
-"Der Hadoop-Cluster sollte eine ungerade Anzahl von %(component)s, aber "
-"%(actual_count)s enthalten."
 
 #, python-format
 msgid "Health check id '%s' not found!"
@@ -905,9 +597,6 @@ msgstr "Heat Stack ist fehlgeschlagen"
 #, python-format
 msgid "Heat stack failed with status %s"
 msgstr "Heat Stack ist mit Status %s fehlgeschlagen"
-
-msgid "IMPALAD must be installed on every HDFS_DATANODE"
-msgstr "IMPALAD muss auf jedem HDFS_DATANODE installiert werden"
 
 msgid ""
 "If this flag is set, no changes will be made to the image; instead, the "
@@ -944,37 +633,6 @@ msgstr ""
 msgid "Incorrect path"
 msgstr "Falscher Pfad"
 
-msgid "Init Sentry DB schema"
-msgstr "Init-Sentry-DB-Schema"
-
-msgid "Initializing MapR-FS"
-msgstr "Initialisieren von MapR-FS"
-
-#, python-format
-msgid "Install %s service"
-msgstr "Installieren Sie den %s Dienst"
-
-msgid "Install Java"
-msgstr "Installiere Java"
-
-msgid "Install MapR repositories"
-msgstr "Installiere MapR-Repositories"
-
-msgid "Install MySQL client"
-msgstr "Installiere MySQL-Client"
-
-msgid "Install Scala"
-msgstr "Installiere Scala"
-
-msgid "Install packages"
-msgstr "Installiere Pakete"
-
-msgid "Install security repos"
-msgstr "Installiere Sicherheitsrepositionen"
-
-msgid "Install services on hosts"
-msgstr "Installieren Sie Dienste auf Hosts"
-
 #, python-format
 msgid "Installing packages \"%s\""
 msgstr "Pakete installieren '%s'"
@@ -1010,10 +668,6 @@ msgstr "Ungültiger Jobstatus"
 msgid "Invalid Time Format"
 msgstr "Ungültiges Zeitformat"
 
-#, python-format
-msgid "Invalid argument type %s"
-msgstr "Ungültiger Argumenttyp %s"
-
 msgid "Invalid credentials"
 msgstr "Ungültige Anmeldeinformationen"
 
@@ -1025,10 +679,6 @@ msgstr "Ungültige Job-Binärdatei"
 
 msgid "Invalid object reference"
 msgstr "Ungültige Objektreferenz"
-
-#, python-format
-msgid "Invalid property %(attname)s for class %(classname)s."
-msgstr "Ungültige Eigenschaft %(attname)s für Klasse %(classname)s."
 
 msgid "Invalid status parameter"
 msgstr "Ungültiger Statusparameter"
@@ -1183,9 +833,6 @@ msgstr "Manila-URL-Schema muss 'manila' sein"
 msgid "MapR FS url must not be empty"
 msgstr "Die MapR FS-URL darf nicht leer sein"
 
-msgid "Migrating Hue database"
-msgstr "Migrieren der Hue-Datenbank"
-
 msgid "Mount volumes to {inst_name} instance"
 msgstr "Hänge Datenträger an Instanz {inst_name} an"
 
@@ -1211,15 +858,8 @@ msgstr "Netzwerk %s wurde nicht gefunden"
 msgid "Neutron router corresponding to network %s is not found"
 msgstr "Neutron Router entsprechend Netzwerk %s wurde nicht gefunden"
 
-msgid "No alerts found"
-msgstr "Keine Alarme gefunden"
-
 msgid "No credentials provided for Swift"
 msgstr "Für Swift wurden keine Anmeldeinformationen angegeben"
-
-#, python-format
-msgid "Node \"%(ng_name)s\" is missing component %(component)s"
-msgstr "Knoten '%(ng_name)s' fehlt Komponente %(component)s"
 
 #, python-format
 msgid "Node Group %s is missing 'floating_ip_pool' field"
@@ -1232,10 +872,6 @@ msgstr "Knotengruppe Vorlagen-ID '%s' nicht gefunden!"
 #, python-format
 msgid "Node Group id '%s' not found!"
 msgstr "Knotengruppen-ID '%s' nicht gefunden!"
-
-#, python-format
-msgid "Node failed to connect to CLDB: %s"
-msgstr "Knoten konnte keine Verbindung zu CLDB herstellen: %s"
 
 #, python-format
 msgid ""
@@ -1273,29 +909,12 @@ msgid "Nova availability zone '%s' not found"
 msgstr "Die Nova-Verfügbarkeitszone '%s' wurde nicht gefunden"
 
 #, python-format
-msgid "Number of %(dn)s instances should not be less than %(replication)s"
-msgstr ""
-"Die Anzahl der %(dn)s-Instanzen sollte nicht kleiner als %(replication)s sein"
-
-msgid "Number of datanodes must be not less than dfs.replication."
-msgstr "Die Anzahl der Daten muss nicht kleiner als dfs.replication sein."
-
-msgid "Number of datanodes must be not less than dfs_replication."
-msgstr "Die Anzahl der Daten muss nicht kleiner als dfs_replication sein."
-
-#, python-format
 msgid ""
 "Number of specific instances (%(instance)s) to delete can not be greater "
 "than the count difference (%(count)s during scaling"
 msgstr ""
 "Die Anzahl der zu löschenden spezifischen Instanzen (%(instance)s) darf "
 "nicht größer sein als die Zähldifferenz (%(count)s während der Skalierung)"
-
-msgid "Number of zookeeper nodesshould be in odd."
-msgstr "Anzahl der Tierpfleger-Knoten sollte in ungerade sein."
-
-msgid "OS on image is not supported by CDH plugin"
-msgstr "OS on image wird vom CDH-Plugin nicht unterstützt"
 
 #, python-format
 msgid "Object '%s' could not be updated"
@@ -1314,15 +933,6 @@ msgstr "Objekt wurde nicht gelöscht"
 #, python-format
 msgid "Object with %s not found"
 msgstr "Objekt mit %s nicht gefunden"
-
-msgid "Odd number"
-msgstr "Ungerade Zahl"
-
-msgid "Odd number of JournalNodes are required for HA"
-msgstr "Eine ungerade Anzahl von JournalNodes ist für HA erforderlich"
-
-msgid "Odd number of ZooKeepers are required for HA"
-msgstr "Für HA ist eine ungerade Anzahl von ZooKeepern erforderlich"
 
 #, python-format
 msgid ""
@@ -1361,13 +971,6 @@ msgstr "Paketinstallation"
 
 msgid "Password is not provided in credentials for Swift"
 msgstr "In den Anmeldedaten für Swift ist kein Passwort angegeben"
-
-msgid ""
-"Paths must be absolute Linux paths starting with \"/\"and may not contain "
-"nulls."
-msgstr ""
-"Pfade müssen absolute Linux-Pfade sein, die mit '/' beginnen und dürfen "
-"keine Nullen enthalten."
 
 msgid "Plugin"
 msgstr "Plugin"
@@ -1418,31 +1021,17 @@ msgstr "Plugin: Herunterfahren des Clusters"
 msgid "Plugin: start cluster"
 msgstr "Plugin: Cluster starten"
 
-#, python-format
-msgid "Plugins couldn't be loaded: %s"
-msgstr "Plugins konnten nicht geladen werden: %s"
-
 msgid ""
 "Positional arguments must be given default values if they are not required."
 msgstr ""
 "Positionsargumente müssen Standardwerte erhalten, wenn sie nicht benötigt "
 "werden."
 
-msgid "Prepare Hive"
-msgstr "Bereite Hive vor"
-
-msgid "Prepare cluster"
-msgstr "Vorbereiten des Clusters"
-
 msgid "Preparing policy files"
 msgstr "Vorbereiten von Richtliniendateien"
 
 msgid "Private key file hasn't been created"
 msgstr "Private Schlüsseldatei wurde nicht erstellt"
-
-#, python-format
-msgid "Process %(process)s is not supported by CDH plugin"
-msgstr "Process %(process)s wird vom CDH-Plugin nicht unterstützt"
 
 #, python-format
 msgid "Provided input and output DataSources reference the same location: %s"
@@ -1455,9 +1044,6 @@ msgstr "Proxy-Domäne angefordert, aber nicht angegeben."
 
 msgid "Public key file hasn't been created"
 msgstr "Die öffentliche Schlüsseldatei wurde nicht erstellt"
-
-msgid "Push configs to nodes"
-msgstr "Push-Konfigurationen zu Knoten"
 
 #, python-format
 msgid ""
@@ -1474,25 +1060,6 @@ msgstr "RAM"
 msgid "Reading file \"%s\""
 msgstr "Datei '%s' lesen"
 
-msgid "Rebalance Topology"
-msgstr "Rebalance-Topologie"
-
-msgid "Rebuilt Oozie war"
-msgstr "Wiederaufbau von Oozie war"
-
-#, python-format
-msgid "Refresh %s nodes"
-msgstr "Aktualisieren Sie die Knoten %s"
-
-msgid "Refresh DataNodes"
-msgstr "Aktualisieren Sie DataNodes"
-
-msgid "Refresh YARNNodes"
-msgstr "Aktualisieren Sie YARNNodes"
-
-msgid "Regenerate keytabs for Kerberos"
-msgstr "Generieren Sie Keytabs für Kerberos neu"
-
 msgid "Remote conductor isn't implemented yet."
 msgstr "Remote Conductor ist noch nicht implementiert."
 
@@ -1504,9 +1071,6 @@ msgstr ""
 "Der Remote-Treiber wurde nicht geladen. Höchstwahrscheinlich sehen Sie "
 "diesen Fehler, weil Sie Sahara im verteilten Modus ausführen und es kaputt "
 "ist. Versuchen Sie stattdessen, sahara-all auszuführen."
-
-msgid "Remove hosts"
-msgstr "Entfernen Sie Hosts"
 
 msgid "Repository Update"
 msgstr "Repository-Aktualisierung"
@@ -1574,18 +1138,6 @@ msgstr "ResourceManager Hochverfügbarkeit: %s"
 msgid "Response {response} is not unique for this query {query}."
 msgstr "Antwort {response} ist nicht eindeutig für diese Abfrage {query}."
 
-msgid "Restart HDFS and MAPREDUCE2 services"
-msgstr "Starten Sie die HDFS- und MAPREDUCE2-Dienste neu"
-
-msgid "Restart NameNodes and ResourceManagers"
-msgstr "Starten Sie NameNodes und ResourceManagers neu"
-
-msgid "Restart of ambari-agent is needed for host {}, reason: {}"
-msgstr "Neustart von ambari-agent wird für Host {} benötigt, Grund: {}"
-
-msgid "Restart stale services"
-msgstr "Stalle Dienste neu starten"
-
 #, python-format
 msgid "Sahara doesn't contain plugin with name '%s'"
 msgstr "Sahara enthält kein Plugin mit dem Namen '%s'"
@@ -1614,34 +1166,11 @@ msgid "Server or server ip are not provided"
 msgstr "Server- oder Server-IP wird nicht bereitgestellt"
 
 #, python-format
-msgid ""
-"Service %(service)s requires %(os)s OS. Use %(os)s image and add \"%(os)s\" "
-"tag to it."
-msgstr ""
-"Service %(service)s benötigt %(os)s OS. Verwenden Sie das %(os)s Abbild und "
-"fügen Sie das '%(os)s'-Tag hinzu."
-
-msgid "Service not found in services list"
-msgstr "Dienst nicht in der Serviceliste gefunden"
-
-#, python-format
 msgid "Session for %(host)s:%(port)s not cached"
 msgstr "Sitzung für %(host)s:%(port)s nicht zwischengespeichert"
 
 msgid "Session type {type} not recognized"
 msgstr "Sitzungstyp {type} nicht erkannt"
-
-msgid "Set cluster mode"
-msgstr "Stelle Cluster-Modus"
-
-msgid "Set up Ambari agents"
-msgstr "Richten Sie Ambari-Agenten ein"
-
-msgid "Set up Ambari management console"
-msgstr "Richten Sie die Ambari-Verwaltungskonsole ein"
-
-msgid "Set up HDP repositories"
-msgstr "Richten Sie HDP-Repositorys ein"
 
 msgid "Setting Up Kerberos clients"
 msgstr "Einrichten von Kerberos-Clients"
@@ -1677,100 +1206,14 @@ msgstr ""
 "Größe des swift Objekts (%(size)sKB) ist größer als Maximum (%(maximum)sKB)"
 
 #, python-format
-msgid "Some %s processes are not in running state"
-msgstr "Einige %s-Prozesse sind nicht im aktiven Zustand"
-
-#, python-format
-msgid "Some Ambari request(s) not in COMPLETED state: %(description)s."
-msgstr ""
-"Einige Ambari-Anfragen sind nicht im Status COMPLETED: %(description)s."
-
-msgid "Some ZooKeeper processes are not in running state"
-msgstr "Einige ZooKeeper-Prozesse sind nicht im aktiven Zustand"
-
-#, python-format
 msgid ""
 "Spark job execution failed. Exit status = %(status)s, stdout = %(stdout)s"
 msgstr ""
 "Die Ausführung des Spark-Jobs ist fehlgeschlagen. Exit status = %(status)s, "
 "stdout = %(stdout)s"
 
-#, python-format
-msgid "Spark plugin cannot scale nodegroup with processes: %s"
-msgstr "Das Spark-Plugin kann Knotengruppen nicht mit Prozessen skalieren: %s"
-
-#, python-format
-msgid ""
-"Spark plugin cannot shrink cluster because there would be not enough nodes "
-"for HDFS replicas (replication factor is %s)"
-msgstr ""
-"Das Spark-Plug-in kann den Cluster nicht verkleinern, da nicht genügend "
-"Knoten für HDFS-Replikate vorhanden sind (der Replikationsfaktor ist%s)"
-
-msgid "Spark {base} or higher required to run {type} jobs"
-msgstr "Spark {base} oder höher erforderlich, um {type} Jobs auszuführen"
-
-msgid "Specifies CentOS MapR core repository."
-msgstr "Gibt das CentOS MapR-Kernrepository an."
-
-msgid "Specifies CentOS MapR ecosystem repository."
-msgstr "Gibt das CentOS MapR-Ökosystem-Repository an."
-
-msgid "Specifies Sentry storage mode."
-msgstr "Gibt den Sentry-Speichermodus an."
-
-msgid "Specifies Ubuntu MapR core repository."
-msgstr "Gibt das Ubuntu MapR-Core-Repository an."
-
-msgid "Specifies Ubuntu MapR ecosystem repository."
-msgstr "Gibt das Ubuntu MapR-Ökosystem-Repository an."
-
-msgid "Specifies heap size for MapR-FS in percents of maximum value."
-msgstr ""
-"Legt die Größe des Heapspeichers für MapR-FS in Prozent des Maximalwerts "
-"fest."
-
-msgid "Specifies that MapR-DB is in use."
-msgstr "Gibt an, dass MapR-DB verwendet wird."
-
-msgid "Specifies thrift version."
-msgstr "Gibt die thrift Version an."
-
-msgid "Specify the version of the service"
-msgstr "Geben Sie die Version des Service an"
-
-msgid "Start CLDB nodes"
-msgstr "Starten Sie CLDB-Knoten"
-
-msgid "Start Cloudera Agents"
-msgstr "Starte Cloudera-Agenten"
-
-msgid "Start Cloudera Manager"
-msgstr "Starte den Cloudera Manager"
-
-msgid "Start ZooKeepers nodes"
-msgstr "Starten Sie ZooKeepers-Knoten"
-
-msgid "Start cluster"
-msgstr "Cluster starten"
-
-msgid "Start non-CLDB nodes"
-msgstr "Starten Sie Nicht-CLDB-Knoten"
-
-msgid "Start roles: NODEMANAGER, DATANODE"
-msgstr "Start Rollen: NODEMANAGER, DATANODE"
-
-msgid "Start services on hosts"
-msgstr "Starten Sie Dienste auf Hosts"
-
 msgid "Start the following process(es): {process}"
 msgstr "Starten Sie den/die folgenden Prozess(e): {process}"
-
-msgid "Stop Warden nodes"
-msgstr "Stoppen Sie Warden-Knoten"
-
-msgid "Stop ZooKeepers nodes"
-msgstr "Stoppen Sie ZooKeepers-Knoten"
 
 #, python-format
 msgid ""
@@ -1778,13 +1221,6 @@ msgid ""
 msgstr ""
 "Storm-Jobausführung fehlgeschlagen. Exit status = %(status)s, stdout = "
 "%(stdout)s"
-
-#, python-format
-msgid "Storm plugin cannot scale nodegroup with processes: %s"
-msgstr "Das Storm-Plugin kann Knotengruppen nicht mit Prozessen skalieren:%s"
-
-msgid "Storm {base} required to run {type} jobs"
-msgstr "Storm {base} ist zum Ausführen von {type} Jobs erforderlich"
 
 msgid "Subprocess execution has failed"
 msgstr "Subprozessausführung ist fehlgeschlagen"
@@ -1805,45 +1241,9 @@ msgstr "Swift URL darf nicht leer sein"
 msgid "System error has occurred"
 msgstr "Systemfehler ist aufgetreten"
 
-msgid "Template object must be defined"
-msgstr "Vorlagenobjekt muss definiert sein"
-
 msgid "Terminating cluster failed for the following reason(s): {reason}"
 msgstr ""
 "Das Beenden des Clusters ist aus folgenden Gründen fehlgeschlagen: {reason}"
-
-msgid ""
-"The Ambari Sahara plugin provides the ability to launch clusters with "
-"Hortonworks Data Platform (HDP) on OpenStack using Apache Ambari"
-msgstr ""
-"Das Ambari Sahara-Plugin bietet die Möglichkeit, Cluster mit Hortonworks "
-"Data Platform (HDP) auf OpenStack mit Apache Ambari zu starten"
-
-msgid ""
-"The Apache Vanilla plugin provides the ability to launch upstream Vanilla "
-"Apache Hadoop cluster without any management consoles. It can also deploy "
-"the Oozie component."
-msgstr ""
-"Das Apache Vanilla-Plugin bietet die Möglichkeit, Upstream-Vanilla-Apache-"
-"Hadoop-Cluster ohne Verwaltungskonsolen zu starten. Es kann auch die Oozie-"
-"Komponente bereitstellen."
-
-msgid ""
-"The Cloudera Sahara plugin provides the ability to launch the Cloudera "
-"distribution of Apache Hadoop (CDH) with Cloudera Manager management console."
-msgstr ""
-"Das Cloudera Sahara-Plugin bietet die Möglichkeit, die Cloudera-Distribution "
-"von Apache Hadoop (CDH) mit der Cloudera Manager Management Console zu "
-"starten."
-
-msgid ""
-"The MapR Distribution provides a full Hadoop stack that includes the MapR "
-"File System (MapR-FS), MapReduce, a complete Hadoop ecosystem, and the MapR "
-"Control System user interface"
-msgstr ""
-"MapR Distribution bietet einen vollständigen Hadoop-Stapel, der das MapR-"
-"Dateisystem (MapR-FS), MapReduce, ein vollständiges Hadoop-Ökosystem und die "
-"Benutzeroberfläche des MapR-Steuerungssystems enthält"
 
 msgid ""
 "The combination of mapping type and location must be unique within the "
@@ -1855,19 +1255,8 @@ msgstr ""
 msgid "The configuration has failed"
 msgstr "Die Konfiguration ist fehlgeschlagen"
 
-msgid ""
-"The filesystem to mount as the root volume on the image. Novalue is required "
-"if only one filesystem is detected."
-msgstr ""
-"Das Dateisystem, das als Root-Volume im Abbild bereitgestellt werden soll. "
-"Novalue wird benötigt, wenn nur ein Dateisystem gefunden wird."
-
 msgid "The following argument names are reserved: {names}"
 msgstr "Die folgenden Argumentnamen sind reserviert: {names}"
-
-#, python-format
-msgid "The following checks did not pass: %s"
-msgstr "Die folgenden Überprüfungen wurden nicht bestanden: %s"
 
 msgid "The name of realm to be used"
 msgstr "Der Name des zu verwendenden Bereichs"
@@ -1896,20 +1285,6 @@ msgstr "Die Version, die Sie verwenden möchten, ist veraltet"
 
 msgid "This API operation isn't implemented"
 msgstr "Diese API-Operation ist nicht implementiert"
-
-msgid ""
-"This plugin provides an ability to launch Spark on Hadoop CDH cluster "
-"without any management consoles."
-msgstr ""
-"Dieses Plugin bietet die Möglichkeit, Spark auf dem Hadoop CDH-Cluster ohne "
-"Verwaltungskonsolen zu starten."
-
-msgid ""
-"This plugin provides an ability to launch Storm cluster without any "
-"management consoles."
-msgstr ""
-"Dieses Plugin bietet die Möglichkeit, den Storm-Cluster ohne "
-"Verwaltungskonsolen zu starten."
 
 msgid ""
 "To work with JobBinary located in internal swift add 'user' and 'password' "
@@ -1945,22 +1320,12 @@ msgstr "Das URL-Schema muss 'maprfs' lauten"
 msgid "URL scheme must be 'swift'"
 msgstr "Das URL-Schema muss 'swift' sein"
 
-msgid "Unable to find config: applicable_target: {target}, name: {name}"
-msgstr ""
-"Konnte nicht gefunden werden: applicable_target: {target}, name: {name}"
-
 #, python-format
 msgid "Unable to find file %s with compute topology"
 msgstr "Die Datei %s konnte mit der Computertopologie nicht gefunden werden"
 
 msgid "Unable to get kdc server start command"
 msgstr "Der Startbefehl des kdc-Servers konnte nicht abgerufen werden"
-
-#, python-format
-msgid "Unable to get parameter '%(name)s' from service %(service)s"
-msgstr ""
-"Der Parameter '%(name)s' konnte nicht vom Service %(service)s abgerufen "
-"werden"
 
 #, python-format
 msgid "Unable to get parameter '%(param_name)s' from service %(service)s"
@@ -2000,15 +1365,6 @@ msgstr "Unbekannte Plugin-Version '%(version)s' von %(plugin)s"
 msgid "Unsupported type: %s"
 msgstr "Nicht unterstützter Typ: %s"
 
-msgid "Update configs"
-msgstr "Aktualisieren Sie die Konfigurationen"
-
-msgid "Update default Ambari password"
-msgstr "Aktualisieren Sie das Standard-Ambari-Passwort"
-
-msgid "Update include files"
-msgstr "Update-Include-Dateien"
-
 msgid "Updating repository"
 msgstr "Repository aktualisieren"
 
@@ -2042,33 +1398,6 @@ msgstr "Der Wert '%s' ist keine gültige Zeichenfolge."
 msgid "Value for argument {name} must be one of {choices}."
 msgstr "Der Wert für Argument {name} muss einer von {choices} sein."
 
-msgid ""
-"Vanilla plugin cannot scale cluster because it must keep zookeeper service "
-"in odd."
-msgstr ""
-"Das Vanilla-Plugin kann den Cluster nicht skalieren, da der Zoowäklerservice "
-"in Odd gehalten werden muss."
-
-msgid ""
-"Vanilla plugin cannot scale node group with processes which have no master-"
-"processes run in cluster"
-msgstr ""
-"Das Vanilla-Plugin kann Knotengruppen nicht mit Prozessen skalieren, für die "
-"keine Masterprozesse im Cluster ausgeführt werden"
-
-#, python-format
-msgid "Vanilla plugin cannot scale nodegroup with processes: %s"
-msgstr ""
-"Das Vanilla-Plugin kann Knotengruppen nicht mit Prozessen skalieren: %s"
-
-#, python-format
-msgid ""
-"Vanilla plugin cannot shrink cluster because it would be not enough nodes "
-"for replicas (replication factor is %s)"
-msgstr ""
-"Das Vanilla-Plugin kann den Cluster nicht verkleinern, da es nicht genug "
-"Knoten für Replikate geben würde (der Replikationsfaktor ist %s)"
-
 #, python-format
 msgid "Verification id '%s' not found!"
 msgstr "Überprüfungs-ID '%s' wurde nicht gefunden!"
@@ -2089,40 +1418,12 @@ msgstr ""
 msgid "Volume type '%s' not found"
 msgstr "Der Datenträger-Typ '%s' wurde nicht gefunden"
 
-msgid "Wait Ambari accessible"
-msgstr "Warte auf Ambari zugänglich"
-
-msgid "Wait for decommissioning"
-msgstr "Warten Sie auf die Außerbetriebnahme"
-
 msgid "Wait for instance accessibility"
 msgstr "Warten Sie auf Barrierefreiheit"
-
-msgid "Wait for {node_process} on {instance} to change status to \"{status}\""
-msgstr ""
-"Warten Sie auf {node_process} auf {instance}, um den Status in \"{status}\" "
-"zu ändern"
-
-msgid "Wait registration of hosts"
-msgstr "Warten Sie die Registrierung der Hosts"
-
-#, python-format
-msgid "Waiting on %d DataNodes to start up"
-msgstr "Warten auf %d DataNodes zum Starten"
-
-#, python-format
-msgid "Waiting on %s datanodes to start up"
-msgstr "Warten auf %s Daten, um zu starten"
-
-msgid "Waiting on 1 datanodes to start up"
-msgstr "Warte auf 1 Daten, um zu starten"
 
 #, python-format
 msgid "Was not able to find compute node topology for VM %s"
 msgstr "Es konnte keine Rechenknotentopologie für VM%s gefunden werden"
-
-msgid "Write config files to instances"
-msgstr "Schreibe Konfigurationsdateien in Instanzen"
 
 #, python-format
 msgid "Writing file \"%s\""
@@ -2131,12 +1432,6 @@ msgstr "Datei '%s' schreiben"
 #, python-format
 msgid "Writing files \"%s\""
 msgstr "Dateien schreiben '%s'"
-
-msgid "YARN_RESOURCEMANAGER should be enabled in anti_affinity."
-msgstr "YARN_RESOURCEMANAGER sollte in anti_affinity aktiviert sein."
-
-msgid "YARN_STANDBYRM should be enabled in anti_affinity."
-msgstr "YARN_STANDBYRM sollte in anti_affinity aktiviert sein."
 
 msgid "You are not authorized to complete this action"
 msgstr "Sie sind nicht berechtigt, diese Aktion abzuschließen"
@@ -2158,18 +1453,6 @@ msgstr "Sie müssen einen %s-Wert für Ihren plugin_name angeben"
 msgid "You must specify a volumes_size parameter"
 msgstr "Sie müssen einen volumes_size-Parameter angeben"
 
-msgid "ZooKeeper is in running state"
-msgstr "ZooKeeper ist in Bearbeitung"
-
-msgid "ZooKeeper is not in running state"
-msgstr "ZooKeeper befindet sich nicht im aktiven Status"
-
-msgid "at least 1"
-msgstr "mindestens 1"
-
-msgid "be odd"
-msgstr "sei ungerade"
-
 msgid "cannot understand JSON"
 msgstr "kann JSON nicht verstehen"
 
@@ -2179,18 +1462,8 @@ msgstr "Floating IP"
 msgid "instance"
 msgstr "Beispiel"
 
-msgid "not less than 3"
-msgstr "nicht weniger als 3"
-
-msgid "odd"
-msgstr "ungerade"
-
 msgid "port"
 msgstr "port"
-
-#, python-format
-msgid "request %(id)d: %(name)s - in status %(status)s"
-msgstr "Anfrage %(id)d: %(name)s - in Status %(status)s"
 
 msgid "security group"
 msgstr "Sicherheitsgruppe"
