@@ -17,7 +17,7 @@ to your ``local.conf`` file
 .. sourcecode:: bash
 
     # Enable sahara-dashboard
-    enable_plugin sahara-dashboard git://git.openstack.org/openstack/sahara-dashboard
+    enable_plugin sahara-dashboard https://git.openstack.org/openstack/sahara-dashboard
 
 
 Isolated Dashboard for Sahara

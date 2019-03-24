@@ -97,7 +97,7 @@ Ubuntu 14.04 system.
     # OFFLINE=True
 
     # Enable sahara
-    enable_plugin sahara git://git.openstack.org/openstack/sahara
+    enable_plugin sahara https://git.openstack.org/openstack/sahara
 
 In cases where you need to specify a git refspec (branch, tag, or commit hash)
 for the sahara in-tree devstack plugin (or sahara repo), it should be
@@ -105,7 +105,7 @@ appended to the git repo URL as follows:
 
 .. sourcecode:: bash
 
-    enable_plugin sahara git://git.openstack.org/openstack/sahara <some_git_refspec>
+    enable_plugin sahara https://git.openstack.org/openstack/sahara <some_git_refspec>
 
 3. Sahara can send notifications to Ceilometer, if Ceilometer is enabled.
    If you want to enable Ceilometer add the following lines to the
@@ -113,7 +113,7 @@ appended to the git repo URL as follows:
 
 .. sourcecode:: bash
 
-    enable_plugin ceilometer git://git.openstack.org/openstack/ceilometer
+    enable_plugin ceilometer https://git.openstack.org/openstack/ceilometer
 
 4. Start DevStack:
 
