@@ -6,10 +6,10 @@ devstack_localrc base IMAGE_URLS=\
 "http://download.cirros-cloud.net/0.3.5/cirros-0.3.5-x86_64-uec.tar.gz,\
 http://tarballs.openstack.org/heat-test-image/fedora-heat-test-image.qcow2"
 devstack_localrc base enable_plugin sahara \
-                                    git://git.openstack.org/openstack/sahara \
+                                    https://git.openstack.org/openstack/sahara \
                                     stable/rocky
 devstack_localrc base enable_plugin heat \
-                                    git://git.openstack.org/openstack/heat \
+                                    https://git.openstack.org/openstack/heat \
                                     stable/rocky
 devstack_localrc base DEFAULT_IMAGE_NAME="cirros-0.3.5-x86_64-uec"
 devstack_localrc base DEFAULT_IMAGE_NAME="cirros-0.3.5-x86_64-uec"
@@ -18,8 +18,8 @@ devstack_localrc target IMAGE_URLS=\
 "http://download.cirros-cloud.net/0.3.5/cirros-0.3.5-x86_64-uec.tar.gz,\
 http://tarballs.openstack.org/heat-test-image/fedora-heat-test-image.qcow2"
 devstack_localrc target enable_plugin sahara \
-                                    git://git.openstack.org/openstack/sahara
+                                    https://git.openstack.org/openstack/sahara
 devstack_localrc target enable_plugin heat \
-                                    git://git.openstack.org/openstack/heat
+                                    https://git.openstack.org/openstack/heat
 devstack_localrc target LIBS_FROM_GIT=python-saharaclient
 devstack_localrc target DEFAULT_IMAGE_NAME="cirros-0.3.5-x86_64-uec"
