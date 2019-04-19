@@ -46,8 +46,8 @@
     post-run: playbooks/sahara-grenade/post.yaml
     timeout: 10800
     required-projects:
-      - openstack-dev/grenade
-      - openstack-infra/devstack-gate
+      - openstack/grenade
+      - openstack/devstack-gate
       - openstack/sahara
       - openstack/python-saharaclient
       - openstack/heat
@@ -74,7 +74,7 @@
     name: sahara-buildimages-base
     nodeset: centos-7
     vars:
-      sahara_src_dir: src/git.openstack.org/openstack/sahara
+      sahara_src_dir: src/opendev.org/openstack/sahara
     run: playbooks/buildimages/run.yaml
     timeout: 7200
     required-projects:
