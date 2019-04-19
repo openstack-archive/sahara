@@ -1,5 +1,5 @@
 - name: Installs needed plugins to build its images
-  command: tox -e images -- pip install {{ ansible_user_dir }}/src/git.openstack.org/openstack/sahara-plugin-{{ sahara_plugin }}
+  command: tox -e images -- pip install {{ ansible_user_dir }}/src/opendev.org/openstack/sahara-plugin-{{ sahara_plugin }}
   args:
     chdir: "{{ sahara_src_dir }}"
 

@@ -13,12 +13,12 @@
           set -x
           cat > clonemap.yaml << EOF
           clonemap:
-            - name: openstack-infra/devstack-gate
+            - name: openstack/devstack-gate
               dest: devstack-gate
           EOF
           /usr/zuul-env/bin/zuul-cloner -m clonemap.yaml --cache-dir /opt/git \
-              https://git.openstack.org \
-              openstack-infra/devstack-gate
+              https://opendev.org \
+              openstack/devstack-gate
         executable: /bin/bash
         chdir: '{{ ansible_user_dir }}/workspace'
       environment: '{{ zuul | zuul_legacy_vars }}'
@@ -39,7 +39,7 @@
         cmd: |
           set -e
           set -x
-          export PROJECTS="openstack-dev/grenade $PROJECTS"
+          export PROJECTS="openstack/grenade $PROJECTS"
           export PROJECTS="openstack/sahara $PROJECTS"
           export PROJECTS="openstack/python-saharaclient $PROJECTS"
           export PROJECTS="openstack/heat-tempest-plugin $PROJECTS"
@@ -52,8 +52,8 @@
           export PROJECTS="openstack/sahara-plugin-storm $PROJECTS"
           export PROJECTS="openstack/sahara-plugin-vanilla $PROJECTS"
           export PYTHONUNBUFFERED=true
-          export GRENADE_PLUGINRC="enable_grenade_plugin sahara https://git.openstack.org/openstack/sahara"
-          export GRENADE_PLUGINRC+=$'\n'"enable_grenade_plugin heat https://git.openstack.org/openstack/heat"
+          export GRENADE_PLUGINRC="enable_grenade_plugin sahara https://opendev.org/openstack/sahara"
+          export GRENADE_PLUGINRC+=$'\n'"enable_grenade_plugin heat https://opendev.org/openstack/heat"
 
           export DEVSTACK_GATE_NEUTRON=1
           export RUN_HEAT_INTEGRATION_TESTS=False
