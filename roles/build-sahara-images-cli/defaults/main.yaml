@@ -1,4 +1,4 @@
 ---
-sahara_src_dir: "{{ ansible_user_dir }}/{{ zuul.projects['git.openstack.org/openstack/sahara'].src_dir }}"
+sahara_src_dir: "{{ ansible_user_dir }}/{{ zuul.projects['opendev.org/openstack/sahara'].src_dir }}"
 sahara_build_directory: /var/tmp/sahara-image-build
 sahara_plugin: vanilla
