@@ -68,7 +68,7 @@ those user interface components. For more details on this process please see
 :ref:`registering Sahara in installation guide <register-sahara-label>`.
 
 The
-`sahara-dashboard <https://git.openstack.org/cgit/openstack/sahara-dashboard>`_
+`sahara-dashboard <https://opendev.org/openstack/sahara-dashboard>`_
 project is now used solely to host sahara user interface integration tests.
 
 Virtual machine user name changes

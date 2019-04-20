@@ -65,7 +65,7 @@ Installation and developer notes
 
 The script is part of of the Sahara repository, but it does not depend
 on the Sahara services. In order to use its development version,
-clone the `Sahara repository <https://git.openstack.org/openstack/sahara>`_,
+clone the `Sahara repository <https://opendev.org/openstack/sahara>`_,
 check out the branch which matches the Sahara version used, and
 install the repository in a virtualenv.
 

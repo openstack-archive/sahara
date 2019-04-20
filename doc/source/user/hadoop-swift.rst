@@ -12,7 +12,7 @@ the most current features enabled.
   https://issues.apache.org/jira/browse/HADOOP-8545
 
 * The most current Sahara maintained version of this patch can be found in the
-  `Sahara Extra repository <https://git.openstack.org/cgit/openstack/sahara-extra>`_
+  `Sahara Extra repository <https://opendev.org/openstack/sahara-extra>`_
 
 * The latest compiled version of the jar for this component can be downloaded
   from https://tarballs.openstack.org/sahara-extra/dist/hadoop-openstack/master/

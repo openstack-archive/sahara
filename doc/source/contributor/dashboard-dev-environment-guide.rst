@@ -17,7 +17,7 @@ to your ``local.conf`` file
 .. sourcecode:: bash
 
     # Enable sahara-dashboard
-    enable_plugin sahara-dashboard https://git.openstack.org/openstack/sahara-dashboard
+    enable_plugin sahara-dashboard https://opendev.org/openstack/sahara-dashboard
 
 
 Isolated Dashboard for Sahara
@@ -66,7 +66,7 @@ Here is an example:
 
 .. sourcecode:: console
 
-    $ git clone https://git.openstack.org/openstack/horizon/ {HORIZON_DIR}
+    $ git clone https://opendev.org/openstack/horizon/ {HORIZON_DIR}
 ..
 
 Then install the virtual environment:
@@ -105,7 +105,7 @@ creation, add the following parameter:
 
 .. sourcecode:: console
 
-    $ git clone https://git.openstack.org/openstack/sahara-dashboard/ \
+    $ git clone https://opendev.org/openstack/sahara-dashboard/ \
         {SAHARA_DASHBOARD_DIR}
 ..
 

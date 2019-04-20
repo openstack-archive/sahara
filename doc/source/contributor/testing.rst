@@ -14,7 +14,7 @@ Scenario integration tests
 
 New scenario integration tests were implemented for Sahara. They are available
 in the sahara-tests repository
-(https://git.openstack.org/cgit/openstack/sahara-tests).
+(https://opendev.org/openstack/sahara-tests).
 
 Tempest tests
 +++++++++++++

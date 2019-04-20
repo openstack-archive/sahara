@@ -125,7 +125,7 @@ running ``tox -e docs`` first time):
 
 
 .. _PEP 8: http://www.python.org/dev/peps/pep-0008/
-.. _bashate: https://git.openstack.org/cgit/openstack-dev/bashate
+.. _bashate: https://opendev.org/openstack/bashate
 .. _PEP 257: http://www.python.org/dev/peps/pep-0257/
 .. _Tox: http://tox.testrun.org/
 .. _Sphinx: http://sphinx.pocoo.org/markup/index.html

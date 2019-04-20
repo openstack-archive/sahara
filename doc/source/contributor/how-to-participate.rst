@@ -50,7 +50,7 @@ How to stay in touch with the community
 How to post your first patch for review
 ---------------------------------------
 
-* Checkout Sahara code from `its repository <https://git.openstack.org/cgit/openstack/sahara>`_
+* Checkout Sahara code from `its repository <https://opendev.org/openstack/sahara>`_
 
 * Carefully read https://docs.openstack.org/infra/manual/developers.html#development-workflow
 

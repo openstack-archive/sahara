@@ -274,7 +274,7 @@ the template below.
 
 Sample templates can be found here:
 
-`Sample Templates <https://git.openstack.org/cgit/openstack/sahara/tree/sahara/plugins/default_templates/>`_
+`Sample Templates <https://opendev.org/openstack/sahara/src/branch/master/sahara/plugins/default_templates/>`_
 
 Create a file named ``my_master_template_create.json`` with the following
 content:

@@ -253,14 +253,14 @@ Example Jobs
 There are sample jobs located in the sahara repository. In this section, we
 will give a walkthrough on how to run those jobs via the Horizon UI. These
 steps assume that you already have a cluster up and running (in the "Active"
-state).  You may want to clone into https://git.openstack.org/cgit/openstack/sahara-tests/
+state).  You may want to clone into https://opendev.org/openstack/sahara-tests/
 so that you will have all of the source code and inputs stored locally.
 
 1) Sample Pig job -
-   https://git.openstack.org/cgit/openstack/sahara-tests/tree/sahara_tests/scenario/defaults/edp-examples/edp-pig/cleanup-string/example.pig
+   https://opendev.org/openstack/sahara-tests/src/branch/master/sahara_tests/scenario/defaults/edp-examples/edp-pig/cleanup-string/example.pig
 
 - Load the input data file from
-  https://git.openstack.org/cgit/openstack/sahara-tests/tree/sahara_tests/scenario/defaults/edp-examples/edp-pig/cleanup-string/data/input
+  https://opendev.org/openstack/sahara-tests/src/branch/master/sahara_tests/scenario/defaults/edp-examples/edp-pig/cleanup-string/data/input
   into swift
 
   - Click on Project/Object Store/Containers and create a container with any
@@ -339,8 +339,8 @@ so that you will have all of the source code and inputs stored locally.
     It should be in the "pigoutput" folder
 
 2) Sample Spark job -
-   https://git.openstack.org/cgit/openstack/sahara-tests/tree/sahara_tests/scenario/defaults/edp-examples/edp-spark
-   You can clone into https://git.openstack.org/cgit/openstack/sahara-tests/ for quicker
+   https://opendev.org/openstack/sahara-tests/src/branch/master/sahara_tests/scenario/defaults/edp-examples/edp-spark
+   You can clone into https://opendev.org/openstack/sahara-tests/ for quicker
    access to the files for this sample job.
 
 - Store the Job Binary in Swift (you can choose another type of storage if

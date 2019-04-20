@@ -223,27 +223,24 @@ respective source trees:
 
 * For Rabbit MQ see
 
-  * rabbit_opts variable in `impl_rabbit.py <https://git.openstack.org/
-    cgit/openstack/oslo.messaging/tree/oslo/messaging/_drivers
-    /impl_rabbit.py?id=1.4.0#n38>`_
-  * amqp_opts variable in `amqp.py <https://git.openstack.org/cgit/
-    openstack/oslo.messaging/tree/oslo/messaging/
-    _drivers/amqp.py?id=1.4.0#n37>`_
+  * rabbit_opts variable in `impl_rabbit.py <https://opendev.org/openstack/
+    oslo.messaging/src/tag/1.4.0/oslo/messaging/_drivers/impl_rabbit.py#L38>`_
+  * amqp_opts variable in `amqp.py <https://opendev.org/openstack/
+    oslo.messaging/src/tag/1.4.0/oslo/messaging/_drivers/amqp.py#L37>`_
 
 * For Zmq see
 
-  * zmq_opts variable in `impl_zmq.py <https://git.openstack.org/cgit/
-    openstack/oslo.messaging/tree/oslo/messaging/_drivers/
-    impl_zmq.py?id=1.4.0#n49>`_
-  * matchmaker_opts variable in `matchmaker.py <https://git.openstack.org/
-    cgit/openstack/oslo.messaging/tree/oslo/messaging/_drivers/
-    matchmaker.py?id=1.4.0#n27>`_
+  * zmq_opts variable in `impl_zmq.py <https://opendev.org/openstack/
+    oslo.messaging/src/tag/1.4.0/oslo/messaging/_drivers/impl_zmq.py#L49>`_
+  * matchmaker_opts variable in `matchmaker.py <https://opendev.org/
+    openstack/oslo.messaging/src/tag/1.4.0/oslo/messaging/_drivers/
+    matchmaker.py#L27>`_
   * matchmaker_redis_opts variable in `matchmaker_redis.py <https://
-    git.openstack.org/cgit/openstack/oslo.messaging/tree/oslo/messaging/
-    _drivers/matchmaker_redis.py?id=1.4.0#n26>`_
-  * matchmaker_opts variable in `matchmaker_ring.py <https://
-    git.openstack.org/cgit/openstack/oslo.messaging/tree/oslo/messaging/
-    _drivers/matchmaker_ring.py?id=1.4.0#n27>`_
+    opendev.org/openstack/oslo.messaging/src/tag/1.4.0/oslo/messaging/
+    _drivers/matchmaker_redis.py#L26>`_
+  * matchmaker_opts variable in `matchmaker_ring.py <https://opendev.org/
+    openstack/oslo.messaging/src/tag/1.4.0/oslo/messaging/_drivers/
+    matchmaker_ring.py#L27>`_
 
 These options will also be present in the generated sample configuration
 file. For instructions on creating the configuration file please see the
@@ -514,7 +511,7 @@ installed. The sources for this plugin can be found in the
 integration see the sahara documentation sections
 :ref:`building-guest-images-label` and :ref:`swift-integration-label`.
 
-.. _Sahara extra repository: https://git.openstack.org/cgit/openstack/sahara-extra
+.. _Sahara extra repository: https://openstack.org/openstack/sahara-extra
 
 .. _volume_instance_locality_configuration:
 
