@@ -171,7 +171,7 @@ deployed on bare metal machines. It is natural to expect data processing on
 OpenStack to access data stored there. Sahara provides this option with a
 file system implementation for swift
 `HADOOP-8545 <https://issues.apache.org/jira/browse/HADOOP-8545>`_ and
-`Change I6b1ba25b <https://review.openstack.org/#/c/21015/>`_ which
+`Change I6b1ba25b <https://review.opendev.org/#/c/21015/>`_ which
 implements the ability to list endpoints for an object, account or container.
 This makes it possible to integrate swift with software that relies on data
 locality information to avoid network overhead.

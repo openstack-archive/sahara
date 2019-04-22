@@ -16,13 +16,13 @@ Getting started
 
 * Create `OpenStack profile <https://www.openstack.org/profile/>`_
 
-* Login to `OpenStack Gerrit <https://review.openstack.org/>`_ with your
+* Login to `OpenStack Gerrit <https://review.opendev.org/>`_ with your
   Launchpad id
 
-  * Sign `OpenStack Individual Contributor License Agreement <https://review.openstack.org/#/settings/agreements>`_
-  * Make sure that your email is listed in `identities <https://review.openstack.org/#/settings/web-identities>`_
+  * Sign `OpenStack Individual Contributor License Agreement <https://review.opendev.org/#/settings/agreements>`_
+  * Make sure that your email is listed in `identities <https://review.opendev.org/#/settings/web-identities>`_
 
-* Subscribe to code-reviews. Go to your settings on https://review.openstack.org
+* Subscribe to code-reviews. Go to your settings on https://review.opendev.org
 
   * Go to ``watched projects``
   * Add ``openstack/sahara``, ``openstack/sahara-extra``,
@@ -63,7 +63,7 @@ How to post your first patch for review
 
 * Post your patch for review
 
-* Monitor the status of your patch review on https://review.openstack.org/#/
+* Monitor the status of your patch review on https://review.opendev.org/#/
 
 
 
