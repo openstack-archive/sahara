@@ -101,8 +101,7 @@ def setup_service_messaging():
 def setup_notifications():
     global NOTIFICATION_TRANSPORT, NOTIFIER, MESSAGING_TRANSPORT
     try:
-        NOTIFICATION_TRANSPORT = \
-            messaging.get_notification_transport(cfg.CONF)
+        NOTIFICATION_TRANSPORT = messaging.get_notification_transport(cfg.CONF)
     except Exception:
         LOG.error("Unable to setup notification transport. Reusing "
                   "service transport for that.")
