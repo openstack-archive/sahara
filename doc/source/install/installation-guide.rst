@@ -144,13 +144,16 @@ For example, you can get Sahara Mitaka release by executing:
     $ sahara-venv/bin/pip install 'http://tarballs.openstack.org/sahara/sahara-stable-mitaka.tar.gz'
 ..
 
-4. After installation you should create a configuration file from the sample
-   file located in ``sahara-venv/share/sahara/sahara.conf.sample-basic``:
+4. After installation you should create a configuration file; as seen below it
+   is possible to generate a sample one:
 
 .. sourcecode:: console
 
-    $ mkdir sahara-venv/etc
-    $ cp sahara-venv/share/sahara/sahara.conf.sample-basic sahara-venv/etc/sahara.conf
+    $ SAHARA_SOURCE_DIR="/path/to/sahara/source"
+    $ pushd $SAHARA_SOURCE_DIR
+    $ tox -e genconfig
+    $ popd
+    $ cp $SAHARA_SOURCE_DIR/etc/sahara/sahara.conf.sample sahara-venv/etc/sahara.conf
 ..
 
 Make any necessary changes to ``sahara-venv/etc/sahara.conf``.
