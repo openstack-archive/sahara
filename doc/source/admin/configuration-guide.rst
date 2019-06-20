@@ -34,19 +34,19 @@ database. For example, the connection string for a MySQL database will be:
     connection=mysql+pymsql://username:password@host:port/database
 
 Next you will configure the Identity service parameters in the
-``[keystone_authtoken]`` section. The ``auth_uri`` parameter
-should point to the public Identity API endpoint. The ``identity_uri``
-should point to the admin Identity API endpoint. For example:
+``[keystone_authtoken]`` section. The ``www_authenticate_uri`` parameter
+should point to the public Identity API endpoint. The ``auth_url``
+should point to the internal Identity API endpoint. For example:
 
 .. sourcecode:: cfg
 
-    auth_uri=http://127.0.0.1:5000/v2.0/
-    identity_uri=http://127.0.0.1:35357/
+    www_authenticate_uri=http://127.0.0.1:5000/v3/
+    auth_url=http://127.0.0.1:5000/v3/
 
-Specify the ``username``, ``password`` and ``project_name``.
-These parameters must specify an Identity user who has the ``admin`` role
-in the given project. These credentials allow sahara to authenticate and
-authorize its users.
+Specify the ``username``, ``user_domain_name``, ``password``, ``project_name``.
+and ``project_domain_name``. These parameters must specify an Identity user who
+has the ``admin`` role in the given project. These credentials allow sahara to
+authenticate and authorize its users.
 
 Next you will configure the default Networking service. If using
 neutron for networking the following parameter should be set
