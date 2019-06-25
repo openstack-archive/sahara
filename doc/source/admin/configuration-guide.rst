@@ -8,14 +8,8 @@ manner.
 Basic configuration
 -------------------
 
-Sahara is packaged with a basic sample configuration file:
-``sahara.conf.sample-basic``. This file contains all the essential
-parameters that are required for sahara. We recommend creating your
-configuration file based on this basic example.
-
-If a more thorough configuration is needed we recommend using the ``tox``
-tool to create a full configuration file by executing the following
-command:
+A full configuration file showing all possible configuration options and their
+defaults can be generated with the following command:
 
 .. sourcecode:: cfg
 
@@ -24,8 +18,8 @@ command:
 Running this command will create a file named ``sahara.conf.sample``
 in the ``etc/sahara`` directory of the project.
 
-After creating a configuration file by either copying the basic example
-or generating one, edit the ``connection`` parameter in the
+After creating a configuration file by either generating one or starting with
+an empty file, edit the ``connection`` parameter in the
 ``[database]`` section. The URL provided here should point to an empty
 database. For example, the connection string for a MySQL database will be:
 
