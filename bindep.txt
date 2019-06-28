@@ -19,6 +19,7 @@ postgresql
 postgresql-client [platform:dpkg]
 libpq-dev [platform:dpkg]
 postgresql-server [platform:rpm]
+postgresql-devel [platform:rpm]
 
 # The Python binding for libguestfs are used by the sahara-image-pack
 # command.
