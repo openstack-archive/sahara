@@ -23,7 +23,6 @@ extensions = [
 repository_name = 'openstack/sahara'
 bug_project = '935'
 bug_tag = 'releasenotes'
-html_last_updated_fmt = '%Y-%m-%d %H:%M'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -35,15 +34,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Sahara Release Notes'
 copyright = u'2015, Sahara Developers'
-
-# Release do not need a version number in the title, they
-# cover multiple versions.
-# The full version, including alpha/beta/rc tags.
-release = ''
-# The short X.Y version.
-version = ''
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -92,10 +83,6 @@ html_static_path = ['_static']
 # .htaccess) here, relative to this directory. These files are copied
 # directly to the root of the documentation.
 # html_extra_path = []
-
-# If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
-# using the given strftime format.
-# html_last_updated_fmt = '%b %d, %Y'
 
 # If true, SmartyPants will be used to convert quotes and dashes to
 # typographically correct entities.
