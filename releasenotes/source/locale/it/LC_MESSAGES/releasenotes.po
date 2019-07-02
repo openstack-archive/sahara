@@ -1,18 +1,22 @@
 # Luigi Toscano <ltoscano@redhat.com>, 2018. #zanata
+# Luigi Toscano <ltoscano@redhat.com>, 2019. #zanata
 msgid ""
 msgstr ""
 "Project-Id-Version: sahara\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-21 18:55+0000\n"
+"POT-Creation-Date: 2019-07-01 15:11+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2018-10-25 03:03+0000\n"
+"PO-Revision-Date: 2019-07-01 10:22+0000\n"
 "Last-Translator: Luigi Toscano <ltoscano@redhat.com>\n"
 "Language-Team: Italian\n"
 "Language: it\n"
 "X-Generator: Zanata 4.3.3\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
+
+msgid "10.0.0"
+msgstr "10.0.0"
 
 msgid "3.0.1"
 msgstr "3.0.1"
@@ -35,6 +39,9 @@ msgstr "6.0.0"
 msgid "7.0.0"
 msgstr "7.0.0"
 
+msgid "7.0.3"
+msgstr "7.0.3"
+
 msgid "8.0.0"
 msgstr "8.0.0"
 
@@ -44,8 +51,17 @@ msgstr "8.0.1"
 msgid "8.0.2"
 msgstr "8.0.2"
 
+msgid "8.0.2-13"
+msgstr "8.0.2-13"
+
 msgid "9.0.0"
 msgstr "9.0.0"
+
+msgid "9.0.1"
+msgstr "9.0.1"
+
+msgid "9.0.1-8"
+msgstr "9.0.1-8"
 
 msgid ""
 "A few responses in the experimental (but nearly-stable) APIv2 have been "
@@ -216,10 +232,55 @@ msgstr ""
 msgid "Deprecation Notes"
 msgstr "Note relative alle deprecazioni"
 
+msgid ""
+"Enables the creation and validation of Ambari 2.4 images using the new image "
+"generation process where libguestfs replaces the use of DIB."
+msgstr ""
+"Permette la creazione e la validazione di immagini Ambari 2.4 usando il "
+"nuovo processo di generazione delle immagini in cui libguestfs sostituisce "
+"l'uso di DIB."
+
+msgid ""
+"Enables the creation and validation of CDH 5.11.0 images using the new image "
+"generation process where libguestfs replaces the use of DIB."
+msgstr ""
+"Permette la creazione e la validazione di immagini CDH 5.11.0 usando il "
+"nuovo processo di generazione delle immagini in cui libguestfs sostituisce "
+"l'uso di DIB."
+
+msgid ""
+"Enables the creation and validation of CDH 5.7.0 images using the new image "
+"generation process where libguestfs replaces the use of DIB."
+msgstr ""
+"Permette la creazione e la validazione di immagini CDH 5.7.0 usando il nuovo "
+"processo di generazione delle immagini in cui libguestfs sostituisce l'uso "
+"di DIB."
+
+msgid ""
+"Enables the creation and validation of CDH 5.9.0 images using the new image "
+"generation process where libguestfs replaces the use of DIB."
+msgstr ""
+"Permette la creazione e la validazione di immagini CDH 5.9.0 usando il nuovo "
+"processo di generazione delle immagini in cui libguestfs sostituisce l'uso "
+"di DIB."
+
+msgid "Fix Hue intergation with Spark and Hive on different nodes"
+msgstr "Corretta l'integrazione di Hue con Spark e Hive su nodi diversi"
+
+msgid "Fix creating Hive database schema automatically."
+msgstr "Corretta la creazione automatica di schemi di database di Hive"
+
+msgid "Fix unavailable MCS link."
+msgstr "Corretto il collegamento MCS non disponibile"
+
 msgid "Fix visualization of MapR versions when running on python 3"
 msgstr ""
 "Corretta la visualizzazione delle versioni di MapR quando viene usato python "
 "3"
+
+msgid "Fixed api_insecure handling in sessions. Closed bug 1539498."
+msgstr ""
+"Corretta la gestione di api_insecure nelle sessioni. Risolve il bug 1539498."
 
 msgid "Fixed arguments list in latest cdh plugin"
 msgstr "Corretto l'elenco degli argomenti nel plugin CDH più recente"
