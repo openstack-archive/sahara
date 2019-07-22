@@ -33,7 +33,6 @@ from sahara.tests.unit import base
 from sahara.tests.unit.service.edp import edp_test_utils as u
 from sahara.utils import cluster as c_u
 from sahara.utils import edp
-from sahara.utils import patches as p
 from sahara.utils import xmlutils
 
 conductor = cond.API
@@ -45,7 +44,6 @@ _java_opts = "-Dparam1=val1 -Dparam2=val2"
 class TestJobManager(base.SaharaWithDbTestCase):
     def setUp(self):
         super(TestJobManager, self).setUp()
-        p.patch_minidom_writexml()
         self.override_config('plugins', ['fake'])
         pb.setup_plugins()
         castellan.validate_config()

@@ -18,7 +18,6 @@ import xml.dom.minidom as xml
 import pkg_resources as pkg
 import testtools
 
-from sahara.utils import patches as p
 from sahara.utils import xmlutils as x
 from sahara import version
 
@@ -27,7 +26,6 @@ class XMLUtilsTestCase(testtools.TestCase):
 
     def setUp(self):
         super(XMLUtilsTestCase, self).setUp()
-        p.patch_minidom_writexml()
 
     def test_load_xml_defaults(self):
         self.assertEqual(

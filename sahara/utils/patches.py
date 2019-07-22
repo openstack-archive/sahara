@@ -29,10 +29,8 @@ def patch_all():
     List of patches:
 
     * eventlet's monkey patch for all cases;
-    * minidom's writexml patch for py < 2.7.3 only.
     """
     eventlet_monkey_patch()
-    patch_minidom_writexml()
 
 
 def eventlet_monkey_patch():
@@ -50,59 +48,3 @@ def eventlet_import_monkey_patched(module):
     It's needed for some tests, for example, context test.
     """
     return eventlet.import_patched(module, **EVENTLET_MONKEY_PATCH_MODULES)
-
-
-def patch_minidom_writexml():
-    """Patch for xml.dom.minidom toprettyxml bug with whitespaces around text
-
-    We apply the patch to avoid excess whitespaces in generated xml
-    configuration files that brakes Hadoop.
-
-    (This patch will be applied for all Python versions < 2.7.3)
-
-    Issue: http://bugs.python.org/issue4147
-    Patch: http://hg.python.org/cpython/rev/cb6614e3438b/
-    Description: http://ronrothman.com/public/leftbraned/xml-dom-minidom-\
-                        toprettyxml-and-silly-whitespace/#best-solution
-    """
-
-    import sys
-    if sys.version_info >= (2, 7, 3):
-        return
-
-    import xml.dom.minidom as md
-
-    def element_writexml(self, writer, indent="", addindent="", newl=""):
-        # indent = current indentation
-        # addindent = indentation to add to higher levels
-        # newl = newline string
-        writer.write(indent + "<" + self.tagName)
-
-        attrs = self._get_attributes()
-        a_names = list(attrs.keys())
-        a_names.sort()
-
-        for a_name in a_names:
-            writer.write(" %s=\"" % a_name)
-            md._write_data(writer, attrs[a_name].value)
-            writer.write("\"")
-        if self.childNodes:
-            writer.write(">")
-            if (len(self.childNodes) == 1
-                    and self.childNodes[0].nodeType == md.Node.TEXT_NODE):
-                self.childNodes[0].writexml(writer, '', '', '')
-            else:
-                writer.write(newl)
-                for node in self.childNodes:
-                    node.writexml(writer, indent + addindent, addindent, newl)
-                writer.write(indent)
-            writer.write("</%s>%s" % (self.tagName, newl))
-        else:
-            writer.write("/>%s" % (newl))
-
-    md.Element.writexml = element_writexml
-
-    def text_writexml(self, writer, indent="", addindent="", newl=""):
-        md._write_data(writer, "%s%s%s" % (indent, self.data, newl))
-
-    md.Text.writexml = text_writexml
