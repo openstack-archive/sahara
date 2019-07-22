@@ -31,7 +31,7 @@ The EDP features can be used from the sahara web UI which is described in the
 :doc:`dashboard-user-guide`.
 
 The EDP features also can be used directly by a client through the
-`REST api <https://developer.openstack.org/api-ref/data-processing/>`_
+`REST api <https://docs.openstack.org/api-ref/data-processing/>`_
 
 EDP Concepts
 ------------

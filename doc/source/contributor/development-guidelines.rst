@@ -143,7 +143,7 @@ for identifying the error. Additionally, each exception in sahara contains a
 unique identifier that allows the user to find extra information about that
 error in the sahara logs. You can see an example of provisioning progress
 information here:
-https://developer.openstack.org/api-ref/data-processing/#event-log
+https://docs.openstack.org/api-ref/data-processing/#event-log
 
 This means that if you add some important phase for cluster provisioning to
 the sahara code, it's recommended to add a new provisioning step for this
