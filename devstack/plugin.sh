@@ -45,7 +45,6 @@ function create_sahara_accounts {
 function cleanup_sahara {
 
     # Cleanup auth cache dir
-    sudo rm -rf $SAHARA_AUTH_CACHE_DIR
     if [ "$SAHARA_USE_MOD_WSGI" == "True" ]; then
         sudo rm -f $(apache_site_config_for sahara-api)
     fi
@@ -85,12 +84,7 @@ function configure_sahara {
 
     cp -p $SAHARA_DIR/etc/sahara/api-paste.ini $SAHARA_CONF_DIR
 
-    # Create auth cache dir
-    sudo install -d -o $STACK_USER -m 700 $SAHARA_AUTH_CACHE_DIR
-    rm -rf $SAHARA_AUTH_CACHE_DIR/*
-
-    configure_auth_token_middleware \
-        $SAHARA_CONF_FILE sahara $SAHARA_AUTH_CACHE_DIR
+    configure_keystone_authtoken_middleware $SAHARA_CONF_FILE sahara
 
     # Set admin user parameters needed for trusts creation
     iniset $SAHARA_CONF_FILE \
