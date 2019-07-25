@@ -173,7 +173,7 @@ class SparkJobEngine(base_engine.JobEngine):
                 job_configs.get('configs', {})):
             path = 'service/edp/resources/edp-spark-wrapper.jar'
             name = 'builtin-%s.jar' % uuidutils.generate_uuid()
-            builtin_libs = [{'raw': files.get_file_text(path),
+            builtin_libs = [{'raw': files.try_get_file_text(path),
                              'name': name}]
 
         uploaded_paths = []
