@@ -3,5 +3,8 @@
 echo "Installing mysql compat"
 
 MARIADB_VERSION=$(rpm -qa mariadb | cut -d- -f2)
+INSTALLED=$(rpm -qa | grep -i mariadb-compat-${MARIADB_VERSION}-)
 
-rpm -ivh --nodeps http://yum.mariadb.org/$MARIADB_VERSION/rhel7-amd64/rpms/MariaDB-$MARIADB_VERSION-centos73-x86_64-compat.rpm
+if [[ -z "$INSTALLED" ]]; then
+    rpm -ivh --nodeps http://yum.mariadb.org/$MARIADB_VERSION/rhel7-amd64/rpms/MariaDB-$MARIADB_VERSION-centos73-x86_64-compat.rpm
+fi
