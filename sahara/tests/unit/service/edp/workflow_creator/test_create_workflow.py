@@ -21,14 +21,12 @@ from sahara.service.edp.oozie.workflow_creator import java_workflow as jw
 from sahara.service.edp.oozie.workflow_creator import mapreduce_workflow as mrw
 from sahara.service.edp.oozie.workflow_creator import pig_workflow as pw
 from sahara.service.edp.oozie.workflow_creator import shell_workflow as shw
-from sahara.utils import patches as p
 
 
 class TestWorkflowCreators(testtools.TestCase):
 
     def setUp(self):
         super(TestWorkflowCreators, self).setUp()
-        p.patch_minidom_writexml()
         self.prepare = {'delete': ['delete_dir_1', 'delete_dir_2'],
                         'mkdir': ['mkdir_1']}
         self.job_xml = 'job_xml.xml'
