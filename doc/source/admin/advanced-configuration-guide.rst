@@ -213,39 +213,13 @@ you want to run sahara services and follow these steps:
   run both processes on the same or separate hosts as long as they are
   configured to use the same message broker and database.
 
-To configure oslo.messaging, first you will need to choose a message
-broker driver. Currently there are two drivers provided: RabbitMQ
-or ZeroMQ. For the RabbitMQ drivers please see the
-:ref:`notification-configuration` documentation for an explanation of
-common configuration options.
-
-For an expanded view of all the options provided by each message broker
-driver in oslo.messaging please refer to the options available in the
-respective source trees:
-
-* For Rabbit MQ see
-
-  * rabbit_opts variable in `impl_rabbit.py <https://git.openstack.org/
-    cgit/openstack/oslo.messaging/tree/oslo/messaging/_drivers
-    /impl_rabbit.py?id=1.4.0#n38>`_
-  * amqp_opts variable in `amqp.py <https://git.openstack.org/cgit/
-    openstack/oslo.messaging/tree/oslo/messaging/
-    _drivers/amqp.py?id=1.4.0#n37>`_
-
-* For Zmq see
-
-  * zmq_opts variable in `impl_zmq.py <https://git.openstack.org/cgit/
-    openstack/oslo.messaging/tree/oslo/messaging/_drivers/
-    impl_zmq.py?id=1.4.0#n49>`_
-  * matchmaker_opts variable in `matchmaker.py <https://git.openstack.org/
-    cgit/openstack/oslo.messaging/tree/oslo/messaging/_drivers/
-    matchmaker.py?id=1.4.0#n27>`_
-  * matchmaker_redis_opts variable in `matchmaker_redis.py <https://
-    git.openstack.org/cgit/openstack/oslo.messaging/tree/oslo/messaging/
-    _drivers/matchmaker_redis.py?id=1.4.0#n26>`_
-  * matchmaker_opts variable in `matchmaker_ring.py <https://
-    git.openstack.org/cgit/openstack/oslo.messaging/tree/oslo/messaging/
-    _drivers/matchmaker_ring.py?id=1.4.0#n27>`_
+To configure ``oslo.messaging``, first you need to choose a message
+broker driver. The recommended driver is ``RabbitMQ``. For the ``RabbitMQ``
+drivers please see the :ref:`notification-configuration` documentation
+for an explanation of common configuration options; the entire list of
+configuration options is found in the
+:oslo.messaging-doc:`oslo_messaging_rabbit documentation
+<configuration/opts.html#oslo-messaging-rabbit>`.
 
 These options will also be present in the generated sample configuration
 file. For instructions on creating the configuration file please see the
