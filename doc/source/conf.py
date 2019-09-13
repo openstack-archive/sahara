@@ -59,6 +59,7 @@ openstack_projects = [
     'kolla-ansible',
     'neutron',
     'nova',
+    'oslo.messaging',
     'oslo.middleware',
     'sahara-plugin-ambari',
     'sahara-plugin-cdh',
