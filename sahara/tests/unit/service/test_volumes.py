@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from cinderclient.v1 import volumes as vol_v1
 from cinderclient.v2 import volumes as vol_v2
 from cinderclient.v3 import volumes as vol_v3
 import mock
@@ -39,25 +38,6 @@ class TestAttachVolume(base.SaharaWithDbTestCase):
         execute_com.side_effect = ex.RemoteCommandException('cmd')
         self.assertRaises(ex.RemoteCommandException, volumes._mount_volume,
                           instance, '123', '456', False)
-
-    @mock.patch('sahara.conductor.manager.ConductorManager.cluster_get')
-    @mock.patch('cinderclient.v1.volumes.Volume.delete')
-    @mock.patch('cinderclient.v1.volumes.Volume.detach')
-    @mock.patch('sahara.utils.openstack.cinder.get_volume')
-    def test_detach_volumes(self, p_get_volume, p_detach, p_delete, p_cond):
-        class Instance(object):
-            def __init__(self):
-                self.instance_id = '123454321'
-                self.volumes = [123]
-                self.instance_name = 'spam'
-
-        instance = Instance()
-        p_get_volume.return_value = vol_v1.Volume(None, {'id': '123', 'status':
-                                                         'available'})
-        p_detach.return_value = None
-        p_delete.return_value = None
-        self.assertIsNone(
-            volumes.detach_from_instance(instance))
 
     @mock.patch('sahara.conductor.manager.ConductorManager.cluster_get')
     @mock.patch('cinderclient.v2.volumes.Volume.delete')
