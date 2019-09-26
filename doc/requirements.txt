@@ -4,6 +4,7 @@
 openstackdocstheme>=1.18.1 # Apache-2.0
 os-api-ref>=1.6.0 # Apache-2.0
 reno>=2.5.0 # Apache-2.0
-sphinx!=1.6.6,!=1.6.7,>=1.6.2 # BSD
+sphinx!=1.6.6,!=1.6.7,>=1.6.2,<2.0.0;python_version=='2.7'  # BSD
+sphinx!=1.6.6,!=1.6.7,>=1.6.2;python_version>='3.4'  # BSD
 sphinxcontrib-httpdomain>=1.3.0 # BSD
 whereto>=0.3.0 # Apache-2.0
