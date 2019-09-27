@@ -20,7 +20,8 @@
         - sahara-grenade
         - sahara-tests-scenario-py3:
             voting: false
-        - sahara-tripleo-ci-centos-7-scenario003-standalone
+        - sahara-tripleo-ci-centos-7-scenario003-standalone:
+            voting: false
         - sahara-openstack-ansible-functional
     gate:
       queue: sahara
@@ -30,7 +31,8 @@
         - sahara-tests-tempest
         - sahara-tests-tempest-v2
         - sahara-grenade
-        - sahara-tripleo-ci-centos-7-scenario003-standalone
+        - sahara-tripleo-ci-centos-7-scenario003-standalone:
+            voting: false
         - sahara-openstack-ansible-functional
     experimental:
       jobs:
