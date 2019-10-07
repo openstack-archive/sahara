@@ -276,7 +276,11 @@ def _get_http_client(host, port, proxy_command=None, gateway_host=None,
 
 
 def _write_fl(sftp, remote_file, data):
-    write_data = paramiko.py3compat.StringIO(data)
+    try:
+        write_data = paramiko.py3compat.StringIO(data)
+    except TypeError:
+        write_data = paramiko.py3compat.BytesIO(data)
+
     sftp.putfo(write_data, remote_file)
 
 
