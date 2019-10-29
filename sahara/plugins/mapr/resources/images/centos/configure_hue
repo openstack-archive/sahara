@@ -6,5 +6,5 @@ MARIADB_VERSION=$(rpm -qa mariadb | cut -d- -f2)
 INSTALLED=$(rpm -qa | grep -i mariadb-compat-${MARIADB_VERSION}-)
 
 if [[ -z "$INSTALLED" ]]; then
-    rpm -ivh --nodeps http://yum.mariadb.org/$MARIADB_VERSION/rhel7-amd64/rpms/MariaDB-$MARIADB_VERSION-centos73-x86_64-compat.rpm
+    rpm -ivh --nodeps http://yum.mariadb.org/$MARIADB_VERSION/rhel7-amd64/rpms/MariaDB-compat-$MARIADB_VERSION-1.el7.centos.x86_64.rpm
 fi

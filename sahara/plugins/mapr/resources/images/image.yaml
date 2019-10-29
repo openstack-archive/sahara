@@ -109,7 +109,6 @@ validators:
               - redhat-lsb
               - redhat-lsb-core
               - redhat-lsb-printing
-              - urw-fonts
               - yum-utils
               - xml-common
       - ubuntu:
