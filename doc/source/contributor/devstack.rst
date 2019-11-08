@@ -2,7 +2,7 @@ Setup DevStack
 ==============
 
 DevStack can be installed on Fedora, Ubuntu, and CentOS. For supported
-versions see `DevStack documentation <http://devstack.org>`_
+versions see `DevStack documentation <https://docs.openstack.org/devstack/latest/>`_
 
 We recommend that you install DevStack in a VM, rather than on your main
 system. That way you may avoid contamination of your system. You may find
@@ -16,7 +16,7 @@ Start VM and set up OS
 
 In order to run DevStack in a local VM, you need to start by installing
 a guest with Ubuntu 14.04 server. Download an image file from
-`Ubuntu's web site <http://www.ubuntu.com/download/server>`_ and create
+`Ubuntu's web site <https://www.ubuntu.com/download/server>`_ and create
 a new guest from it. Virtualization solution must support
 nested virtualization. Without nested virtualization VMs running inside
 the DevStack will be extremely slow lacking hardware acceleration, i.e.
