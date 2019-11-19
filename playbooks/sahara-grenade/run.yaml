@@ -60,6 +60,7 @@
           export DEVSTACK_GATE_TEMPEST=1
           export DEVSTACK_GATE_TEMPEST_REGEX="sahara_tempest_plugin.tests.api"
           export DEVSTACK_GATE_GRENADE=pullup
+          export DEVSTACK_GATE_USE_PYTHON3=True
           export BRANCH_OVERRIDE=default
           if [ "$BRANCH_OVERRIDE" != "default" ] ; then
               export OVERRIDE_ZUUL_BRANCH=$BRANCH_OVERRIDE
