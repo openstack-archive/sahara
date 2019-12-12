@@ -65,7 +65,7 @@ class TestDataSourceUpdateValidation(u.ValidationTestCase):
         ds.check_data_source_update(
             {'type': 'maprfs', 'url': 'maprfs://cluster'}, 'ds_id')
 
-    def _update_manilla(self):
+    def _update_manila(self):
         with testtools.ExpectedException(ex.InvalidDataException):
             ds.check_data_source_update({'type': 'manila'}, 'ds_id')
 
@@ -113,7 +113,7 @@ class TestDataSourceUpdateValidation(u.ValidationTestCase):
 
         self._update_hdfs()
         self._update_maprfs()
-        self._update_manilla()
+        self._update_manila()
 
         with testtools.ExpectedException(ex.InvalidDataException):
             ds.check_data_source_update({'url': '/tmp/file'}, 'ds_id')
@@ -129,7 +129,7 @@ class TestDataSourceUpdateValidation(u.ValidationTestCase):
 
         self._update_swift()
         self._update_maprfs()
-        self._update_manilla()
+        self._update_manila()
 
         ds.check_data_source_update({'url': '/tmp/file'}, 'ds_id')
 
@@ -144,7 +144,7 @@ class TestDataSourceUpdateValidation(u.ValidationTestCase):
 
         self._update_swift()
         self._update_hdfs()
-        self._update_manilla()
+        self._update_manila()
 
         ds.check_data_source_update({'url': '/tmp/file'}, 'ds_id')
 
