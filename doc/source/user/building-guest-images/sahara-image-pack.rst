@@ -63,7 +63,7 @@ starting to pack it, also enable some required repos.
 Installation and developer notes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The script is part of of the Sahara repository, but it does not depend
+The script is part of the Sahara repository, but it does not depend
 on the Sahara services. In order to use its development version,
 clone the `Sahara repository <https://opendev.org/openstack/sahara>`_,
 check out the branch which matches the Sahara version used, and

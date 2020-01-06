@@ -337,7 +337,7 @@ Group of instances.
 Cluster
 -------
 
-Contains all relevant info about cluster.  This object is is provided to the
+Contains all relevant info about cluster.  This object is provided to the
 plugin for both cluster creation and scaling.  The "Cluster Lifecycle" section
 below further specifies which fields are filled at which moment.
 
