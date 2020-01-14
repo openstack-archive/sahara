@@ -1,7 +1,6 @@
 - project:
     templates:
       - openstack-lower-constraints-jobs
-      - openstack-python-jobs
       - openstack-python3-ussuri-jobs
       - periodic-stable-jobs
       - publish-openstack-docs-pti
@@ -90,10 +89,12 @@
       - openstack/openstack-ansible-os_sahara
     vars:
       osa_test_repo: openstack/openstack-ansible-os_sahara
+      devstack_localrc:
+        USE_PYTHON3: True
 
 - job:
     name: sahara-buildimages-base
-    nodeset: centos-7
+    nodeset: centos-8
     vars:
       sahara_src_dir: src/opendev.org/openstack/sahara
     run: playbooks/buildimages/run.yaml
