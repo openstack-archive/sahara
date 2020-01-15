@@ -25,6 +25,6 @@ postgresql-devel [platform:rpm]
 # command.
 python-guestfs [platform:dpkg]
 libguestfs-xfs [platform:dpkg]
-python-libguestfs [platform:rpm]
+python3-libguestfs [platform:rpm]
 libguestfs-xfs [platform:redhat]
 xfsprogs [platform:suse]
