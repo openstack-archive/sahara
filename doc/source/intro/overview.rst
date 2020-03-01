@@ -75,8 +75,9 @@ The sahara product communicates with the following OpenStack services:
   like passwords and private keys in a secure storage.
 
 .. image:: ../images/openstack-interop.png
-    :width: 800 px
-    :scale: 99 %
+    :width: 960
+    :height: 720
+    :scale: 83 %
     :align: left
 
 General Workflow

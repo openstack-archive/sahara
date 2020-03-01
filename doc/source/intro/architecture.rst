@@ -2,8 +2,9 @@ Architecture
 ============
 
 .. image:: ../images/sahara-architecture.svg
-    :width: 800 px
-    :scale: 100 %
+    :width: 960
+    :height: 635
+    :scale: 83 %
     :align: left
 
 
