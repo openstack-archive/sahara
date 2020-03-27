@@ -41,8 +41,7 @@ extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.todo', 'sp
 
 # openstackdocstheme options
 repository_name = 'openstack/sahara'
-bug_project = '935'
-bug_tag = 'doc'
+use_storyboard = True
 
 config_generator_config_file = 'config-generator.conf'
 config_sample_basename = 'sahara'

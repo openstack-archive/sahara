@@ -34,8 +34,7 @@ extensions = [
 
 # openstackdocstheme options
 repository_name = 'openstack/sahara'
-bug_project = '935'
-bug_tag = 'api-ref'
+use_storyboard = True
 
 html_theme = 'openstackdocs'
 html_theme_options = {
