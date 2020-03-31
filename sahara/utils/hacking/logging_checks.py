@@ -12,6 +12,7 @@
 
 import re
 
+from hacking import core
 
 ALL_LOG_LEVELS = "info|exception|warning|critical|error|debug"
 
@@ -23,6 +24,7 @@ RE_TRANSLATED_LOG = re.compile(
     r"(.)*LOG\.(%(levels)s)\(\s*_\(" % {'levels': ALL_LOG_LEVELS})
 
 
+@core.flake8ext
 def no_translate_logs(logical_line, filename):
     """Check for 'LOG.*(_('
 
@@ -40,6 +42,7 @@ def no_translate_logs(logical_line, filename):
         yield (0, msg)
 
 
+@core.flake8ext
 def accepted_log_levels(logical_line, filename):
     """In Sahara we use only 5 log levels.
 
