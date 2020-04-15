@@ -12,7 +12,6 @@ Programming HowTos and Tutorials
    development-environment
    devstack
    dashboard-dev-environment-guide
-   how-to-participate
    how-to-build-oozie
    adding-database-migrations
    testing
@@ -26,6 +25,6 @@ Other Resources
 .. toctree::
    :maxdepth: 2
 
-   project
+   contributing
    gerrit
    jenkins
