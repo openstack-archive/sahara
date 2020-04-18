@@ -14,7 +14,8 @@
 # limitations under the License.
 
 
-import mock
+from unittest import mock
+
 from oslo_utils import uuidutils
 
 from sahara.service.api import v10 as api

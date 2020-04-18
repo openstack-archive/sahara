@@ -14,9 +14,9 @@
 # limitations under the License.
 
 import random
+from unittest import mock
 
 import fixtures
-import mock
 import six
 import testtools
 

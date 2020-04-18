@@ -14,8 +14,8 @@
 # limitations under the License.
 
 
-import mock
 import testtools
+from unittest import mock
 
 from sahara import exceptions as ex
 from sahara.service.edp import s3_common

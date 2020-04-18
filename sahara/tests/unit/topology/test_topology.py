@@ -14,8 +14,8 @@
 # limitations under the License.
 
 import tempfile
+from unittest import mock
 
-import mock
 
 from sahara.conductor import objects as o
 from sahara import context

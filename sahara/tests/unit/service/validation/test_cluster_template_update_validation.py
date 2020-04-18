@@ -14,8 +14,8 @@
 # limitations under the License.
 
 import copy
+from unittest import mock
 
-import mock
 
 from sahara.service.api import v10 as api
 from sahara.service.validations import cluster_template_schema as ct_schema

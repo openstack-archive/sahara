@@ -13,9 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from unittest import mock
+
 from cinderclient.v2 import volumes as vol_v2
 from cinderclient.v3 import volumes as vol_v3
-import mock
 
 from sahara import exceptions as ex
 from sahara.service import volumes

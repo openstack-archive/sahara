@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import mock
+from unittest import mock
 
 from sahara.plugins import exceptions as ex
 from sahara.plugins import utils as pu

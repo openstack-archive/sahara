@@ -15,8 +15,8 @@
 # limitations under the License.
 
 import os
+from unittest import mock
 
-import mock
 
 import sahara.exceptions as ex
 from sahara.service.edp.job_utils import ds_manager

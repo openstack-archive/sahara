@@ -15,8 +15,8 @@
 
 
 import shlex
+from unittest import mock
 
-import mock
 import testtools
 
 from sahara import exceptions as ex

@@ -15,8 +15,8 @@
 
 import copy
 import datetime
+from unittest import mock
 
-import mock
 from sqlalchemy import exc as sa_exc
 import testtools
 

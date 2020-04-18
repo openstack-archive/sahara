@@ -14,8 +14,8 @@
 # under the License.
 
 import sys
+from unittest import mock
 
-import mock
 import testscenarios
 import testtools
 

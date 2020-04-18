@@ -14,8 +14,8 @@
 # limitations under the License.
 
 import copy
+from unittest import mock
 
-import mock
 from oslo_utils import uuidutils
 import six
 from sqlalchemy import exc as sa_ex

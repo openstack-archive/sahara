@@ -15,7 +15,7 @@
 
 
 from heatclient import exc as heat_exc
-import mock
+from unittest import mock
 
 from sahara.service import engine
 from sahara.service.heat import heat_engine

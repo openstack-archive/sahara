@@ -14,7 +14,8 @@
 # limitations under the License.
 
 
-import mock
+from unittest import mock
+
 from oslo_utils import uuidutils
 import testtools
 

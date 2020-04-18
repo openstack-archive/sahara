@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import mock
+from unittest import mock
 
 import sahara.exceptions as ex
 from sahara.service.castellan import config as castellan

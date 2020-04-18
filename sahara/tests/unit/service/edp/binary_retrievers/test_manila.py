@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import mock
+from unittest import mock
 
 import sahara.service.edp.binary_retrievers.manila_share as ms
 from sahara.tests.unit import base

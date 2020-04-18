@@ -12,8 +12,8 @@
 # limitations under the License.
 
 import jsonschema.exceptions as json_exc
-import mock
 import testtools
+from unittest import mock
 
 from sahara import conductor as cond
 from sahara import context

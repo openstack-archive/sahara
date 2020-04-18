@@ -15,8 +15,8 @@
 
 import collections
 import itertools
+from unittest import mock
 
-import mock
 
 from sahara.service.validations.edp import job as j
 from sahara.service.validations.edp import job_execution_schema as j_e_schema

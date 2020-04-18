@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import mock
+from unittest import mock
 
 from sahara.service.edp.job_binaries import base as jb_base
 from sahara.tests.unit import base

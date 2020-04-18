@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import mock
+from unittest import mock
 
 from sahara.service.api import v10 as api
 from sahara.service.validations.edp import job_binary as b

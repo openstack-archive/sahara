@@ -17,7 +17,7 @@ try:
     from manilaclient.common.apiclient import exceptions as manila_ex
 except ImportError:
     from manilaclient.openstack.common.apiclient import exceptions as manila_ex
-import mock
+from unittest import mock
 
 from sahara.service.validations import shares
 from sahara.tests.unit.service.validation import utils as u

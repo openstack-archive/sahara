@@ -15,8 +15,8 @@
 
 import ast
 import re
+from unittest import mock
 
-import mock
 from neutronclient.common import exceptions as neutron_ex
 import novaclient.exceptions as nova_ex
 import six

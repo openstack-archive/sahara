@@ -14,9 +14,9 @@
 # limitations under the License.
 
 import copy
+from unittest import mock
 import xml.dom.minidom as xml
 
-import mock
 import testtools
 
 from sahara import conductor as cond

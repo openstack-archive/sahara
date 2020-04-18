@@ -14,8 +14,8 @@
 # limitations under the License.
 
 import time
+from unittest import mock
 
-import mock
 from oslo_utils import timeutils
 from oslo_utils import uuidutils
 import testtools

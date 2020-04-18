@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import mock
 import testtools
+from unittest import mock
 
 import sahara.exceptions as ex
 from sahara.service.edp.data_sources.s3.implementation import S3Type

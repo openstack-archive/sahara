@@ -14,9 +14,9 @@
 
 import copy
 import tempfile
+from unittest import mock
 
 import jsonschema
-import mock
 from oslo_serialization import jsonutils as json
 from oslo_utils import uuidutils
 
