@@ -15,6 +15,7 @@
 
 import mock
 import six
+import testtools
 
 from sahara import conductor
 from sahara import context
@@ -56,6 +57,7 @@ class TestVerifications(base.SaharaWithDbTestCase):
         cluster = self.api.cluster_create(ctx, test_api.SAMPLE_CLUSTER)
         return cluster
 
+    @testtools.skip("Story 2007450 - http://sqlalche.me/e/bhk3")
     @mock.patch('sahara.plugins.health_check_base.get_health_checks')
     def test_verification_start(self, get_health_checks):
         cluster = self._cluster_sample()
@@ -99,6 +101,7 @@ class TestVerifications(base.SaharaWithDbTestCase):
         message = message.split('\n')[0]
         self.assertEqual(expected_message, message)
 
+    @testtools.skip("Story 2007450 - http://sqlalche.me/e/bhk3")
     def test_conductor_crud_verifications(self):
         ctx = context.ctx()
         try:
@@ -134,6 +137,7 @@ class TestVerifications(base.SaharaWithDbTestCase):
 
         self.assertIsNone(self.api.cluster_verification_get(ctx, ver['id']))
 
+    @testtools.skip("Story 2007450 - http://sqlalche.me/e/bhk3")
     def test_conductor_crud_health_checks(self):
         ctx = context.ctx()
         try:
