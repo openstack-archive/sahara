@@ -21,8 +21,7 @@ extensions = [
 
 # openstackdocstheme options
 repository_name = 'openstack/sahara'
-bug_project = '935'
-bug_tag = 'releasenotes'
+use_storyboard = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
