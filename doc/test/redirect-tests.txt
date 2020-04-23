@@ -7,3 +7,5 @@
 /sahara/rocky/user/guest-requirements.html 301 /sahara/rocky/user/building-guest-images.html
 /sahara/latest/user/vanilla-plugin.html 301 /sahara-plugin-vanilla/latest/
 /sahara/stein/user/storm-plugin.html 301 /sahara-plugin-storm/stein/
+/sahara/latest/contributor/how-to-participate.html 301 /sahara/latest/contributor/contributing.html
+/sahara/latest/contributor/project.html 301 /sahara/latest/contributor/contributing.html

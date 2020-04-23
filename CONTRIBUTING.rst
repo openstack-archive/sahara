@@ -1,20 +1,19 @@
-If you would like to contribute to the development of OpenStack,
-you must follow the steps in this page:
+The source repository for this project can be found at:
 
-   https://docs.openstack.org/infra/manual/developers.html
+   https://opendev.org/openstack/sahara
 
-You can find more Sahara-specific info in our How To Participate guide:
+Pull requests submitted through GitHub are not monitored.
 
-   https://docs.openstack.org/sahara/latest/contributor/how-to-participate.html
+To start contributing to OpenStack, follow the steps in the contribution guide
+to set up and use Gerrit:
 
-Once those steps have been completed, changes to OpenStack
-should be submitted for review via the Gerrit tool, following
-the workflow documented at:
+   https://docs.openstack.org/contributors/code-and-documentation/quick-start.html
 
-   https://docs.openstack.org/infra/manual/developers.html#development-workflow
+Bugs should be filed on Storyboard:
 
-Pull requests submitted through GitHub will be ignored.
+   https://storyboard.openstack.org/#!/project/openstack/sahara
 
-Bugs should be filed on Storyboard, not GitHub:
+For more specific information about contributing to this repository, see the
+sahara contributor guide:
 
-   https://storyboard.openstack.org/#!/project/935
+   https://docs.openstack.org/sahara/latest/contributor/contributing.html
