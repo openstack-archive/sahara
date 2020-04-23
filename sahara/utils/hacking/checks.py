@@ -18,9 +18,7 @@ import pycodestyle
 import re
 import tokenize
 
-from sahara.utils.hacking import commit_message
-from sahara.utils.hacking import import_checks
-from sahara.utils.hacking import logging_checks
+from hacking import core
 
 
 RE_OSLO_IMPORTS = (re.compile(r"(((from)|(import))\s+oslo\.)"),
@@ -45,6 +43,7 @@ def _any_in(line, *sublines):
     return False
 
 
+@core.flake8ext
 def import_db_only_in_conductor(logical_line, filename):
     """Check that db calls are only in conductor, plugins module and in tests.
 
@@ -65,6 +64,7 @@ def import_db_only_in_conductor(logical_line, filename):
                   "sahara/conductor/*")
 
 
+@core.flake8ext
 def hacking_no_author_attr(logical_line, tokens):
     """__author__ should not be used.
 
@@ -76,6 +76,7 @@ def hacking_no_author_attr(logical_line, tokens):
                    "S362: __author__ should not be used")
 
 
+@core.flake8ext
 def check_oslo_namespace_imports(logical_line):
     """Check to prevent old oslo namespace usage.
 
@@ -92,6 +93,7 @@ def check_oslo_namespace_imports(logical_line):
               logical_line))
 
 
+@core.flake8ext
 def dict_constructor_with_list_copy(logical_line):
     """Check to prevent dict constructor with a sequence of key-value pairs.
 
@@ -102,6 +104,7 @@ def dict_constructor_with_list_copy(logical_line):
                   'constructor with a sequence of key-value pairs.')
 
 
+@core.flake8ext
 def use_jsonutils(logical_line, filename):
     """Check to prevent importing json in sahara code.
 
@@ -115,6 +118,7 @@ def use_jsonutils(logical_line, filename):
                  " of json")
 
 
+@core.flake8ext
 def no_mutable_default_args(logical_line):
     """Check to prevent mutable default argument in sahara code.
 
@@ -123,18 +127,3 @@ def no_mutable_default_args(logical_line):
     msg = "S360: Method's default argument shouldn't be mutable!"
     if RE_MUTABLE_DEFAULT_ARGS.match(logical_line):
         yield (0, msg)
-
-
-def factory(register):
-    register(import_db_only_in_conductor)
-    register(hacking_no_author_attr)
-    register(check_oslo_namespace_imports)
-    register(commit_message.OnceGitCheckCommitTitleBug)
-    register(commit_message.OnceGitCheckCommitTitleLength)
-    register(import_checks.hacking_import_groups)
-    register(import_checks.hacking_import_groups_together)
-    register(dict_constructor_with_list_copy)
-    register(logging_checks.no_translate_logs)
-    register(logging_checks.accepted_log_levels)
-    register(use_jsonutils)
-    register(no_mutable_default_args)
