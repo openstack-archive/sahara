@@ -8,16 +8,17 @@
 # Robert Simai, 2014
 # Andreas Jaeger <jaegerandi@gmail.com>, 2016. #zanata
 # Frank Kloeker <eumel@arcor.de>, 2018. #zanata
+# Andreas Jaeger <jaegerandi@gmail.com>, 2020. #zanata
 msgid ""
 msgstr ""
 "Project-Id-Version: sahara VERSION\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/openstack-i18n/\n"
-"POT-Creation-Date: 2019-03-21 18:56+0000\n"
+"POT-Creation-Date: 2020-04-23 21:26+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2018-03-06 07:48+0000\n"
-"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
+"PO-Revision-Date: 2020-04-25 10:36+0000\n"
+"Last-Translator: Andreas Jaeger <jaegerandi@gmail.com>\n"
 "Language: de\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.0\n"
@@ -561,6 +562,9 @@ msgstr "Der Benutzer%s konnte nicht gefunden werden"
 
 msgid "Failed to perform Oozie request"
 msgstr "Oozie-Anfrage konnte nicht ausgeführt werden"
+
+msgid "Failed to suspend job execution {jid}"
+msgstr "Die Ausführung des Jobs konnte nicht angehalten werden {jid}"
 
 #, python-format
 msgid "Feature '%s' is not implemented"
@@ -1138,6 +1142,9 @@ msgstr "ResourceManager Hochverfügbarkeit: %s"
 msgid "Response {response} is not unique for this query {query}."
 msgstr "Antwort {response} ist nicht eindeutig für diese Abfrage {query}."
 
+msgid "S3 url must not be empty"
+msgstr "S3 URL darf nicht leer sein"
+
 #, python-format
 msgid "Sahara doesn't contain plugin with name '%s'"
 msgstr "Sahara enthält kein Plugin mit dem Namen '%s'"
@@ -1255,6 +1262,13 @@ msgstr ""
 msgid "The configuration has failed"
 msgstr "Die Konfiguration ist fehlgeschlagen"
 
+msgid ""
+"The filesystem to mount as the root volume on the image. No value is "
+"required if only one filesystem is detected."
+msgstr ""
+"Das Dateisystem, das als Root-Volume im Abbild bereitgestellt werden soll. "
+"Kein Wert wird benötigt, wenn nur ein Dateisystem gefunden wird."
+
 msgid "The following argument names are reserved: {names}"
 msgstr "Die folgenden Argumentnamen sind reserviert: {names}"
 
@@ -1316,6 +1330,9 @@ msgstr "Das URL-Schema muss 'internal-db' sein"
 
 msgid "URL scheme must be 'maprfs'"
 msgstr "Das URL-Schema muss 'maprfs' lauten"
+
+msgid "URL scheme must be 's3' or 's3a'"
+msgstr "Das URL-Schema muss 's3' oder 's3a' sein"
 
 msgid "URL scheme must be 'swift'"
 msgstr "Das URL-Schema muss 'swift' sein"
