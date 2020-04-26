@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sahara\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-02 08:55+0000\n"
+"POT-Creation-Date: 2020-04-23 21:25+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -51,17 +51,11 @@ msgstr "8.0.1"
 msgid "8.0.2"
 msgstr "8.0.2"
 
-msgid "8.0.2-13"
-msgstr "8.0.2-13"
-
 msgid "9.0.0"
 msgstr "9.0.0"
 
 msgid "9.0.1"
 msgstr "9.0.1"
-
-msgid "9.0.1-8"
-msgstr "9.0.1-8"
 
 msgid ""
 "A few responses in the experimental (but nearly-stable) APIv2 have been "
