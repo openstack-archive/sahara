@@ -14,7 +14,6 @@
 # limitations under the License.
 
 import copy
-from unittest import mock
 
 import testtools
 
@@ -40,56 +39,60 @@ class APIUtilsTest(testtools.TestCase):
                 ]
                 }
 
-    @mock.patch('flask.request')
-    @mock.patch('flask.Response')
-    def test_render_pagination(self, flask, request):
-        serializer = wsgi.JSONDictSerializer()
-        request.status_code = 200
+    def test_render_pagination(self):
+        def _assert_response_equal(response_obj, response, status, mimetype):
+            self.assertEqual(response_obj.response, [response.encode()])
+            self.assertEqual(response_obj.status, status)
+            self.assertEqual(response_obj.mimetype, mimetype)
 
-        api.render(self.page, 'application/json', 200, name='clusters')
-        body = serializer.serialize(self.response)
-        flask.assert_called_with(
-            response=body, status=200, mimetype='application/json')
+        from sahara.api.middleware import sahara_middleware  # noqa
+        app = sahara_middleware.build_app()
 
-        self.page.prev, self.page.next = 35, 49
-        api.render(self.page, 'application/json', 200, name='clusters')
-        paginate_response = copy.copy(self.response)
-        paginate_response["markers"] = \
-            {"prev": 35, "next": 49}
+        with app.test_request_context():
+            _200_OK = '200 OK'
+            serializer = wsgi.JSONDictSerializer()
 
-        body = serializer.serialize(paginate_response)
-        flask.assert_called_with(
-            response=body, status=200, mimetype='application/json')
+            resp = \
+                api.render(self.page, 'application/json', 200, name='clusters')
+            body = serializer.serialize(self.response)
+            _assert_response_equal(resp, body, _200_OK, 'application/json')
 
-        self.page.prev, self.page.next = 7, None
-        api.render(self.page, 'application/json', 200, name='clusters')
-        paginate_response = copy.copy(self.response)
-        paginate_response["markers"] = {"prev": 7, "next": None}
+            self.page.prev, self.page.next = 35, 49
+            resp = \
+                api.render(self.page, 'application/json', 200, name='clusters')
+            paginate_response = copy.copy(self.response)
+            paginate_response["markers"] = \
+                {"prev": 35, "next": 49}
 
-        body = serializer.serialize(paginate_response)
-        flask.assert_called_with(
-            response=body, status=200, mimetype='application/json')
+            body = serializer.serialize(paginate_response)
+            _assert_response_equal(resp, body, _200_OK, 'application/json')
 
-        self.page.prev, self.page.next = None, 14
-        api.render(self.page, 'application/json', 200, name='clusters')
+            self.page.prev, self.page.next = 7, None
+            resp = \
+                api.render(self.page, 'application/json', 200, name='clusters')
+            paginate_response = copy.copy(self.response)
+            paginate_response["markers"] = {"prev": 7, "next": None}
 
-        paginate_response = copy.copy(self.response)
-        paginate_response["markers"] = {"prev": None, "next": 14}
+            body = serializer.serialize(paginate_response)
+            _assert_response_equal(resp, body, _200_OK, 'application/json')
 
-        body = serializer.serialize(paginate_response)
-        flask.assert_called_with(
-            response=body, status=200, mimetype='application/json')
+            self.page.prev, self.page.next = None, 14
+            resp = \
+                api.render(self.page, 'application/json', 200, name='clusters')
 
-        self.page.prev, self.page.next = None, 11
-        api.render(self.page, 'application/json', 200, name='clusters')
+            paginate_response = copy.copy(self.response)
+            paginate_response["markers"] = {"prev": None, "next": 14}
 
-        paginate_response = copy.copy(self.response)
-        paginate_response["markers"] = \
-            {"prev": None, "next": 11}
+            body = serializer.serialize(paginate_response)
+            _assert_response_equal(resp, body, _200_OK, 'application/json')
 
-        body = serializer.serialize(paginate_response)
-        flask.assert_called_with(
-            response=body, status=200, mimetype='application/json')
+            self.page.prev, self.page.next = None, 11
+            resp = \
+                api.render(self.page, 'application/json', 200, name='clusters')
 
-        self.page.prev, self.page.next = None, 11
-        api.render(self.page, 'application/json', 200, name='clusters')
+            paginate_response = copy.copy(self.response)
+            paginate_response["markers"] = \
+                {"prev": None, "next": 11}
+
+            body = serializer.serialize(paginate_response)
+            _assert_response_equal(resp, body, _200_OK, 'application/json')
