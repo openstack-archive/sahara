@@ -11,7 +11,7 @@ eventlet!=0.18.3,!=0.20.1,>=0.18.2 # MIT
 Flask>=1.0.2 # BSD
 iso8601>=0.1.11 # MIT
 Jinja2>=2.10 # BSD License (3 clause)
-jsonschema>=2.6.0 # MIT
+jsonschema>=3.2.0 # MIT
 keystoneauth1>=3.4.0 # Apache-2.0
 keystonemiddleware>=4.17.0 # Apache-2.0
 microversion-parse>=0.2.1 # Apache-2.0
