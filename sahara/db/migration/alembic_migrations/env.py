@@ -14,8 +14,6 @@
 # limitations under the License.
 #
 # Based on Neutron's migration/cli.py
-
-from __future__ import with_statement
 from logging import config as c
 
 from alembic import context
