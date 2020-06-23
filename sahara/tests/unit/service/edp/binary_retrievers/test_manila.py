@@ -53,14 +53,14 @@ class TestManilaShare(base.SaharaTestCase):
         remote.instance.node_group.shares = ng_shares
 
         info = ms.get_file_info(job_binary, remote)
-        self.assertItemsEqual({'path': '/mnt/mymountpoint/the_path',
+        self.assertCountEqual({'path': '/mnt/mymountpoint/the_path',
                                'type': 'path'}, info)
         self.assertEqual(0, mount_shares.call_count)
         self.assertEqual(0, cluster_update.call_count)
 
         job_binary.url = 'manila://123456/the_path'
         info = ms.get_file_info(job_binary, remote)
-        self.assertItemsEqual({'path': '/mnt/themountpoint/the_path',
+        self.assertCountEqual({'path': '/mnt/themountpoint/the_path',
                                'type': 'path'}, info)
         self.assertEqual(0, mount_shares.call_count)
         self.assertEqual(0, cluster_update.call_count)
@@ -74,7 +74,7 @@ class TestManilaShare(base.SaharaTestCase):
 
         job_binary.url = 'manila://missing_id/the_path'
         info = ms.get_file_info(job_binary, remote)
-        self.assertItemsEqual({'path': '/mnt/missing_id/the_path',
+        self.assertCountEqual({'path': '/mnt/missing_id/the_path',
                                'type': 'path'}, info)
         self.assertEqual(1, mount_shares.call_count)
         self.assertEqual(1, cluster_update.call_count)

@@ -75,12 +75,12 @@ class TestManilaType(base.SaharaTestCase):
         info = self.manila_type.copy_binary_to_cluster(job_binary,
                                                        remote=remote)
 
-        self.assertItemsEqual('/mnt/mymountpoint/the_path', info)
+        self.assertCountEqual('/mnt/mymountpoint/the_path', info)
 
         job_binary.url = 'manila://123456/the_path'
         info = self.manila_type.copy_binary_to_cluster(job_binary,
                                                        remote=remote)
-        self.assertItemsEqual('/mnt/themountpoint/the_path', info)
+        self.assertCountEqual('/mnt/themountpoint/the_path', info)
 
         # missing id
         default_mount.return_value = '/mnt/missing_id'
@@ -89,7 +89,7 @@ class TestManilaType(base.SaharaTestCase):
         info = self.manila_type.copy_binary_to_cluster(job_binary,
                                                        remote=remote)
 
-        self.assertItemsEqual('/mnt/missing_id/the_path', info)
+        self.assertCountEqual('/mnt/missing_id/the_path', info)
 
     @mock.patch('sahara.utils.openstack.manila.client')
     @mock.patch('sahara.conductor.API.cluster_update')

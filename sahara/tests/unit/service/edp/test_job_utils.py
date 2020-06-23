@@ -106,7 +106,7 @@ class JobUtilsTestCase(testtools.TestCase):
         job_configs = {'args': [name_ref, name_ref2, id],
                        'configs': {'config': name_ref},
                        'params': {'param': name_ref}}
-        self.assertItemsEqual(
+        self.assertCountEqual(
             ['name', 'name2'],
             job_utils.find_possible_data_source_refs_by_name(job_configs))
 
@@ -152,7 +152,7 @@ class JobUtilsTestCase(testtools.TestCase):
         job_configs = {'args': [id, id2, name_ref],
                        'configs': {'config': id},
                        'params': {'param': id}}
-        self.assertItemsEqual([id, id2],
+        self.assertCountEqual([id, id2],
                               job_utils.find_possible_data_source_refs_by_uuid(
                                   job_configs))
 
@@ -231,11 +231,11 @@ class JobUtilsTestCase(testtools.TestCase):
     def test_to_url_dict(self):
         data_source_urls = {'1': ('1_native', '1_runtime'),
                             '2': ('2_native', '2_runtime')}
-        self.assertItemsEqual({'1': '1_native',
+        self.assertCountEqual({'1': '1_native',
                                '2': '2_native'},
                               job_utils.to_url_dict(data_source_urls))
 
-        self.assertItemsEqual({'1': '1_runtime',
+        self.assertCountEqual({'1': '1_runtime',
                                '2': '2_runtime'},
                               job_utils.to_url_dict(data_source_urls,
                                                     runtime=True))
