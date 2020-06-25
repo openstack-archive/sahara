@@ -17,8 +17,6 @@
         - openstack-tox-cover:
             voting: false
         - sahara-grenade
-        - sahara-tests-scenario-py3:
-            voting: false
         - sahara-tripleo-ci-centos-7-scenario003-standalone
         - sahara-openstack-ansible-functional
     gate:
@@ -41,25 +39,53 @@
 
 - job:
     name: sahara-grenade
-    parent: legacy-dsvm-base
-    run: playbooks/sahara-grenade/run.yaml
-    post-run: playbooks/sahara-grenade/post.yaml
-    timeout: 10800
+    parent: grenade
     required-projects:
-      - openstack/grenade
-      - openstack/devstack-gate
-      - openstack/sahara
-      - openstack/python-saharaclient
-      - openstack/heat
-      - openstack/heat-tempest-plugin
-      - openstack/python-heatclient
-      - openstack/sahara-tests
-      - openstack/sahara-plugin-ambari
-      - openstack/sahara-plugin-cdh
-      - openstack/sahara-plugin-mapr
-      - openstack/sahara-plugin-spark
-      - openstack/sahara-plugin-storm
-      - openstack/sahara-plugin-vanilla
+      - opendev.org/openstack/grenade
+      - opendev.org/openstack/sahara
+      - opendev.org/openstack/python-saharaclient
+      - opendev.org/openstack/heat
+      - opendev.org/openstack/heat-tempest-plugin
+      - opendev.org/openstack/python-heatclient
+      - opendev.org/openstack/sahara-tests
+      - opendev.org/openstack/sahara-plugin-ambari
+      - opendev.org/openstack/sahara-plugin-cdh
+      - opendev.org/openstack/sahara-plugin-mapr
+      - opendev.org/openstack/sahara-plugin-spark
+      - opendev.org/openstack/sahara-plugin-storm
+      - opendev.org/openstack/sahara-plugin-vanilla
+    vars:
+      grenade_localrc:
+        RUN_HEAT_INTEGRATION_TESTS: False
+      grenade_devstack_localrc:
+        shared:
+          IMAGE_URLS: http://tarballs.openstack.org/heat-test-image/fedora-heat-test-image.qcow2,https://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64-disk1.img
+      devstack_local_conf:
+        test-config:
+          $TEMPEST_CONFIG:
+            data_processing:
+              test_image_name: xenial-server-cloudimg-amd64-disk1
+              test_ssh_user: ubuntu
+            data-processing-feature-enabled:
+              s3: True
+      devstack_plugins:
+        sahara: https://opendev.org/openstack/sahara
+        heat: https://opendev.org/openstack/heat
+      devstack_services:
+        h-api: true
+        h-api-cfn: true
+        h-eng: true
+        heat: true
+        tls-proxy: false
+      tempest_plugins:
+        - sahara-tests
+        - heat-tempest-plugin
+      tempest_test_regex: ^(sahara_tempest_plugin.tests.)
+      tox_envlist: all
+    group-vars:
+      subnode:
+        devstack_services:
+          tls-proxy: false
     irrelevant-files:
       - ^(test-|)requirements.txt$
       - ^.*\.rst$
