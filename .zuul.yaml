@@ -19,8 +19,7 @@
         - sahara-tests-tempest-v2
         - openstack-tox-cover:
             voting: false
-        - sahara-grenade:
-            voting: false
+        - sahara-grenade
         - sahara-tests-scenario-py3
     gate:
       queue: sahara
@@ -29,6 +28,7 @@
         - sahara-tests-scenario-v2
         - sahara-tests-tempest
         - sahara-tests-tempest-v2
+        - sahara-grenade
         - sahara-tests-scenario-py3
 
     experimental:
