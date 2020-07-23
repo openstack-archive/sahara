@@ -966,7 +966,7 @@ class InstanceInteropHelper(remote.Remote):
                             old_line_with_start_string,
                             new_line, timeout=None):
         description = _('In file "%(file)s" replacing line'
-                        ' begining with string '
+                        ' beginning with string '
                         '"%(old_line_with_start_string)s"'
                         ' with "%(new_line)s"') % {
             "file": remote_file,
