@@ -23,7 +23,7 @@ postgresql-devel [platform:rpm]
 
 # The Python binding for libguestfs are used by the sahara-image-pack
 # command.
-python-guestfs [platform:dpkg]
+python3-guestfs [platform:dpkg]
 libguestfs-xfs [platform:dpkg]
 python3-libguestfs [platform:rpm]
 libguestfs-xfs [platform:redhat]
