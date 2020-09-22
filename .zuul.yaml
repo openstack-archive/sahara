@@ -17,7 +17,6 @@
         - openstack-tox-cover:
             voting: false
         - sahara-grenade
-        - sahara-tripleo-ci-centos-7-scenario003-standalone
         - sahara-openstack-ansible-functional
     gate:
       queue: sahara
@@ -27,7 +26,6 @@
         - sahara-tests-tempest
         - sahara-tests-tempest-v2
         - sahara-grenade
-        - sahara-tripleo-ci-centos-7-scenario003-standalone
         - sahara-openstack-ansible-functional
     experimental:
       jobs:
