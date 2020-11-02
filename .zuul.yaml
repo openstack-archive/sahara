@@ -22,8 +22,10 @@
         - sahara-grenade
         - sahara-tests-scenario-py3:
             voting: false
-        - sahara-tripleo-ci-centos-7-scenario003-standalone:
+        - sahara-tripleo-ci-centos-8-scenario003-standalone: &tripleo_sa
             voting: false
+            vars:
+              build_container_images: true
         - sahara-openstack-ansible-functional
     gate:
       queue: sahara
@@ -33,8 +35,7 @@
         - sahara-tests-tempest
         - sahara-tests-tempest-v2
         - sahara-grenade
-        - sahara-tripleo-ci-centos-7-scenario003-standalone:
-            voting: false
+        - sahara-tripleo-ci-centos-8-scenario003-standalone: *tripleo_sa
         - sahara-openstack-ansible-functional
     experimental:
       jobs:
@@ -104,10 +105,10 @@
       - ^tox.ini$
 
 - job:
-    name: sahara-tripleo-ci-centos-7-scenario003-standalone
+    name: sahara-tripleo-ci-centos-8-scenario003-standalone
     description: |
       Basic TripleO standalone job with all Sahara API tests
-    parent: tripleo-ci-centos-7-scenario003-standalone
+    parent: tripleo-ci-centos-8-scenario003-standalone
     vars:
       featureset_override:
         tempest_test_whitelist:
