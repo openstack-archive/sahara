@@ -67,15 +67,14 @@ class JobBinaryManager(object):
     def get_job_binary(self, name):
         res = self.job_binaries.get(name)
         if res is None:
-            raise ex.InvalidDataException
-            (_("Invalid job binary"))
+            raise ex.InvalidDataException(_("Invalid job binary"))
         return res
 
     def get_job_binary_by_url(self, url):
         url = urlparse.urlparse(url)
         if not url.scheme:
-            raise ex.InvalidDataException
-            (_("Job binary url must have a scheme"))
+            raise ex.InvalidDataException(
+                _("Job binary url must have a scheme"))
         return self.get_job_binary(url.scheme)
 
 
