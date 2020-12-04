@@ -256,7 +256,6 @@ function start_sahara {
     if [ "$SAHARA_USE_MOD_WSGI" == "True" ] ; then
         enable_apache_site sahara-api
         restart_apache_server
-        tail_log sahara-api /var/log/$APACHE_NAME/sahara-api.log
     else
         run_process sahara-api "$SAHARA_BIN_DIR/sahara-api \
             --config-file $SAHARA_CONF_FILE"

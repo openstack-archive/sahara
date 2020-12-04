@@ -16,7 +16,8 @@
         - sahara-tests-tempest-v2
         - openstack-tox-cover:
             voting: false
-        - sahara-grenade
+        - sahara-grenade:
+            voting: false
         - sahara-openstack-ansible-functional
     gate:
       queue: sahara
@@ -25,7 +26,7 @@
         - sahara-tests-scenario-v2
         - sahara-tests-tempest
         - sahara-tests-tempest-v2
-        - sahara-grenade
+        # - sahara-grenade
         - sahara-openstack-ansible-functional
     experimental:
       jobs:
