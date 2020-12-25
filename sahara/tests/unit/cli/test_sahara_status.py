@@ -12,6 +12,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from unittest import mock
+
 from oslo_upgradecheck.upgradecheck import Code
 
 from sahara.cli import sahara_status
@@ -24,7 +26,15 @@ class TestUpgradeChecks(base.SaharaTestCase):
         super(TestUpgradeChecks, self).setUp()
         self.cmd = sahara_status.Checks()
 
-    def test__sample_check(self):
-        check_result = self.cmd._sample_check()
-        self.assertEqual(
-            Code.SUCCESS, check_result.code)
+    @mock.patch('oslo_config.cfg.ConfigOpts.find_file')
+    @mock.patch('oslo_utils.fileutils.is_json')
+    def test_checks(self, mock_util, mock_config):
+        mock_config.return_value = '/etc/sahara/'
+        mock_util.return_value = False
+        for name, func in self.cmd._upgrade_checks:
+            if isinstance(func, tuple):
+                func_name, kwargs = func
+                result = func_name(self, **kwargs)
+            else:
+                result = func(self)
+            self.assertEqual(Code.SUCCESS, result.code)

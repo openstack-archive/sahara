@@ -519,7 +519,7 @@ set to ``true`` and some extra configurations are needed:
   be returned by the Compute service.
   This can be done by:
 
-  * by changing nova's ``policy.json`` to allow the user access to the
+  * by changing nova's ``policy.yaml`` to allow the user access to the
     ``extended_server_attributes`` option.
   * by designating an account with privileged rights in the cinder
     configuration:
