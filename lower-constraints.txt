@@ -1,6 +1,5 @@
 alabaster==0.7.10
-alembic==0.8.10
-amqp==2.2.2
+alembic==0.9.6
 appdirs==1.4.3
 asn1crypto==0.24.0
 astroid==1.3.8
@@ -18,7 +17,7 @@ cliff==2.11.0
 cmd2==0.8.1
 contextlib2==0.5.5
 coverage==4.0
-cryptography==2.1.4
+cryptography==2.5
 debtcollector==1.19.0
 decorator==4.2.1
 deprecation==2.0
@@ -36,7 +35,7 @@ future==0.16.0
 futurist==1.6.0
 gitdb2==2.0.3
 GitPython==2.1.8
-greenlet==0.4.15
+greenlet==0.4.16
 idna==2.6
 imagesize==1.0.0
 iso8601==0.1.11
@@ -73,12 +72,12 @@ oslo.context==2.19.2
 oslo.db==6.0.0
 oslo.i18n==3.15.3
 oslo.log==3.36.0
-oslo.messaging==5.29.0
+oslo.messaging==10.2.0
 oslo.middleware==3.31.0
 oslo.policy==1.30.0
 oslo.rootwrap==5.8.0
 oslo.serialization==2.18.0
-oslo.service==1.24.0
+oslo.service==1.31.0
 oslo.upgradecheck==0.1.0
 oslo.utils==3.33.0
 oslotest==3.2.0
@@ -94,7 +93,6 @@ psycopg2==2.8.0
 pyasn1==0.4.2
 pycadf==2.7.0
 pycparser==2.18
-pycodestyle==2.4.0
 Pygments==2.2.0
 pyinotify==0.9.6
 pylint==1.4.5
@@ -128,7 +126,7 @@ restructuredtext-lint==1.1.3
 rfc3986==1.1.0
 Routes==2.4.1
 simplejson==3.13.2
-six==1.10.0
+six==1.14.0
 smmap2==2.0.3
 snowballstemmer==1.2.1
 Sphinx==1.6.2
@@ -151,7 +149,6 @@ unittest2==1.1.0
 urllib3==1.22
 vine==1.1.4
 voluptuous==0.11.1
-warlock==1.3.0
 WebOb==1.7.1
 Werkzeug==0.14.1
 wrapt==1.10.11
