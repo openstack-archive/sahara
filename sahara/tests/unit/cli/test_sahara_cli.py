@@ -52,9 +52,10 @@ class TestSaharaCLI(base.SaharaTestCase):
         for patcher in reversed(self.patchers):
             patcher.stop()
 
+    @mock.patch('oslo_config.cfg.ConfigOpts.find_file')
     @mock.patch('sahara.main.setup_sahara_api')
-    def test_main_start_api(self, mock_setup_sahara_api):
-
+    def test_main_start_api(self, mock_setup_sahara_api, mock_config):
+        mock_config.return_value = '/etc/sahara/'
         sahara_api.main()
 
         self.mock_start_server.assert_called_once_with()
@@ -76,8 +77,9 @@ class TestSaharaCLI(base.SaharaTestCase):
         mock_pl.launch_service.assert_called_once_with(mock_get_service)
         mock_pl.wait.assert_called_once_with()
 
-    def test_main_start_all(self):
-
+    @mock.patch('oslo_config.cfg.ConfigOpts.find_file')
+    def test_main_start_all(self, mock_config):
+        mock_config.return_value = '/etc/sahara/'
         sahara_all.main()
 
         self.mock_start_server.assert_called_once_with()

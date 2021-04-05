@@ -15,6 +15,7 @@
 import sys
 
 from oslo_config import cfg
+from oslo_upgradecheck import common_checks
 from oslo_upgradecheck import upgradecheck
 
 from sahara.i18n import _
@@ -30,17 +31,9 @@ class Checks(upgradecheck.UpgradeCommands):
     and added to _upgrade_checks tuple.
     """
 
-    def _sample_check(self):
-        """This is sample check added to test the upgrade check framework
-
-        It needs to be removed after adding any real upgrade check
-        """
-        return upgradecheck.Result(upgradecheck.Code.SUCCESS, 'Sample detail')
-
     _upgrade_checks = (
-        # Sample check added for now.
-        # Whereas in future real checks must be added here in tuple
-        (_('Sample Check'), _sample_check),
+        (_("Policy File JSON to YAML Migration"),
+         (common_checks.check_policy_json, {'conf': CONF})),
     )
 
 

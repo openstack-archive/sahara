@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from unittest import mock
+
 from oslo_policy import policy as cpolicy
 
 from sahara.api import acl
@@ -27,7 +29,9 @@ class TestAcl(base.SaharaTestCase):
         rules = cpolicy.Rules.load_json(json)
         acl.ENFORCER.set_rules(rules, use_conf=False)
 
-    def test_policy_allow(self):
+    @mock.patch('oslo_config.cfg.ConfigOpts.find_file')
+    def test_policy_allow(self, mock_config):
+        mock_config.return_value = '/etc/sahara/'
         @acl.enforce("data-processing:clusters:get_all")
         def test():
             pass
@@ -37,7 +41,9 @@ class TestAcl(base.SaharaTestCase):
 
         test()
 
-    def test_policy_deny(self):
+    @mock.patch('oslo_config.cfg.ConfigOpts.find_file')
+    def test_policy_deny(self, mock_config):
+        mock_config.return_value = '/etc/sahara/'
         @acl.enforce("data-processing:clusters:get_all")
         def test():
             pass

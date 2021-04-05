@@ -161,11 +161,19 @@ for instance provisioning.
 Policy configuration
 --------------------
 
+.. warning::
+
+   JSON formatted policy file is deprecated since Sahara 15.0.0 (Xena).
+   This `oslopolicy-convert-json-to-yaml`__ tool will migrate your existing
+   JSON-formatted policy file to YAML in a backward-compatible way.
+
+.. __: https://docs.openstack.org/oslo.policy/victoria/cli/oslopolicy-convert-json-to-yaml.html
+
 Sahara's public API calls may be restricted to certain sets of users by
 using a policy configuration file. The location of the policy file(s)
 is controlled by the ``policy_file`` and ``policy_dirs`` parameters
 in the ``[oslo_policy]`` section. By default sahara will search for
-a ``policy.json`` file in the same directory as the ``sahara.conf``
+a ``policy.yaml`` file in the same directory as the ``sahara.conf``
 configuration file.
 
 Examples

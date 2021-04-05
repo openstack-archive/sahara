@@ -14,11 +14,19 @@
 # limitations under the License.
 
 from oslo_middleware import cors
+from oslo_policy import opts
+
+from sahara import config
 
 
 def set_config_defaults():
     """This method updates all configuration default values."""
     set_cors_middleware_defaults()
+
+    # TODO(gmann): Remove setting the default value of config policy_file
+    # once oslo_policy change the default value to 'policy.yaml'.
+    # https://opendev.org/openstack/oslo.policy/src/commit/d8534850d9238e85ae0ea55bf2ac8583681fdb2b/oslo_policy/opts.py#L49
+    opts.set_defaults(config.CONF, 'policy.yaml')
 
 
 def set_cors_middleware_defaults():
