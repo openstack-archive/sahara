@@ -1561,7 +1561,7 @@ def cluster_verification_add(context, cluster_id, values):
         verification.update(values)
         session.add(verification)
 
-    return verification
+    return _cluster_verification_get(context, session, verification.id)
 
 
 def cluster_verification_update(context, verification_id, values):
