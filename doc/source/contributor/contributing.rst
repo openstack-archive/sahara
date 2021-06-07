@@ -17,7 +17,7 @@ Communication
   `OpenStack development mail-list <http://lists.openstack.org/cgi-bin/mailman/listinfo/openstack-discuss>`_.
   Prefix the mail subject with ``[sahara]``
 
-* Join ``#openstack-sahara`` IRC channel on `freenode <http://freenode.net/>`_
+* Join ``#openstack-sahara`` IRC channel on `OFTC <http://oftc.net>`_
 
 * Attend Sahara team meetings
 
