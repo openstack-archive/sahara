@@ -33,12 +33,7 @@ class TestCinder(test_base.SaharaTestCase):
                       **kwargs):
         self.override_config('os_region_name', 'RegionOne')
 
-        # Fake service_catalog with both volumev2
-        # and volumev3 services available
         service_catalog = '''[
-            { "type": "volumev2",
-              "endpoints": [ { "region": "RegionOne",
-                               "internalURL": "http://localhost/" } ] },
             { "type": "volumev3",
               "endpoints": [ { "region": "RegionOne",
                                "internalURL": "http://localhost/" } ] }]'''
@@ -49,21 +44,8 @@ class TestCinder(test_base.SaharaTestCase):
 
     @mock.patch('sahara.utils.openstack.keystone.auth')
     @mock.patch('cinderclient.v3.client.Client')
-    @mock.patch('cinderclient.v2.client.Client')
-    def test_get_cinder_client_api_v2(self, patched2, patched3, auth):
-        self.override_config('api_version', 2, group='cinder')
-        patched2.return_value = FakeCinderClient(2)
-        patched3.return_value = FakeCinderClient(3)
-
-        client = cinder.client()
-        self.assertEqual(2, client.client.api_version)
-
-    @mock.patch('sahara.utils.openstack.keystone.auth')
-    @mock.patch('cinderclient.v3.client.Client')
-    @mock.patch('cinderclient.v2.client.Client')
-    def test_get_cinder_client_api_v3(self, patched2, patched3, auth):
+    def test_get_cinder_client_api_v3(self, patched3, auth):
         self.override_config('api_version', 3, group='cinder')
-        patched2.return_value = FakeCinderClient(2)
         patched3.return_value = FakeCinderClient(3)
 
         client = cinder.client()
