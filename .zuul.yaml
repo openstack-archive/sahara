@@ -20,8 +20,7 @@
             voting: false
         - sahara-grenade:
             voting: false
-        - sahara-openstack-ansible-functional:
-            voting: false
+        - openstack-ansible-deploy-aio_sahara_metal-ubuntu-focal
     gate:
       queue: sahara
       jobs:
@@ -32,8 +31,7 @@
         - sahara-tests-tempest
         - sahara-tests-tempest-v2
         # - sahara-grenade
-        - sahara-openstack-ansible-functional:
-            voting: false
+        - openstack-ansible-deploy-aio_sahara_metal-ubuntu-focal
     experimental:
       jobs:
         - sahara-buildimages-ambari
@@ -112,16 +110,9 @@
           - 'sahara_tempest_plugin.tests.api.'
 
 - job:
-    name: sahara-openstack-ansible-functional
-    description: |
-      OSA job focused on openstack-ansible-os_sahara
-    parent: openstack-ansible-cross-repo-functional
-    required-projects:
-      - openstack/openstack-ansible-os_sahara
-    vars:
-      osa_test_repo: openstack/openstack-ansible-os_sahara
-      devstack_localrc:
-        USE_PYTHON3: True
+    name: openstack-ansible-deploy-aio_sahara_metal-ubuntu-focal
+    parent: openstack-ansible-deploy-aio
+    nodeset: ubuntu-focal
 
 - job:
     name: sahara-buildimages-base
