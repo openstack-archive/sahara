@@ -18,7 +18,8 @@
             voting: false
         - sahara-grenade:
             voting: false
-        - sahara-openstack-ansible-functional
+        - sahara-openstack-ansible-functional:
+            voting: false
     gate:
       queue: sahara
       jobs:
@@ -27,7 +28,8 @@
         - sahara-tests-tempest
         - sahara-tests-tempest-v2
         # - sahara-grenade
-        - sahara-openstack-ansible-functional
+        - sahara-openstack-ansible-functional:
+            voting: false
     experimental:
       jobs:
         - sahara-buildimages-ambari
