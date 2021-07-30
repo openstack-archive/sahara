@@ -5,7 +5,6 @@
       - openstack-python3-train-jobs
       - periodic-stable-jobs
       - publish-openstack-docs-pti
-      - check-requirements
       - release-notes-jobs-python3
     check:
       jobs:
@@ -19,6 +18,8 @@
         - sahara-tests-tempest-v2
         - openstack-tox-cover:
             voting: false
+        - requirements-check:
+            nodeset: ubuntu-bionic
         - sahara-grenade
         - sahara-tests-scenario-py3:
             voting: false
@@ -34,6 +35,8 @@
         # - sahara-tests-scenario-v2
         - sahara-tests-tempest
         - sahara-tests-tempest-v2
+        - requirements-check:
+            nodeset: ubuntu-bionic
         - sahara-grenade
         - sahara-tripleo-ci-centos-8-scenario003-standalone: *tripleo_sa
         - sahara-openstack-ansible-functional
