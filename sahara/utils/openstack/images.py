@@ -185,7 +185,7 @@ class SaharaImageManager(object):
         images_list = [i for i in self.list()
                        if i.username and set(tags).issubset(i.tags)]
         if name:
-            return [i for i in images_list if i.name == name]
+            return [i for i in images_list if name in i.name]
         else:
             return images_list
 

@@ -37,7 +37,8 @@ class TestImages(base.SaharaTestCase):
         some_images = [
             FakeImage('foo', ['bar', 'baz'], 'test'),
             FakeImage('baz', [], 'test'),
-            FakeImage('spam', [], "")]
+            FakeImage('spam', [], ""),
+            FakeImage('spa', [], 'test')]
 
         with mock.patch(
                 'sahara.utils.openstack.images.SaharaImageManager.list',
@@ -45,12 +46,24 @@ class TestImages(base.SaharaTestCase):
             manager = sahara_images.image_manager()
 
             images = manager.list_registered()
-            self.assertEqual(2, len(images))
+            self.assertEqual(3, len(images))
 
             images = manager.list_registered(name='foo')
             self.assertEqual(1, len(images))
             self.assertEqual('foo', images[0].name)
             self.assertEqual('test', images[0].username)
+
+            images = manager.list_registered(name='ba')
+            self.assertEqual(1, len(images))
+            self.assertEqual('baz', images[0].name)
+            self.assertEqual('test', images[0].username)
+
+            images = manager.list_registered(name='a')
+            self.assertEqual(2, len(images))
+            self.assertEqual('baz', images[0].name)
+            self.assertEqual('test', images[0].username)
+            self.assertEqual('spa', images[1].name)
+            self.assertEqual('test', images[1].username)
 
             images = manager.list_registered(name='eggs')
             self.assertEqual(0, len(images))
