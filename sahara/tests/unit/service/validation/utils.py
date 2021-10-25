@@ -377,7 +377,7 @@ class ValidationTestCase(base.SaharaTestCase):
             'hadoop_version': '0.1',
             'cluster_configs': {
                 'HDFS': {
-                    u'mapreduce.task.tmp.dir': '/temp/'
+                    'mapreduce.task.tmp.dir': '/temp/'
                 }
             },
             'default_image_id': '550e8400-e29b-41d4-a716-446655440000'
@@ -394,7 +394,7 @@ class ValidationTestCase(base.SaharaTestCase):
             data=_update_data(data.copy(), {
                 'cluster_configs': {
                     'wrong_target': {
-                        u'mapreduce.task.tmp.dir': '/temp/'
+                        'mapreduce.task.tmp.dir': '/temp/'
                     }
                 }}),
             bad_req_i=(1, 'INVALID_REFERENCE',
@@ -405,7 +405,7 @@ class ValidationTestCase(base.SaharaTestCase):
             data=_update_data(data.copy(), {
                 'cluster_configs': {
                     'general': {
-                        u's': '/temp/'
+                        's': '/temp/'
                     }
                 }
             }),

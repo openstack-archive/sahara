@@ -29,11 +29,11 @@ class XMLUtilsTestCase(testtools.TestCase):
 
     def test_load_xml_defaults(self):
         self.assertEqual(
-            [{'name': u'name1', 'value': u'value1', 'description': 'descr1'},
-             {'name': u'name2', 'value': u'value2', 'description': 'descr2'},
-             {'name': u'name3', 'value': '', 'description': 'descr3'},
-             {'name': u'name4', 'value': '', 'description': 'descr4'},
-             {'name': u'name5', 'value': u'value5', 'description': ''}],
+            [{'name': 'name1', 'value': 'value1', 'description': 'descr1'},
+             {'name': 'name2', 'value': 'value2', 'description': 'descr2'},
+             {'name': 'name3', 'value': '', 'description': 'descr3'},
+             {'name': 'name4', 'value': '', 'description': 'descr4'},
+             {'name': 'name5', 'value': 'value5', 'description': ''}],
             x.load_hadoop_xml_defaults(
                 'tests/unit/resources/test-default.xml'))
 
@@ -44,18 +44,18 @@ class XMLUtilsTestCase(testtools.TestCase):
         with open(fname, "r") as f:
             doc = "".join(line.strip() for line in f)
         self.assertEqual(
-            [{'name': u'name1', 'value': u'value1'},
-             {'name': u'name2', 'value': u'value2'},
-             {'name': u'name3', 'value': ''},
-             {'name': u'name4', 'value': ''},
-             {'name': u'name5', 'value': u'value5'}],
+            [{'name': 'name1', 'value': 'value1'},
+             {'name': 'name2', 'value': 'value2'},
+             {'name': 'name3', 'value': ''},
+             {'name': 'name4', 'value': ''},
+             {'name': 'name5', 'value': 'value5'}],
             x.parse_hadoop_xml_with_name_and_value(doc)
         )
 
     def test_adjust_description(self):
         self.assertEqual("", x._adjust_field("\n"))
         self.assertEqual("", x._adjust_field("\n  "))
-        self.assertEqual("abcdef", x._adjust_field(u"abc\n  def\n  "))
+        self.assertEqual("abcdef", x._adjust_field("abc\n  def\n  "))
         self.assertEqual("abc de f", x._adjust_field("abc d\n e f\n"))
         self.assertEqual("abc", x._adjust_field("a\tb\t\nc"))
 
