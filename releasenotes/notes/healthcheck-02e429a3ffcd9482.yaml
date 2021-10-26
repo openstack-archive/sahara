@@ -1,0 +1,7 @@
+---
+features:
+  - |
+    Now healthcheck middleware is enabled by default. Applications like
+    loadbalancer or monitoring tools can use ``/healthcheck`` path to monitor
+    health of each API endpoints. Remove entries for healthcheck from
+    ``api-paste.ini`` to disable this functionality.
