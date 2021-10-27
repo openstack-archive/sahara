@@ -51,8 +51,8 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
                                    job, ds, ds)
         p._make_periodic_tasks().update_job_statuses(None)
         self.assertEqual(2, get_job_status.call_count)
-        get_job_status.assert_has_calls([mock.call(u'2'),
-                                         mock.call(u'3')])
+        get_job_status.assert_has_calls([mock.call('2'),
+                                         mock.call('3')])
 
     @mock.patch('sahara.service.trusts.use_os_admin_auth_token')
     @mock.patch('sahara.service.api.v10.terminate_cluster')
@@ -85,7 +85,7 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
 
         p._make_periodic_tasks().terminate_unneeded_transient_clusters(None)
         self.assertEqual(1, terminate_cluster.call_count)
-        terminate_cluster.assert_has_calls([mock.call(u'1')])
+        terminate_cluster.assert_has_calls([mock.call('1')])
         self.assertEqual(1, use_os_admin_auth_token.call_count)
 
     @mock.patch('sahara.service.api.v10.terminate_cluster')
@@ -123,7 +123,7 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
 
         p._make_periodic_tasks().terminate_unneeded_transient_clusters(None)
         self.assertEqual(1, terminate_cluster.call_count)
-        terminate_cluster.assert_has_calls([mock.call(u'1')])
+        terminate_cluster.assert_has_calls([mock.call('1')])
         self.assertEqual(1, use_os_admin_auth_token.call_count)
 
     @mock.patch('sahara.service.api.v10.terminate_cluster')
@@ -156,7 +156,7 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
 
         p._make_periodic_tasks().terminate_incomplete_clusters(None)
         self.assertEqual(1, terminate_cluster.call_count)
-        terminate_cluster.assert_has_calls([mock.call(u'1')])
+        terminate_cluster.assert_has_calls([mock.call('1')])
         self.assertEqual(1, use_os_admin_auth_token.call_count)
 
     @mock.patch('sahara.service.api.v10.terminate_cluster')

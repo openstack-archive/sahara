@@ -238,7 +238,7 @@ class TestScalingValidation(u.ValidationTestCase):
         self._assert_cluster_scaling_validation(
             data=data,
             bad_req_i=(1, 'VALIDATION_ERROR',
-                       u'{} is not valid under any of the given schemas')
+                       '{} is not valid under any of the given schemas')
         )
         data = {
             'resize_node_groups': [{}]
@@ -246,7 +246,7 @@ class TestScalingValidation(u.ValidationTestCase):
         self._assert_cluster_scaling_validation(
             data=data,
             bad_req_i=(1, 'VALIDATION_ERROR',
-                       u"resize_node_groups[0]: 'name' is a required property")
+                       "resize_node_groups[0]: 'name' is a required property")
         )
         data = {
             'resize_node_groups': [
@@ -258,8 +258,8 @@ class TestScalingValidation(u.ValidationTestCase):
         self._assert_cluster_scaling_validation(
             data=data,
             bad_req_i=(1, 'VALIDATION_ERROR',
-                       u"resize_node_groups[0]: 'count' is a required "
-                       u"property")
+                       "resize_node_groups[0]: 'count' is a required "
+                       "property")
         )
         data = {
             'resize_node_groups': [
@@ -273,8 +273,8 @@ class TestScalingValidation(u.ValidationTestCase):
         self._assert_cluster_scaling_validation(
             data=data,
             bad_req_i=(1, 'VALIDATION_ERROR',
-                       u"resize_node_groups[0]: Additional properties are not "
-                       u"allowed ('flavor_id' was unexpected)")
+                       "resize_node_groups[0]: Additional properties are not "
+                       "allowed ('flavor_id' was unexpected)")
         )
 
     @mock.patch("sahara.service.api.OPS")
@@ -286,7 +286,7 @@ class TestScalingValidation(u.ValidationTestCase):
         self._assert_cluster_scaling_validation_v2(
             data=data,
             bad_req_i=(1, 'VALIDATION_ERROR',
-                       u'{} is not valid under any of the given schemas')
+                       '{} is not valid under any of the given schemas')
         )
         data = {
             'resize_node_groups': [{}]
@@ -294,7 +294,7 @@ class TestScalingValidation(u.ValidationTestCase):
         self._assert_cluster_scaling_validation_v2(
             data=data,
             bad_req_i=(1, 'VALIDATION_ERROR',
-                       u"resize_node_groups[0]: 'name' is a required property")
+                       "resize_node_groups[0]: 'name' is a required property")
         )
         data = {
             'resize_node_groups': [
@@ -306,8 +306,8 @@ class TestScalingValidation(u.ValidationTestCase):
         self._assert_cluster_scaling_validation_v2(
             data=data,
             bad_req_i=(1, 'VALIDATION_ERROR',
-                       u"resize_node_groups[0]: 'count' is a required "
-                       u"property")
+                       "resize_node_groups[0]: 'count' is a required "
+                       "property")
         )
         data = {
             'resize_node_groups': [
@@ -322,8 +322,8 @@ class TestScalingValidation(u.ValidationTestCase):
         self._assert_cluster_scaling_validation_v2(
             data=data,
             bad_req_i=(1, 'VALIDATION_ERROR',
-                       u"resize_node_groups[0]: Additional properties are not "
-                       u"allowed ('flavor_id' was unexpected)")
+                       "resize_node_groups[0]: Additional properties are not "
+                       "allowed ('flavor_id' was unexpected)")
         )
 
     @mock.patch("sahara.service.api.OPS")
@@ -356,10 +356,10 @@ class TestScalingValidation(u.ValidationTestCase):
         self._assert_cluster_scaling_validation(
             data=data,
             bad_req_i=(1, 'VALIDATION_ERROR',
-                       u"add_node_groups[0]: {'node_group_template_id': "
-                       u"'5185a809-6bf7-44ed-9de3-618270550e2c', "
-                       u"'name': 'a'} is not valid under any "
-                       u"of the given schemas")
+                       "add_node_groups[0]: {'node_group_template_id': "
+                       "'5185a809-6bf7-44ed-9de3-618270550e2c', "
+                       "'name': 'a'} is not valid under any "
+                       "of the given schemas")
         )
 
     @mock.patch("sahara.service.api.OPS")
@@ -418,7 +418,7 @@ class TestScalingValidation(u.ValidationTestCase):
         self._assert_cluster_scaling_validation(
             data=data,
             bad_req_i=(1, 'VALIDATION_ERROR',
-                       u"resize_node_groups: {} is not of type 'array'")
+                       "resize_node_groups: {} is not of type 'array'")
         )
         data = {
             'add_node_groups': {}
@@ -426,7 +426,7 @@ class TestScalingValidation(u.ValidationTestCase):
         self._assert_cluster_scaling_validation(
             data=data,
             bad_req_i=(1, 'VALIDATION_ERROR',
-                       u"add_node_groups: {} is not of type 'array'")
+                       "add_node_groups: {} is not of type 'array'")
         )
         data = {
             'resize_node_groups': [],
@@ -434,7 +434,7 @@ class TestScalingValidation(u.ValidationTestCase):
         self._assert_cluster_scaling_validation(
             data=data,
             bad_req_i=(1, 'VALIDATION_ERROR',
-                       u'resize_node_groups: [] is too short')
+                       'resize_node_groups: [] is too short')
         )
 
     @mock.patch("sahara.service.api.OPS")

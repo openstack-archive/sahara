@@ -23,8 +23,8 @@ from sahara.tests.unit.conductor.manager import test_templates
 
 
 CORRECT_CONF = {
-    u'service_1': {u'config_2': u'value_2', u'config_1': u'value_1'},
-    u'service_2': {u'config_1': u'value_1'}
+    'service_1': {'config_2': 'value_2', 'config_1': 'value_1'},
+    'service_2': {'config_1': 'value_1'}
 }
 
 

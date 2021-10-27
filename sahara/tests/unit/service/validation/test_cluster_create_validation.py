@@ -206,7 +206,7 @@ class TestClusterCreateValidation(u.ValidationTestCase):
                 'user_keypair_id': 'test_keypair',
                 'cluster_configs': {
                     'general': {
-                        u'Enable NTP service': True
+                        'Enable NTP service': True
                     }
                 },
                 'default_image_id': '550e8400-e29b-41d4-a716-446655440000',
