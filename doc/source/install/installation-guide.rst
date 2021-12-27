@@ -207,7 +207,7 @@ Then restart the mysql server to ensure these changes are active.
    python-saharaclient to work properly you must register sahara in
    the Identity service catalog. For example:
 
-.. sourcecode:: console
+.. code-block:: console
 
     $ openstack service create --name sahara --description \
       "Sahara Data Processing" data-processing
