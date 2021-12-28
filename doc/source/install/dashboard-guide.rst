@@ -37,7 +37,7 @@ first place.
 
 Local endpoint example:
 
-.. code-block:: console
+.. code-block::
 
     $ openstack service create --name sahara_local --description \
       "Sahara Data Processing (local installation)" \
