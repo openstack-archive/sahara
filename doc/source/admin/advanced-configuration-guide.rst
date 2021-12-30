@@ -32,7 +32,7 @@ internal IP. The option is ignored if ``proxy_command`` is not also set.
 For example, the following parameter in the sahara configuration file
 would be used if instances are accessed through a relay machine:
 
-.. sourcecode:: cfg
+.. code-block::
 
     [DEFAULT]
     proxy_command='ssh relay-machine-{tenant_id} nc {host} {port}'
@@ -40,7 +40,7 @@ would be used if instances are accessed through a relay machine:
 Whereas the following shows an example of accessing instances though
 a custom network namespace:
 
-.. sourcecode:: cfg
+.. code-block::
 
     [DEFAULT]
     proxy_command='ip netns exec ns_for_{network_id} nc {host} {port}'
@@ -73,7 +73,7 @@ because some plugins (e.g. ``HDP``) determine hostname by ip.
 Sahara also should be properly configured. In ``sahara.conf`` you must specify
 two config properties:
 
-.. sourcecode:: cfg
+.. code-block::
 
     [DEFAULT]
     # Use Designate for internal and external hostnames resolution:
@@ -109,7 +109,7 @@ through a few configuration parameters and user defined topology files.
 To enable data-locality, set the ``enable_data_locality`` parameter to
 ``true`` in the sahara configuration file
 
-.. sourcecode:: cfg
+.. code-block::
 
     [DEFAULT]
     enable_data_locality=true
@@ -118,7 +118,7 @@ With data locality enabled, you must now specify the topology files
 for the Compute and Object Storage services. These files are
 specified in the sahara configuration file as follows:
 
-.. sourcecode:: cfg
+.. code-block::
 
     [DEFAULT]
     compute_topology_file=/etc/sahara/compute.topology
@@ -127,7 +127,7 @@ specified in the sahara configuration file as follows:
 The ``compute_topology_file`` should contain mappings between Compute
 nodes and racks in the following format:
 
-.. sourcecode:: cfg
+.. code-block::
 
     compute1 /rack1
     compute2 /rack2
@@ -139,7 +139,7 @@ OpenStack (``host`` column in admin list for instances).
 The ``swift_topology_file`` should contain mappings between Object Storage
 nodes and racks in the following format:
 
-.. sourcecode:: cfg
+.. code-block::
 
     node1 /rack1
     node2 /rack2
@@ -243,7 +243,7 @@ to use periodic tasks distribution, the following steps are required:
   ``periodic_coordinator_backend_url`` parameter. For example, if the
   ZooKeeper backend is being used:
 
-  .. sourcecode:: cfg
+  .. code-block::
 
       [DEFAULT]
       periodic_coordinator_backend_url=kazoo://IP:PORT
@@ -251,7 +251,7 @@ to use periodic tasks distribution, the following steps are required:
 * Tooz extras should be installed. When using Zookeeper as coordination
   backend, ``kazoo`` library should be installed. It can be done with pip:
 
-  .. sourcecode:: console
+  .. code-block::
 
       pip install tooz[zookeeper]
 
@@ -260,7 +260,7 @@ to use periodic tasks distribution, the following steps are required:
   ``periodic_workers_number`` parameter (only 1 thread will be launched by
   default). Example:
 
-  .. sourcecode:: cfg
+  .. code-block::
 
       [DEFAULT]
       periodic_workers_number=2
@@ -269,7 +269,7 @@ to use periodic tasks distribution, the following steps are required:
   heartbeat execution (1 second by default). Heartbeats are needed to make
   sure that connection to the coordination backend is active. Example:
 
-  .. sourcecode:: cfg
+  .. code-block::
 
       [DEFAULT]
       coordinator_heartbeat_interval=2
@@ -279,7 +279,7 @@ to use periodic tasks distribution, the following steps are required:
   belongs to a particular engine. A larger number of replicas leads to better
   task distribution across the set of engines. (40 by default). Example:
 
-  .. sourcecode:: cfg
+  .. code-block::
 
       [DEFAULT]
        hash_ring_replicas_count=100
@@ -302,7 +302,7 @@ to interface with the OpenStack Key Manager service. This library provides
 configurable access to a key manager. To configure sahara to use barbican as
 the key manager, edit the sahara configuration file as follows:
 
-.. sourcecode:: cfg
+.. code-block::
 
     [DEFAULT]
     use_barbican_key_manager=true
@@ -314,7 +314,7 @@ attempt to find barbican in the Identity service's service catalog.
 For added control of the barbican server location, optional configuration
 values may be added to specify the URL for the barbican API server.
 
-.. sourcecode:: cfg
+.. code-block::
 
     [castellan]
     barbican_api_endpoint=http://{barbican controller IP:PORT}/
@@ -360,7 +360,7 @@ instance of sahara should have the ``os_region_name=<region>``
 parameter set in the configuration file. The following example demonstrates
 configuring sahara to use the ``RegionOne`` region:
 
-.. sourcecode:: cfg
+.. code-block::
 
     [DEFAULT]
     os_region_name=RegionOne
@@ -376,7 +376,7 @@ command), rootwrap functionality is provided to allow users other than
 ``root`` access to the needed operating system facilities. To use rootwrap
 the following configuration parameter is required to be set:
 
-.. sourcecode:: cfg
+.. code-block::
 
     [DEFAULT]
     use_rootwrap=true
@@ -390,7 +390,7 @@ steps:
   ``/etc/sudoers.d``. This file is setup to allow a user named ``sahara``
   access to the rootwrap script. It contains the following:
 
-.. sourcecode:: cfg
+.. code-block::
 
     sahara ALL = (root) NOPASSWD: /usr/bin/sahara-rootwrap /etc/sahara/rootwrap.conf *
 
@@ -409,7 +409,7 @@ change user in script from ``sahara`` to ``stack``.
   (depending on ``proxy_command`` you may need to set additional filters).
   It should look similar to the followings:
 
-.. sourcecode:: cfg
+.. code-block::
 
     [Filters]
     ip: IpNetnsExecFilter, ip, root
@@ -419,7 +419,7 @@ change user in script from ``sahara`` to ``stack``.
 If you wish to use a rootwrap command other than ``sahara-rootwrap`` you can
 set the following parameter in your sahara configuration file:
 
-.. sourcecode:: cfg
+.. code-block::
 
     [DEFAULT]
     rootwrap_command='sudo sahara-rootwrap /etc/sahara/rootwrap.conf'
@@ -467,7 +467,7 @@ this example let's assume that the name of the proxy domain is
 ``sahara_proxy`` and the roles needed by proxy users will be ``member`` and
 ``SwiftUser``.
 
-.. sourcecode:: cfg
+.. code-block::
 
     [DEFAULT]
     use_domain_for_proxy_users=true
@@ -524,7 +524,7 @@ set to ``true`` and some extra configurations are needed:
   * by designating an account with privileged rights in the cinder
     configuration:
 
-    .. sourcecode:: cfg
+    .. code-block::
 
         os_privileged_user_name =
         os_privileged_user_password =
@@ -561,7 +561,7 @@ server or disable NTP service using the examples below.
 If you want to enable configuring the NTP service, you should specify the
 following configs for the cluster:
 
-.. sourcecode:: json
+.. code-block::
 
   {
       "cluster_configs": {
@@ -574,7 +574,7 @@ following configs for the cluster:
 If you want to disable configuring NTP service, you should specify following
 configs for the cluster:
 
-.. sourcecode:: json
+.. code-block::
 
   {
       "cluster_configs": {
@@ -596,7 +596,7 @@ To get started quickly, use the example configuration block below, replacing
 the :code:`allowed origin` field with the host(s) from which your API expects
 access.
 
-.. sourcecode:: cfg
+.. code-block::
 
     [cors]
     allowed_origin=https://we.example.com:443
@@ -627,7 +627,7 @@ means that automatic clean up is disabled). For example, if you want cluster to
 be deleted after 3 hours if it didn't leave "Starting" state then you should
 specify:
 
-.. sourcecode:: cfg
+.. code-block::
 
     [DEFAULT]
     cleanup_time_for_incomplete_clusters = 3
@@ -640,7 +640,7 @@ may be bigger than the default values configured in ``neutron.conf``. Then the
 default limit should be raised up to some bigger value which is proportional to
 the number of cluster node groups. You can change it in ``neutron.conf`` file:
 
-.. sourcecode:: cfg
+.. code-block::
 
     [quotas]
     quota_security_group = 1000
@@ -648,6 +648,6 @@ the number of cluster node groups. You can change it in ``neutron.conf`` file:
 
 Or you can execute openstack CLI command:
 
-.. sourcecode:: console
+.. code-block::
 
     openstack quota set --secgroups 1000 --secgroup-rules 10000 $PROJECT_ID
