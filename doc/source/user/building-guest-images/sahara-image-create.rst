@@ -24,14 +24,14 @@ To create images for a specific plugin follow these steps:
    cloud images for all versions of supported plugins and all operating systems
    (subset of Ubuntu, Fedora, and CentOS depending on plugin).
 
-   .. sourcecode:: console
+   .. sourcecode::
 
       tox -e venv -- sahara-image-create -u
 
    If you want to build a image for ``<plugin>`` with ``<version>`` on a specific
    ``<distribution>`` just execute:
 
-   .. sourcecode:: console
+   .. sourcecode::
 
       tox -e venv -- sahara-image-create -p <plugin> -v <version> -i <distribution>
 
