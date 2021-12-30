@@ -40,7 +40,7 @@ Hadoop installation. In cases where a user might require more in-depth
 configuration all the data is set in the ``core-site.xml`` file on the cluster
 instances using this template:
 
-.. sourcecode:: xml
+.. code-block::
 
     <property>
         <name>${name} + ${config}</name>
