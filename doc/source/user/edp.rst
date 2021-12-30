@@ -332,7 +332,7 @@ A "Description" field may also be added to each interface argument.
 To create such an interface via the REST API, provide an "interface" argument,
 the value of which consists of a list of JSON objects, as below:
 
-.. sourcecode:: json
+.. code-block::
 
     [
         {
@@ -349,7 +349,7 @@ the value of which consists of a list of JSON objects, as below:
 Creating this interface would allow you to specify a configuration for any
 execution of the job template by passing an "interface" map similar to:
 
-.. sourcecode:: json
+.. code-block::
 
     {
         "Rows": "1000000",
@@ -361,7 +361,7 @@ The specified arguments would be automatically placed into the args, configs,
 and params for the job, according to the mapping type and location fields of
 each interface argument. The final ``job_configs`` map would be:
 
-.. sourcecode:: json
+.. code-block::
 
     {
         "job_configs": {
