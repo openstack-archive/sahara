@@ -30,7 +30,7 @@ additional values for plugin's labels.
 To disable a plugin (Vanilla Apache Hadoop, for example), the admin
 can run the following command:
 
-.. code-block:: ini
+.. code-block::
 
  cat update_configs.json
  {
@@ -45,7 +45,7 @@ can run the following command:
 
 Additionally, specific versions can be disabled by the following command:
 
-.. code-block:: ini
+.. code-block::
 
  cat update_configs.json
  {
@@ -64,7 +64,7 @@ Finally, to see all labels of a specific plugin and to see the current status
 of the plugin (is it stable or not, deprecation status) the following command
 can be executed from the CLI:
 
-.. code-block:: ini
+.. code-block::
 
  openstack dataprocessing plugin show vanilla
 

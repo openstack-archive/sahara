@@ -50,7 +50,7 @@ to the plugin-specific documentation.
 
 Upload the generated image into the OpenStack Image service:
 
-.. code-block:: console
+.. code-block::
 
     $ openstack image create sahara-vanilla-latest-ubuntu --disk-format qcow2 \
         --container-format bare --file sahara-vanilla-latest-ubuntu.qcow2
@@ -81,7 +81,7 @@ Remember the image name or save the image ID. This will be used during the
 image registration with sahara. You can get the image ID using the
 ``openstack`` command line tool as follows:
 
-.. code-block:: console
+.. code-block::
 
     $ openstack image list --property name=sahara-vanilla-latest-ubuntu
     +--------------------------------------+------------------------------+
@@ -114,7 +114,7 @@ it shall be used.
     For the steps below and the rest of this guide, substitute
     ``<plugin_version>`` with the appropriate version of your plugin.
 
-.. code-block:: console
+.. code-block::
 
     $ openstack dataprocessing image tags add sahara-vanilla-latest-ubuntu \
         --tags vanilla <plugin_version>
@@ -145,7 +145,7 @@ You can get information about available plugins with the following command:
 Also you can get information about available services for a particular plugin
 with the ``plugin show`` command. For example:
 
-.. code-block:: console
+.. code-block::
 
     $ openstack dataprocessing plugin show vanilla --plugin-version <plugin_version>
     +---------------------+-----------------------------------------------------------------------------------------------------------------------+
@@ -174,7 +174,7 @@ with the ``plugin show`` command. For example:
 
 Create a master node group template with the command:
 
-.. code-block:: console
+.. code-block::
 
     $ openstack dataprocessing node group template create \
         --name vanilla-default-master --plugin vanilla \
@@ -204,7 +204,7 @@ Create a master node group template with the command:
 
 Create a worker node group template with the command:
 
-.. code-block:: console
+.. code-block::
 
     $ openstack dataprocessing node group template create \
         --name vanilla-default-worker --plugin vanilla \
@@ -238,7 +238,7 @@ This will tell the node group to boot its instances from a volume instead of
 the image. This feature allows for easier live migrations and improved
 performance.
 
-.. code-block:: console
+.. code-block::
 
     $ openstack dataprocessing node group template create \
         --name vanilla-default-worker --plugin vanilla \
@@ -279,7 +279,7 @@ Sample templates can be found here:
 Create a file named ``my_master_template_create.json`` with the following
 content:
 
-.. sourcecode:: json
+.. code-block:: json
 
     {
         "plugin_name": "vanilla",
@@ -297,7 +297,7 @@ content:
 Create a file named ``my_worker_template_create.json`` with the following
 content:
 
-.. sourcecode:: json
+.. code-block:: json
 
     {
         "plugin_name": "vanilla",
@@ -324,7 +324,7 @@ Use the ``openstack`` client to upload the node group templates:
 List the available node group templates to ensure that they have been
 added properly:
 
-.. code-block:: console
+.. code-block::
 
     $ openstack dataprocessing node group template list --name vanilla-default
     +------------------------+--------------------------------------+-------------+--------------------+
@@ -350,7 +350,7 @@ that describes the node groups of the cluster.
 
 Create a cluster template with the command:
 
-.. code-block:: console
+.. code-block::
 
     $ openstack dataprocessing cluster template create \
         --name vanilla-default-cluster \
@@ -377,7 +377,7 @@ Alternatively you can create cluster template from JSON file:
 Create a file named ``my_cluster_template_create.json`` with the following
 content:
 
-.. sourcecode:: json
+.. code-block:: json
 
     {
         "plugin_name": "vanilla",
@@ -408,7 +408,7 @@ Remember the cluster template name or save the cluster template ID for use in
 the cluster provisioning command. The cluster ID can be found in the output of
 the creation command or by listing the cluster templates as follows:
 
-.. code-block:: console
+.. code-block::
 
     $ openstack dataprocessing cluster template list --name vanilla-default
     +-------------------------+--------------------------------------+-------------+--------------------+
@@ -425,7 +425,7 @@ information that can be found by querying various OpenStack services.
 
 Create a cluster with the command:
 
-.. code-block:: console
+.. code-block::
 
     $ openstack dataprocessing cluster create --name my-cluster-1 \
         --cluster-template vanilla-default-cluster --user-keypair my_stack \
@@ -456,7 +456,7 @@ Alternatively you can create a cluster template from a JSON file:
 
 Create a file named ``my_cluster_create.json`` with the following content:
 
-.. sourcecode:: json
+.. code-block:: json
 
     {
         "name": "my-cluster-1",
@@ -495,7 +495,7 @@ Create and start the cluster:
 Verify the cluster status by using the ``openstack`` command
 line tool as follows:
 
-.. code-block:: console
+.. code-block::
 
     $ openstack dataprocessing cluster show my-cluster-1 -c Status
     +--------+--------+
