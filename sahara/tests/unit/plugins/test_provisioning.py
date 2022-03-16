@@ -110,13 +110,13 @@ class TestPluginDataCRUD(base.SaharaWithDbTestCase):
         self.assertIsNotNone(raised)
 
         # not duplicated entry, other tenant
-        ctx.tenant = "tenant_2"
+        ctx.project_id = "tenant_2"
         res = conductor.plugin_create(ctx, {'name': 'fake'})
         conductor.plugin_create(ctx, {'name': 'guy'})
         self.assertIsNotNone(res)
         self.assertEqual(2, len(conductor.plugin_get_all(ctx)))
 
-        ctx.tenant = "tenant_1"
+        ctx.project_id = "tenant_1"
 
         data = conductor.plugin_get(ctx, 'fake')
         self.assertEqual('fake', data['name'])
