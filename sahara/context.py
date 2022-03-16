@@ -55,7 +55,7 @@ class Context(context.RequestContext):
                         '{args}'.format(args=kwargs))
 
         super(Context, self).__init__(auth_token=auth_token,
-                                      user=user_id,
+                                      user_id=user_id,
                                       project_id=tenant_id,
                                       is_admin=is_admin,
                                       resource_uuid=resource_uuid,
@@ -108,9 +108,9 @@ class Context(context.RequestContext):
         return (self.service_catalog and self.auth_token and self.project_id
                 and self.user_id)
 
-    # NOTE(adrienverge): The Context class uses the 'user' and 'tenant'
-    # properties internally (inherited from oslo_context), but Sahara code
-    # often uses 'user_id' and 'tenant_id'.
+    # NOTE(adrienverge): The Context class uses the 'tenant' property
+    # internally (inherited from oslo_context), but Sahara code often uses
+    # 'tenant_id'.
     @property
     def user_id(self):
         return self.user
