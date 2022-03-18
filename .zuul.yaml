@@ -10,8 +10,10 @@
       jobs:
         - openstack-tox-pylint:
             voting: false
-        - sahara-tests-scenario
-        - sahara-tests-scenario-v2
+        - sahara-tests-scenario:
+            voting: false
+        - sahara-tests-scenario-v2:
+            voting: false
         - sahara-tests-tempest
         - sahara-tests-tempest-v2
         - openstack-tox-cover:
@@ -23,8 +25,10 @@
     gate:
       queue: sahara
       jobs:
-        - sahara-tests-scenario
-        - sahara-tests-scenario-v2
+        - sahara-tests-scenario:
+            voting: false
+        - sahara-tests-scenario-v2:
+            voting: false
         - sahara-tests-tempest
         - sahara-tests-tempest-v2
         # - sahara-grenade

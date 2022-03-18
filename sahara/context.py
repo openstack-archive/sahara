@@ -56,7 +56,7 @@ class Context(context.RequestContext):
 
         super(Context, self).__init__(auth_token=auth_token,
                                       user=user_id,
-                                      tenant=tenant_id,
+                                      project_id=tenant_id,
                                       is_admin=is_admin,
                                       resource_uuid=resource_uuid,
                                       request_id=request_id,
@@ -105,8 +105,8 @@ class Context(context.RequestContext):
         return d
 
     def is_auth_capable(self):
-        return (self.service_catalog and self.auth_token and self.tenant and
-                self.user_id)
+        return (self.service_catalog and self.auth_token and self.project_id
+                and self.user_id)
 
     # NOTE(adrienverge): The Context class uses the 'user' and 'tenant'
     # properties internally (inherited from oslo_context), but Sahara code
@@ -121,11 +121,11 @@ class Context(context.RequestContext):
 
     @property
     def tenant_id(self):
-        return self.tenant
+        return self.project_id
 
     @tenant_id.setter
     def tenant_id(self, value):
-        self.tenant = value
+        self.project_id = value
 
 
 def get_admin_context():
