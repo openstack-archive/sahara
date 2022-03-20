@@ -116,7 +116,7 @@
 
 - job:
     name: sahara-buildimages-base
-    nodeset: centos-8
+    nodeset: centos-8-stream
     vars:
       sahara_src_dir: src/opendev.org/openstack/sahara
     run: playbooks/buildimages/run.yaml
