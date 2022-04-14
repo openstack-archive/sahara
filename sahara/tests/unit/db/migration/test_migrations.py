@@ -31,13 +31,19 @@ postgres=# create database openstack_citest with owner openstack_citest;
 
 import os
 
-from oslo_db.sqlalchemy import test_base
+from oslo_db.sqlalchemy import enginefacade
+from oslo_db.sqlalchemy import test_fixtures
 from oslo_db.sqlalchemy import utils as db_utils
+from oslotest import base as test_base
 
 from sahara.tests.unit.db.migration import test_migrations_base as base
 
 
 class SaharaMigrationsCheckers(object):
+
+    def setUp(self):
+        super().setUp()
+        self.engine = enginefacade.writer.get_engine()
 
     def assertColumnExists(self, engine, table, column):
         t = db_utils.get_table(engine, table)
@@ -646,12 +652,14 @@ class SaharaMigrationsCheckers(object):
 class TestMigrationsMySQL(SaharaMigrationsCheckers,
                           base.BaseWalkMigrationTestCase,
                           base.TestModelsMigrationsSync,
-                          test_base.MySQLOpportunisticTestCase):
-    pass
+                          test_fixtures.OpportunisticDBTestMixin,
+                          test_base.BaseTestCase):
+    FIXTURE = test_fixtures.MySQLOpportunisticFixture
 
 
 class TestMigrationsPostgresql(SaharaMigrationsCheckers,
                                base.BaseWalkMigrationTestCase,
                                base.TestModelsMigrationsSync,
-                               test_base.PostgreSQLOpportunisticTestCase):
-    pass
+                               test_fixtures.OpportunisticDBTestMixin,
+                               test_base.BaseTestCase):
+    FIXTURE = test_fixtures.PostgresqlOpportunisticFixture
