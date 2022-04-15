@@ -40,7 +40,7 @@ def build_app():
         context.set_ctx(None)
 
     app.register_blueprint(api_v10.rest, url_prefix='/v1.0')
-    app.register_blueprint(api_v10.rest, url_prefix='/v1.1')
+    app.register_blueprint(api_v10.rest, name='apiv10_v11', url_prefix='/v1.1')
     app.register_blueprint(api_v11.rest, url_prefix='/v1.1')
 
     def make_json_error(ex):

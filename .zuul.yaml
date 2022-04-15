@@ -20,7 +20,8 @@
             voting: false
         - sahara-grenade:
             voting: false
-        - openstack-ansible-deploy-aio_sahara_metal-ubuntu-focal
+        - openstack-ansible-deploy-aio_sahara_metal-ubuntu-focal:
+            voting: false
     gate:
       queue: sahara
       jobs:
@@ -31,7 +32,7 @@
         - sahara-tests-tempest
         - sahara-tests-tempest-v2
         # - sahara-grenade
-        - openstack-ansible-deploy-aio_sahara_metal-ubuntu-focal
+        # - openstack-ansible-deploy-aio_sahara_metal-ubuntu-focal
     experimental:
       jobs:
         - sahara-buildimages-ambari
