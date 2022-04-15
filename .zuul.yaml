@@ -26,7 +26,6 @@
         - sahara-tests-tempest
         - sahara-tests-tempest-v2
         - sahara-grenade
-        - sahara-openstack-ansible-functional
     experimental:
       jobs:
         - sahara-buildimages-ambari
@@ -94,18 +93,11 @@
       - ^tools/.*$
       - ^tox.ini$
 
-- job:
-    name: sahara-tripleo-ci-centos-7-scenario003-standalone
-    description: |
-      Basic TripleO standalone job with all Sahara API tests
-    parent: tripleo-ci-centos-7-scenario003-standalone
-    vars:
-      featureset_override:
-        tempest_test_whitelist:
-          - 'sahara_tempest_plugin.tests.api.'
-
+# Job set non voting as it in unstable for victoria
+# https://review.opendev.org/c/openstack/sahara/+/838017/3#message-3cddf211ea5974fb65c92c148dd9ec52594ac1e2
 - job:
     name: sahara-openstack-ansible-functional
+    voting: false
     description: |
       OSA job focused on openstack-ansible-os_sahara
     parent: openstack-ansible-cross-repo-functional
