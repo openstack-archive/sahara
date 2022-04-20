@@ -98,16 +98,6 @@
       - ^tox.ini$
 
 - job:
-    name: sahara-tripleo-ci-centos-7-scenario003-standalone
-    description: |
-      Basic TripleO standalone job with all Sahara API tests
-    parent: tripleo-ci-centos-7-scenario003-standalone
-    vars:
-      featureset_override:
-        tempest_test_whitelist:
-          - 'sahara_tempest_plugin.tests.api.'
-
-- job:
     name: sahara-openstack-ansible-functional
     description: |
       OSA job focused on openstack-ansible-os_sahara
