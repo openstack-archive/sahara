@@ -113,7 +113,7 @@ Note that the ``~/.pip/cache`` folder should be created manually.
 
 Just add the following lines to .git/hooks/pre-commit and do chmod +x for it.
 
-.. sourcecode:: console
+.. sourcecode::
 
     #!/bin/sh
     # Run fast checks (PEP8 style check and PyFlakes fast static analysis)
@@ -126,6 +126,6 @@ and tests (tox -epy27).
 
 Just run the following command
 
-.. sourcecode:: console
+.. sourcecode::
 
     tox -e pylint
