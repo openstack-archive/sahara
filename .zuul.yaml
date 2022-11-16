@@ -1,4 +1,5 @@
 - project:
+    queue: sahara
     templates:
       - openstack-python3-zed-jobs
       - periodic-stable-jobs
@@ -22,7 +23,6 @@
         - openstack-ansible-deploy-aio_sahara_metal-ubuntu-focal:
             voting: false
     gate:
-      queue: sahara
       jobs:
         - sahara-tests-scenario:
             voting: false
