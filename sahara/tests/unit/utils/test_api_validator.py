@@ -259,7 +259,7 @@ class ApiValidatorTest(testtools.TestCase):
     def test_validate_hostname(self):
         schema = {
             "type": "string",
-            "format": "hostname",
+            "format": "idn-hostname",
         }
 
         self._validate_success(schema, "abcd")

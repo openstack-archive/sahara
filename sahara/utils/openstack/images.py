@@ -50,7 +50,7 @@ def wrap_entity(func):
 
 def _get_all_tags(image_props):
     tags = []
-    for key, value in image_props.iteritems():
+    for key, value in six.iteritems(image_props):
         if key.startswith(PROP_TAG) and value:
             tags.append(key)
     return tags
@@ -69,7 +69,7 @@ def _parse_tags(image_props):
 
 def _serialize_metadata(image):
     data = {}
-    for key, value in image.iteritems():
+    for key, value in six.iteritems(image):
         if key.startswith('_sahara') and value:
             data[key] = value
     return data
