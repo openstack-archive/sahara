@@ -65,6 +65,7 @@ periodic_opts = [
                     'will be deleted automatically. (0 value means that '
                     'automatic clean up is disabled).'),
     cfg.StrOpt('periodic_coordinator_backend_url',
+               secret=True,
                help='The backend URL to use for distributed periodic tasks '
                     'coordination.'),
     cfg.IntOpt('periodic_workers_number',
