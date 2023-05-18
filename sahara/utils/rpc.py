@@ -60,7 +60,7 @@ class RPCClient(object):
     def __init__(self, target):
         global MESSAGING_TRANSPORT
 
-        self.__client = messaging.RPCClient(
+        self.__client = messaging.get_rpc_client(
             target=target,
             transport=MESSAGING_TRANSPORT,
         )
