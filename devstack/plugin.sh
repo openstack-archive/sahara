@@ -272,9 +272,9 @@ function start_sahara {
 
     # Start proxies if enabled
     if is_service_enabled tls-proxy; then
-        start_tls_proxy '*' $SAHARA_SERVICE_PORT \
-                            $SAHARA_SERVICE_HOST \
-                            $SAHARA_SERVICE_PORT_INT &
+        start_tls_proxy sahara '*' $SAHARA_SERVICE_PORT \
+                                    $SAHARA_SERVICE_HOST \
+                                    $SAHARA_SERVICE_PORT_INT &
     fi
 }
 
