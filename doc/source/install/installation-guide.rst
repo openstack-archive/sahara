@@ -119,7 +119,7 @@ require super user privileges and can be executed in any directory where
 the current user has write permissions.
 
 3. You can get a sahara archive from
-   `<http://tarballs.openstack.org/sahara/>`_ and install it using pip:
+   `<https://tarballs.opendev.org/openstack/sahara/>`_ and install it using pip:
 
 .. sourcecode:: console
 
