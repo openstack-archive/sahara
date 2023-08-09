@@ -1,6 +1,6 @@
-======================
- Sahara Release Notes
-======================
+====================
+Sahara Release Notes
+====================
 
 .. toctree::
    :maxdepth: 1

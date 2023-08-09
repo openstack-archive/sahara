@@ -1,6 +1,6 @@
-===================================
- Rocky Series Release Notes
-===================================
+==========================
+Rocky Series Release Notes
+==========================
 
 .. release-notes::
    :branch: stable/rocky
