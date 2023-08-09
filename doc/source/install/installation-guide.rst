@@ -123,25 +123,25 @@ the current user has write permissions.
 
 .. sourcecode:: console
 
-    $ sahara-venv/bin/pip install 'http://tarballs.openstack.org/sahara/sahara-master.tar.gz'
+    $ sahara-venv/bin/pip install 'https://tarballs.opendev.org/openstack/sahara/sahara-master.tar.gz'
 ..
 
 Note that ``sahara-master.tar.gz`` contains the latest changes and
 might not be stable at the moment. We recommend browsing
-`<http://tarballs.openstack.org/sahara/>`_ and selecting the latest
+`<https://tarballs.opendev.org/openstack/sahara/>`_ and selecting the latest
 stable release. For installation just execute (where replace the 'release'
 word with release name, e.g. 'mitaka'):
 
 .. sourcecode:: console
 
-    $ sahara-venv/bin/pip install 'http://tarballs.openstack.org/sahara/sahara-stable-release.tar.gz'
+    $ sahara-venv/bin/pip install 'https://tarballs.opendev.org/openstack/sahara/sahara-stable-release.tar.gz'
 ..
 
 For example, you can get Sahara Mitaka release by executing:
 
 .. sourcecode:: console
 
-    $ sahara-venv/bin/pip install 'http://tarballs.openstack.org/sahara/sahara-stable-mitaka.tar.gz'
+    $ sahara-venv/bin/pip install 'https://tarballs.opendev.org/openstack/sahara/sahara-stable-mitaka.tar.gz'
 ..
 
 4. After installation you should create a configuration file; as seen below it
