@@ -377,8 +377,8 @@ so that you will have all of the source code and inputs stored locally.
 
   - Set the main class to be:  sahara.edp.spark.SparkWordCount
 
-  - Under Arguments, click Add and fill url for the input file,
-    once more click Add and fill url for the output file.
+  - Under Arguments, click Add and fill URL for the input file,
+    once more click Add and fill URL for the output file.
 
   - Click on Launch
 
