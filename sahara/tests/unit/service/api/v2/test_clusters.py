@@ -28,6 +28,7 @@ from sahara.service import api as service_api
 from sahara.service.api.v2 import clusters as api
 from sahara.tests.unit import base
 import sahara.tests.unit.service.api.v2.base as api_base
+from sahara.utils import api as util_api
 from sahara.utils import cluster as c_u
 
 conductor = cond.API
@@ -303,3 +304,10 @@ class TestClusterApi(base.SaharaWithDbTestCase):
         with mock.patch('sahara.service.quotas.check_cluster'):
             cluster = api.create_cluster(api_base.SAMPLE_CLUSTER)
             api.update_cluster(cluster.id, {'update_keypair': True})
+
+    def test_replace_hadoop_version_plugin_version(self):
+        cluster = api.create_cluster(api_base.SAMPLE_CLUSTER)
+        cluster = api.get_cluster(cluster.id)
+        self.assertEqual(cluster.hadoop_version, 'test_version')
+        util_api._replace_hadoop_version_plugin_version(cluster)
+        self.assertEqual(cluster.plugin_version, 'test_version')
