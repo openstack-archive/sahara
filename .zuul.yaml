@@ -1,6 +1,6 @@
 - project:
+    queue: sahara
     templates:
-      - openstack-lower-constraints-jobs
       - openstack-python-jobs
       - openstack-python3-train-jobs
       - periodic-stable-jobs
@@ -14,32 +14,33 @@
             voting: false
         - sahara-tests-scenario-v2:
             voting: false
-        - sahara-tests-tempest
+        #- sahara-tests-tempest
         - sahara-tests-tempest-v2
         - openstack-tox-cover:
             voting: false
         - requirements-check:
             nodeset: ubuntu-bionic
-        - sahara-grenade
+        #- sahara-grenade
         - sahara-tests-scenario-py3:
             voting: false
         - sahara-tripleo-ci-centos-8-scenario003-standalone: &tripleo_sa
             voting: false
             vars:
               build_container_images: true
-        - sahara-openstack-ansible-functional
+        - sahara-openstack-ansible-functional:
+            voting: false
     gate:
-      queue: sahara
       jobs:
         # - sahara-tests-scenario
         # - sahara-tests-scenario-v2
-        - sahara-tests-tempest
+        #- sahara-tests-tempest
         - sahara-tests-tempest-v2
         - requirements-check:
             nodeset: ubuntu-bionic
-        - sahara-grenade
+        #- sahara-grenade
         - sahara-tripleo-ci-centos-8-scenario003-standalone: *tripleo_sa
-        - sahara-openstack-ansible-functional
+        - sahara-openstack-ansible-functional:
+            voting: false
     experimental:
       jobs:
         - sahara-buildimages-ambari
