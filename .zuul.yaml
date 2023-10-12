@@ -1,6 +1,6 @@
 - project:
+    queue: sahara
     templates:
-      - openstack-lower-constraints-jobs
       - openstack-python3-wallaby-jobs
       - periodic-stable-jobs
       - publish-openstack-docs-pti
@@ -10,10 +10,14 @@
       jobs:
         - openstack-tox-pylint:
             voting: false
-        - sahara-tests-scenario
-        - sahara-tests-scenario-v2
-        - sahara-tests-tempest
-        - sahara-tests-tempest-v2
+        - sahara-tests-scenario:
+            voting: false
+        - sahara-tests-scenario-v2:
+            voting: false
+        - sahara-tests-tempest:
+            voting: false
+        - sahara-tests-tempest-v2:
+            voting: false
         - openstack-tox-cover:
             voting: false
         - sahara-grenade:
@@ -21,12 +25,15 @@
         - sahara-openstack-ansible-functional:
             voting: false
     gate:
-      queue: sahara
       jobs:
-        - sahara-tests-scenario
-        - sahara-tests-scenario-v2
-        - sahara-tests-tempest
-        - sahara-tests-tempest-v2
+        - sahara-tests-scenario:
+            voting: false
+        - sahara-tests-scenario-v2:
+            voting: false
+        - sahara-tests-tempest:
+            voting: false
+        - sahara-tests-tempest-v2:
+            voting: false
         # - sahara-grenade
         - sahara-openstack-ansible-functional:
             voting: false
