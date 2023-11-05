@@ -14,11 +14,15 @@
             voting: false
         - sahara-tests-scenario-v2:
             voting: false
-        - sahara-tests-tempest
-        - sahara-tests-tempest-v2
-        - openstack-tox-cover:
+        - sahara-tests-tempest:
             voting: false
-        - sahara-grenade:
+        - sahara-tests-tempest-v2:
+            voting: false
+        - openstack-tox-py38:
+            voting: false
+        - openstack-tox-py311:
+            voting: false
+        - openstack-tox-cover:
             voting: false
         - openstack-ansible-deploy-aio_sahara_metal-ubuntu-focal:
             voting: false
@@ -28,8 +32,14 @@
             voting: false
         - sahara-tests-scenario-v2:
             voting: false
-        - sahara-tests-tempest
-        - sahara-tests-tempest-v2
+        - sahara-tests-tempest:
+            voting: false
+        - sahara-tests-tempest-v2:
+            voting: false
+        - openstack-tox-py38:
+            voting: false
+        - openstack-tox-py311:
+            voting: false
         # - sahara-grenade
         # - openstack-ansible-deploy-aio_sahara_metal-ubuntu-focal
     experimental:
