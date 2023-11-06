@@ -11,10 +11,10 @@ gettext
 # - mysqladmin and psql
 mariadb [platform:rpm]
 mariadb-devel [platform:rpm]
-mariadb-server [platform:rpm]
 dev-db/mariadb [platform:gentoo]
-mysql-client [platform:dpkg]
-mysql-server [platform:dpkg]
+mysql-client [platform:dpkg !platform:debian]
+mysql-server [platform:dpkg !platform:debian]
+mariadb-server [platform:debian]
 postgresql
 postgresql-client [platform:dpkg]
 libpq-dev [platform:dpkg]
