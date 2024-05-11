@@ -1,9 +1,0 @@
-- name: Installs needed plugins to build its images
-  command: tox -e images -- pip install {{ ansible_user_dir }}/src/opendev.org/openstack/sahara-plugin-{{ sahara_plugin }}
-  args:
-    chdir: "{{ sahara_src_dir }}"
-
-- name: Build all the images for the selected plugin
-  command: ./tools/gate/build-images "{{ sahara_plugin }}"
-  args:
-    chdir: "{{ sahara_src_dir }}"

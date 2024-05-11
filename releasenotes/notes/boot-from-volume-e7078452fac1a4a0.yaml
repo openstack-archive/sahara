@@ -1,3 +1,0 @@
----
-features:
-  - Adding the ability to boot a Sahara cluster from volumes instead of images.

@@ -1,1 +1,0 @@
-sahara ALL=(root) NOPASSWD: /usr/bin/sahara-rootwrap /etc/sahara/rootwrap.conf *

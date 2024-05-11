@@ -1,6 +1,0 @@
-- hosts: all
-  roles:
-    - role: bindep
-      bindep_profile: test
-      bindep_dir: "{{ sahara_src_dir|default(zuul_work_dir) }}"
-    - build-sahara-images-cli

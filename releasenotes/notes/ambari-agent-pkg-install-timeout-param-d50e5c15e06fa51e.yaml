@@ -1,4 +1,0 @@
----
-features:
-  - Adding the ability to change default timeout parameter for
-    ambari agent package installation

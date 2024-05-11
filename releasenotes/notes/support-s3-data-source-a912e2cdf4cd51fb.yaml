@@ -1,3 +1,0 @@
----
-features:
-  - An EDP data source may reference a file stored in a S3-like object store.

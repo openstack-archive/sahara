@@ -1,9 +1,0 @@
-# renamed after the switch to Storyboard
-redirectmatch 301 ^/sahara/([^/]+)/contributor/launchpad.html$ /sahara/$1/contributor/project.html
-# renamed after some documentation reshuffling
-redirectmatch 301 ^/sahara/(?!ocata|pike|queens)([^/]+)/user/vanilla-imagebuilder.html$ /sahara/$1/user/vanilla-plugin.html
-redirectmatch 301 ^/sahara/(?!ocata|pike|queens)([^/]+)/user/cdh-imagebuilder.html$ /sahara/$1/user/cdh-plugin.html
-redirectmatch 301 ^/sahara/(?!ocata|pike|queens)([^/]+)/user/guest-requirements.html$ /sahara/$1/user/building-guest-images.html
-redirectmatch 301 ^/sahara/([^/]+)/user/([^-]+)-plugin.html$ /sahara-plugin-$2/$1/
-redirectmatch 301 ^/sahara/([^/]+)/contributor/how-to-participate.html$ /sahara/$1/contributor/contributing.html
-redirectmatch 301 ^/sahara/([^/]+)/contributor/project.html$ /sahara/$1/contributor/contributing.html

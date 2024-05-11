@@ -1,3 +1,0 @@
----
-fixes:
-  - Fixed api_insecure handling in sessions. Closed bug 1539498.

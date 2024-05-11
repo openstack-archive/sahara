@@ -1,5 +1,0 @@
----
-deprecations:
-  - MapR 5.1.0.mrv2 is now deprecated and will be removed in Ocata release.
-    It is recommended to use MapR 5.2.0.mrv2 instead.
-

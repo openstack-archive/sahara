@@ -1,3 +1,0 @@
-#!/bin/bash
-
-sudo -u %(user)s kinit -p %(principal)s -kt /tmp/sahara-kerberos/%(keytab)s

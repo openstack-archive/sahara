@@ -1,4 +1,0 @@
----
-features:
-  - Added support of running sahara-api as wsgi application.
-    Use 'sahara-wsgi-api' command for use this feature.

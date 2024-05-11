@@ -1,5 +1,0 @@
----
-upgrade:
-  - HDP plugin removed from default configuration list.
-    End users who are using HDP should ensure that their
-    configuration files continue to list "hdp".

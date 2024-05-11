@@ -1,6 +1,0 @@
----
-upgrade:
-  - |
-    Sample configuration files previously installed in
-    share/sahara will now be installed into etc/sahara
-    instead.

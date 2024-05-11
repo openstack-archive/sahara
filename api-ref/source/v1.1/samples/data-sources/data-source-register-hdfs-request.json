@@ -1,6 +1,0 @@
-{
-    "description": "This is hdfs input",
-    "url": "hdfs://test-master-node:8020/user/hadoop/input",
-    "type": "hdfs",
-    "name": "hdfs_input"
-}
